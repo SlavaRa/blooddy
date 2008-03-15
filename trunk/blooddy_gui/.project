@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>blooddy_gui</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>com.adobe.flexbuilder.project.flexbuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>com.adobe.flexbuilder.project.flexlibnature</nature>
+		<nature>com.adobe.flexbuilder.project.actionscriptnature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>[source path] fl</name>
+			<type>2</type>
+			<location>C:/Program Files/Adobe/Adobe Flash CS3/en/Configuration/Component Source/ActionScript 3.0/User Interface/fl</location>
+		</link>
+		<link>
+			<name>[source path] mx</name>
+			<type>2</type>
+			<location>C:/Program Files/Adobe/Flex Builder 3/sdks/3.0.0/frameworks/projects/framework/src/mx</location>
+		</link>
+		<link>
+			<name>[source path] org</name>
+			<type>2</type>
+			<location>D:/_work/__WORKSPACE__/AsWing/trunk/AsWing/src/org</location>
+		</link>
+	</linkedResources>
+</projectDescription>
