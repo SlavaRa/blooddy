@@ -18,10 +18,8 @@ package by.blooddy.platform.managers {
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	
-	import by.blooddy.platform.events.DragEvent;
-	import flash.events.KeyboardEvent;
-	import flash.ui.Keyboard;
+	import flash.utils.getQualifiedClassName;
+	import by.blooddy.platform.utils.getCallerInfo;
 
 	//--------------------------------------
 	//  Events
@@ -53,32 +51,6 @@ package by.blooddy.platform.managers {
 	 */
 	public final class DragObject extends Shape {
 
-		//--------------------------------------------------------------------------
-		//
-		//  Internal class methods
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		internal static function getNewInstance(dragSource:DisplayObject, rescale:Boolean=false, offset:Point=null, bounds:Rectangle=null):DragObject {
-			internalCall = true;
-			var info:DragObject = new DragObject(dragSource, rescale, offset, bounds);
-			internalCall = false;
-			return info;
-		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Internal class variables
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		private static var internalCall:Boolean = false;
 
 		//--------------------------------------------------------------------------
 		//
@@ -91,7 +63,13 @@ package by.blooddy.platform.managers {
 		 */
 		public function DragObject(dragSource:DisplayObject, rescale:Boolean=false, offset:Point=null, bounds:Rectangle=null) {
 			super();
-			if (!internalCall) throw new ArgumentError();
+			var info:XML = getCallerInfo();
+			if (
+				info.localName() != "type" || info.@name != getQualifiedClassName(DragInfo) ||
+				!info.method || info.method.@name != "doDrag"
+			) {
+				throw new ArgumentError();
+			}
 			this._dragSource = dragSource;
 			this._rescale = rescale;
 			this._offset = offset || new Point();
