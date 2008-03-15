@@ -16,6 +16,7 @@
 <classEntry path="by.blooddy.platform.events.PointEvent"/>
 <classEntry path="by.blooddy.platform.events.ResourceEvent"/>
 <classEntry path="by.blooddy.platform.events.VectorEvent"/>
+<classEntry path="by.blooddy.platform.events.isIntrinsicEvent"/>
 <classEntry path="by.blooddy.platform.geom.IPoint"/>
 <classEntry path="by.blooddy.platform.geom.Point"/>
 <classEntry path="by.blooddy.platform.geom.Vector"/>
