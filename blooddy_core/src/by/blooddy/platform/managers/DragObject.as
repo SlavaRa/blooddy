@@ -20,6 +20,7 @@ package by.blooddy.platform.managers {
 	import flash.geom.Rectangle;
 	import flash.utils.getQualifiedClassName;
 	import by.blooddy.platform.utils.getCallerInfo;
+	import flash.system.Capabilities;
 
 	//--------------------------------------
 	//  Events
@@ -51,6 +52,18 @@ package by.blooddy.platform.managers {
 	 */
 	public final class DragObject extends Shape {
 
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 * На кубунте странные проблемы с драгом. невъебически задержки
+		 * при перемещеннии.
+		 */
+		private static const CORRECT_UPDATE:Boolean = ( Capabilities.os.toLowerCase().indexOf('linux') <0 );
 
 		//--------------------------------------------------------------------------
 		//
@@ -328,7 +341,7 @@ package by.blooddy.platform.managers {
 			this._lastMouseEvent = event;
 			if (this._mouseLeave) this._mouseLeave = false;
 			this.updatePosition();
-			event.updateAfterEvent();
+			if (CORRECT_UPDATE) event.updateAfterEvent();
 		}
 
 		/**

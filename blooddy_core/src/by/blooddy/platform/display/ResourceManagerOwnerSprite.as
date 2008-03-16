@@ -12,6 +12,7 @@ package by.blooddy.platform.display {
 	import flash.display.Sprite;
 	import flash.display.DisplayObjectContainer;
 	import flash.errors.IllegalOperationError;
+	import flash.events.Event;
 
 	/**
 	 * Класс у когорого есть ссылка на манагер ресурсов.
@@ -36,6 +37,7 @@ package by.blooddy.platform.display {
 		 */
 		public function ResourceManagerOwnerSprite() {
 			super();
+			super.addEventListener(Event.REMOVED_FROM_STAGE, this.handler_removedFromStage, false, int.MAX_VALUE);
 		}
 
 		//--------------------------------------------------------------------------
@@ -60,6 +62,10 @@ package by.blooddy.platform.display {
 				this._resourceManager = ( !parent ? new ResourceManager() : ( parent as IResourceManagerOwner ).resourceManager );
 			}
 			return this._resourceManager;
+		}
+
+		private function handler_removedFromStage(event:Event):void {
+			this._resourceManager = null;
 		}
 
 	}

@@ -90,7 +90,7 @@ package by.blooddy.platform.utils {
 			} else {
 				c = target.constructor as Class;
 			}
-			var info:ObjectInfo = _HASH[c];
+			var info:ObjectInfo = _HASH[c] as ObjectInfo;
 			if (!info) {
 				info = new ObjectInfo();
 				info.$parseXML( describeType( c ) );
@@ -275,8 +275,7 @@ package by.blooddy.platform.utils {
 				if (name.lastIndexOf("::")<0) {
 					name = name.replace(/\.(?=[^\.]+$)/, "::");
 				}
-			}
-			else throw new ArgumentError();
+			} else throw new ArgumentError();
 			return this._superclasses.indexOf(name)>=0;
 		}
 
@@ -292,8 +291,7 @@ package by.blooddy.platform.utils {
 				if (name.lastIndexOf("::")<0) {
 					name = name.replace(/\.(?=[^\.]+$)/, "::");
 				}
-			}
-			else throw new ArgumentError();
+			} else throw new ArgumentError();
 			return this._interfaces.indexOf(name)>=0
 		}
 
