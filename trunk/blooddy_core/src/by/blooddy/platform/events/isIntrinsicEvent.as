@@ -68,7 +68,8 @@ internal final class EventDispatcherInfo {
 	 * @private
 	 */
 	public static function getInfo(dispatcher:IEventDispatcher):EventDispatcherInfo {
-		return getClassInfo( ( dispatcher as Object ).constructor as Class );
+		if ( !dispatcher ) return null;
+		else return getClassInfo( ( dispatcher as Object ).constructor as Class );
 	}
 
 	//--------------------------------------------------------------------------
@@ -101,7 +102,7 @@ internal final class EventDispatcherInfo {
 		if (!info) {
 			var info2:ObjectInfo = ObjectInfo.getInfo( c );
 			_HASH[c] = info = new EventDispatcherInfo();
-			info.setInfo( info2 );
+			info.$setInfo( info2 );
 		}
 		return info;
 	}
@@ -126,6 +127,9 @@ internal final class EventDispatcherInfo {
 	//
 	//--------------------------------------------------------------------------
 
+	/**
+	 * @private
+	 */
 	private var _info:ObjectInfo;
 
 	/**
@@ -179,7 +183,7 @@ internal final class EventDispatcherInfo {
 	/**
 	 * @private
 	 */
-	private function setInfo(info:ObjectInfo):void {
+	private function $setInfo(info:ObjectInfo):void {
 		this._info = info;
 		var list:XMLList, xml:XML, arg:XML, name:String, type:Object;
 		list = info.getMetadata("Event", ObjectInfo.META_SELF);
