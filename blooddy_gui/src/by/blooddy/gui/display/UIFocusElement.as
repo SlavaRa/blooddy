@@ -7,11 +7,11 @@ package by.blooddy.gui.display {
 	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
 
+	[AbstractClass]
 	public class UIFocusElement extends UIControl implements IFocusElement {
 
 		public function UIFocusElement() {
 			super();
-			if ( ( this as Object ).constructor === UIFocusElement ) throw new ArgumentError();
 			super.addEventListener(Event.ADDED_TO_STAGE, this.handler_addedToStage, false, int.MAX_VALUE);
 			super.addEventListener(Event.REMOVED_FROM_STAGE, this.handler_removedFromStage, false, int.MAX_VALUE);
 		}

@@ -10,8 +10,9 @@ package by.blooddy.gui.display {
 	import flash.geom.Transform;
 	import flash.display.Sprite;
 	import flash.geom.Point;
+	import by.blooddy.platform.managers.IResourceManagerOwner;
 
-	public interface IUIControl extends ILivePreview {
+	public interface IUIControl extends ILivePreview, IResourceManagerOwner {
 
 		function get name():String;
 		function set name(value:String):void; 

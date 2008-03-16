@@ -10,6 +10,8 @@ package by.blooddy.gui.display.controls {
 	import flash.geom.Point;
 	import flash.display.DisplayObject;
 	import flash.utils.getDefinitionByName;
+	import by.blooddy.platform.managers.ResourceManager;
+	import by.blooddy.platform.managers.IResourceManagerOwner;
 
 	public class Label extends TextField implements IUIControl {
 
@@ -73,6 +75,29 @@ package by.blooddy.gui.display.controls {
 			}
 			if (c) super.dispatchEvent( new Event("move") );
 		}
+
+	    //--------------------------------------
+	    //  resources declaration
+	    //--------------------------------------	
+
+		/**
+		 * @private
+		 */
+		private var _resourceManager:ResourceManager;
+
+		public function get resourceManager():ResourceManager {
+			if (!this._resourceManager) {
+				var parent:DisplayObject = this;
+				while ( ( parent = parent.parent ) && !( parent is IResourceManagerOwner ) );
+				// TODO: сделать выборку глобального манагера
+				this._resourceManager = ( !parent ? new ResourceManager() : ( parent as IResourceManagerOwner ).resourceManager );
+			}
+			return this._resourceManager;
+		}
+
+	    //--------------------------------------
+	    //  livepreview declaration
+	    //--------------------------------------	
 
 		public function get isLivePreview():Boolean {
 			return ( super.parent && super.parent is ( getDefinitionByName("fl.livepreview::LivePreviewParent") as Class ) )
