@@ -1,29 +1,42 @@
 ﻿package by.blooddy.gui.display {
 
-	import flash.display.Sprite;
-	import flash.utils.getQualifiedClassName;
-	import flash.utils.getDefinitionByName;
-	import by.blooddy.platform.utils.deferredCall;
-	import flash.events.Event;
-	import flash.geom.Rectangle;
-	import flash.geom.Point;
-	import flash.display.DisplayObjectContainer;
-	import flash.display.DisplayObject;
-	import by.blooddy.platform.utils.ObjectInfo;
+	import by.blooddy.gui.utils.UIControlInfo;
 	import by.blooddy.platform.events.isIntrinsicEvent;
-	import flash.errors.IllegalOperationError;
+	
+	import flash.display.DisplayObject;
+	import flash.display.Sprite;
+	import flash.events.Event;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
+	import flash.utils.getDefinitionByName;
+	import by.blooddy.platform.managers.ResourceManager;
+	import by.blooddy.platform.display.ResourceManagerOwnerSprite;
+	import by.blooddy.platform.managers.IResourceManagerOwner;
+	import by.blooddy.platform.utils.ObjectInfo;
 
 //	[AccessibilityClass(implementation="by.blooddy.gui.accessibility.UIControlAccessibility")]
+
+	[AbstractClass]
 	public class UIControl extends Sprite implements IUIControl {
 
 		public function UIControl() {
 			super();
-			if ( ( this as Object ).constructor === UIControl ) throw new ArgumentError();
+
+			this._info = UIControlInfo.getInfo( this );
+
+			// класс обстрактный
+			if ( this._info.hasMetadata("AbstractClass", ObjectInfo.META_SELF) ) {
+				throw new ArgumentError();
+			}
+
 			this.updatePreview();
-			this._info = ObjectInfo.getInfo( this );
+
+			super.addEventListener(Event.ADDED_TO_STAGE, this.handler_addedToStage, false, int.MAX_VALUE);
+			super.addEventListener(Event.REMOVED_FROM_STAGE, this.handler_removedFromStage, false, int.MAX_VALUE);
+
 		}
 
-		private var _info:ObjectInfo;
+		private var _info:UIControlInfo;
 
 	    //--------------------------------------
 	    //  center
@@ -247,6 +260,9 @@
 			return super.getRect( targetCoordinateSpace );
 		}
 
+		/**
+		 * @private
+		 */
 		private function getControlBounds(targetCoordinateSpace:DisplayObject):Rectangle {
 			var p:Point = new Point();
 			var result:Rectangle = new Rectangle();
@@ -261,6 +277,29 @@
 			// готова
 			return result;
 		}
+
+	    //--------------------------------------
+	    //  resources declaration
+	    //--------------------------------------	
+
+		/**
+		 * @private
+		 */
+		private var _resourceManager:ResourceManager;
+
+		public function get resourceManager():ResourceManager {
+			if (!this._resourceManager) {
+				var parent:DisplayObject = this;
+				while ( ( parent = parent.parent ) && !( parent is IResourceManagerOwner ) );
+				// TODO: сделать выборку глобального манагера
+				this._resourceManager = ( !parent ? new ResourceManager() : ( parent as IResourceManagerOwner ).resourceManager );
+			}
+			return this._resourceManager;
+		}
+
+	    //--------------------------------------
+	    //  livepreview declaration
+	    //--------------------------------------	
 
 		public function get isLivePreview():Boolean {
 			return ( super.parent && super.parent is ( getDefinitionByName("fl.livepreview::LivePreviewParent") as Class ) )
@@ -289,11 +328,10 @@
 		public override function toString():String {
 			var parent:DisplayObject = this;
 			var result:Array = new Array();
-			while (parent) {
+			do {
 				if (parent.name) result.unshift( parent.name );
 				else result.unshift( ( parent as Object ).toLocaleString() );
-				parent = parent.parent;
-			}
+			} while ( parent = parent.parent );
 			return result.join(".");
 		}
 
@@ -304,6 +342,13 @@
 
 		protected final function $dispatchEvent(event:Event):Boolean {
 			return super.dispatchEvent( event );
+		}
+
+		private function handler_addedToStage(event:Event):void {
+		}
+
+		private function handler_removedFromStage(event:Event):void {
+			this._resourceManager = null;
 		}
 
 	}
