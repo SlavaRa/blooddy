@@ -3,7 +3,7 @@ package by.blooddy.gui.display {
 	import by.blooddy.gui.managers.IFocusManager;
 	import by.blooddy.gui.managers.FocusManager;
 
-	[AbstractClass]
+	[AbstractControl]
 	public class UIFocusManager extends UIFocusElement implements IFocusManager {
 
 		public function UIFocusManager() {

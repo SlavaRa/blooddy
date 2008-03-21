@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <flexLibProperties version="1">
 <includeClasses>
-<classEntry path="by.blooddy.gui.display.ILivePreview"/>
 <classEntry path="by.blooddy.gui.display.IUIControl"/>
-<classEntry path="by.blooddy.gui.display.UIControl"/>
-<classEntry path="by.blooddy.gui.display.UIFocusElement"/>
-<classEntry path="by.blooddy.gui.display.UIFocusManager"/>
 <classEntry path="by.blooddy.gui.display.controls.Button"/>
+<classEntry path="by.blooddy.gui.managers.IFocusManager"/>
 <classEntry path="by.blooddy.gui.display.controls.Label"/>
+<classEntry path="by.blooddy.gui.display.UIFocusManager"/>
+<classEntry path="by.blooddy.gui.display.ILivePreview"/>
+<classEntry path="by.blooddy.gui.display.UIFocusElement"/>
+<classEntry path="by.blooddy.gui.utils.UIControlInfo"/>
 <classEntry path="by.blooddy.gui.managers.FocusManager"/>
 <classEntry path="by.blooddy.gui.managers.IFocusElement"/>
-<classEntry path="by.blooddy.gui.managers.IFocusManager"/>
+<classEntry path="by.blooddy.gui.display.UIControl"/>
 </includeClasses>
 <includeResources/>
 <namespaceManifests>

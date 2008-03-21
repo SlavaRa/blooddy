@@ -29,6 +29,7 @@
 			if ( !container ) throw new ArgumentError();
 
 			this._container = container;
+
 			if (this._container.stage) {
 				this.init();
 			} else {
