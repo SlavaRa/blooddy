@@ -7,7 +7,7 @@ package by.blooddy.gui.display {
 	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
 
-	[AbstractClass]
+	[AbstractControl]
 	public class UIFocusElement extends UIControl implements IFocusElement {
 
 		public function UIFocusElement() {

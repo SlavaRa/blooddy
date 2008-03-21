@@ -13,10 +13,14 @@
 	import by.blooddy.platform.display.ResourceManagerOwnerSprite;
 	import by.blooddy.platform.managers.IResourceManagerOwner;
 	import by.blooddy.platform.utils.ObjectInfo;
+	import by.blooddy.platform.utils.ClassUtils;
+	import flash.display.Graphics;
+	import flash.display.LineScaleMode;
+	import flash.display.DisplayObjectContainer;
 
 //	[AccessibilityClass(implementation="by.blooddy.gui.accessibility.UIControlAccessibility")]
 
-	[AbstractClass]
+	[AbstractControl]
 	public class UIControl extends Sprite implements IUIControl {
 
 		public function UIControl() {
@@ -25,11 +29,9 @@
 			this._info = UIControlInfo.getInfo( this );
 
 			// класс обстрактный
-			if ( this._info.hasMetadata("AbstractClass", ObjectInfo.META_SELF) ) {
+			if ( this._info.hasMetadata("AbstractControl", ObjectInfo.META_SELF) ) {
 				throw new ArgumentError();
 			}
-
-			this.updatePreview();
 
 			super.addEventListener(Event.ADDED_TO_STAGE, this.handler_addedToStage, false, int.MAX_VALUE);
 			super.addEventListener(Event.REMOVED_FROM_STAGE, this.handler_removedFromStage, false, int.MAX_VALUE);
@@ -39,15 +41,70 @@
 		private var _info:UIControlInfo;
 
 	    //--------------------------------------
+	    //  graphics declaration
+	    //--------------------------------------
+
+		public override function get graphics():Graphics {
+			return null;
+		}
+
+		CONFIG::debug {
+
+			/**
+			 * @private
+			 */
+			private var _showPreview:Boolean = false;
+
+			public function get showPreview():Boolean {
+				return this._showPreview;
+			}
+
+			/**
+			 * @private
+			 */
+			public function set showPreview(value:Boolean):void {
+				if ( this._showPreview == value ) return;
+				this._showPreview = value;
+				if ( this._showPreview ) {
+					this.redrawPreview();
+				} else {
+					super.graphics.clear();
+				}
+			}
+
+			/**
+			 * @private
+			 */
+			private function redrawPreview():void {
+				var bounds:Rectangle = this.getControlBounds( this );
+				with ( super.graphics ) {
+					lineStyle(1, 0xFFFFFF, 1, true, LineScaleMode.NONE);
+					moveTo( bounds.left, bounds.top );
+					lineTo( bounds.right, bounds.top );
+					lineTo( bounds.right, bounds.bottom );
+					lineTo( bounds.left, bounds.bottom );
+					lineTo( bounds.left, bounds.top );
+				}
+			}
+
+		}
+
+	    //--------------------------------------
 	    //  center
 	    //--------------------------------------	
 
+		/**
+		 * @private
+		 */
 		private var _center:Point = new Point();
 
 		public function get center():Point {
 			return this._center;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set center(p:Point):void {
 			this._center = p;
 			super.x = this._x - p.x;
@@ -109,18 +166,20 @@
 		}
 
 		public function move(x:Number, y:Number):void {
-			var c:Boolean = false;
+			var changed:Boolean = false;
 			if (this._x == x) {
 				this._x = x;
 				super.x = Math.round( this._x - this._center.x );
-				c = true;
+				changed = true;
 			}
 			if (this._y == y) {
 				this._y = y;
 				super.x = Math.round( this._y - this._center.y );
-				c = true;
+				changed = true;
 			}
-			if (c) super.dispatchEvent( new Event("move") );
+			if (changed) {
+				super.dispatchEvent( new Event("move") );
+			}
 		}
 
 	    //--------------------------------------
@@ -232,16 +291,23 @@
 		/**
 		 */
 		public function setSize(width:Number, height:Number):void {
+			var changed:Boolean = false;
 			if (this._width != width && !isNaN(width)) {
 				this._width = width;
+				changed = true;
 			}
 			if (this._height != height && !isNaN(height)) {
 				this._height = height;
+				changed = true;
 			}
-			Math.round( this._width );
-			Math.round( this._height );
-			// doResize
-			super.dispatchEvent( new Event(Event.RESIZE) );
+			width = Math.round( this._width );
+			height = Math.round( this._height );
+			if (changed) {
+				CONFIG::debug {
+					if (this._showPreview) this.redrawPreview();
+				}
+				super.dispatchEvent( new Event(Event.RESIZE) );
+			}
 		}
 
 		public override function getBounds(targetCoordinateSpace:DisplayObject):Rectangle {
@@ -269,13 +335,43 @@
 			// начальная точка
 			p.x = this._x - this._center.x;
 			p.y = this._y - this._center.y;
-			result.topLeft = targetCoordinateSpace.globalToLocal( super.localToGlobal( p ) );
+			if ( targetCoordinateSpace !== this ) {
+				result.topLeft = targetCoordinateSpace.globalToLocal( super.localToGlobal( p ) );
+			}
 			// конечная точка
 			p.x += this._width;
 			p.y += this._height;
-			result.bottomRight = targetCoordinateSpace.globalToLocal( super.localToGlobal( p ) );
+			if ( targetCoordinateSpace !== this ) {
+				result.bottomRight = targetCoordinateSpace.globalToLocal( super.localToGlobal( p ) );
+			}
 			// готова
 			return result;
+		}
+
+		public override function set scale9Grid(innerRectangle:Rectangle):void {
+			super.scale9Grid = innerRectangle;
+			setScale9Grid( this, innerRectangle );
+		}
+
+		/**
+		 * @private
+		 */
+		private static function setScale9Grid(container:DisplayObjectContainer, innerRectangle:Rectangle):void {
+			var l:uint = container.numChildren;
+			var child:DisplayObject;
+			var childRectangle:Rectangle = new Rectangle();
+			while (l--) {
+				child = container.getChildAt( l );
+				// прямоугольник
+				childRectangle
+				childRectangle.topLeft = child.globalToLocal( container.localToGlobal( innerRectangle.topLeft ) );
+				childRectangle.bottomRight = child.globalToLocal( container.localToGlobal( innerRectangle.bottomRight ) );
+				// сэтим
+				child.scale9Grid = childRectangle;
+				if ( !( child is IUIControl ) && ( child is DisplayObjectContainer ) ) {
+					setScale9Grid( ( child as DisplayObjectContainer ), childRectangle );
+				}
+			}
 		}
 
 	    //--------------------------------------
@@ -305,26 +401,6 @@
 			return ( super.parent && super.parent is ( getDefinitionByName("fl.livepreview::LivePreviewParent") as Class ) )
 		}
 
-		private function updatePreview():void {
-/**			TODO: сделать превью
- 			super.graphics.clear();
-			var bounds:Rectangle = super.getBounds( this );
-			with (super.graphics) {
-//				moveTo( bounds.xMin, bounds.yMin );
-//				lineTo( bounds.xMax, bounds.yMin );
-//				lineTo( bounds.xMax, bounds.yMax );
-//				lineTo( bounds.xMin, bounds.yMax );
-//				lineTo( bounds.xMin, bounds.yMin );
-				lineStyle(1, 0xFFFFFF);
-				moveTo( 0, 0 );
-				lineTo( 10, 0 );
-				lineTo( 10, 10 );
-				lineTo( 0, 10 );
-				lineTo( 0, 0 );
-			}
-*/
-		}
-
 		public override function toString():String {
 			var parent:DisplayObject = this;
 			var result:Array = new Array();
@@ -344,9 +420,15 @@
 			return super.dispatchEvent( event );
 		}
 
+		/**
+		 * @private
+		 */
 		private function handler_addedToStage(event:Event):void {
 		}
 
+		/**
+		 * @private
+		 */
 		private function handler_removedFromStage(event:Event):void {
 			this._resourceManager = null;
 		}

@@ -2,6 +2,11 @@
 
 	<compiler>
 
+		<define>
+			<name>CONFIG::debug</name>
+			<value>true</value>
+		</define>
+
 		<accessible>false</accessible>
       
 		<locale>
@@ -17,9 +22,8 @@
 		<optimize>true</optimize>
 
 		<keep-as3-metadata>
-			<!--
-			<name>Name</name>
-			-->
+			<name>AbstractControl</name>
+			<name>Event</name>
 		</keep-as3-metadata>
 
 		<show-binding-warnings>true</show-binding-warnings>
