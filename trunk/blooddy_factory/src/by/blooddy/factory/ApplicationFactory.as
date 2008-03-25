@@ -38,6 +38,27 @@ package by.blooddy.factory {
 
 	import flash.utils.getQualifiedClassName;
 
+	//--------------------------------------
+	//  Excluded APIs
+	//--------------------------------------
+
+	[Exclude(name="stage", kind="property")]
+	[Exclude(name="parent", kind="property")]
+
+	[Exclude(name="gotoAndPlay", kind="method")]
+	[Exclude(name="gotoAndStop", kind="method")]
+	[Exclude(name="play", kind="method")]
+	[Exclude(name="stop", kind="method")]
+	[Exclude(name="nextFrame", kind="method")]
+	[Exclude(name="nextScene", kind="method")]
+	[Exclude(name="prevFrame", kind="method")]
+	[Exclude(name="nextScene", kind="method")]
+
+	/**
+	 * TODO: описать эключд событий
+	 * 		 позапрещать всё что ещё не запрещено
+	 */
+
 	/**
 	 * Создатель приложения. Покаывает процесс загрузки как самого
 	 * приложения так и его библиотек необходимых для инициализации.
@@ -521,15 +542,17 @@ package by.blooddy.factory {
 		//
 		//--------------------------------------------------------------------------
 
+		[Deprecated(message="свойство не используется")]
 		/**
-		 * @private
+		 * @default	null
 		 */
 		public override function get stage():Stage {
 			return null;
 		}
 
+		[Deprecated(message="свойство не используется")]
 		/**
-		 * @private
+		 * @default	null
 		 */
 		public override function get parent():DisplayObjectContainer {
 			return null;
@@ -541,57 +564,65 @@ package by.blooddy.factory {
 		//
 		//--------------------------------------------------------------------------
 
+		[Deprecated(message="метод не используется")]
 		/**
-		 * @private
+		 * @throw	IllegalOperationError
 		 */
 		public override function gotoAndPlay(frame:Object, scene:String=null):void {
 			throw new IllegalOperationError();
 		}
 
+		[Deprecated(message="метод не используется")]
 		/**
-		 * @private
+		 * @throw	IllegalOperationError
 		 */
 		public override function gotoAndStop(frame:Object, scene:String=null):void {
 			throw new IllegalOperationError();
 		}
 
+		[Deprecated(message="метод не используется")]
 		/**
-		 * @private
+		 * @throw	IllegalOperationError
 		 */
 		public override function play():void {
 			throw new IllegalOperationError();
 		}
 
+		[Deprecated(message="метод не используется")]
 		/**
-		 * @private
+		 * @throw	IllegalOperationError
 		 */
 		public override function stop():void {
 			throw new IllegalOperationError();
 		}
 
+		[Deprecated(message="метод не используется")]
 		/**
-		 * @private
+		 * @throw	IllegalOperationError
 		 */
 		public override function nextFrame():void {
 			throw new IllegalOperationError();
 		}
 
+		[Deprecated(message="метод не используется")]
 		/**
-		 * @private
+		 * @throw	IllegalOperationError
 		 */
 		public override function nextScene():void {
 			throw new IllegalOperationError();
 		}
 
+		[Deprecated(message="метод не используется")]
 		/**
-		 * @private
+		 * @throw	IllegalOperationError
 		 */
 		public override function prevFrame():void {
 			throw new IllegalOperationError();
 		}
 
+		[Deprecated(message="метод не используется")]
 		/**
-		 * @private
+		 * @throw	IllegalOperationError
 		 */
 		public override function prevScene():void {
 			throw new IllegalOperationError();
