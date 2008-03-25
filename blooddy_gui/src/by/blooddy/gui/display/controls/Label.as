@@ -1,23 +1,31 @@
 package by.blooddy.gui.display.controls {
 
-	import flash.geom.Transform;
 	import by.blooddy.gui.display.IUIControl;
-	import flash.geom.Rectangle;
-	import flash.text.TextField;
-	import flash.display.DisplayObjectContainer;
+	import by.blooddy.gui.utils.UIControlInfo;
+	import by.blooddy.platform.utils.ObjectInfo;
+	
 	import flash.events.Event;
-	import flash.display.Stage;
 	import flash.geom.Point;
-	import flash.display.DisplayObject;
+	import flash.text.TextField;
 	import flash.utils.getDefinitionByName;
-	import by.blooddy.platform.managers.ResourceManager;
-	import by.blooddy.platform.managers.IResourceManagerOwner;
 
+	[DefaultProperty("text")]
+	/**
+	 */
 	public class Label extends TextField implements IUIControl {
 
 		public function Label() {
 			super();
+			this._info = UIControlInfo.getInfo( this );
+
+			// класс обстрактный
+			if ( this._info.hasMetadata("AbstractControl", ObjectInfo.META_SELF) ) {
+				throw new ArgumentError();
+			}
+
 		}
+
+		private var _info:UIControlInfo;
 		
 	    //--------------------------------------
 	    //  center
@@ -77,37 +85,23 @@ package by.blooddy.gui.display.controls {
 		}
 
 	    //--------------------------------------
-	    //  resources declaration
-	    //--------------------------------------	
-
-		/**
-		 * @private
-		 */
-		private var _resourceManager:ResourceManager;
-
-		public function get resourceManager():ResourceManager {
-			if (!this._resourceManager) {
-				var parent:DisplayObject = this;
-				while ( ( parent = parent.parent ) && !( parent is IResourceManagerOwner ) );
-				// TODO: сделать выборку глобального манагера
-				this._resourceManager = ( !parent ? new ResourceManager() : ( parent as IResourceManagerOwner ).resourceManager );
-			}
-			return this._resourceManager;
-		}
-
-	    //--------------------------------------
 	    //  livepreview declaration
 	    //--------------------------------------	
 
 		public function get isLivePreview():Boolean {
-			return ( super.parent && super.parent is ( getDefinitionByName("fl.livepreview::LivePreviewParent") as Class ) )
+			var C:Class;
+			if ( super.parent ) {
+				// flash
+				C = getDefinitionByName("fl.livepreview::LivePreviewParent") as Class;
+				if ( C && super.parent is C ) return true;
+				// flex
+				C = getDefinitionByName("mx.core::UIComponentGlobals") as Class;
+				if ( C && "designMode" in C && C.designMode ) return true;
+			}
+			return false;
 		}
 
 		public function setSize(width:Number, height:Number):void {
-		}
-
-		private function updatePreview():void {
-			// TODO
 		}
 
 	}
