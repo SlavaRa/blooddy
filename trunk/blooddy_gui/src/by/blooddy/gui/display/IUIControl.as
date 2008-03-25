@@ -1,18 +1,13 @@
 package by.blooddy.gui.display {
 
-	import flash.display.IBitmapDrawable;
-	import flash.events.IEventDispatcher;
-	import flash.ui.ContextMenu;
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
-	import flash.geom.Rectangle;
 	import flash.display.Stage;
-	import flash.geom.Transform;
-	import flash.display.Sprite;
 	import flash.geom.Point;
-	import by.blooddy.platform.managers.IResourceManagerOwner;
+	import flash.geom.Rectangle;
+	import flash.geom.Transform;
 
-	public interface IUIControl extends ILivePreview, IResourceManagerOwner {
+	public interface IUIControl extends ILivePreview {
 
 		function get name():String;
 		function set name(value:String):void; 

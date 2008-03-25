@@ -1,51 +1,103 @@
 ﻿package by.blooddy.gui.display {
 
 	import by.blooddy.gui.utils.UIControlInfo;
+	import by.blooddy.platform.display.ResourceManagerOwnerSprite;
 	import by.blooddy.platform.events.isIntrinsicEvent;
+	import by.blooddy.platform.utils.ObjectInfo;
 	
 	import flash.display.DisplayObject;
-	import flash.display.Sprite;
+	import flash.display.DisplayObjectContainer;
+	import flash.display.Graphics;
+	import flash.display.LineScaleMode;
+	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.utils.getDefinitionByName;
-	import by.blooddy.platform.managers.ResourceManager;
-	import by.blooddy.platform.display.ResourceManagerOwnerSprite;
-	import by.blooddy.platform.managers.IResourceManagerOwner;
-	import by.blooddy.platform.utils.ObjectInfo;
-	import by.blooddy.platform.utils.ClassUtils;
-	import flash.display.Graphics;
-	import flash.display.LineScaleMode;
-	import flash.display.DisplayObjectContainer;
+	import flash.events.MouseEvent;
+
+//	[Deprecated(message="string_describing_deprecation", replacement="string_specifying_replacement", since="version_of_replacement")]
+//
+//	The [Event], [Effect] and [Style] metadata tags also support deprecation. These tags support the following options for syntax:
+//	[Event(... , deprecatedMessage="string_describing_deprecation", deprecatedReplacement="string_specifying_replacement", deprecatedSince="version_of_replacement")]
+
+	//--------------------------------------
+	//  Excluded APIs
+	//--------------------------------------
+
+	[Exclude(name="graphics", kind="property")]
+
+	[Exclude(name="startDrag", kind="method")]
+	[Exclude(name="stopDrag", kind="method")]
+
+	//--------------------------------------
+	//  Other metadata
+	//--------------------------------------
 
 //	[AccessibilityClass(implementation="by.blooddy.gui.accessibility.UIControlAccessibility")]
-
+//	[IconFile("MyButton.png")]
 	[AbstractControl]
-	public class UIControl extends Sprite implements IUIControl {
+
+	/**
+	 * @author					BlooDHounD
+	 * @version					1.0
+	 * @playerversion			Flash 9
+	 * @langversion				3.0
+	 * 
+	 * @keyword					uicontrol, uicomponent, control, component, ui
+	 */
+	public class UIControl extends ResourceManagerOwnerSprite implements IUIControl {
 
 		public function UIControl() {
 			super();
 
 			this._info = UIControlInfo.getInfo( this );
 
-			// класс обстрактный
+			// класс абстрактный
 			if ( this._info.hasMetadata("AbstractControl", ObjectInfo.META_SELF) ) {
 				throw new ArgumentError();
 			}
 
 			super.addEventListener(Event.ADDED_TO_STAGE, this.handler_addedToStage, false, int.MAX_VALUE);
 			super.addEventListener(Event.REMOVED_FROM_STAGE, this.handler_removedFromStage, false, int.MAX_VALUE);
-
 		}
 
 		private var _info:UIControlInfo;
 
 	    //--------------------------------------
+	    //  mouse declaration
+	    //--------------------------------------
+
+		private var _mouseChildren:Boolean = true;
+
+		public override function get mouseChildren():Boolean {
+			return this._mouseChildren;
+		}
+
+		public override function set mouseChildren(enable:Boolean):void {
+			if ( enable == this._mouseChildren ) return;
+			this._mouseChildren = enable;
+			this.mouseChildren_update();
+		}
+
+		private function mouseChildren_update():void {
+			super.mouseChildren = this._mouseChildren;
+		}
+
+	    //--------------------------------------
 	    //  graphics declaration
 	    //--------------------------------------
 
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @default	null
+		 */
 		public override function get graphics():Graphics {
 			return null;
+		}
+
+		protected function get $graphics():Graphics {
+			return super.graphics;
 		}
 
 		CONFIG::debug {
@@ -78,12 +130,11 @@
 			private function redrawPreview():void {
 				var bounds:Rectangle = this.getControlBounds( this );
 				with ( super.graphics ) {
+					clear();
 					lineStyle(1, 0xFFFFFF, 1, true, LineScaleMode.NONE);
-					moveTo( bounds.left, bounds.top );
-					lineTo( bounds.right, bounds.top );
-					lineTo( bounds.right, bounds.bottom );
-					lineTo( bounds.left, bounds.bottom );
-					lineTo( bounds.left, bounds.top );
+					beginFill(0xFFFFFF, 0.3);
+					drawRect( bounds.x, bounds.y, bounds.width, bounds.height );
+					endFill();
 				}
 			}
 
@@ -98,6 +149,7 @@
 		 */
 		private var _center:Point = new Point();
 
+		[Bindable("centerChanged")]
 		public function get center():Point {
 			return this._center;
 		}
@@ -106,9 +158,21 @@
 		 * @private
 		 */
 		public function set center(p:Point):void {
-			this._center = p;
-			super.x = this._x - p.x;
-			super.y = this._y - p.x;
+			var changed:Boolean = false;
+			if ( p.x != this._center.x && !isNaN(p.x) ) {
+				this._center.x = p.x;
+				changed = true;
+			}
+			if ( p.y != this._center.y && !isNaN(p.y) ) {
+				this._center.y = p.y;
+				changed = true;
+			}
+			if (changed) {
+				CONFIG::debug {
+					if (this._showPreview) this.redrawPreview();
+				}
+				super.dispatchEvent( new Event("centerChanged") );
+			}
 		}
 
 	    //--------------------------------------
@@ -132,7 +196,7 @@
 		 * @private
 		 */
 		public override function set x(value:Number):void {
-			if (this._x == value) return;
+		if (this._x == value && !isNaN(x)) return;
 			this.move(value, this._y);
 		}
 
@@ -157,7 +221,7 @@
 		 * @private
 		 */
 		public override function set y(value:Number):void {
-			if (this._y == value) return;
+			if (this._y == value && !isNaN(y)) return;
 			this.move(this._x, value);
 		}
 
@@ -167,14 +231,14 @@
 
 		public function move(x:Number, y:Number):void {
 			var changed:Boolean = false;
-			if (this._x == x) {
+			if ( this._x != x && !isNaN(x) ) {
 				this._x = x;
-				super.x = Math.round( this._x - this._center.x );
+				super.x = Math.round( this._x );
 				changed = true;
 			}
-			if (this._y == y) {
+			if ( this._y != y && !isNaN(y) ) {
 				this._y = y;
-				super.x = Math.round( this._y - this._center.y );
+				super.y = Math.round( this._y );
 				changed = true;
 			}
 			if (changed) {
@@ -292,11 +356,13 @@
 		 */
 		public function setSize(width:Number, height:Number):void {
 			var changed:Boolean = false;
-			if (this._width != width && !isNaN(width)) {
+			var oldWidth:Number = this._width;
+			if (oldWidth != width && !isNaN(width)) {
 				this._width = width;
 				changed = true;
 			}
-			if (this._height != height && !isNaN(height)) {
+			var oldHeight:Number = this._width;
+			if (oldHeight != height && !isNaN(height)) {
 				this._height = height;
 				changed = true;
 			}
@@ -332,19 +398,14 @@
 		private function getControlBounds(targetCoordinateSpace:DisplayObject):Rectangle {
 			var p:Point = new Point();
 			var result:Rectangle = new Rectangle();
-			// начальная точка
-			p.x = this._x - this._center.x;
-			p.y = this._y - this._center.y;
+			result.left = -this._center.x;
+			result.top = -this._center.y;
+			result.width = this._width;
+			result.height = this._height;
 			if ( targetCoordinateSpace !== this ) {
-				result.topLeft = targetCoordinateSpace.globalToLocal( super.localToGlobal( p ) );
+				result.topLeft = targetCoordinateSpace.globalToLocal( super.localToGlobal( result.topLeft ) );
+				result.bottomRight = targetCoordinateSpace.globalToLocal( super.localToGlobal( result.bottomRight ) );
 			}
-			// конечная точка
-			p.x += this._width;
-			p.y += this._height;
-			if ( targetCoordinateSpace !== this ) {
-				result.bottomRight = targetCoordinateSpace.globalToLocal( super.localToGlobal( p ) );
-			}
-			// готова
 			return result;
 		}
 
@@ -375,22 +436,23 @@
 		}
 
 	    //--------------------------------------
-	    //  resources declaration
+	    //  drag declaration
 	    //--------------------------------------	
 
+		[Deprecated(message="метод не используется")]
 		/**
-		 * @private
+		 * @throw	IllegalOperationError
 		 */
-		private var _resourceManager:ResourceManager;
+		public override function startDrag(lockCenter:Boolean=false, bounds:Rectangle=null):void {
+			throw new IllegalOperationError();
+		}
 
-		public function get resourceManager():ResourceManager {
-			if (!this._resourceManager) {
-				var parent:DisplayObject = this;
-				while ( ( parent = parent.parent ) && !( parent is IResourceManagerOwner ) );
-				// TODO: сделать выборку глобального манагера
-				this._resourceManager = ( !parent ? new ResourceManager() : ( parent as IResourceManagerOwner ).resourceManager );
-			}
-			return this._resourceManager;
+		[Deprecated(message="метод не используется")]
+		/**
+		 * @throw	IllegalOperationError
+		 */
+		public override function stopDrag():void {
+			throw new IllegalOperationError();
 		}
 
 	    //--------------------------------------
@@ -398,8 +460,34 @@
 	    //--------------------------------------	
 
 		public function get isLivePreview():Boolean {
-			return ( super.parent && super.parent is ( getDefinitionByName("fl.livepreview::LivePreviewParent") as Class ) )
+			var C:Class;
+			if ( super.parent ) {
+				// flash
+				C = getDefinitionByName("fl.livepreview::LivePreviewParent") as Class;
+				if ( C && super.parent is C ) return true;
+				// flex
+				C = getDefinitionByName("mx.core::UIComponentGlobals") as Class;
+				if ( C && "designMode" in C && C.designMode ) return true;
+			}
+			return false;
 		}
+
+	    //--------------------------------------
+	    //  events declaration
+	    //--------------------------------------	
+
+		public override function dispatchEvent(event:Event):Boolean {
+			if ( isIntrinsicEvent( this, event ) ) return true; // throw new IllegalOperationError();
+			else return super.dispatchEvent( event );
+		}
+
+		protected final function $dispatchEvent(event:Event):Boolean {
+			return super.dispatchEvent( event );
+		}
+
+	    //--------------------------------------
+	    //  toString declaration
+	    //--------------------------------------	
 
 		public override function toString():String {
 			var parent:DisplayObject = this;
@@ -411,14 +499,9 @@
 			return result.join(".");
 		}
 
-		public override function dispatchEvent(event:Event):Boolean {
-			if ( isIntrinsicEvent( this, event ) ) return true; // throw new IllegalOperationError();
-			else return super.dispatchEvent( event );
-		}
-
-		protected final function $dispatchEvent(event:Event):Boolean {
-			return super.dispatchEvent( event );
-		}
+	    //--------------------------------------
+	    //  stage events declaration
+	    //--------------------------------------	
 
 		/**
 		 * @private
@@ -430,7 +513,6 @@
 		 * @private
 		 */
 		private function handler_removedFromStage(event:Event):void {
-			this._resourceManager = null;
 		}
 
 	}
