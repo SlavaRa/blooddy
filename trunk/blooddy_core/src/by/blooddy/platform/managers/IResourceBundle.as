@@ -48,9 +48,20 @@ package by.blooddy.platform.managers {
 	     * 
 	     * @return					Возвращает ресурс.
 	     * 
-		 * @keyword					resourcebundle.getobject, getobject
+		 * @keyword					resourcebundle.getresource, getresource
 	     */
-		function getObject(name:String):*;
+		function getResource(name:String):*;
+
+	    /**
+	     * Проверяем наличие ресурса по имени.
+	     * 
+	     * @param	name			Имя ресурса.
+	     * 
+	     * @return					true / false.
+	     * 
+		 * @keyword					resourcebundle.hasresource, hasresource
+	     */
+		function hasResource(name:String):Boolean;
 
 	}
 

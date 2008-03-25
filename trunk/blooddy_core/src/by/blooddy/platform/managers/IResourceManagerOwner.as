@@ -35,6 +35,10 @@ package by.blooddy.platform.managers {
 	     */
 		function get resourceManager():ResourceManager;
 
+		/**
+		 */
+		function get trash():ResourceBundleTrash;
+
 	}
 
 }

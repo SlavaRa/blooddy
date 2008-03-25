@@ -36,6 +36,10 @@ package by.blooddy.platform.managers {
 	[Event(name="keyUp", type="flash.events.KeyboardEvent")]
 
 	/**
+	 * TODO: впісать депрікэтэды на подпіску событий и т.д.
+	 */
+
+	/**
 	 * Глобальный следитель, за нажиманием и отпусканием клавиш.
 	 * 
 	 * @author					BlooDHounD

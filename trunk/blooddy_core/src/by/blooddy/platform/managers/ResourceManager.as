@@ -91,9 +91,17 @@ package by.blooddy.platform.managers {
 		 * 
 		 * @keyword					resourcemanager.getobject, getobject
 		 */
-		public function getObject(bundleName:String, resourceName:String):* {
+		public function getResource(bundleName:String, resourceName:String):* {
 			if (!this._hash[bundleName]) return null;
-			return (this._hash[bundleName] as IResourceBundle).getObject(resourceName);
+			return ( this._hash[bundleName] as IResourceBundle ).getResource( resourceName );
+		}
+
+		public function hasResource(bundleName:String, resourceName:String):Boolean {
+			if ( this.hasResourceBundle( bundleName ) ) {
+				var bundle:IResourceBundle = this._hash[bundleName] as IResourceBundle;
+				return bundle.hasResource( resourceName );
+			}
+			return false;
 		}
 
 		/**
@@ -106,9 +114,9 @@ package by.blooddy.platform.managers {
 		 * @keyword					resourcemanager.hasresourcebundle, hasresourcebundle
 		 */
 		public function hasResourceBundle(bundleName:String):Boolean {
-			var resourceBundle:IResourceBundle = this._hash[bundleName] as IResourceBundle;
-			var loader:ILoadable = resourceBundle as ILoadable;
-			return ( loader && !loader.loaded ? false : Boolean(resourceBundle) );
+			var bundle:IResourceBundle = this._hash[bundleName] as IResourceBundle;
+			var loader:ILoadable = bundle as ILoadable;
+			return ( loader && !loader.loaded ? false : Boolean( bundle ) );
 		}
 
 		/**
@@ -121,9 +129,9 @@ package by.blooddy.platform.managers {
 		 * @keyword					resourcemanager.getresourcebundle, getresourcebundle
 		 */
 		public function getResourceBundle(bundleName:String):IResourceBundle {
-			var resourceBundle:IResourceBundle = this._hash[bundleName] as IResourceBundle;
-			var loader:ILoadable = resourceBundle as ILoadable;
-			return ( loader && !loader.loaded ? null : resourceBundle );
+			var bundle:IResourceBundle = this._hash[bundleName] as IResourceBundle;
+			var loader:ILoadable = bundle as ILoadable;
+			return ( loader && !loader.loaded ? null : bundle );
 		}
 
 		/**
@@ -135,14 +143,14 @@ package by.blooddy.platform.managers {
 		 * 
 		 * @keyword					resourcemanager.removeresourcebundle, removeresourcebundle
 		 */
-		public function addResourceBundle(resourceBundle:IResourceBundle):void {
-			if (!resourceBundle.name) return; // чё-то не то
-			this._hash[resourceBundle.name] = resourceBundle;
-			var loader:ILoadable = resourceBundle as ILoadable;
+		public function addResourceBundle(bundle:IResourceBundle):void {
+			if (!bundle.name) return; // чё-то не то
+			this._hash[bundle.name] = bundle;
+			var loader:ILoadable = bundle as ILoadable;
 			if (loader && !loader.loaded) { // ещё не загрузились
 				this.registerHandlers(loader);
 			} else {
-				this.dispatchEvent( new ResourceEvent(ResourceEvent.BUNDLE_ADDED, false, false, resourceBundle.name) );
+				super.dispatchEvent( new ResourceEvent(ResourceEvent.BUNDLE_ADDED, false, false, bundle.name) );
 			}
 		}
 
@@ -160,7 +168,7 @@ package by.blooddy.platform.managers {
 				var loader:ILoadable = this._hash[bundleName] as ILoadable;
 				delete this._hash[bundleName];
 				if (loader) this.unregisterHandlers(loader);
-				if (!loader || loader.loaded) this.dispatchEvent( new ResourceEvent(ResourceEvent.BUNDLE_REMOVED, false, false, bundleName) );
+				if (!loader || loader.loaded) super.dispatchEvent( new ResourceEvent(ResourceEvent.BUNDLE_REMOVED, false, false, bundleName) );
 			}
 		}
 
@@ -227,7 +235,7 @@ package by.blooddy.platform.managers {
 		private function handler_complete(event:Event):void {
 			var loader:ILoadable = event.target as ILoadable;
 			if (loader) this.unregisterHandlers(loader);
-			this.addResourceBundle(event.target as IResourceBundle);
+			this.addResourceBundle( event.target as IResourceBundle );
 		}
 
 		/**
@@ -235,8 +243,8 @@ package by.blooddy.platform.managers {
 		 * Ошибка. Надо удалить.
 		 */
 		private function handler_error(event:Event):void {
-			var resourceBundle:IResourceBundle = event.target as IResourceBundle;
-			if (resourceBundle) this.removeResourceBundle(resourceBundle.name);
+			var bundle:IResourceBundle = event.target as IResourceBundle;
+			if (bundle) this.removeResourceBundle( bundle.name );
 		}
 
 	}

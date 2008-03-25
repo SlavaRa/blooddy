@@ -52,6 +52,13 @@ package by.blooddy.platform.database {
 	 */
 	[Event(name="removedFromBase", type="by.blooddy.platform.events.DataBaseEvent")]
 
+	//--------------------------------------
+	//  Excluded APIs
+	//--------------------------------------
+
+	[Exclude(name="$parent", kind="property")]
+	[Exclude(name="$base", kind="property")]
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -228,7 +235,7 @@ package by.blooddy.platform.database {
 			}
 			var container:EventContainer = new EventContainer( event );
 			var result:Boolean = super.dispatchEvent( container );
-			if (!event.stopped && result) {
+			if (!event.$stopped && result) {
 				// надо бублить
 				if (event.bubbles && this._bubble_parent) {
 					result = this._bubble_parent.$dispatchEvent(event, EventPhase.BUBBLING_PHASE);
