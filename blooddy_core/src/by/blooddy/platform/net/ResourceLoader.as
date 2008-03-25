@@ -66,14 +66,24 @@ package by.blooddy.platform.net {
 		/**
 		 * @inheritDoc
 		 */
-		public function getObject(name:String):* {
-			if (this.loaderInfo.applicationDomain.hasDefinition(name)) {
-				return this.loaderInfo.applicationDomain.getDefinition(name);
-			} else if (this.content.hasOwnProperty(name)) {
-				return this.content[name];
+		public function getResource(name:String):* {
+			if ( super.loaderInfo.applicationDomain.hasDefinition(name) ) {
+				return super.loaderInfo.applicationDomain.getDefinition(name);
+			} else if ( name in super.content ) {
+				return super.content[name];
 			} else {
 				return null;
 			}
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function hasResource(name:String):Boolean {
+			return (
+				super.loaderInfo.applicationDomain.hasDefinition(name) ||
+				( name in super.content )
+			);
 		}
 
 		//--------------------------------------------------------------------------
@@ -105,13 +115,13 @@ package by.blooddy.platform.net {
 		 * @private
 		 */
 		protected override function handler_init(event:Event):void {
-			if ( this.loaderInfo.contentType != MIME.FLASH ) {
+			if ( super.loaderInfo.contentType != MIME.FLASH ) {
 				try {
-					this.close();
-					this.unload();
+					super.close();
+					super.unload();
 				} catch (e:Error) {
 				}
-				super.handler_ioError( new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, ( new Error(2124, ErrorsManager.getErrorMessage(2124)+"URL: "+this.loaderInfo.url) ).toString()) );
+				super.handler_ioError( new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, ( new Error(2124, ErrorsManager.getErrorMessage(2124) + "URL: " + super.loaderInfo.url ) ).toString()) );
 			} else {
 				super.handler_init(event);
 			}

@@ -77,8 +77,15 @@ package by.blooddy.platform.managers {
 		/**
 		 * @inheritDoc
 		 */
-		public function getObject(name:String):* {
+		public function getResource(name:String):* {
 			return this._hash[name] || null;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function hasResource(name:String):Boolean {
+			return name in this._hash;
 		}
 
 		//--------------------------------------------------------------------------
@@ -93,9 +100,9 @@ package by.blooddy.platform.managers {
 		 * @param	name		Имя ресурса.
 		 * @param	value		Ресурс.
 		 * 
-		 * @keyword				resourcebundle.addobject, addobject
+		 * @keyword				resourcebundle.addresource, addresource
 		 */
-		public function addObject(name:String, object:*):void {
+		public function addResource(name:String, object:*):void {
 			this._hash[name] = object;
 		}
 
@@ -104,9 +111,9 @@ package by.blooddy.platform.managers {
 		 * 
 		 * @param	name		Имя ресурса.
 		 * 
-		 * @keyword				resourcebundle.removeobject, removeobject
+		 * @keyword				resourcebundle.removeresource, removeresource
 		 */
-		public function removeObject(name:String):void {
+		public function removeResource(name:String):void {
 			delete this._hash[name];
 		}
 

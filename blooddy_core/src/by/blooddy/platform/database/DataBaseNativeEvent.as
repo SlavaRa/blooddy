@@ -18,7 +18,20 @@ package by.blooddy.platform.database {
 	import by.blooddy.platform.events.DataBaseEvent;
 	import flash.events.Event;
 
-	//[ExcludeClass]
+	//--------------------------------------
+	//  Excluded APIs
+	//--------------------------------------
+
+	[Exclude(name="$stopped", kind="property")]
+	[Exclude(name="$target", kind="property")]
+	[Exclude(name="$eventPhase", kind="property")]
+
+	//--------------------------------------
+	//  Other metadata
+	//--------------------------------------
+
+//	[Deprecated(message="класс не используется", replacement="by.blooddy.platform.events.DataBaseEvent")]
+
 	/**
 	 * @private
 	 * Класс прослойка для создания события бублинга.
@@ -69,7 +82,7 @@ package by.blooddy.platform.database {
 		/**
 		 * @private
 		 */
-		internal var stopped:Boolean = false;
+		internal var $stopped:Boolean = false;
 
 		//--------------------------------------------------------------------------
 		//
@@ -132,7 +145,7 @@ package by.blooddy.platform.database {
 		public override function stopImmediatePropagation():void {
 			if (!super.cancelable) return;
 			super.stopImmediatePropagation();
-			this.stopped = true;
+			this.$stopped = true;
 		}
 
 	}

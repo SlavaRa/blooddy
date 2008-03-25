@@ -6,6 +6,9 @@
 
 package by.blooddy.platform.managers {
 
+	import by.blooddy.platform.events.DragEvent;
+	import by.blooddy.platform.utils.getCallerInfo;
+	
 	import flash.display.DisplayObject;
 	import flash.display.Stage;
 	import flash.events.Event;
@@ -16,8 +19,6 @@ package by.blooddy.platform.managers {
 	import flash.geom.Rectangle;
 	import flash.ui.Keyboard;
 	import flash.utils.getQualifiedClassName;
-	import by.blooddy.platform.events.DragEvent;
-	import by.blooddy.platform.utils.getCallerInfo;
 
 	//--------------------------------------
 	//  Events
@@ -42,6 +43,12 @@ package by.blooddy.platform.managers {
 	 * @eventType			platform.events.DragEvent.DRAG_FAIL
 	 */
 	[Event(name="dragFail", type="platform.events.DragEvent")]
+
+	//--------------------------------------
+	//  Excluded APIs
+	//--------------------------------------
+
+	[Exclude(name="$doDrag", kind="method")]
 
 	/**
 	 * @author					BlooDHounD
@@ -79,12 +86,10 @@ package by.blooddy.platform.managers {
 			return this._dragObject;
 		}
 
-		internal function doDrag(dragSource:DisplayObject, rescale:Boolean=false, offset:Point=null, bounds:Rectangle=null):void {
+		internal function $doDrag(dragSource:DisplayObject, rescale:Boolean=false, offset:Point=null, bounds:Rectangle=null):void {
 			if (!dragSource.stage) throw new ArgumentError();
 
 			this._dragSource = dragSource;
-			this._dragSource.addEventListener(Event.REMOVED_FROM_STAGE, this.handler_fail);
-			this._dragSource.addEventListener(Event.DEACTIVATE, this.handler_fail);
 
 			if (!offset) offset = new Point( -this._dragSource.mouseX, -this._dragSource.mouseY );
 
@@ -98,11 +103,20 @@ package by.blooddy.platform.managers {
 
 			stage.addChild( this._dragObject );
 
-			stage.addEventListener(MouseEvent.MOUSE_MOVE, this.handler_mouseMove, false, int.MAX_VALUE);
-			stage.addEventListener(MouseEvent.MOUSE_UP, this.handler_mouseUp, false, int.MAX_VALUE);
-			stage.addEventListener(KeyboardEvent.KEY_UP, this.handler_keyUp, false, int.MAX_VALUE);
-			stage.addEventListener(MouseEvent.MOUSE_OVER, this.handler_mouseOver, false, int.MAX_VALUE);
-			stage.addEventListener(MouseEvent.MOUSE_OUT, this.handler_mouseOut, false, int.MAX_VALUE);
+			var listeners:Array = new Array(
+				new Listener( this._dragSource, Event.REMOVED_FROM_STAGE, this.handler_fail ),
+				new Listener( this._dragSource, Event.DEACTIVATE, this.handler_fail ),
+				new Listener( stage, MouseEvent.MOUSE_MOVE, this.handler_mouseMove ),
+				new Listener( stage, MouseEvent.MOUSE_UP, this.handler_mouseUp ),
+				new Listener( stage, MouseEvent.MOUSE_OVER, this.handler_mouseOver ),
+				new Listener( stage, MouseEvent.MOUSE_OUT, this.handler_mouseOut ),
+				new Listener( stage, KeyboardEvent.KEY_UP, this.handler_keyUp )
+			);
+
+			for each ( var listener:Listener in listeners ) {
+				listener.target.addEventListener( listener.type, listener.handler, false, int.MAX_VALUE );
+				listener.target.addEventListener( listener.type, listener.handler, true, int.MAX_VALUE );
+			}
 
 			this.dispatchDragEvent( DragEvent.DRAG_START );
 
@@ -113,14 +127,24 @@ package by.blooddy.platform.managers {
 				this._dragObject.$parent.removeChild( this._dragObject );
 			}
 			if (this._dragSource && this._dragSource.stage) {
-				this._dragSource.removeEventListener(Event.REMOVED_FROM_STAGE, this.handler_fail);
-				this._dragSource.removeEventListener(Event.DEACTIVATE, this.handler_fail);
+
 				var stage:Stage = this._dragSource.stage;
-				stage.removeEventListener(MouseEvent.MOUSE_MOVE, this.handler_mouseMove);
-				stage.removeEventListener(MouseEvent.MOUSE_UP, this.handler_mouseUp);
-				stage.removeEventListener(KeyboardEvent.KEY_UP, this.handler_keyUp);
-				stage.removeEventListener(MouseEvent.MOUSE_OVER, this.handler_mouseOver);
-				stage.removeEventListener(MouseEvent.MOUSE_OUT, this.handler_mouseOut);
+
+				var listeners:Array = new Array(
+					new Listener( this._dragSource, Event.REMOVED_FROM_STAGE, this.handler_fail ),
+					new Listener( this._dragSource, Event.DEACTIVATE, this.handler_fail ),
+					new Listener( stage, MouseEvent.MOUSE_MOVE, this.handler_mouseMove ),
+					new Listener( stage, MouseEvent.MOUSE_UP, this.handler_mouseUp ),
+					new Listener( stage, MouseEvent.MOUSE_OVER, this.handler_mouseOver ),
+					new Listener( stage, MouseEvent.MOUSE_OUT, this.handler_mouseOut ),
+					new Listener( stage, KeyboardEvent.KEY_UP, this.handler_keyUp )
+				);
+
+				for each ( var listener:Listener in listeners ) {
+					listener.target.removeEventListener( listener.type, listener.handler, false );
+					listener.target.removeEventListener( listener.type, listener.handler, true );
+				}
+
 			}
 			this._dragSource = null;
 			this._dragObject = null;
@@ -167,5 +191,24 @@ package by.blooddy.platform.managers {
 		}
 
 	}
+
+}
+
+import flash.events.IEventDispatcher;
+
+internal final class Listener {
+
+	public function Listener(target:IEventDispatcher, type:String, handler:Function) {
+		super();
+		this.target = target;
+		this.type = type;
+		this.handler = handler;
+	}
+
+	public var target:IEventDispatcher;
+
+	public var type:String;
+
+	public var handler:Function;
 
 }

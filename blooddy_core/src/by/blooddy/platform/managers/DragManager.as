@@ -27,7 +27,7 @@ package by.blooddy.platform.managers {
 		}
 
 		public static function doDrag(dragSource:DisplayObject, rescale:Boolean=false, offset:Point=null, bounds:Rectangle=null):void {
-			_dragInfo.doDrag( dragSource, rescale, offset, bounds );
+			_dragInfo.$doDrag( dragSource, rescale, offset, bounds );
 		}
 
 	}

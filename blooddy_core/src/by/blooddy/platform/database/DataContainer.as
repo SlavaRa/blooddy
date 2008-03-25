@@ -11,6 +11,14 @@ package by.blooddy.platform.database {
 
 	import by.blooddy.platform.errors.ErrorsManager;
 
+	//--------------------------------------
+	//  Excluded APIs
+	//--------------------------------------
+
+	[Exclude(name="$base", kind="property")]
+
+	[Exclude(name="$getChildIndex", kind="method")]
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0

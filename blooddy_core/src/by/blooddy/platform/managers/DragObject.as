@@ -41,6 +41,20 @@ package by.blooddy.platform.managers {
 	 */
 	[Event(name="dragFail", type="platform.events.DragEvent")]
 
+	//--------------------------------------
+	//  Excluded APIs
+	//--------------------------------------
+
+	[Exclude(name="graphics", kind="property")]
+	[Exclude(name="parent", kind="property")]
+	[Exclude(name="$parent", kind="property")]
+	[Exclude(name="stage", kind="property")]
+	[Exclude(name="visible", kind="property")]
+
+	/**
+	 * TODO: доделать всякие деприкатыды и эклюды
+	 */
+
 	/**
 	 * 
 	 * @author					BlooDHounD
@@ -79,7 +93,7 @@ package by.blooddy.platform.managers {
 			var info:XML = getCallerInfo();
 			if (
 				info.localName() != "type" || info.@name != getQualifiedClassName(DragInfo) ||
-				!info.method || info.method.@name != "doDrag"
+				!info.method || info.method.@name != "$doDrag"
 			) {
 				throw new ArgumentError();
 			}
@@ -125,21 +139,22 @@ package by.blooddy.platform.managers {
 		//--------------------------------------------------------------------------
 
 		/**
-		 * @private
+		 * @throw	IllegalOperationError
 		 */
 		public override function set x(value:Number):void {
 			throw new IllegalOperationError();
 		}
 
 		/**
-		 * @private
+		 * @throw	IllegalOperationError
 		 */
 		public override function set y(value:Number):void {
 			throw new IllegalOperationError();
 		}
 
+		[Deprecated(message="свойство не используется")]
 		/**
-		 * @private
+		 * @default	null
 		 */
 		public override function get parent():DisplayObjectContainer {
 			return null;
@@ -152,15 +167,19 @@ package by.blooddy.platform.managers {
 			return super.parent;
 		}
 
+		[Deprecated(message="свойство не используется")]
 		/**
-		 * @private
+		 * @default	null
 		 */
 		public override function get stage():Stage {
 			return null;
 		}
 
+		[Deprecated(message="свойство не используется")]
 		/**
-		 * @private
+		 * @default	true
+		 * 
+		 * @throw	IllegalOperationError
 		 */
 		public override function set visible(value:Boolean):void {
 			throw new IllegalOperationError();
@@ -172,11 +191,12 @@ package by.blooddy.platform.managers {
 		//
 		//--------------------------------------------------------------------------
 
+		[Deprecated(message="свойство не используется")]
 		/**
-		 * @private
+		 * @default	null
 		 */
 		public override function get graphics():Graphics {
-			throw new IllegalOperationError();
+			return null;
 		}
 
 		//--------------------------------------------------------------------------

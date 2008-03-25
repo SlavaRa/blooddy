@@ -8,6 +8,8 @@ package by.blooddy.platform.events {
 
 	public class DragEvent extends MouseEvent {
 
+		public static const DRAG_PREPARE:String = "dragPrepare";
+
 		public static const DRAG_START:String = "dragStart";
 
 		public static const DRAG_MOVE:String = "dragMove";
