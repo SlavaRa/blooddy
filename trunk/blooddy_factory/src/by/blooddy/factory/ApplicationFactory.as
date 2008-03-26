@@ -27,6 +27,7 @@ package by.blooddy.factory {
 	import flash.display.Stage;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
+	import flash.display.Scene;
 
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
@@ -37,14 +38,32 @@ package by.blooddy.factory {
 	import flash.system.LoaderContext;
 
 	import flash.utils.getQualifiedClassName;
+	import flash.text.TextSnapshot;
+	import flash.ui.ContextMenu;
 
 	//--------------------------------------
 	//  Excluded APIs
 	//--------------------------------------
 
+	[Exclude(name="name", kind="property")]
 	[Exclude(name="stage", kind="property")]
 	[Exclude(name="parent", kind="property")]
+	[Exclude(name="mouseEnabled", kind="property")]
+	[Exclude(name="tabEnabled", kind="property")]
+	[Exclude(name="textSnapshot", kind="property")]
+	[Exclude(name="buttonMode", kind="property")]
+	[Exclude(name="hitArea", kind="property")]
+	[Exclude(name="useHandCursor", kind="property")]
+	[Exclude(name="currentFrame", kind="property")]
+	[Exclude(name="currentLabel", kind="property")]
+	[Exclude(name="currentLabels", kind="property")]
+	[Exclude(name="currentScene", kind="property")]
+	[Exclude(name="framesLoaded", kind="property")]
+	[Exclude(name="scenes", kind="property")]
 
+	[Exclude(name="startDrag", kind="method")]
+	[Exclude(name="stopDrag", kind="method")]
+	[Exclude(name="addFrameScript", kind="method")]
 	[Exclude(name="gotoAndPlay", kind="method")]
 	[Exclude(name="gotoAndStop", kind="method")]
 	[Exclude(name="play", kind="method")]
@@ -52,19 +71,14 @@ package by.blooddy.factory {
 	[Exclude(name="nextFrame", kind="method")]
 	[Exclude(name="nextScene", kind="method")]
 	[Exclude(name="prevFrame", kind="method")]
-	[Exclude(name="nextScene", kind="method")]
-
-	/**
-	 * TODO: описать эключд событий
-	 * 		 позапрещать всё что ещё не запрещено
-	 */
+	[Exclude(name="prevScene", kind="method")]
 
 	/**
 	 * Создатель приложения. Покаывает процесс загрузки как самого
 	 * приложения так и его библиотек необходимых для инициализации.
 	 * 
 	 * Может присутвовать только у запускаемого приложения.
-	 * Подключаемые модулинемогутиметь не могут иметь ApplicationFactory.
+	 * Подключаемые модули не могутиметь не могут иметь ApplicationFactory.
 	 * 
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -105,6 +119,14 @@ package by.blooddy.factory {
 
 			inited = true;
 
+			super.name = getQualifiedClassName( this );
+			super.mouseEnabled = false;
+			super.tabEnabled = false;
+			super.enabled = false;
+			super.buttonMode = false;
+			super.hitArea = null;
+			super.useHandCursor = false;
+
 			super.stop();
 
 			this._stageAlign = super.stage.align;
@@ -121,6 +143,11 @@ package by.blooddy.factory {
 
 			// рузим себя
 			this.addLoader( super.loaderInfo );
+
+			super.addEventListener(Event.ADDED, this.handler_added_removed, false, int.MAX_VALUE)
+			super.addEventListener(Event.ADDED, this.handler_added_removed, true, int.MAX_VALUE)
+			super.addEventListener(Event.REMOVED, this.handler_added_removed, false, int.MAX_VALUE)
+			super.addEventListener(Event.REMOVED, this.handler_added_removed, true, int.MAX_VALUE)
 
 			this.showPreloader = true;
 
@@ -259,7 +286,7 @@ package by.blooddy.factory {
 				this._info.x = super.stage.stageWidth / 2;
 				this._info.y = super.stage.stageHeight / 2;
 				if ( this._info is PreloaderSprite ) {
-					(this._info as PreloaderSprite ).progress = this._bytesLoaded / this._bytesTotal
+					( this._info as PreloaderSprite ).progress = this._bytesLoaded / this._bytesTotal
 				}
 			} else {
 				if (this._info) {
@@ -358,7 +385,7 @@ package by.blooddy.factory {
 		 * @see					flash.display.Loader#load()
 		 * @see					flash.display.Loader#contentLoaderInfo
 		 */
-		public final function load(request:URLRequest, context:LoaderContext=null):LoaderInfo {
+		protected final function load(request:URLRequest, context:LoaderContext=null):LoaderInfo {
 			var loader:Loader = new Loader();
 			this.addLoader( loader.contentLoaderInfo );
 			loader.load( request, context || this._context );
@@ -383,6 +410,7 @@ package by.blooddy.factory {
 			if (loaderInfo.bytesTotal > 0) {
 				this._bytesLoaded += loaderInfo.bytesLoaded;
 				this._bytesTotal += loaderInfo.bytesTotal;
+				this.onProgress( new ProgressEvent(ProgressEvent.PROGRESS, false, false, this._bytesLoaded, this._bytesTotal) );
 			}
 		}
 
@@ -401,7 +429,22 @@ package by.blooddy.factory {
 			if (loaderInfo.bytesTotal > 0) {
 				this._bytesLoaded -= loaderInfo.bytesLoaded;
 				this._bytesTotal -= loaderInfo.bytesTotal;
+				this.onProgress( new ProgressEvent(ProgressEvent.PROGRESS, false, false, this._bytesLoaded, this._bytesTotal) );
 			}
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Event handlers
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 * стопаем всякіе штуки
+		 */
+		private function handler_added_removed(event:Event):void {
+			if ( event.target === this._info ) event.stopImmediatePropagation();
 		}
 
 		/**
@@ -426,11 +469,11 @@ package by.blooddy.factory {
 				var appd:ApplicationDomain = super.loaderInfo.applicationDomain;
 				if (!rootClassName) {
 					rootClassName = super.loaderInfo.loaderURL.match( /[^\\\/]*?(?=(\.[^\.]*)?$)/ )[0] as String;
-					if (!appd.hasDefinition(rootClassName)) rootClassName = null;
+					if ( !appd.hasDefinition(rootClassName) ) rootClassName = null;
 				}
 				if (!rootClassName) {
 					rootClassName = ( super.currentLabels.pop() as FrameLabel ).name.replace( /_(?=[^_]$)/, "::" ).replace( /_/g, "." );
-					if (!appd.hasDefinition(rootClassName)) rootClassName = null;
+					if ( !appd.hasDefinition(rootClassName) ) rootClassName = null;
 				}
 			    var Root:Class;
 				try {
@@ -493,6 +536,178 @@ package by.blooddy.factory {
 			}
 		}
 
+		//--------------------------------------------------------------------------
+		//
+		//  Overriden properties: DisplayObject
+		//
+		//--------------------------------------------------------------------------
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @throw	IllegalOperationError
+		 */
+		public override function set name(value:String):void {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @private
+		 */
+		public override function get stage():Stage {
+			return null;
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @private
+		 */
+		public override function get parent():DisplayObjectContainer {
+			return null;
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Overriden properties: InteractiveObject
+		//
+		//--------------------------------------------------------------------------
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @throw	IllegalOperationError
+		 */
+		public override function set mouseEnabled(enabled:Boolean):void {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @throw	IllegalOperationError
+		 */
+		public override function set tabEnabled(enabled:Boolean):void {
+			throw new IllegalOperationError();
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Overriden properties: DisplayObjectContainer
+		//
+		//--------------------------------------------------------------------------
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @private
+		 */
+		public override function get textSnapshot():TextSnapshot {
+			return null;
+		}
+
+		/**
+		 * @private
+		 */
+		public override function get numChildren():int {
+			if ( this._info && super.contains( this._info) ) return super.numChildren - 1;
+			return super.numChildren;
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Overriden properties: Sprite
+		//
+		//--------------------------------------------------------------------------
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @throw	IllegalOperationError
+		 */
+		public override function set buttonMode(value:Boolean):void {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @throw	IllegalOperationError
+		 */
+		public override function set hitArea(value:Sprite):void {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @throw	IllegalOperationError
+		 */
+		public override function set useHandCursor(value:Boolean):void {
+			throw new IllegalOperationError();
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Overriden properties: MovieClip
+		//
+		//--------------------------------------------------------------------------
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @private
+		 */
+		public override function get currentFrame():int {
+			return 1;
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @private
+		 */
+		public override function get currentLabel():String {
+			return null;
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @private
+		 */
+		public override function get currentLabels():Array {
+			return new Array();
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @private
+		 */
+		public override function get currentScene():Scene {
+			return null;
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @private
+		 */
+		public override function get framesLoaded():int {
+			return 0;
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @private
+		 */
+		public override function get scenes():Array {
+			return new Array();
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @private
+		 */
+		public override function get totalFrames():int {
+			return 0;
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Overriden methods: DisplayObjectContainer
+		//
+		//--------------------------------------------------------------------------
+
 		/**
 		 * @private
 		 */
@@ -538,24 +753,24 @@ package by.blooddy.factory {
 
 		//--------------------------------------------------------------------------
 		//
-		//  Overriden properties: DisplayObject
+		//  Overriden methods: Sprite
 		//
 		//--------------------------------------------------------------------------
 
-		[Deprecated(message="свойство не используется")]
+		[Deprecated(message="метод не используется")]
 		/**
-		 * @default	null
+		 * @throw	IllegalOperationError
 		 */
-		public override function get stage():Stage {
-			return null;
+		public override function startDrag(lockCenter:Boolean=false, bounds:Rectangle=null):void {
+			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="свойство не используется")]
+		[Deprecated(message="метод не используется")]
 		/**
-		 * @default	null
+		 * @throw	IllegalOperationError
 		 */
-		public override function get parent():DisplayObjectContainer {
-			return null;
+		public override function stopDrag():void {
+			throw new IllegalOperationError();
 		}
 
 		//--------------------------------------------------------------------------
@@ -563,6 +778,14 @@ package by.blooddy.factory {
 		//  Overriden methods: MovieClip
 		//
 		//--------------------------------------------------------------------------
+
+		[Deprecated(message="метод не используется")]
+		/**
+		 * @throw	IllegalOperationError
+		 */
+		public override function addFrameScript(...args):void {
+			throw new IllegalOperationError();
+		}
 
 		[Deprecated(message="метод не используется")]
 		/**
