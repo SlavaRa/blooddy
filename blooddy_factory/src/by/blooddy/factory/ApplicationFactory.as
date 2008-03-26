@@ -7,6 +7,10 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * TODO: предусмотреть смещение
+ */
+
 package by.blooddy.factory {
 
 	import flash.errors.IOError;
@@ -283,8 +287,7 @@ package by.blooddy.factory {
 				if ( !super.contains(this._info) ) {
 					super.addChildAt( this._info, 0 );
 				}
-				this._info.x = super.stage.stageWidth / 2;
-				this._info.y = super.stage.stageHeight / 2;
+				this.updateInfoPosition();
 				if ( this._info is PreloaderSprite ) {
 					( this._info as PreloaderSprite ).progress = this._bytesLoaded / this._bytesTotal
 				}
@@ -364,16 +367,9 @@ package by.blooddy.factory {
 		 */
 		protected function onError(e:Error):void {
 			this._info = new ErrorSprite( e.message, this._color );
-			this._info.x = super.stage.stageWidth / 2;
-			this._info.y = super.stage.stageHeight / 2;
+			this.updateInfoPosition();
 			super.addChildAt( this._info, 0 );
 		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Methods
-		//
-		//--------------------------------------------------------------------------
 
 		/**
 		 * Загрузить новую свф.
@@ -397,6 +393,16 @@ package by.blooddy.factory {
 		//  Private methods
 		//
 		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private function updateInfoPosition():void {
+			if (!this._info) return;
+			var p:Point = super.globalToLocal( new Point( super.stage.stageWidth / 2, super.stage.stageHeight / 2 ) );
+			this._info.x = p.x;
+			this._info.y = p.y;
+		}
 
 		/**
 		 * @private
@@ -530,10 +536,7 @@ package by.blooddy.factory {
 		 * @private
 		 */
 		private function handler_resize(event:Event):void {
-			if ( this._info ) {
-				this._info.x = super.stage.stageWidth/2;
-				this._info.y = super.stage.stageHeight/2;
-			}
+			this.updateInfoPosition();
 		}
 
 		//--------------------------------------------------------------------------
