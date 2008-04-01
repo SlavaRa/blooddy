@@ -7,10 +7,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-/**
- * TODO: предусмотреть смещение
- */
-
 package by.blooddy.factory {
 
 	import flash.errors.IOError;
@@ -567,6 +563,24 @@ package by.blooddy.factory {
 		 */
 		public override function get parent():DisplayObjectContainer {
 			return null;
+		}
+
+		/**
+		 * @private
+		 */
+		public override function set x(value:Number):void {
+			if ( super.x == value ) return;
+			super.x = value;
+			this.updateInfoPosition();
+		}
+
+		/**
+		 * @private
+		 */
+		public override function set y(value:Number):void {
+			if ( super.y == value ) return;
+			super.y = value;
+			this.updateInfoPosition();
 		}
 
 		//--------------------------------------------------------------------------
