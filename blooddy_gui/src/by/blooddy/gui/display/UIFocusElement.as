@@ -12,7 +12,7 @@ package by.blooddy.gui.display {
 	import by.blooddy.platform.events.DragEvent;
 
 	[AbstractControl]
-	public class UIFocusElement extends UIControl implements IUIFocusElement {
+	public class UIFocusElement extends UIControl implements IUIFocusElementControl {
 
 		public function UIFocusElement() {
 			super();
