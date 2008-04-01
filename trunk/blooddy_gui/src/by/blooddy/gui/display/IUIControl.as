@@ -3,11 +3,12 @@ package by.blooddy.gui.display {
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Stage;
+	import flash.events.IEventDispatcher;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.geom.Transform;
 
-	public interface IUIControl extends ILivePreview {
+	public interface IUIControl extends IEventDispatcher, ILivePreview {
 
 		function get name():String;
 		function set name(value:String):void; 
@@ -49,14 +50,26 @@ package by.blooddy.gui.display {
 		function get x():Number;
 		function set x(value:Number):void; 
 
+		function get xPercent():Number;
+		function set xPercent(value:Number):void;
+
 		function get y():Number;
 		function set y(value:Number):void; 
+
+		function get yPercent():Number;
+		function set yPercent(value:Number):void;
 
 		function get width():Number;
 		function set width(value:Number):void; 
 
+		function get widthPercent():Number;
+		function set widthPercent(value:Number):void;
+
 		function get height():Number;
 		function set height(value:Number):void; 
+
+		function get heightPercent():Number;
+		function set heightPercent(value:Number):void;
 
 		function get scaleX():Number;
 		function set scaleX(value:Number):void;
@@ -70,6 +83,8 @@ package by.blooddy.gui.display {
 
 		function get center():Point;
 		function set center(p:Point):void;
+
+		function get layout():DisplayObjectContainer;
 
 		function getBounds(targetCoordinateSpace:DisplayObject):Rectangle;
 		function getRect(targetCoordinateSpace:DisplayObject):Rectangle ;

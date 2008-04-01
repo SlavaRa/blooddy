@@ -1,5 +1,6 @@
 ﻿package by.blooddy.gui.display {
 
+	import by.blooddy.gui.errors.PositionError;
 	import by.blooddy.gui.utils.UIControlInfo;
 	import by.blooddy.platform.display.ResourceManagerOwnerSprite;
 	import by.blooddy.platform.events.isIntrinsicEvent;
@@ -14,7 +15,9 @@
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.utils.getDefinitionByName;
-	import flash.events.MouseEvent;
+	import by.blooddy.gui.errors.SizeError;
+	import by.blooddy.gui.events.UIControlEvent;
+	import by.blooddy.platform.utils.deferredCall;
 
 //	[Deprecated(message="string_describing_deprecation", replacement="string_specifying_replacement", since="version_of_replacement")]
 //
@@ -34,8 +37,9 @@
 	//  Other metadata
 	//--------------------------------------
 
-//	[AccessibilityClass(implementation="by.blooddy.gui.accessibility.UIControlAccessibility")]
 //	[IconFile("MyButton.png")]
+
+//	[AccessibilityClass(implementation="by.blooddy.gui.accessibility.UIControlAccessibility")]
 	[AbstractControl]
 
 	/**
@@ -44,7 +48,7 @@
 	 * @playerversion			Flash 9
 	 * @langversion				3.0
 	 * 
-	 * @keyword					uicontrol, uicomponent, control, component, ui
+	 * @keyword					uicontrol, control, component, ui, uicomponent
 	 */
 	public class UIControl extends ResourceManagerOwnerSprite implements IUIControl {
 
@@ -62,42 +66,61 @@
 			super.addEventListener(Event.REMOVED_FROM_STAGE, this.handler_removedFromStage, false, int.MAX_VALUE);
 		}
 
+		/**
+		 * @private
+		 */
 		private var _info:UIControlInfo;
 
-	    //--------------------------------------
-	    //  mouse declaration
-	    //--------------------------------------
+		/**
+		 */
+		protected final function get info():UIControlInfo {
+			return this._info;
+		}
 
+		//--------------------------------------
+		//  mouse declaration
+		//--------------------------------------
+
+		/**
+		 * @private
+		 */
 		private var _mouseChildren:Boolean = true;
 
+		/**
+		 * @inheritDoc
+		 */
 		public override function get mouseChildren():Boolean {
 			return this._mouseChildren;
 		}
 
+		/**
+		 * @private
+		 */
 		public override function set mouseChildren(enable:Boolean):void {
 			if ( enable == this._mouseChildren ) return;
 			this._mouseChildren = enable;
 			this.mouseChildren_update();
 		}
 
+		/**
+		 * @private
+		 */
 		private function mouseChildren_update():void {
 			super.mouseChildren = this._mouseChildren;
 		}
 
-	    //--------------------------------------
-	    //  graphics declaration
-	    //--------------------------------------
+		//--------------------------------------
+		//  graphics declaration
+		//--------------------------------------
 
 		[Deprecated(message="свойство не используется")]
 		/**
+		 * @inheritDoc
+		 * 
 		 * @default	null
 		 */
 		public override function get graphics():Graphics {
 			return null;
-		}
-
-		protected function get $graphics():Graphics {
-			return super.graphics;
 		}
 
 		CONFIG::debug {
@@ -128,7 +151,7 @@
 			 * @private
 			 */
 			private function redrawPreview():void {
-				var bounds:Rectangle = this.getControlBounds( this );
+				const bounds:Rectangle = this.getControlBounds( this );
 				with ( super.graphics ) {
 					clear();
 					lineStyle(1, 0xFFFFFF, 1, true, LineScaleMode.NONE);
@@ -140,16 +163,20 @@
 
 		}
 
-	    //--------------------------------------
-	    //  center
-	    //--------------------------------------	
+		//--------------------------------------
+		//  center
+		//--------------------------------------	
 
 		/**
 		 * @private
 		 */
 		private var _center:Point = new Point();
 
-		[Bindable("centerChanged")]
+		[Bindable("centerChange")]
+		[Inspectable(category="Position")]
+		/**
+		 * @inheritDoc
+		 */
 		public function get center():Point {
 			return this._center;
 		}
@@ -171,13 +198,32 @@
 				CONFIG::debug {
 					if (this._showPreview) this.redrawPreview();
 				}
-				super.dispatchEvent( new Event("centerChanged") );
+				super.dispatchEvent( new UIControlEvent(UIControlEvent.CENTER_CHANGE) );
 			}
 		}
 
-	    //--------------------------------------
-	    //  position declaration
-	    //--------------------------------------	
+		//------------------------------------------------
+		//  
+		//------------------------------------------------
+	
+		//--------------------------------------
+		//  layout
+		//--------------------------------------
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get layout():DisplayObjectContainer {
+			return super.parent;
+		}
+
+		//------------------------------------------------
+		//  position declaration
+		//------------------------------------------------
+	
+		//--------------------------------------
+		//  x
+		//--------------------------------------
 	
 		/**
 		 * @private
@@ -186,7 +232,9 @@
 
 		[Bindable("move")]
 		[Inspectable(category="Position")]
+		[PercentProxy("xPercent")]
 		/**
+		 * @inheritDoc
 		 */
 		public override function get x():Number {
 			return this._x;
@@ -197,13 +245,38 @@
 		 */
 		public override function set x(value:Number):void {
 		if (this._x == value && !isNaN(x)) return;
-			this.move(value, this._y);
+			this.setPosition(value, this._y);
 		}
 
+		[Bindable("move")]
+		[Inspectable(category="Position")]
+		/**
+		 * @inheritDoc
+		 */
+		public function get xPercent():Number {
+			if (!this.layout) throw new PositionError();
+			return this._x / this.layout.width * 100;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set xPercent(value:Number):void {
+			if (!this.layout) throw new PositionError();
+			this.setPosition( value / 100 * this.layout.width, this._y );
+		}
+
+		[Bindable("move")]
+		/**
+		 */
 		protected final function get $x():Number {
 			return super.x;
 		}
 
+		//--------------------------------------
+		//  y
+		//--------------------------------------
+	
 		/**
 		 * @private
 		 */
@@ -211,7 +284,9 @@
 
 		[Bindable("move")]
 		[Inspectable(category="Position")]
+		[PercentProxy("yPercent")]
 		/**
+		 * @inheritDoc
 		 */
 		public override function get y():Number {
 			return this._y;
@@ -222,14 +297,42 @@
 		 */
 		public override function set y(value:Number):void {
 			if (this._y == value && !isNaN(y)) return;
-			this.move(this._x, value);
+			this.setPosition(this._x, value);
 		}
 
+		[Bindable("move")]
+		[Inspectable(category="Position")]
+		/**
+		 * @inheritDoc
+		 */
+		public function get yPercent():Number {
+			if (!this.layout) throw new PositionError();
+			return this._y / this.layout.height * 100;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set yPercent(value:Number):void {
+			if (!this.layout) throw new PositionError();
+			this.setPosition( this._x, value / 100 * this.layout.height );
+		}
+
+		[Bindable("move")]
+		/**
+		 */
 		protected final function get $y():Number {
 			return super.y;
 		}
 
-		public function move(x:Number, y:Number):void {
+		//--------------------------------------
+		//  move
+		//--------------------------------------
+	
+		/**
+		 * @inheritDoc
+		 */
+		public function setPosition(x:Number, y:Number):void {
 			var changed:Boolean = false;
 			if ( this._x != x && !isNaN(x) ) {
 				this._x = x;
@@ -242,13 +345,25 @@
 				changed = true;
 			}
 			if (changed) {
-				super.dispatchEvent( new Event("move") );
+				super.dispatchEvent( new UIControlEvent(UIControlEvent.MOVE) );
 			}
 		}
 
-	    //--------------------------------------
-	    //  size declaration
-	    //--------------------------------------	
+		[Deprecated(message="метод устарел", replacement="setPosition")]
+		/**
+		 * @inheritDoc
+		 */
+		public function move(x:Number, y:Number):void {
+			this.setPosition(x, y);
+		}
+
+   		//------------------------------------------------
+		//  size declaration
+		//------------------------------------------------
+	
+		//--------------------------------------
+		//  width
+		//--------------------------------------
 	
 		/**
 		 * @private
@@ -262,7 +377,9 @@
 
 		[Bindable("resize")]
 		[Inspectable(category="Size")]
+		[PercentProxy("widthPercent")]
 		/**
+		 * @inheritDoc
 		 */
 		public override function get width():Number {
 			return this._width;
@@ -276,10 +393,35 @@
 			this.setSize(value, this._height);
 		}
 
+		[Bindable("resize")]
+		[Inspectable(category="Size")]
+		/**
+		 * @inheritDoc
+		 */
+		public function get widthPercent():Number {
+			if (!this.layout) throw new SizeError();
+			return this._width / this.layout.width * 100;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set widthPercent(value:Number):void {
+			if (!this.layout) throw new SizeError();
+			this.setSize( value / 100 * this.layout.width, this._height );
+		}
+
+		[Bindable("resize")]
+		/**
+		 */
 		protected function get $width():Number {
 			return super.width;
 		}
 
+		//--------------------------------------
+		//  height
+		//--------------------------------------
+	
 		/**
 		 * @private
 		 */
@@ -293,6 +435,7 @@
 		[Bindable("resize")]
 		[Inspectable(category="Size")]
 		/**
+		 * @inheritDoc
 		 */
 		public override function get height():Number {
 			return this._height;
@@ -306,10 +449,34 @@
 			this.setSize(this._width, value);
 		}
 
+		[Bindable("resize")]
+		[Inspectable(category="Size")]
+		/**
+		 * @inheritDoc
+		 */
+		public function get heightPercent():Number {
+			if (!this.layout) throw new SizeError();
+			return this._height / this.layout.height * 100;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set heightPercent(value:Number):void {
+			if (!this.layout) throw new SizeError();
+			this.setSize( this._width, value / 100 * this.layout.height );
+		}
+
+		/**
+		 */
 		protected function get $height():Number {
 			return super.height;
 		}
 
+		//--------------------------------------
+		//  scaleX
+		//--------------------------------------
+	
 		/**
 		 * @private
 		 */
@@ -318,6 +485,7 @@
 		[Bindable("resize")]
 		[Inspectable(category="Size", defaultValue="1.0")]
 		/**
+		 * @inheritDoc
 		 */
 		public override function get scaleX():Number {
 			return this._scaleX;
@@ -328,9 +496,13 @@
 		 */
 		public override function set scaleX(value:Number):void {
 			if (this._scaleX == value) return;
-			this.setSize(this._width, value);
+			this.setSize( this._startWidth * value, this._height );
 		}
 
+		//--------------------------------------
+		//  scaleY
+		//--------------------------------------
+	
 		/**
 		 * @private
 		 */
@@ -339,6 +511,7 @@
 		[Bindable("resize")]
 		[Inspectable(category="Size", defaultValue="1.0")]
 		/**
+		 * @inheritDoc
 		 */
 		public override function get scaleY():Number {
 			return this._scaleY;
@@ -349,21 +522,28 @@
 		 */
 		public override function set scaleY(value:Number):void {
 			if (this._scaleY == value) return;
-			this.height = this._startHeight * value;
+			this.setSize( this._width, this._startHeight * value )
 		}
 
+		//--------------------------------------
+		//  resize
+		//--------------------------------------
+	
 		/**
+		 * @inheritDoc
 		 */
 		public function setSize(width:Number, height:Number):void {
 			var changed:Boolean = false;
-			var oldWidth:Number = this._width;
+			const oldWidth:Number = this._width;
 			if (oldWidth != width && !isNaN(width)) {
 				this._width = width;
+				this._scaleX = this._width / this._startWidth;
 				changed = true;
 			}
-			var oldHeight:Number = this._width;
+			const oldHeight:Number = this._width;
 			if (oldHeight != height && !isNaN(height)) {
 				this._height = height;
+				this._scaleY = this._height / this._startHeight;
 				changed = true;
 			}
 			width = Math.round( this._width );
@@ -372,10 +552,25 @@
 				CONFIG::debug {
 					if (this._showPreview) this.redrawPreview();
 				}
-				super.dispatchEvent( new Event(Event.RESIZE) );
+				super.dispatchEvent( new UIControlEvent(UIControlEvent.RESIZE) );
 			}
 		}
 
+		[Deprecated(message="метод устарел", replacement="setSize")]
+		/**
+		 * @inheritDoc
+		 */
+		public function resize(width:Number, height:Number):void {
+			this.setSize(width, height);
+		}
+
+		//--------------------------------------
+		//  bounds
+		//--------------------------------------
+
+		/**
+		 * @inheritDoc
+		 */
 		public override function getBounds(targetCoordinateSpace:DisplayObject):Rectangle {
 			return this.getControlBounds( targetCoordinateSpace );
 		}
@@ -384,6 +579,9 @@
 			return super.getBounds( targetCoordinateSpace );
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public override function getRect(targetCoordinateSpace:DisplayObject):Rectangle {
 			return this.getControlBounds( targetCoordinateSpace );
 		}
@@ -396,8 +594,8 @@
 		 * @private
 		 */
 		private function getControlBounds(targetCoordinateSpace:DisplayObject):Rectangle {
-			var p:Point = new Point();
-			var result:Rectangle = new Rectangle();
+			const p:Point = new Point();
+			const result:Rectangle = new Rectangle();
 			result.left = -this._center.x;
 			result.top = -this._center.y;
 			result.width = this._width;
@@ -409,6 +607,13 @@
 			return result;
 		}
 
+		//--------------------------------------
+		//  scale9Grid
+		//--------------------------------------
+	
+		/**
+		 * @private
+		 */
 		public override function set scale9Grid(innerRectangle:Rectangle):void {
 			super.scale9Grid = innerRectangle;
 			setScale9Grid( this, innerRectangle );
@@ -420,7 +625,7 @@
 		private static function setScale9Grid(container:DisplayObjectContainer, innerRectangle:Rectangle):void {
 			var l:uint = container.numChildren;
 			var child:DisplayObject;
-			var childRectangle:Rectangle = new Rectangle();
+			const childRectangle:Rectangle = new Rectangle();
 			while (l--) {
 				child = container.getChildAt( l );
 				// прямоугольник
@@ -435,30 +640,37 @@
 			}
 		}
 
-	    //--------------------------------------
-	    //  drag declaration
-	    //--------------------------------------	
+		//------------------------------------------------
+		//  drag declaration
+		//------------------------------------------------
 
 		[Deprecated(message="метод не используется")]
 		/**
+		 * @inheritDoc
+		 * 
 		 * @throw	IllegalOperationError
 		 */
-		public override function startDrag(lockCenter:Boolean=false, bounds:Rectangle=null):void {
+		public final override function startDrag(lockCenter:Boolean=false, bounds:Rectangle=null):void {
 			throw new IllegalOperationError();
 		}
 
 		[Deprecated(message="метод не используется")]
 		/**
+		 * @inheritDoc
+		 * 
 		 * @throw	IllegalOperationError
 		 */
-		public override function stopDrag():void {
+		public final override function stopDrag():void {
 			throw new IllegalOperationError();
 		}
 
-	    //--------------------------------------
-	    //  livepreview declaration
-	    //--------------------------------------	
+		//------------------------------------------------
+		//  livepreview declaration
+		//------------------------------------------------
 
+		/**
+		 * @inheritDoc
+		 */
 		public function get isLivePreview():Boolean {
 			var C:Class;
 			if ( super.parent ) {
@@ -472,26 +684,34 @@
 			return false;
 		}
 
-	    //--------------------------------------
-	    //  events declaration
-	    //--------------------------------------	
+		//------------------------------------------------
+		//  events declaration
+		//------------------------------------------------
 
+		/**
+		 * @inheritDoc
+		 */
 		public override function dispatchEvent(event:Event):Boolean {
 			if ( isIntrinsicEvent( this, event ) ) return true; // throw new IllegalOperationError();
 			else return super.dispatchEvent( event );
 		}
 
+		/**
+		 */
 		protected final function $dispatchEvent(event:Event):Boolean {
 			return super.dispatchEvent( event );
 		}
 
-	    //--------------------------------------
-	    //  toString declaration
-	    //--------------------------------------	
+		//------------------------------------------------
+		//  toString declaration
+		//------------------------------------------------
 
+		/**
+		 * @inheritDoc
+		 */
 		public override function toString():String {
 			var parent:DisplayObject = this;
-			var result:Array = new Array();
+			const result:Array = new Array();
 			do {
 				if (parent.name) result.unshift( parent.name );
 				else result.unshift( ( parent as Object ).toLocaleString() );
@@ -499,9 +719,43 @@
 			return result.join(".");
 		}
 
-	    //--------------------------------------
-	    //  stage events declaration
-	    //--------------------------------------	
+		//------------------------------------------------
+		//  redraw declaration
+		//------------------------------------------------
+
+		/**
+		 */
+		public final function invalidate(redrawType:uint, deferredRedraw:Boolean=true):void {
+			if (deferredRedraw) {
+				this._redrawType |= redrawType; 
+				deferredCall( this.redraw_prepare, null, this, Event.ENTER_FRAME );
+			} else {
+				this.redraw( redrawType );
+			}
+		}
+
+		/**
+		 * @private
+		 */
+		private var _redrawType:uint = 0;
+
+		/**
+		 * @private
+		 */
+		private function redraw_prepare():void {
+			var type:uint = this._redrawType;
+			this._redrawType = 0;
+			this.redraw( type );
+		}
+
+		/**
+		 */
+		protected function redraw(redrawType:uint=0):void {
+		}
+
+		//------------------------------------------------
+		//  stage events declaration
+		//------------------------------------------------
 
 		/**
 		 * @private
