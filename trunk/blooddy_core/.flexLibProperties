@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <flexLibProperties version="1">
 <includeClasses>
+<classEntry path="by.blooddy.abc.ABCByteArray"/>
+<classEntry path="by.blooddy.abc.IABCInput"/>
+<classEntry path="by.blooddy.abc.IABCOutput"/>
 <classEntry path="by.blooddy.platform.database.Data"/>
 <classEntry path="by.blooddy.platform.database.DataBase"/>
 <classEntry path="by.blooddy.platform.database.DataBaseNativeEvent"/>
@@ -12,9 +15,11 @@
 <classEntry path="by.blooddy.platform.events.DataBaseEvent"/>
 <classEntry path="by.blooddy.platform.events.DragEvent"/>
 <classEntry path="by.blooddy.platform.events.FZipEvent"/>
+<classEntry path="by.blooddy.platform.events.LoaderEvent"/>
 <classEntry path="by.blooddy.platform.events.ParserErrorEvent"/>
 <classEntry path="by.blooddy.platform.events.PointEvent"/>
 <classEntry path="by.blooddy.platform.events.ResourceEvent"/>
+<classEntry path="by.blooddy.platform.events.StyleSheetEvent"/>
 <classEntry path="by.blooddy.platform.events.VectorEvent"/>
 <classEntry path="by.blooddy.platform.events.isIntrinsicEvent"/>
 <classEntry path="by.blooddy.platform.geom.IPoint"/>
@@ -39,16 +44,16 @@
 <classEntry path="by.blooddy.platform.net.LoaderDispatcher"/>
 <classEntry path="by.blooddy.platform.net.MIME"/>
 <classEntry path="by.blooddy.platform.net.ResourceLoader"/>
+<classEntry path="by.blooddy.platform.net.SWFInfo"/>
 <classEntry path="by.blooddy.platform.net.URLLoader"/>
 <classEntry path="by.blooddy.platform.net.URLStream"/>
-<classEntry path="by.blooddy.platform.net.zip.FZip"/>
-<classEntry path="by.blooddy.platform.net.zip.FZipBundle"/>
-<classEntry path="by.blooddy.platform.net.zip.FZipFile"/>
+<classEntry path="by.blooddy.platform.text.StyleSheet"/>
 <classEntry path="by.blooddy.platform.utils.ActivityListener"/>
 <classEntry path="by.blooddy.platform.utils.ArrayEventDispatcher"/>
 <classEntry path="by.blooddy.platform.utils.Caller"/>
 <classEntry path="by.blooddy.platform.utils.ClassUtils"/>
 <classEntry path="by.blooddy.platform.utils.DynamicObject"/>
+<classEntry path="by.blooddy.platform.utils.HashArray"/>
 <classEntry path="by.blooddy.platform.utils.ObjectInfo"/>
 <classEntry path="by.blooddy.platform.utils.ProxyEventDispatcher"/>
 <classEntry path="by.blooddy.platform.utils.TimerDispatcher"/>
