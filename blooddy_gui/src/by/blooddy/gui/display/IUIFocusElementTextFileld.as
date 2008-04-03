@@ -19,13 +19,16 @@ package by.blooddy.gui.display {
 
 		function get selectionBeginIndex():int;
 
-		function set selectionEndIndex():int;
+		function get selectionEndIndex():int;
+
+		function get selectedText():String;
 
 		function get type():String;
 		function set type(value:String):void;
 
 		function get useRichTextClipboard():Boolean;
 		function set useRichTextClipboard(value:Boolean):void;
+
 
 		function replaceSelectedText(value:String):void;
 

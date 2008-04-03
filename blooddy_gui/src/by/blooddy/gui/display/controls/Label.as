@@ -16,7 +16,8 @@ package by.blooddy.gui.display.controls {
 	import flash.geom.Rectangle;
 	import flash.text.TextField;
 	import flash.utils.getDefinitionByName;
-
+	import flash.errors.IllegalOperationError;
+	import flash.text.TextFieldType;
 
 //	[Deprecated(message="string_describing_deprecation", replacement="string_specifying_replacement", since="version_of_replacement")]
 //
@@ -36,8 +37,6 @@ package by.blooddy.gui.display.controls {
 	//[DefaultBindingProperty(source="text", destination="text")]
 //	[IconFile("Label.png")]
 	//htmlText, text -> [CollapseWhiteSpace]
-	/**
-	 */
 
 	/**
 	 * @author					BlooDHounD
@@ -61,6 +60,7 @@ package by.blooddy.gui.display.controls {
 
 			super.addEventListener(Event.ADDED_TO_STAGE, this.handler_addedToStage, false, int.MAX_VALUE);
 			super.addEventListener(Event.REMOVED_FROM_STAGE, this.handler_removedFromStage, false, int.MAX_VALUE);
+
 		}
 
 		/**
@@ -669,6 +669,222 @@ package by.blooddy.gui.display.controls {
 		 * @private
 		 */
 		private function handler_removedFromStage(event:Event):void {
+		}
+
+		//------------------------------------------------
+		//  stage events declaration
+		//------------------------------------------------
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @inheritDoc
+		 * 
+		 * @default	false
+		 */
+		public override function set alwaysShowSelection(value:Boolean):void {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @inheritDoc
+		 * 
+		 * @default	false
+		 */
+		public override function set background(value:Boolean):void {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @inheritDoc
+		 */
+		public override function set backgroundColor(value:uint):void {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @inheritDoc
+		 * 
+		 * @default	false
+		 */
+		public override function set border(value:Boolean):void {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @inheritDoc
+		 */
+		public override function set borderColor(value:uint):void {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @inheritDoc
+		 * 
+		 * @default	false
+		 */
+		public override function set displayAsPassword(value:Boolean):void {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @inheritDoc
+		 * 
+		 * @default	false
+		 */
+		public override function set doubleClickEnabled(enabled:Boolean):void {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @inheritDoc
+		 */
+		public override function set focusRect(focusRect:Object):void {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @inheritDoc
+		 */
+		public override function set maxChars(value:int):void {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @inheritDoc
+		 * 
+		 * @default	false
+		 */
+		public override function set mouseEnabled(enabled:Boolean):void {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @inheritDoc
+		 * 
+		 * @default	false
+		 */
+		public override function set mouseWheelEnabled(value:Boolean):void {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @inheritDoc
+		 */
+		public override function set restrict(value:String):void {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @inheritDoc
+		 */
+		public override function set scrollH(value:int):void {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @inheritDoc
+		 */
+		public override function set scrollV(value:int):void {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @inheritDoc
+		 * 
+		 * @default	false
+		 */
+		public override function set selectable(value:Boolean):void {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @inheritDoc
+		 * 
+		 * @default	false
+		 */
+		public override function set tabEnabled(enabled:Boolean):void {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @inheritDoc
+		 */
+		public override function set tabIndex(index:int):void {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @inheritDoc
+		 * 
+		 * @default	dynamic
+		 */
+		public override function set type(value:String):void {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @inheritDoc
+		 */
+		public override function set useRichTextClipboard(value:Boolean):void {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @inheritDoc
+		 */
+		public override function get selectedText():String {
+			return super.selectedText;
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @inheritDoc
+		 */
+		public override function get selectionBeginIndex():int {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @inheritDoc
+		 */
+		public override function get selectionEndIndex():int {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="метод не используется")]
+		/**
+		 * @inheritDoc
+		 */
+		public override function setSelection(beginIndex:int, endIndex:int):void {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="метод не используется")]
+		/**
+		 * @inheritDoc
+		 */
+		public override function replaceSelectedText(value:String):void {
+			throw new IllegalOperationError();
 		}
 
 	}
