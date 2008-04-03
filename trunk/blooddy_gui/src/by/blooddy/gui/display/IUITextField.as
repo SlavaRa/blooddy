@@ -1,10 +1,10 @@
 package by.blooddy.gui.display {
-	import flash.text.TextFormat;
-	import flash.text.StyleSheet;
-	import flash.geom.Rectangle;
+
 	import flash.display.DisplayObject;
+	import flash.geom.Rectangle;
+	import flash.text.StyleSheet;
+	import flash.text.TextFormat;
 	import flash.text.TextLineMetrics;
-	
 
 	public interface IUITextField extends IUIControl {
 

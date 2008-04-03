@@ -1,6 +1,6 @@
 package by.blooddy.gui.styles {
 
-	import flash.text.StyleSheet;
+	import by.blooddy.platform.text.StyleSheet;
 
 	public class UIStyleSheet extends StyleSheet {
 
