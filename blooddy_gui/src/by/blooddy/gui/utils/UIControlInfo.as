@@ -6,7 +6,7 @@ package by.blooddy.gui.utils {
 	import flash.utils.getQualifiedClassName;
 	import flash.utils.getDefinitionByName;
 
-	public class UIControlInfo {
+	public final class UIControlInfo {
 
 		//--------------------------------------------------------------------------
 		//
@@ -36,7 +36,7 @@ package by.blooddy.gui.utils {
 		/**
 		 * @private
 		 */
-		private static const CONTROL_LINK:String = getQualifiedClassName(IUIControl);
+		private static const UI_CONTROL_LINK:String = getQualifiedClassName(IUIControl);
 
 		//--------------------------------------------------------------------------
 		//
@@ -82,6 +82,8 @@ package by.blooddy.gui.utils {
 		 */
 		private var _info:ObjectInfo;
 
+		private var _styles:XMLList = new XMLList();
+
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
@@ -97,7 +99,7 @@ package by.blooddy.gui.utils {
 		 * @private
 		 */
 		public function get parent():UIControlInfo {
-			if ( !this._parent && this._info.parent && this._info.parent.hasInterface( CONTROL_LINK ) ) {
+			if ( !this._parent && this._info.parent && this._info.parent.hasInterface( UI_CONTROL_LINK ) ) {
 				this._parent = getClassInfo( getDefinitionByName( this._info.parent.name.toString() ) );
 			}
 			return this._parent;
@@ -146,6 +148,24 @@ package by.blooddy.gui.utils {
 			return this._info.getInterfaces();
 		}
 
+		public function getStyleList():XMLList {
+			return this.$getStyleList( new Object() );
+		}
+
+		private function $getStyleList(excludeHash:Object):XMLList {
+			var result:XMLList = new XMLList();
+			var name:String;
+			for each ( var xml:XML in this._styles ) {
+				name = xml.arg.(@key=="name").@value;
+				if ( !excludeHash[ name ] ) {
+					excludeHash[ name ] = true;
+					result += xml;
+				}
+			}
+			if ( this.parent ) this.parent.$getStyleList( excludeHash );
+			return result;
+		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Private methods
@@ -157,17 +177,16 @@ package by.blooddy.gui.utils {
 		 */
 		private function $setInfo(info:ObjectInfo):void {
 			this._info = info;
-//			var list:XMLList, xml:XML, arg:XML, name:String, type:Object;
-//			list = info.getMetadata("Event", ObjectInfo.META_SELF);
-//			for each (xml in list) {
-//				arg = xml.arg.(@key=="name")[0];
-//				if ( arg && ( name = arg.@value.toXMLString().toLowerCase() ) ) {
-//					arg = xml.arg.(@key=="type")[0];
-//					if ( arg && ( type = getDefinitionByName( arg.@value.toXMLString() ) ) ) {
-//						_events[name] = type;
-//					}
-//				}
-//			}
+			var list:XMLList, xml:XML, arg:XML, name:String;
+			list = info.getMetadata("Style", ObjectInfo.META_SELF);
+			const hash:Object = new Object();
+			for each (xml in list) {
+				arg = xml.arg.(@key=="name")[0];
+				if ( arg && ( name = arg.@value.toXMLString().toLowerCase() ) && !hash[ name ]) {
+					hash[ name ] = true;
+					this._styles += xml;
+				}
+			}
 		}
 
 	}

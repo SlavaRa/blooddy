@@ -29,8 +29,8 @@ package by.blooddy.gui.display {
 		function get text():String;
 		function set text(value:String):void;
 
-		function get htmlText():String;
-		function set htmlText(value:String):void;
+		function get html():Boolean;
+		function set html(value:Boolean):void;
 
 		function get multiline():Boolean;
 		function set multiline(value:Boolean):void;
@@ -42,10 +42,6 @@ package by.blooddy.gui.display {
 
 		function get styleSheet():StyleSheet;
 		function set styleSheet(value:StyleSheet):void;
-
-		[Deprecated(message="свойство устарело", replacement="defaultTextFormat.color")]
-		function get textColor():uint;
-		function set textColor(value:uint):void;
 
 		function get textWidth():Number;
 

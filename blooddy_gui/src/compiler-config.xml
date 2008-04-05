@@ -24,6 +24,7 @@
 		<keep-as3-metadata>
 			<name>AbstractControl</name>
 			<name>Event</name>
+			<name>Style</name>
 		</keep-as3-metadata>
 
 		<show-binding-warnings>true</show-binding-warnings>

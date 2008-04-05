@@ -28,10 +28,10 @@
 	//  Excluded APIs
 	//--------------------------------------
 
-	[Exclude(name="graphics", kind="property")]
+	[Exclude(kind="property", name="graphics")]
 
-	[Exclude(name="startDrag", kind="method")]
-	[Exclude(name="stopDrag", kind="method")]
+	[Exclude(kind="method", name="startDrag")]
+	[Exclude(kind="method", name="stopDrag")]
 
 	//--------------------------------------
 	//  Other metadata
