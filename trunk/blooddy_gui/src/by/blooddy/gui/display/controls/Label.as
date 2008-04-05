@@ -11,32 +11,74 @@ package by.blooddy.gui.display.controls {
 	
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
+	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.text.TextField;
 	import flash.utils.getDefinitionByName;
-	import flash.errors.IllegalOperationError;
-	import flash.text.TextFieldType;
+	import flash.text.TextFormat;
 
-//	[Deprecated(message="string_describing_deprecation", replacement="string_specifying_replacement", since="version_of_replacement")]
-//
-//	The [Event], [Effect] and [Style] metadata tags also support deprecation. These tags support the following options for syntax:
-//	[Event(... , deprecatedMessage="string_describing_deprecation", deprecatedReplacement="string_specifying_replacement", deprecatedSince="version_of_replacement")]
+	//--------------------------------------
+	//  Styles
+	//--------------------------------------
+
+	[Style(name="themeColor", type="uint", format="Color", inherit="yes")]
+
+	//--------------------------------------
+	//  Events
+	//--------------------------------------
+
+	/**
+	 * @inheritDoc
+	 */
+	[Event(name="scroll", type="flash.events.Event", deprecatedMessage="событие не используется")]
+
+	/**
+	 * @inheritDoc
+	 */
+	[Event(name="textInput", type="flash.events.TextEvent", deprecatedMessage="событие не используется")]
 
 	//--------------------------------------
 	//  Excluded APIs
 	//--------------------------------------
+
+	[Exclude(kind="property", name="alwaysShowSelection")]
+	[Exclude(kind="property", name="background")]
+	[Exclude(kind="property", name="backgroundColor")]
+	[Exclude(kind="property", name="border")]
+	[Exclude(kind="property", name="borderColor")]
+	[Exclude(kind="property", name="displayAsPassword")]
+	[Exclude(kind="property", name="doubleClickEnabled")]
+	[Exclude(kind="property", name="focusRect")]
+	[Exclude(kind="property", name="maxChars")]
+	[Exclude(kind="property", name="mouseEnabled")]
+	[Exclude(kind="property", name="mouseWheelEnabled")]
+	[Exclude(kind="property", name="restrict")]
+	[Exclude(kind="property", name="scrollH")]
+	[Exclude(kind="property", name="scrollV")]
+	[Exclude(kind="property", name="selectable")]
+	[Exclude(kind="property", name="tabEnabled")]
+	[Exclude(kind="property", name="tabIndex")]
+	[Exclude(kind="property", name="type")]
+	[Exclude(kind="property", name="useRichTextClipboard")]
+	[Exclude(kind="property", name="selectedText")]
+	[Exclude(kind="property", name="selectionBeginIndex")]
+	[Exclude(kind="property", name="selectionEndIndex")]
+
+	[Exclude(kind="method", name="setSelection")]
+	[Exclude(kind="method", name="replaceSelectedText")]
+
+	[Exclude(kind="event", name="scroll")]
+	[Exclude(kind="event", name="textInput")]
 
 	//--------------------------------------
 	//  Other metadata
 	//--------------------------------------
 
 	[DefaultProperty("text")]
-	[DefaultBindingProperty(destination="text")]
-	//[DefaultBindingProperty(source="text", destination="text")]
+	[DefaultBindingProperty(source="text", destination="text")]
 //	[IconFile("Label.png")]
-	//htmlText, text -> [CollapseWhiteSpace]
 
 	/**
 	 * @author					BlooDHounD
@@ -122,6 +164,83 @@ package by.blooddy.gui.display.controls {
 
 		}
 
+		//------------------------------------------------
+		//  text declaration
+		//------------------------------------------------
+	
+		//--------------------------------------
+		//  text
+		//--------------------------------------
+
+		/**
+		 * @private
+		 */
+		private var _html:Boolean = false;
+
+		[Bindable("change")]
+		[Inspectable(category="Text", enumeration="true,false", defaultValue="false")]
+		/**
+		 */
+		public function get html():Boolean {
+			return this._html;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set html(value:Boolean):void {
+			if (this._html == value) return;
+			this._html = value;
+			this.setText( this._html ? super.text : super.htmlText )
+		}
+
+		[Bindable("change")]
+		[Inspectable(category="Text")]
+		[CollapseWhiteSpace]
+		/**
+		 */
+		public override function get text():String {
+			return ( this._html ? super.htmlText : super.text );
+		}
+
+		/**
+		 * @private
+		 */
+		public override function set text(value:String):void {
+			this.setText( value );
+		}
+
+		private function setText(text:String):void {
+			var changed:Boolean = false;
+			if ( this._html ) {
+				if ( super.htmlText == text ) {
+					super.htmlText = text;
+					changed = true;
+				}
+			} else {
+				if ( super.text == text ) {
+					super.text = text;
+					changed = true;
+				}
+			}
+			if (changed) super.dispatchEvent( new Event(Event.CHANGE) );
+		}
+
+		//------------------------------------------------
+		//  
+		//------------------------------------------------
+	
+		//--------------------------------------
+		//  layout
+		//--------------------------------------
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get layout():DisplayObjectContainer {
+			return super.parent;
+		}
+
 		//--------------------------------------
 		//  center
 		//--------------------------------------	
@@ -144,36 +263,21 @@ package by.blooddy.gui.display.controls {
 		 * @private
 		 */
 		public function set center(p:Point):void {
-			var changed:Boolean = false;
+			var change:Boolean = false;
 			if ( p.x != this._center.x && !isNaN(p.x) ) {
 				this._center.x = p.x;
-				changed = true;
+				change = true;
 			}
 			if ( p.y != this._center.y && !isNaN(p.y) ) {
 				this._center.y = p.y;
-				changed = true;
+				change = true;
 			}
-			if (changed) {
+			if (change) {
 				CONFIG::debug {
 					if (this._showPreview) this.redrawPreview();
 				}
 				super.dispatchEvent( new UIControlEvent(UIControlEvent.CENTER_CHANGE) );
 			}
-		}
-
-		//------------------------------------------------
-		//  
-		//------------------------------------------------
-	
-		//--------------------------------------
-		//  layout
-		//--------------------------------------
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get layout():DisplayObjectContainer {
-			return super.parent;
 		}
 
 		//------------------------------------------------
@@ -292,18 +396,18 @@ package by.blooddy.gui.display.controls {
 		 * @inheritDoc
 		 */
 		public function setPosition(x:Number, y:Number):void {
-			var changed:Boolean = false;
+			var change:Boolean = false;
 			if ( this._x != x && !isNaN(x) ) {
 				this._x = x;
 				super.x = Math.round( this._x );
-				changed = true;
+				change = true;
 			}
 			if ( this._y != y && !isNaN(y) ) {
 				this._y = y;
 				super.y = Math.round( this._y );
-				changed = true;
+				change = true;
 			}
-			if (changed) {
+			if (change) {
 				super.dispatchEvent( new UIControlEvent(UIControlEvent.MOVE) );
 			}
 		}
@@ -492,22 +596,22 @@ package by.blooddy.gui.display.controls {
 		 * @inheritDoc
 		 */
 		public function setSize(width:Number, height:Number):void {
-			var changed:Boolean = false;
+			var change:Boolean = false;
 			const oldWidth:Number = this._width;
 			if (oldWidth != width && !isNaN(width)) {
 				this._width = width;
 				this._scaleX = this._width / this._startWidth;
-				changed = true;
+				change = true;
 			}
 			const oldHeight:Number = this._width;
 			if (oldHeight != height && !isNaN(height)) {
 				this._height = height;
 				this._scaleY = this._height / this._startHeight;
-				changed = true;
+				change = true;
 			}
 			width = Math.round( this._width );
 			height = Math.round( this._height );
-			if (changed) {
+			if (change) {
 				CONFIG::debug {
 					if (this._showPreview) this.redrawPreview();
 				}
@@ -674,6 +778,39 @@ package by.blooddy.gui.display.controls {
 		//------------------------------------------------
 		//  stage events declaration
 		//------------------------------------------------
+
+		[Deprecated(message="свойство устарело", replacement="flash.text.TextField.text")]
+		/**
+		 * @inheritDoc
+		 * 
+		 * @default	false
+		 */
+		public override function get htmlText():String {
+			return ( this._html ? super.htmlText : "" );
+		}
+
+		/**
+		 * @private
+		 */
+		public override function set htmlText(value:String):void {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="свойство устарело", replacement="flash.text.TextFormat.color")]
+		/**
+		 */
+		public override function get textColor():uint {
+			return parseInt( super.defaultTextFormat.color.toString(), 10 );
+		}
+
+		/**
+		 * @private
+		 */
+		public override function set textColor(value:uint):void {
+			var format:TextFormat = super.defaultTextFormat;
+			format.color = value;
+			super.defaultTextFormat = format;
+		}
 
 		[Deprecated(message="свойство не используется")]
 		/**
