@@ -189,10 +189,10 @@ internal final class EventDispatcherInfo {
 		list = info.getMetadata("Event", ObjectInfo.META_SELF);
 		for each (xml in list) {
 			arg = xml.arg.(@key=="name")[0];
-			if ( arg && ( name = arg.@value.toXMLString().toLowerCase() ) ) {
+			if ( arg && ( name = arg.@value.toXMLString().toLowerCase() ) && !this._events[name] ) {
 				arg = xml.arg.(@key=="type")[0];
 				if ( arg && ( type = getDefinitionByName( arg.@value.toXMLString() ) ) ) {
-					_events[name] = type;
+					this._events[name] = type;
 				}
 			}
 		}

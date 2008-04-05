@@ -15,15 +15,29 @@ package by.blooddy.platform.database {
 	import flash.utils.getQualifiedClassName;
 
 	//--------------------------------------
+	//  Events
+	//--------------------------------------
+
+	/**
+	 * @inheritDoc
+	 */
+	[Event(name="addedToBase", type="by.blooddy.platform.events.DataBaseEvent", deprecatedMessage="событие не используется")]
+
+	/**
+	 * @inheritDoc
+	 */
+	[Event(name="removedFromBase", type="by.blooddy.platform.events.DataBaseEvent", deprecatedMessage="событие не используется")]
+
+	//--------------------------------------
 	//  Excluded APIs
 	//--------------------------------------
 
-	[Exclude(name="name", kind="property")]
-	[Exclude(name="$base", kind="property")]
-	[Exclude(name="$parent", kind="property")]
+	[Exclude(kind="property", name="name")]
+	[Exclude(kind="property", name="$base")]
+	[Exclude(kind="property", name="$parent")]
 
-	[Exclude(name="addedToBase", kind="event")]
-	[Exclude(name="removedFromBase", kind="event")]
+	[Exclude(kind="event", name="addedToBase")]
+	[Exclude(kind="event", name="removedFromBase")]
 
 	/**
 	 * @author					BlooDHounD

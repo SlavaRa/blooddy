@@ -164,7 +164,6 @@ package by.blooddy.platform.net {
 		 */
 		private var _enabled:Boolean = true;
 
-		[Inspectable( type="Boolean", defaultValue="true" )]
 		/**
 		 * @copy					platform.net.ILoaderDispatcher#enabled
 		 */

@@ -230,7 +230,6 @@ package by.blooddy.platform.net {
 		 */
 		private var _loaderContext:LoaderContext;
 
-		[Inspectable( type="Object", defaultValue="" )]
 		/**
 		 * A LoaderContext object to use to control loading of the content.
 		 * This is an advanced property. 
@@ -265,7 +264,6 @@ package by.blooddy.platform.net {
 		 */
 		private var _trustContent:Boolean = false;
 
-		[Inspectable( type="Boolean", defaultValue="false" )]
 		/**
 		 * If true, the content is loaded into your security domain.
 		 * This means that the load fails if the content is in another domain

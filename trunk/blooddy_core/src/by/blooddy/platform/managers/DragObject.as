@@ -45,11 +45,11 @@ package by.blooddy.platform.managers {
 	//  Excluded APIs
 	//--------------------------------------
 
-	[Exclude(name="graphics", kind="property")]
-	[Exclude(name="parent", kind="property")]
-	[Exclude(name="$parent", kind="property")]
-	[Exclude(name="stage", kind="property")]
-	[Exclude(name="visible", kind="property")]
+	[Exclude(kind="property", name="graphics")]
+	[Exclude(kind="property", name="parent")]
+	[Exclude(kind="property", name="$parent")]
+	[Exclude(kind="property", name="stage")]
+	[Exclude(kind="property", name="visible")]
 
 	/**
 	 * TODO: доделать всякие деприкатыды и эклюды
