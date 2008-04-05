@@ -56,8 +56,8 @@ package by.blooddy.platform.database {
 	//  Excluded APIs
 	//--------------------------------------
 
-	[Exclude(name="$parent", kind="property")]
-	[Exclude(name="$base", kind="property")]
+	[Exclude(kind="property", name="$parent")]
+	[Exclude(kind="property", name="$base")]
 
 	/**
 	 * @author					BlooDHounD

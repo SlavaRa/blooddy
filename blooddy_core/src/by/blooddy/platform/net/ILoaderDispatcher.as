@@ -28,7 +28,6 @@ package by.blooddy.platform.net {
 		//  enabled
 		//----------------------------------
 
-		[Inspectable( type="Boolean" )]
 		/**
 		 * Включен ли наш обработчик.
 		 * 

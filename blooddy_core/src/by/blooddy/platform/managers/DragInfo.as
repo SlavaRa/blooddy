@@ -48,7 +48,7 @@ package by.blooddy.platform.managers {
 	//  Excluded APIs
 	//--------------------------------------
 
-	[Exclude(name="$doDrag", kind="method")]
+	[Exclude(kind="method", name="$doDrag")]
 
 	/**
 	 * @author					BlooDHounD

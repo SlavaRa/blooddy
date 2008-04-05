@@ -22,9 +22,9 @@ package by.blooddy.platform.database {
 	//  Excluded APIs
 	//--------------------------------------
 
-	[Exclude(name="$stopped", kind="property")]
-	[Exclude(name="$target", kind="property")]
-	[Exclude(name="$eventPhase", kind="property")]
+	[Exclude(kind="property", name="$stopped")]
+	[Exclude(kind="property", name="$target")]
+	[Exclude(kind="property", name="$eventPhase")]
 
 	//--------------------------------------
 	//  Other metadata
