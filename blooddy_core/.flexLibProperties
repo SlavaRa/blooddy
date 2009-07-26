@@ -5,23 +5,14 @@
     <classEntry path="by.blooddy.core.controllers.IBaseController"/>
     <classEntry path="by.blooddy.core.database.Data"/>
     <classEntry path="by.blooddy.core.database.xml.rss.RSSCategoryData"/>
-    <classEntry path="by.blooddy.core.database.xml.rss.RSSElementData"/>
     <classEntry path="by.blooddy.core.database.xml.rss.RSSImageData"/>
     <classEntry path="by.blooddy.core.database.xml.rss.RSSTextInputData"/>
     <classEntry path="by.blooddy.core.external.HistoryExternalConnection"/>
-    <classEntry path="by.blooddy.core.logging.Logger"/>
-    <classEntry path="by.blooddy.core.managers.DragObject"/>
-    <classEntry path="by.blooddy.core.managers.IResource"/>
     <classEntry path="by.blooddy.core.media.SoundContainer"/>
     <classEntry path="by.blooddy.core.net.HeuristicLoader"/>
-    <classEntry path="by.blooddy.core.net.IAbstractSocket"/>
     <classEntry path="by.blooddy.core.net.INetConnection"/>
-    <classEntry path="by.blooddy.core.net.ISocketFilter"/>
-    <classEntry path="by.blooddy.core.net.NetCommand"/>
-    <classEntry path="by.blooddy.core.net.ProxySharedObject"/>
     <classEntry path="by.blooddy.core.net.Socket"/>
     <classEntry path="by.blooddy.core.net.URLResourceLoader"/>
-    <classEntry path="by.blooddy.core.net.copyURLRequest"/>
     <classEntry path="by.blooddy.core.net.zip.FZip"/>
     <classEntry path="by.blooddy.core.system.SystemTimer"/>
     <classEntry path="by.blooddy.core.utils.ArrayEventDispatcher"/>
@@ -38,7 +29,6 @@
     <classEntry path="by.blooddy.core.utils.math.Calculator"/>
     <classEntry path="by.blooddy.core.utils.version.IVersion"/>
     <classEntry path="by.blooddy.core.utils.version.PlayerVersion"/>
-    <classEntry path="by.blooddy.core.geom.Quadrangle"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
