@@ -1,17 +1,15 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (C) 2007 group company TimeZero.
+//  © 2007 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-	import platform.errors.ErrorsManager;
-	import flash.errors.IllegalOperationError;
-
-	import flash.geom.Point;
-
-	import flash.text.TextSnapshot;
-
+	import by.blooddy.core.errors.getErrorMessage;
+	
 	import flash.display.DisplayObject;
+	import flash.errors.IllegalOperationError;
+	import flash.geom.Point;
+	import flash.text.TextSnapshot;
 
 	//--------------------------------------------------------------------------
 	//
@@ -27,7 +25,7 @@
 	 * @private
 	 */
 	public override function set mouseChildren(enable:Boolean):void {
-		throw new IllegalOperationError( ErrorsManager.getErrorMessage(2071), 2071 );
+		throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
 	}
 
 	//----------------------------------
@@ -38,13 +36,14 @@
 	 * @private
 	 */
 	public override function set tabChildren(enable:Boolean):void {
-		throw new IllegalOperationError( ErrorsManager.getErrorMessage(2071), 2071 );
+		throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
 	}
 
 	//----------------------------------
 	//  numChildren
 	//----------------------------------
 
+	[Deprecated(message="свойство запрещено")]
 	/**
 	 * @private
 	 */
@@ -56,6 +55,7 @@
 	//  textSnapshot
 	//----------------------------------
 
+	[Deprecated(message="свойство запрещено")]
 	/**
 	 * @private
 	 */
@@ -69,20 +69,23 @@
 	//
 	//--------------------------------------------------------------------------
 
+	[Deprecated(message="метод запрещён")]
 	/**
 	 * @private
 	 */
 	public override function addChild(child:DisplayObject):DisplayObject {
-		throw new IllegalOperationError( ErrorsManager.getErrorMessage(2071), 2071 );
+		throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
 	}
 
+	[Deprecated(message="метод запрещён")]
 	/**
 	 * @private
 	 */
 	public override function addChildAt(child:DisplayObject, index:int):DisplayObject {
-		throw new IllegalOperationError( ErrorsManager.getErrorMessage(2071), 2071 );
+		throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
 	}
 
+	[Deprecated(message="метод запрещён")]
 	/**
 	 * @private
 	 */
@@ -90,6 +93,7 @@
 		return false;
 	}
 
+	[Deprecated(message="метод запрещён")]
 	/**
 	 * @private
 	 */
@@ -97,6 +101,7 @@
 		return super.getChildAt(-1);
 	}
 
+	[Deprecated(message="метод запрещён")]
 	/**
 	 * @private
 	 */
@@ -104,6 +109,7 @@
 		return null;
 	}
 
+	[Deprecated(message="метод запрещён")]
 	/**
 	 * @private
 	 */
@@ -111,6 +117,7 @@
 		return super.getChildIndex(this);
 	}
 
+	[Deprecated(message="метод запрещён")]
 	/**
 	 * @private
 	 */
@@ -118,6 +125,7 @@
 		return new Array();
 	}
 
+	[Deprecated(message="метод запрещён")]
 	/**
 	 * @private
 	 */
@@ -125,6 +133,7 @@
 		return super.removeChild( child ? this : null );
 	}
 
+	[Deprecated(message="метод запрещён")]
 	/**
 	 * @private
 	 */
@@ -132,6 +141,7 @@
 		return super.removeChildAt(-1);
 	}
 
+	[Deprecated(message="метод запрещён")]
 	/**
 	 * @private
 	 */
@@ -139,6 +149,7 @@
 		super.setChildIndex(this, -1);
 	}
 
+	[Deprecated(message="метод запрещён")]
 	/**
 	 * @private
 	 */
@@ -146,6 +157,7 @@
 		super.swapChildren(this, this);
 	}
 
+	[Deprecated(message="метод запрещён")]
 	/**
 	 * @private
 	 */

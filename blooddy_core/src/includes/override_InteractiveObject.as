@@ -1,12 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (C) 2007 group company TimeZero.
+//  © 2007 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-	import platform.errors.ErrorsManager;
+	import by.blooddy.core.errors.getErrorMessage;
+	
 	import flash.errors.IllegalOperationError;
-
 	import flash.ui.ContextMenu;
 
 	//--------------------------------------------------------------------------
@@ -19,6 +19,7 @@
 	//  contextMenu
 	//----------------------------------
 
+	[Deprecated(message="свойство запрещено")]
 	/**
 	 * @private
 	 */
@@ -30,7 +31,7 @@
 	 * @private
 	 */
 	public override function set contextMenu(cm:ContextMenu):void {
-		throw new IllegalOperationError( ErrorsManager.getErrorMessage(2071), 2071 );
+		throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
 	}
 
 	//----------------------------------
@@ -41,5 +42,5 @@
 	 * @private
 	 */
 	public override function set mouseEnabled(enabled:Boolean):void {
-		throw new IllegalOperationError( ErrorsManager.getErrorMessage(2071), 2071 );
+		throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
 	}

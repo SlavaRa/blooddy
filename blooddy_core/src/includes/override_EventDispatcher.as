@@ -1,11 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (C) 2007 group company TimeZero.
+//  © 2007 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-	import platform.events.isIntrinsicEvent;
-
+	import by.blooddy.core.events.isIntrinsicEvent;
+	
 	import flash.events.Event;
 
 	//--------------------------------------------------------------------------
@@ -18,7 +18,7 @@
 	 * @private
 	 */
 	public override function dispatchEvent(event:Event):Boolean {
-		if ( isIntrinsicEvent(this, event) ) return true;
+		if ( isIntrinsicEvent( this, event ) ) return true;
 		return super.dispatchEvent( event );
 	}
 
@@ -26,6 +26,5 @@
 	 * @private
 	 */
 	protected final function $dispatchEvent(event:Event):Boolean {
-		return super.dispatchEvent(event);
+		return super.dispatchEvent( event );
 	}
-	

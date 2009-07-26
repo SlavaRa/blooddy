@@ -1,13 +1,13 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (C) 2007 group company TimeZero.
+//  © 2007 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
 	import flash.errors.IllegalOperationError;
 
-	import platform.managers.IResourceManagerOwner;
-	import platform.managers.ResourceManager;
+	import by.blooddy.core.managers.IResourceManagerOwner;
+	import by.blooddy.core.managers.ResourceManager;
 
 	import flash.display.DisplayObjectContainer;
 
@@ -23,13 +23,13 @@
 	private var _resourceManager:ResourceManager;
 
 	/**
-	 * @copy				platform.managers.IResourceManagerOwner#resourceManager
+	 * @copy				by.blooddy.core.managers.IResourceManagerOwner#resourceManager
 	 */
 	public function get resourceManager():ResourceManager {
 		if (!super.stage) throw new IllegalOperationError();
 		if (!this._resourceManager) {
-			var parent:DisplayObjectContainer = super.parent;
-			while ( !( parent is IResourceManagerOwner ) || ( parent = parent.parent ) );
+			var parent:DisplayObjectContainer = this;
+			while ( ( parent = parent.parent ) && !( parent is IResourceManagerOwner ) );
 			this._resourceManager = ( !parent ? new ResourceManager() : ( parent as IResourceManagerOwner ).resourceManager );
 		}
 		return this._resourceManager;
