@@ -1,13 +1,13 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (C) 2007 group company TimeZero.
+//  © 2007 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-	import platform.errors.ErrorsManager;
+	import by.blooddy.core.errors.ErrorsManager;
 	import flash.errors.IllegalOperationError;
 
-	import platform.database.Data;
+	import by.blooddy.core.database.Data;
 
 	//--------------------------------------------------------------------------
 	//
@@ -15,6 +15,7 @@
 	//
 	//--------------------------------------------------------------------------
 
+	[Deprecated(message="метод запрещён")]
 	/**
 	 * @private
 	 */
@@ -22,6 +23,7 @@
 		throw new IllegalOperationError( ErrorsManager.getErrorMessage(2071), 2071 );
 	}
 
+	[Deprecated(message="метод запрещён")]
 	/**
 	 * @private
 	 */
@@ -29,6 +31,7 @@
 		throw new IllegalOperationError( ErrorsManager.getErrorMessage(2071), 2071 );
 	}
 
+	[Deprecated(message="метод запрещён")]
 	/**
 	 * @private
 	 */
@@ -36,6 +39,7 @@
 		throw new IllegalOperationError( ErrorsManager.getErrorMessage(2071), 2071 );
 	}
 
+	[Deprecated(message="метод запрещён")]
 	/**
 	 * @private
 	 */

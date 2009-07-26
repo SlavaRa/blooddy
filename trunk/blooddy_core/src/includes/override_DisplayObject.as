@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (C) 2007 group company TimeZero.
+//  © 2007 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-	import platform.errors.ErrorsManager;
+	import by.blooddy.core.errors.ErrorsManager;
 	import flash.errors.IllegalOperationError;
 
 	import flash.geom.Rectangle;

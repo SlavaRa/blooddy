@@ -13,16 +13,51 @@
 			<locale-element>en_US</locale-element>
 		</locale>
 
+		<!--
+		<source-path>
+			<path-element>string</path-element>
+		</source-path>
+		-->
+
 		<show-actionscript-warnings>true</show-actionscript-warnings>
 
+		<!--
 		<debug>true</debug>
+		-->
+
+		<!--
+		<external-library-path>
+			<path-element>libs/player</path-element>
+		</external-library-path>
+		-->
+
 
 		<keep-generated-actionscript>true</keep-generated-actionscript>
+
+		<!--
+		<include-libraries>
+			<library>string</library>
+		</include-libraries>
+		-->
+
+		<!--
+		<library-path>
+			<path-element>libs</path-element>
+		</library-path>
+		-->
+
+		<!--namespaces>
+			<namespace>
+				<uri>http://www.tzmedia.ru/platform/</uri>
+				<manifest>manifest.xml</manifest>
+			</namespace>
+		</namespaces-->
       
 		<optimize>true</optimize>
 
 		<keep-as3-metadata>
 			<name>Event</name>
+			<name>AbstractClass</name>
 		</keep-as3-metadata>
 
 		<show-binding-warnings>true</show-binding-warnings>
@@ -97,15 +132,15 @@
 
 	<static-link-runtime-shared-libraries>false</static-link-runtime-shared-libraries>
    
-	<target-player>version</target-player>
+	<target-player>9.0.115</target-player>
 
 	<use-network>true</use-network>
    
 	<metadata>
-		<title>blooddy framework</title>
-		<description>http://www.blooddy.by/framework/</description>
+		<title>TimeZero ZGC Application</title>
+		<description>http://www.tzmedia.ru/products/platform</description>
 		<publisher>BlooDHounD</publisher>
-		<creator>BlooDHounD</creator>
+		<creator>TimeZero Team</creator>
 		<language>RU</language>
 	</metadata>
 
