@@ -237,7 +237,7 @@ package by.blooddy.core.display.resource {
 			if ( !manager ) throw new ArgumentError();
 
 			var def:ResourceLinker = this._resources[ resource ];
-			if ( !def ) throw new ArgumentError( '' );
+			if ( !def ) throw new ArgumentError( getErrorMessage( 5101 ), 5101 );
 			def.count--;
 			if ( !def.count ) {
 				delete this._resources[ resource ];

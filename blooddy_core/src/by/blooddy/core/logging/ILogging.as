@@ -4,10 +4,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.net {
-
-	import flash.events.IEventDispatcher;
-	import by.blooddy.core.utils.IAbstractRemoter;
+package by.blooddy.core.logging {
 
 	/**
 	 * @author					BlooDHounD
@@ -15,9 +12,9 @@ package by.blooddy.core.net {
 	 * @playerversion			Flash 9
 	 * @langversion				3.0
 	 *
-	 * @keyword					iremoter
+	 * @keyword					iconnection, connection
 	 */
-	public interface IRemoter extends IEventDispatcher, IAbstractRemoter {
+	public interface ILogging {
 
 		//--------------------------------------------------------------------------
 		//
@@ -26,20 +23,31 @@ package by.blooddy.core.net {
 		//--------------------------------------------------------------------------
 
 		//----------------------------------
-		//  client
+		//  logger
 		//----------------------------------
 
 		/**
-		 * Тута будут вызываться функи.
-		 * 
-		 * @keyword					iremoter.client, client
+		 * Логгер команд.
+		 *
+		 * @keyword					iconnection.logger, logger
 		 */
-		function get client():Object;
+		function get logger():Logger;
+
+		//----------------------------------
+		//  logging
+		//----------------------------------
+
+		/**
+		 * Логгер команд.
+		 *
+		 * @keyword					iconnection.logging, logging
+		 */
+		function get logging():Boolean;
 
 		/**
 		 * @private
 		 */
-		function set client(value:Object):void;
+		function set logging(value:Boolean):void;
 
 	}
 

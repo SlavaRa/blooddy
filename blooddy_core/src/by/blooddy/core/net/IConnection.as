@@ -6,7 +6,7 @@
 
 package by.blooddy.core.net {
 
-	import by.blooddy.core.logging.ConnectionLogger;
+	import by.blooddy.core.logging.ILogging;
 
 	/**
 	 * @author					BlooDHounD
@@ -16,52 +16,7 @@ package by.blooddy.core.net {
 	 *
 	 * @keyword					iconnection, connection
 	 */
-	public interface IConnection extends IRemoter {
-
-		//--------------------------------------------------------------------------
-		//
-		//  Properties
-		//
-		//--------------------------------------------------------------------------
-
-		//----------------------------------
-		//  connected
-		//----------------------------------
-
-		/**
-		 * true, если соединение установленно.
-		 * false, если разорванно, или ещё не установленно.
-		 *
-		 * @keyword					iconnection.connected, connected
-		 */
-		function get connected():Boolean;
-
-		//----------------------------------
-		//  logger
-		//----------------------------------
-
-		/**
-		 * Логгер команд.
-		 *
-		 * @keyword					iconnection.logger, logger
-		 */
-		function get logger():ConnectionLogger;
-
-		//----------------------------------
-		//  logging
-		//----------------------------------
-
-		/**
-		 * Логгер команд.
-		 *
-		 * @keyword					iconnection.logging, logging
-		 */
-		function get logging():Boolean;
-
-		/**
-		 * @private
-		 */
-		function set logging(value:Boolean):void;
+	public interface IConnection extends IAbstractConnection, IRemoter, ILogging {
 
 	}
 

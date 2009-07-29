@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  © 2004—2008 TimeZero LLC.
+//  © 2007 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -55,7 +55,7 @@ package by.blooddy.core.net {
 		//--------------------------------------------------------------------------
 
 		public static function getLocal(name:String, path:String=null, secure:Boolean=false):ProxySharedObject {
-			var so:SharedObject = SharedObject.getLocal(name, path, secure);
+			var so:SharedObject = SharedObject.getLocal( name, path, secure );
 			var intance:ProxySharedObject = _HASH[ so ] as ProxySharedObject;
 			if ( !intance ) {
 				_HASH[ so ] = intance = new ProxySharedObject( so );
@@ -69,6 +69,9 @@ package by.blooddy.core.net {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * Constructor
+		 */
 		public function ProxySharedObject(so:SharedObject) {
 			super( so.data );
 			this._dispatcher = new EventDispatcher( this );

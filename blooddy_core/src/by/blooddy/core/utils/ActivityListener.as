@@ -49,7 +49,7 @@ package by.blooddy.core.utils {
 		 * @private
 		 * Формат текстовых палей.
 		 */
-		private static const TF:TextFormat = new TextFormat( "_sans", 10 );
+		private static const TF:TextFormat = new TextFormat( '_sans', 10 );
 
 		/**
 		 * @private
@@ -111,7 +111,7 @@ package by.blooddy.core.utils {
 		//--------------------------------------------------------------------------
 
 		/**
-		 * Constructor
+		 * Constructor.
 		 */
 		public function ActivityListener() {
 			super();
@@ -131,9 +131,9 @@ package by.blooddy.core.utils {
 			this._shape_MEM.scaleX =
 			this._shape_FPS.scaleX = - 1;
 			// фигачим текстовые поля
-			this._txt_FPS_label.text = "FPS:";
-			this._txt_MEM_label.text = "MEM:";
-			this._txt_NET_label.text = "NET:";
+			this._txt_FPS_label.text = 'FPS:';
+			this._txt_MEM_label.text = 'MEM:';
+			this._txt_NET_label.text = 'NET:';
 			this._txt_NET_value.x =
 			this._txt_MEM_value.x =
 			this._txt_FPS_value.x = 35;
@@ -454,7 +454,7 @@ package by.blooddy.core.utils {
 		 * @private
 		 */
 		public override function set opaqueBackground(value:Object):void {
-			throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
+			throw new IllegalOperationError( getErrorMessage(2071), 2071 );
 		}
 
 		//----------------------------------
@@ -691,7 +691,7 @@ package by.blooddy.core.utils {
 		 * @private
 		 */
 		private function handler_addToStage(event:Event):void {
-			super.mouseEnabled = this.loaderInfo.loaderURL.indexOf("file:///")!=0;
+			super.mouseEnabled = this.loaderInfo.loaderURL.indexOf( 'file:///' ) != 0;
 			// создаём свою менюшку
 			// найдём первое родительское меню
 			var contextMenu:ContextMenu = ContextMenuUtils.getContextMenu( this, true );
@@ -700,8 +700,8 @@ package by.blooddy.core.utils {
 				contextMenu.hideBuiltInItems();
 			}
 			// вставляем наши элементы
-			var item1:ContextMenuItem = new ContextMenuItem( "ActivityListener" );
-			var item2:ContextMenuItem = new ContextMenuItem( "@ 2007 BlooDHounD" );
+			var item1:ContextMenuItem = new ContextMenuItem( 'ActivityListener' );
+			var item2:ContextMenuItem = new ContextMenuItem( '@ 2007 BlooDHounD' );
 			item2.addEventListener( ContextMenuEvent.MENU_ITEM_SELECT, this.handler_menuItemSelect );
 			contextMenu.customItems.unshift( item1, item2 );
 			super.contextMenu = contextMenu;
@@ -856,7 +856,7 @@ package by.blooddy.core.utils {
 		 * Обрабатывался менюшки.
 		 */
 		private function handler_menuItemSelect(event:ContextMenuEvent):void {
-			navigateToURL( new URLRequest( "http://www.timezero.com" ), "_blank" );
+			navigateToURL( new URLRequest( 'http://www.timezero.com' ), '_blank' );
 		}
 
 	}

@@ -7,6 +7,7 @@
 package by.blooddy.core.controllers {
 
 	import by.blooddy.core.database.DataBase;
+	import by.blooddy.core.errors.getErrorMessage;
 	import by.blooddy.core.net.ProxySharedObject;
 	
 	import flash.display.DisplayObjectContainer;
@@ -34,7 +35,9 @@ package by.blooddy.core.controllers {
 		 */
 		public function BaseController(container:DisplayObjectContainer!, dataBase:DataBase!, sharedObject:ProxySharedObject!) {
 			super();
-			if ( !container || !dataBase || !sharedObject ) throw new ArgumentError();
+			if ( !container )		throw new ArgumentError( getErrorMessage( 2007, this, 'BaseController', 'container' ),		2007 );
+			if ( !dataBase )		throw new ArgumentError( getErrorMessage( 2007, this, 'BaseController', 'dataBase' ),		2007 );
+			if ( !sharedObject )	throw new ArgumentError( getErrorMessage( 2007, this, 'BaseController', 'sharedObject' ),	2007 );
 			this._dataBase = dataBase;
 			this._container = container;
 			this._sharedObject = sharedObject;
@@ -42,7 +45,7 @@ package by.blooddy.core.controllers {
 
 		//--------------------------------------------------------------------------
 		//
-		//  Implements properties: IGameController
+		//  Implements properties
 		//
 		//--------------------------------------------------------------------------
 
@@ -103,34 +106,16 @@ package by.blooddy.core.controllers {
 
 		//--------------------------------------------------------------------------
 		//
-		//  Overriden methods: SocketConnection
+		//  Implements methods
 		//
 		//--------------------------------------------------------------------------
 
 		/**
-		 * @private
+		 * @inheritDoc
 		 */
 		public virtual function call(commandName:String, ...arguments):* {
-			throw new IllegalOperationError();
+			throw new IllegalOperationError( getErrorMessage( 2071, this, 'call' ), 2071 );
 		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Private methods
-		//
-		//--------------------------------------------------------------------------
-
-		//--------------------------------------------------------------------------
-		//
-		//  Event handlers
-		//
-		//--------------------------------------------------------------------------
-
-		//--------------------------------------------------------------------------
-		//
-		//  Server handlers
-		//
-		//--------------------------------------------------------------------------
 
 	}
 

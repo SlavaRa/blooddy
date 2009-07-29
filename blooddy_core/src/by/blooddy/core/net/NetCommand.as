@@ -1,16 +1,13 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  © 2004—2008 TimeZero LLC.
+//  © 2007 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.net {
 
 	import by.blooddy.core.utils.ClassUtils;
-
 	import by.blooddy.core.utils.Command;
-	import flash.utils.ByteArray;
-	import by.blooddy.core.utils.ByteArrayUtils;
 
 	/**
 	 * Сетевая комманда.
@@ -36,14 +33,14 @@ package by.blooddy.core.net {
 		 * 
 		 * @see						#io
 		 */
-		public static const INPUT:String = "input";
+		public static const INPUT:String =	'input';
 
 		/**
 		 * Направление комманды. "Изходящая".
 		 * 
 		 * @see						#io
 		 */
-		public static const OUTPUT:String = "output";
+		public static const OUTPUT:String =	'output';
 
 		//--------------------------------------------------------------------------
 		//
@@ -52,11 +49,11 @@ package by.blooddy.core.net {
 		//--------------------------------------------------------------------------
 
 		/**
-		 * Constructor
+		 * Constructor.
 		 * @param	name		Имя комманды.
 		 */
-		public function NetCommand(name:String, io:String=OUTPUT) {
-			super(name);
+		public function NetCommand(name:String, io:String=OUTPUT, arguments:Array=null) {
+			super( name, arguments );
 			this.setIO( io );
 		}
 
@@ -132,16 +129,14 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		public override function clone():Command {
-			var command:NetCommand = new NetCommand( super.name, this._io );
-			command.push.apply( command, this );
-			return command;
+			return new NetCommand( super.name, this._io, this );
 		}
 
 		/**
 		 * @private
 		 */
 		public override function toString():String {
-			return '['+ClassUtils.getClassName(this)+' io="'+this._io+'" name="'+super.name+'" arguments=('+super.argumentsToString()+')]';
+			return '[' + ClassUtils.getClassName( this ) + ' io="' + this._io + '" name="' + super.name + '" arguments=(' + super.argumentsToString() + ')]';
 		}
 
 	}

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (C) 2007 BlooDHounD
+//  © 2007 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -82,7 +82,7 @@ package by.blooddy.core.display.resource {
 			if ( super.stage ) {
 				return this._resourceManager;
 			}
-			return null;
+			return super.$getResourceManager();
 		}
 
 		//--------------------------------------------------------------------------
