@@ -1,6 +1,6 @@
 package by.blooddy.core.utils {
+
 	import flash.system.Capabilities;
-	
 
 	public final class DateUtils {
 

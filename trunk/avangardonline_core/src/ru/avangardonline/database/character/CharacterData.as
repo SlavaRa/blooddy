@@ -4,18 +4,17 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.database.battle {
+package ru.avangardonline.database.character {
 
 	import by.blooddy.core.database.DataContainer;
 
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
-	 * @playerversion			Flash 10
+	 * @playerversion			Flash 9
 	 * @langversion				3.0
-	 * @created					28.07.2009 20:20:44
 	 */
-	public class BattleData extends DataContainer {
+	public class CharacterData extends DataContainer {
 
 		//--------------------------------------------------------------------------
 		//
@@ -26,8 +25,24 @@ package ru.avangardonline.database.battle {
 		/**
 		 * Constructor
 		 */
-		public function BattleData() {
+		public function CharacterData(id:uint) {
 			super();
+			this._id = id;
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Proeprties
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private var _id:uint;
+
+		public function get id():uint {
+			return this._id;
 		}
 
 	}

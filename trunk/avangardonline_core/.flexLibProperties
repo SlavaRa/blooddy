@@ -2,10 +2,11 @@
 <flexLibProperties version="1">
   <includeClasses>
     <classEntry path="ru.avangardonline.display.BattleField"/>
-    <classEntry path="ru.avangardonline.database.CharacterData"/>
-    <classEntry path="ru.avangardonline.events.database.CharacterDataEvent"/>
+    <classEntry path="ru.avangardonline.events.database.character.CharacterDataEvent"/>
     <classEntry path="ru.avangardonline.controllers.GameController"/>
     <classEntry path="ru.avangardonline.database.battle.BattleData"/>
+    <classEntry path="ru.avangardonline.database.world.WorldData"/>
+    <classEntry path="ru.avangardonline.database.character.CharacterCollectionData"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

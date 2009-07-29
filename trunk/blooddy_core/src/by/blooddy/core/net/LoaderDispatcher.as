@@ -7,6 +7,7 @@
 package by.blooddy.core.net {
 
 	import by.blooddy.core.managers.IProgressable;
+	import by.blooddy.core.utils.enterFrameBroadcaster;
 	
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
@@ -15,7 +16,6 @@ package by.blooddy.core.net {
 	import flash.events.ProgressEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.utils.Dictionary;
-	import by.blooddy.core.utils.enterFrameBroadcaster;
 
 	//--------------------------------------
 	//  Implements events: ILoadable
@@ -280,14 +280,11 @@ package by.blooddy.core.net {
 			if ( index < 0 ) return; // надо удалить, если такой присутвует...
 			this._loaders.splice( index, 1 );
 
-			if ( update && loader.bytesTotal > 0 ) {
+			if ( update ) {
 				this._toLoaders = true;
-				if ( loader.loaded ) {
-					this.toProgress();
-				} else {
-					this.updateLoaded();
-				}
+				this.updateLoaded();
 			}
+
 		}
 
 		/**

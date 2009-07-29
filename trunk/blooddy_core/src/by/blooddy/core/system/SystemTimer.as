@@ -1,7 +1,7 @@
 package by.blooddy.core.system {
 
 	import by.blooddy.core.events.SystemTimerEvent;
-	import by.blooddy.core.utils.getTimer;
+	import by.blooddy.core.utils.time.getTimer;
 	
 	import flash.events.EventDispatcher;
 

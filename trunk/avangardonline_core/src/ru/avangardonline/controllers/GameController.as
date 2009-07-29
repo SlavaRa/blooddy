@@ -9,6 +9,7 @@ package ru.avangardonline.controllers {
 	import by.blooddy.core.controllers.BaseController;
 	import by.blooddy.core.database.DataBase;
 	import by.blooddy.core.net.ProxySharedObject;
+	import by.blooddy.core.utils.time.RelativeTime;
 	
 	import flash.display.DisplayObjectContainer;
 	
@@ -34,9 +35,9 @@ package ru.avangardonline.controllers {
 		 */
 		public function GameController(container:DisplayObjectContainer) {
 			super( container, new DataBase(), ProxySharedObject.getLocal( 'avangard' ) );
-			
-			this._battleLogicalController = new BattleLogicalController( this );
-			this._battleController = new BattleController( this, this._battleLogicalController, container );
+
+			this._battleLogicalController =	new BattleLogicalController	( this, this._relativeTime );
+			this._battleController =		new BattleController		( this, this._relativeTime, this._battleLogicalController, container );
 			
 		}
 
@@ -55,6 +56,11 @@ package ru.avangardonline.controllers {
 		 * @private
 		 */
 		private var _battleLogicalController:BattleLogicalController;
+
+		/**
+		 * @private
+		 */
+		private const _relativeTime:RelativeTime = new RelativeTime();
 
 	}
 

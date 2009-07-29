@@ -2,6 +2,7 @@
 <flexLibProperties version="1">
   <includeClasses>
     <classEntry path="by.blooddy.core.controllers.BaseController"/>
+    <classEntry path="by.blooddy.core.controllers.AbstractController"/>
     <classEntry path="by.blooddy.core.controllers.IBaseController"/>
     <classEntry path="by.blooddy.core.controllers.IController"/>
     <classEntry path="by.blooddy.core.database.Data"/>
@@ -75,6 +76,7 @@
     <classEntry path="by.blooddy.core.logging.InfoLogger"/>
     <classEntry path="by.blooddy.core.logging.Log"/>
     <classEntry path="by.blooddy.core.logging.Logger"/>
+    <classEntry path="by.blooddy.core.logging.LoggerProxy"/>
     <classEntry path="by.blooddy.core.logging.TextLog"/>
     <classEntry path="by.blooddy.core.managers.CookieManager"/>
     <classEntry path="by.blooddy.core.managers.DragInfo"/>
@@ -137,7 +139,6 @@
     <classEntry path="by.blooddy.core.ui.KeyboardCode"/>
     <classEntry path="by.blooddy.core.utils.ActivityListener"/>
     <classEntry path="by.blooddy.core.utils.ArrayEventDispatcher"/>
-    <classEntry path="by.blooddy.core.utils.AutoTimer"/>
     <classEntry path="by.blooddy.core.utils.ByteArrayUtils"/>
     <classEntry path="by.blooddy.core.utils.Caller"/>
     <classEntry path="by.blooddy.core.utils.CallerQueue"/>
@@ -147,7 +148,6 @@
     <classEntry path="by.blooddy.core.utils.DefinitionFinder"/>
     <classEntry path="by.blooddy.core.utils.DisplayObjectUtils"/>
     <classEntry path="by.blooddy.core.utils.FPSListener"/>
-    <classEntry path="by.blooddy.core.utils.FrameTimer"/>
     <classEntry path="by.blooddy.core.utils.HashArray"/>
     <classEntry path="by.blooddy.core.utils.IAbstractRemoter"/>
     <classEntry path="by.blooddy.core.utils.IBytesExternalizable"/>
@@ -178,20 +178,24 @@
     <classEntry path="by.blooddy.core.utils.deferredCall"/>
     <classEntry path="by.blooddy.core.utils.enterFrameBroadcaster"/>
     <classEntry path="by.blooddy.core.utils.getCallerInfo"/>
-    <classEntry path="by.blooddy.core.utils.getTimer"/>
     <classEntry path="by.blooddy.core.utils.isActive"/>
     <classEntry path="by.blooddy.core.utils.math.Calculator"/>
     <classEntry path="by.blooddy.core.utils.math.Flatness3D"/>
     <classEntry path="by.blooddy.core.utils.math.NumberUtils"/>
     <classEntry path="by.blooddy.core.utils.nexframeCall"/>
-    <classEntry path="by.blooddy.core.utils.setTimeout"/>
+    <classEntry path="by.blooddy.core.utils.time.AutoTimer"/>
+    <classEntry path="by.blooddy.core.utils.time.FrameTimer"/>
+    <classEntry path="by.blooddy.core.utils.time.RelativeTime"/>
+    <classEntry path="by.blooddy.core.utils.time.getTimer"/>
+    <classEntry path="by.blooddy.core.utils.time.setTimeout"/>
     <classEntry path="by.blooddy.core.utils.traceObject"/>
     <classEntry path="by.blooddy.core.utils.ui.ContextMenuUtils"/>
     <classEntry path="by.blooddy.core.utils.validators.validateEmail"/>
     <classEntry path="by.blooddy.core.utils.version.IVersion"/>
     <classEntry path="by.blooddy.core.utils.version.PlayerVersion"/>
     <classEntry path="by.blooddy.core.utils.version.Version"/>
-    <classEntry path="by.blooddy.core.controllers.Controller"/>
+    <classEntry path="by.blooddy.core.events.time.TimeEvent"/>
+    <classEntry path="by.blooddy.core.utils.time.Time"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

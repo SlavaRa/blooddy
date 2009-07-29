@@ -6,6 +6,7 @@
 
 package by.blooddy.core.external {
 
+	import by.blooddy.core.errors.getErrorMessage;
 	import by.blooddy.core.events.DynamicEvent;
 	import by.blooddy.core.logging.CommandLog;
 	import by.blooddy.core.net.AbstractRemoter;
@@ -13,15 +14,13 @@ package by.blooddy.core.external {
 	import by.blooddy.core.net.NetCommand;
 	import by.blooddy.core.utils.Command;
 	import by.blooddy.core.utils.copyObject;
-	import by.blooddy.core.utils.deferredCall;
-	import by.blooddy.core.utils.enterFrameBroadcaster;
+	import by.blooddy.core.utils.nexframeCall;
 	
 	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.external.ExternalInterface;
-	import by.blooddy.core.errors.getErrorMessage;
 
 	//--------------------------------------
 	//  Events
@@ -74,7 +73,7 @@ package by.blooddy.core.external {
 			if ( !ExternalInterface.available ) throw new SecurityError();
 			_init = true;
 			ExternalInterface.addCallback( _PROXY_METHOD, this.$call );
-			deferredCall( this.init, null, enterFrameBroadcaster, Event.ENTER_FRAME );
+			nexframeCall( this.init );
 		}
 
 		//--------------------------------------------------------------------------

@@ -6,6 +6,9 @@
 
 package by.blooddy.core.utils {
 
+	import by.blooddy.core.errors.getErrorMessage;
+	import by.blooddy.core.utils.time.FrameTimer;
+	import by.blooddy.core.utils.time.getTimer;
 	import by.blooddy.core.utils.ui.ContextMenuUtils;
 	
 	import flash.display.Graphics;
@@ -27,7 +30,6 @@ package by.blooddy.core.utils {
 	import flash.text.TextFormat;
 	import flash.ui.ContextMenu;
 	import flash.ui.ContextMenuItem;
-	import by.blooddy.core.errors.getErrorMessage;
 
 	/**
 	 * @author					BlooDHounD

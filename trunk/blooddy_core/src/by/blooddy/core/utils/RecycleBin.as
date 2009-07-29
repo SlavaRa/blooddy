@@ -6,6 +6,9 @@
 
 package by.blooddy.core.utils {
 
+	import by.blooddy.core.utils.time.AutoTimer;
+	import by.blooddy.core.utils.time.getTimer;
+	
 	import flash.events.TimerEvent;
 
 	/**
@@ -73,7 +76,7 @@ package by.blooddy.core.utils {
 			if ( !resources ) this._hash[ key ] = resources = new Vector.<ResourceContainer>();
 			if ( resources.indexOf( resource ) >= 0 ) return;
 			time += getTimer();
-			for ( var i:uint = resources.length - 1; i >= 0; i-- ) {
+			for ( var i:int = resources.length - 1; i >= 0; i-- ) {
 				if ( resources[ i ].time > time ) {
 					i++;
 					break;
@@ -100,7 +103,7 @@ package by.blooddy.core.utils {
 				if ( this._length == 0 ) {
 					_TIMER.removeEventListener( TimerEvent.TIMER, this.handler_timer );
 				}
-				return resources.pop();
+				return resources.pop().resource;
 			}
 			return null;
 		}
