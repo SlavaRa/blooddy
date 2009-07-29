@@ -86,12 +86,15 @@ package by.blooddy.core.display {
 }
 
 import flash.events.IEventDispatcher;
+import by.blooddy.core.errors.getErrorMessage;
 
 internal final class StageObserverItem {
 
-	public function StageObserverItem(target:IEventDispatcher, type:String, listener:Function, useCapture:Boolean=false, priority:int=0, useWeakReference:Boolean=false) {
+	public function StageObserverItem(target:IEventDispatcher!, type:String!, listener:Function, useCapture:Boolean=false, priority:int=0, useWeakReference:Boolean=false) {
 		super();
-		if (!target) throw new ArgumentError();
+		if ( !target )			throw new ArgumentError( getErrorMessage( 2007, this, 'StageObserverItem', 'target' ),		2007 );
+		if ( !type )			throw new ArgumentError( getErrorMessage( 2007, this, 'StageObserverItem', 'type' ),		2007 );
+		if ( listener != null )	throw new ArgumentError( getErrorMessage( 2007, this, 'StageObserverItem', 'listener' ),	2007 );
 		this.target = target;
 		this.type = type;
 		this.listener = listener;
@@ -108,11 +111,11 @@ internal final class StageObserverItem {
 	public var useWeakReference:Boolean;
 
 	public function activate():void {
-		this.target.addEventListener(this.type, this.listener, this.useCapture, this.priority, this.useWeakReference);
+		this.target.addEventListener( this.type, this.listener, this.useCapture, this.priority, this.useWeakReference );
 	}
 
 	public function deactivate():void {
-		this.target.removeEventListener(this.type, this.listener, this.useCapture);
+		this.target.removeEventListener( this.type, this.listener, this.useCapture );
 	}
 
 }

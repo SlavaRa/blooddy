@@ -1,33 +1,32 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  © 2004—2008 TimeZero LLC.
+//  © 2007 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.net {
 
-	import by.blooddy.core.events.CommandEvent;
 	import by.blooddy.core.events.SerializeErrorEvent;
-	import by.blooddy.core.events.StackErrorEvent;
-	import by.blooddy.core.logging.ConnectionLogger;
+	import by.blooddy.core.logging.CommandLog;
 	import by.blooddy.core.logging.InfoLog;
 	import by.blooddy.core.utils.ByteArrayUtils;
 	
 	import flash.errors.IOError;
 	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
-	import flash.events.EventDispatcher;
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.system.Security;
 	import flash.utils.ByteArray;
-	import flash.utils.getQualifiedClassName;
 
 	//--------------------------------------
 	//  Implements events: IConnection
 	//--------------------------------------
 
+	/**
+	 * @inheritDoc
+	 */
 	[Event(name="open", type="flash.events.Event")]
 
 	/**
@@ -57,12 +56,7 @@ package by.blooddy.core.net {
 	/**
 	 * ошибка сериализации протокола
 	 */
-	[Event(name="serializeError", type="by.blooddy.core.events.SerializeErrorEvent")]	
-
-	/**
-	 * какая-то ошибка при исполнении.
-	 */
-	[Event(name="error", type="by.blooddy.core.events.StackErrorEvent")]	
+	[Event(name="serializeError", type="com.timezero.platform.events.SerializeErrorEvent")]	
 
 	/**
 	 * @author					BlooDHounD
@@ -72,20 +66,7 @@ package by.blooddy.core.net {
 	 *
 	 * @keyword					socketconnection, connection, proxysocket, socket, proxy
 	 */
-	public class SocketConnection extends EventDispatcher implements INetConnection {
-
-		//--------------------------------------------------------------------------
-		//
-		//  Private class methods
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		private static function getName(value:Object):String {
-			return getQualifiedClassName( value ).replace( '::', '.' );
-		}
+	public class SocketConnection extends AbstractRemoter implements INetConnection {
 
 		//--------------------------------------------------------------------------
 		//
@@ -94,12 +75,10 @@ package by.blooddy.core.net {
 		//--------------------------------------------------------------------------
 
 		/**
-		 * Constructior.
+		 * Constructior
 		 */
 		public function SocketConnection() {
 			super();
-			this._client = this;
-			this._clientName = getName( this );
 		}
 
 		//--------------------------------------------------------------------------
@@ -129,36 +108,6 @@ package by.blooddy.core.net {
 		//  Implements properties: INetConnection
 		//
 		//--------------------------------------------------------------------------
-
-		//----------------------------------
-		//  client
-		//----------------------------------
-
-		/**
-		 * @private
-		 */
-		private var _client:Object;
-
-		/**
-		 * @private
-		 */
-		private var _clientName:String;
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get client():Object {
-			return this._client || this;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set client(value:Object):void {
-			if ( this._client === value ) return;
-			this._client = value || this;
-			this._clientName = getName( this._client );
-		}
 
 		//----------------------------------
 		//  connected
@@ -233,47 +182,6 @@ package by.blooddy.core.net {
 		 */
 		public function get port():int {
 			return this._socket.port;
-		}
-
-		//----------------------------------
-		//  logger
-		//----------------------------------
-
-		/**
-		 * @private
-		 */
-		private const _logger:ConnectionLogger = new ConnectionLogger();
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get logger():ConnectionLogger {
-			return this._logger;
-		}
-
-		//----------------------------------
-		//  logging
-		//----------------------------------
-
-		/**
-		 * @private
-		 */
-		private var _logging:Boolean = true;
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get logging():Boolean {
-			return this._logging;
-			
-		}
-
-		/**
-		 * @private
-		 */
-		public function set logging(value:Boolean):void {
-			if ( this._logging == value ) return;
-			this._logging = value;
 		}
 
 		//----------------------------------
@@ -373,15 +281,14 @@ package by.blooddy.core.net {
 		/**
 		 * @inheritDoc
 		 */
-		public function call(commandName:String, ...arguments):* {
+		public override function call(commandName:String, ...parameters):* {
 			if ( !this._filter ) throw new IllegalOperationError();
-			var command:NetCommand = new NetCommand( commandName, NetCommand.OUTPUT );
-			command.push.apply( command, arguments );
+			var command:NetCommand = new NetCommand( commandName, NetCommand.OUTPUT, parameters );
 			this._filter.writeCommand( this._socket, command );
-			if ( this._logging && !command.system ) {
-				this._logger.addCommand( command );
+			if ( super.logging && !command.system ) {
+				super.logger.addLog( new CommandLog( command ) );
+				trace( 'OUT:', command );
 			}
-			trace( 'OUT:', command );
 			this._socket.flush(); 
 		}
 
@@ -415,7 +322,6 @@ package by.blooddy.core.net {
 		private function handler_socketData(event:ProgressEvent):void {
 
 			if ( !this._filter ) throw new IOError(); /** TODO: пипец. нету обработчика протокола. */
-			var command:NetCommand;
 
 			if ( super.hasEventListener( ProgressEvent.PROGRESS ) ) {
 				super.dispatchEvent(
@@ -426,13 +332,15 @@ package by.blooddy.core.net {
 				);
 			}
 
-			var pos:uint = this._inputBuffer.length;
+
+//			var pos:uint = this._inputBuffer.length;
 			// запихиваем фсё в буфер
-			this._socket.readBytes( this._inputBuffer, pos );
+			this._socket.readBytes( this._inputBuffer, this._inputBuffer.length );
+//			trace( ByteArrayUtils.dump( this._inputBuffer, pos  ) );
 
-			//trace( ByteArrayUtils.dump( this._inputBuffer, pos  ) );
+			var command:NetCommand;
 
-			do { // считываем до техз пор, пока есть чего читать
+			do { // считываем до тех пор, пока есть чего читать
 
 				try { // серилизуем комманду
 
@@ -456,81 +364,23 @@ package by.blooddy.core.net {
 					super.dispatchEvent( new SerializeErrorEvent( SerializeErrorEvent.SERIALIZE_ERROR, false, false, e.toString(), e.getStackTrace(), data ) );
 					this.close();
 
-//					if ( super.hasEventListener( SerializeErrorEvent.SERIALIZE_ERROR ) ) {
-//						super.dispatchEvent( new SerializeErrorEvent( SerializeErrorEvent.SERIALIZE_ERROR, false, false, e.toString(), e.getStackTrace(), data ) );
-//						this.close();
-//					} else {
-//						this.close();
-//						throw e;
-//					}
-
 				}
 
 				if ( command ) {
 
-					trace( 'IN:', command );
+					this._inputPosition = this._inputBuffer.position;
 
-					if ( this._inputBuffer.position == this._inputBuffer.length ) { // нечего накапливать буефер. чистим.
-						this._inputPosition = 0;
-						this._inputBuffer.length = 0;
-					} else {
-						this._inputPosition = this._inputBuffer.position;
-					}
-
-					if ( this._logging && !command.system ) {
-						// залогировали
-						this._logger.addCommand( command );
-					}
-
-					try { // отлавливаем ошибки выполнения
-
-						try {
-
-							// пытаемся выполнить что-нить
-							this.client[ command.name ].apply( this.client, command );
-
-						} catch ( e:ReferenceError ) {
-
-							if ( // проверим нету хендлера на нашу комманду
-								e.errorID != 1069 ||
-								e.message.indexOf( this._clientName )<0 ||
-								!super.hasEventListener( 'command_' + command.name )
-							) throw e;
-
-						} catch ( e:Error ) {
-							
-							throw e;
-							
-						} finally {
-
-							if ( super.hasEventListener( 'command_' + command.name ) ) {
-								super.dispatchEvent( new CommandEvent( 'command_' + command.name, false, false, command ) );
-							}
-
-						}
-
-					} catch ( e:Error ) {
-
-						// нету. диспатчим ошибку
-						var error:String = 'Error: ' + this._clientName+'::'+command.name+'('+command.toString()+'): ' + e.toString() + ' ' + e.getStackTrace();
-						
-						if ( this._logging ) {
-							this._logger.addLog( new InfoLog( error, InfoLog.ERROR ) );
-						} 
-						trace( error );
-						super.dispatchEvent( new StackErrorEvent( StackErrorEvent.ERROR, false, false, e.toString(), e.getStackTrace() ) );
-
-//						if ( super.hasEventListener( StackErrorEvent.ERROR ) ) { 
-//							super.dispatchEvent( new StackErrorEvent( StackErrorEvent.ERROR, false, false, e.toString(), e.getStackTrace() ) );
-//						} else {
-//							throw e;
-//						}
-
-					}
+					// вызываем метод обработки
+					super.$invokeCallCommand( command );
 
 				}
 
 			} while ( command && this._inputBuffer.bytesAvailable > 0 );
+
+			if ( this._inputPosition == this._inputBuffer.length ) { // нечего накапливать буфер. чистим.
+				this._inputPosition = 0;
+				this._inputBuffer.length = 0;
+			}
 
 		}
 

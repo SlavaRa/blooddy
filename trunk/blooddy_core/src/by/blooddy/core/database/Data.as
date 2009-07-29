@@ -125,25 +125,6 @@ package by.blooddy.core.database {
 		}
 
 		//----------------------------------
-		//  num
-		//----------------------------------
-
-		/**
-		 * @private
-		 */
-		private var _num:uint;
-
-		/**
-		 * Номер элемента в массиве.
-		 * 
-		 * @keyword					data.num, num
-		 */
-		public function get num():uint {
-			if ( !this.$parent ) throw new Error();
-			return this.$parent.$getChildIndex( this, false );
-		}
-
-		//----------------------------------
 		//  name
 		//----------------------------------
 

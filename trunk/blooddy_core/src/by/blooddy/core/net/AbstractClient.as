@@ -101,9 +101,7 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		private function dispatchCommand(name:*, args:Array=null):Boolean {
-			var command:Command = new Command( name.toString() );
-			command.push.apply( command, args );
-			return super.dispatchEvent( new CommandEvent( CommandEvent.COMMAND, false, false, command ) );
+			return super.dispatchEvent( new CommandEvent( CommandEvent.COMMAND, false, false, new Command( name.toString(), args ) ) );
 		}
 
 	}

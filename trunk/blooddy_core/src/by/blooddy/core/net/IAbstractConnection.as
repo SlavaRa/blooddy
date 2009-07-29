@@ -7,7 +7,6 @@
 package by.blooddy.core.net {
 
 	import flash.events.IEventDispatcher;
-	import by.blooddy.core.utils.IAbstractRemoter;
 
 	/**
 	 * @author					BlooDHounD
@@ -15,9 +14,9 @@ package by.blooddy.core.net {
 	 * @playerversion			Flash 9
 	 * @langversion				3.0
 	 *
-	 * @keyword					iremoter
+	 * @keyword					iconnection, connection
 	 */
-	public interface IRemoter extends IEventDispatcher, IAbstractRemoter {
+	public interface IAbstractConnection extends IEventDispatcher {
 
 		//--------------------------------------------------------------------------
 		//
@@ -26,20 +25,16 @@ package by.blooddy.core.net {
 		//--------------------------------------------------------------------------
 
 		//----------------------------------
-		//  client
+		//  connected
 		//----------------------------------
 
 		/**
-		 * Тута будут вызываться функи.
-		 * 
-		 * @keyword					iremoter.client, client
+		 * true, если соединение установленно.
+		 * false, если разорванно, или ещё не установленно.
+		 *
+		 * @keyword					iconnection.connected, connected
 		 */
-		function get client():Object;
-
-		/**
-		 * @private
-		 */
-		function set client(value:Object):void;
+		function get connected():Boolean;
 
 	}
 

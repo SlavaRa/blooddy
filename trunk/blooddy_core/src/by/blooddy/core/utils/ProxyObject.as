@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  © 2004—2008 TimeZero LLC.
+//  © 2007 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -46,16 +46,34 @@ package by.blooddy.core.utils {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @private
+		 */
 		private var _parent:ProxyObject;
 
+		/**
+		 * @private
+		 */
 		private var _lock:Boolean = false;
 
+		/**
+		 * @private
+		 */
 		private var _target:Object;
 
+		/**
+		 * @private
+		 */
 		private var _name:*;
 
+		/**
+		 * @private
+		 */
 		private const _keys:Array = new Array();
 
+		/**
+		 * @private
+		 */
 		private const _hash:Object = new Object();
 
 		//--------------------------------------------------------------------------

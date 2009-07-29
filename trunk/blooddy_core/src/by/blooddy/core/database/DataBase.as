@@ -47,7 +47,7 @@ package by.blooddy.core.database {
 		 * @private
 		 */
 		public override function set name(value:String):void {
-			throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
+			throw new IllegalOperationError( getErrorMessage( 2071, this, 'name' ), 2071 );
 		}
 
 	}

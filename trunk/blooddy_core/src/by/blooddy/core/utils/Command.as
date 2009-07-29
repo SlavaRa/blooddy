@@ -30,12 +30,15 @@ package by.blooddy.core.utils {
 		//--------------------------------------------------------------------------
 
 		/**
-		 * Constructor
+		 * Constructor.
 		 * @param	name		Имя комманды.
 		 */
-		public function Command(name:String) {
+		public function Command(name:String, arguments:Array=null) {
 			super();
 			this._name = name;
+			if ( arguments ) {
+				super.push.apply( this, arguments );
+			}
 		}
 
 		//--------------------------------------------------------------------------
@@ -73,22 +76,25 @@ package by.blooddy.core.utils {
 		//
 		//--------------------------------------------------------------------------
 
+		public function call(client:Object, ns:Namespace=null):* {
+			// пытаемся выполнить что-нить
+			client[ new QName( ns || '', this._name ) ].apply( client, this );
+		}
+
 		/**
 		 * Клонирует команду.
 		 * 
 		 * @return			Возвращает копию данной команды.
 		 */
 		public function clone():Command {
-			var command:Command = new Command(this.name);
-			command.push.apply( command, this );
-			return command;
+			return new Command( this._name, this );
 		}
 
 		/**
 		 * @private
 		 */
 		public function toString():String {
-			return '['+ClassUtils.getClassName(this)+' name="'+this.name+'" arguments=('+this.argumentsToString()+')]';
+			return '[' + ClassUtils.getClassName( this ) + ' name="' + this._name + '" arguments=(' + this.argumentsToString() + ')]';
 		}
 
 		//--------------------------------------------------------------------------
@@ -112,13 +118,15 @@ package by.blooddy.core.utils {
 		private static function arrayToString(arr:Array):String {
 			var result:Array = new Array();
 			var length:uint = arr.length;
-			for (var i:uint =0; i<length; i++) {
-				if ( arr[i] is ByteArray ) result.push( '[' + ClassUtils.getClassName( arr[i] ) + ' length="' + ( arr[i] as ByteArray ).length + '"]' );
-				else if ( arr[i] is Array && !( arr[i] is Command ) ) result.push( '(' + arrayToString( arr[i] as Array ) + ')' );
-				else if ( arr[i] is String ) result.push( '"' + arr[i] + '"' );
-				else result.push( arr[i] );
+			var o:Object;
+			for ( var i:uint = 0; i<length; i++ ) {
+				o = arr[i];
+				if ( o is ByteArray ) result.push( '[' + ClassUtils.getClassName( o ) + ' length="' + ( o as ByteArray ).length + '"]' );
+				else if ( o is Array && !( o is Command ) ) result.push( '(' + arrayToString( o as Array ) + ')' );
+				else if ( o is String ) result.push( '"' + o + '"' );
+				else result.push( o );
 			}
-			return result.join(',');
+			return result.join( ',' );
 		}
 
 	}

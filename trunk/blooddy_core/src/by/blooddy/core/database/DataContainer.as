@@ -113,7 +113,7 @@ package by.blooddy.core.database {
 		 */
 		private function $addChildAt(child:Data, index:int):Data {
 			// проверим наличие передоваемого объекта
-			if ( !child ) throw new TypeError( getErrorMessage( 2007 ), 2007 );
+			if ( !child ) throw new TypeError( getErrorMessage( 2007, this, '$addChildAt', 'child' ), 2007 );
 			// проверим рэндж
 			if ( index < 0 || index > this._list.length ) throw new RangeError( getErrorMessage( 2006 ), 2006 );
 			// проверим не мыли это?
@@ -217,7 +217,7 @@ package by.blooddy.core.database {
 		 */
 		public function contains(child:Data):Boolean {
 			// проверим наличие передоваемого объекта
-			if ( !child ) throw new TypeError( getErrorMessage( 2007 ), 2007 );
+			if ( !child ) throw new TypeError( getErrorMessage( 2007, this, '$addChildAt', 'child' ), 2007 );
 			return this.$contains( child );
 		}
 
@@ -338,7 +338,7 @@ package by.blooddy.core.database {
 		 */
 		private function $setChildIndex(child:Data, index:int, strict:Boolean=true):void {
 			if ( strict ) {
-				if ( !child ) throw new TypeError( getErrorMessage( 2007 ), 2007 );
+				if ( !child ) throw new TypeError( getErrorMessage( 2007, this, '$addChildAt', 'child' ), 2007 );
 				// проверим рэндж
 				if ( index < 0 || index > this._list.length ) throw new RangeError( getErrorMessage( 2006 ), 2006 );
 			}

@@ -1,16 +1,16 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  © 2004—2008 TimeZero LLC.
+//  © 2007 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.external {
 
-	import by.blooddy.core.events.CommandEvent;
 	import by.blooddy.core.events.DynamicEvent;
-	import by.blooddy.core.events.StackErrorEvent;
-	import by.blooddy.core.logging.ConnectionLogger;
+	import by.blooddy.core.logging.CommandLog;
+	import by.blooddy.core.net.AbstractRemoter;
 	import by.blooddy.core.net.IConnection;
+	import by.blooddy.core.net.NetCommand;
 	import by.blooddy.core.utils.Command;
 	import by.blooddy.core.utils.copyObject;
 	import by.blooddy.core.utils.deferredCall;
@@ -18,12 +18,10 @@ package by.blooddy.core.external {
 	
 	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
-	import flash.events.EventDispatcher;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.external.ExternalInterface;
-	import flash.utils.getQualifiedClassName;
-	import by.blooddy.core.net.NetCommand;
+	import by.blooddy.core.errors.getErrorMessage;
 
 	//--------------------------------------
 	//  Events
@@ -31,7 +29,7 @@ package by.blooddy.core.external {
 
 	[Event(name="connect", type="flash.events.Event")]
 
-	[Event(name="error", type="by.blooddy.core.events.StackErrorEvent")]
+	[Event(name="error", type="com.timezero.platform.events.StackErrorEvent")]
 
 	[Event(name="ioError", type="flash.events.IOErrorEvent")]
 
@@ -43,7 +41,7 @@ package by.blooddy.core.external {
 	 * @playerversion			Flash 9
 	 * @langversion				3.0
 	 */
-	public class ExternalConnection extends EventDispatcher implements IConnection {
+	public class ExternalConnection extends AbstractRemoter implements IConnection {
 
 		//--------------------------------------------------------------------------
 		//
@@ -63,19 +61,6 @@ package by.blooddy.core.external {
 
 		//--------------------------------------------------------------------------
 		//
-		//  Private class methods
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		private static function getName(value:Object):String {
-			return getQualifiedClassName( value ).replace( '::', '.' );
-		}
-
-		//--------------------------------------------------------------------------
-		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
@@ -85,12 +70,10 @@ package by.blooddy.core.external {
 		 */
 		public function ExternalConnection() {
 			super();
-			if ( _init ) throw new ArgumentError();
+			if ( _init ) throw new ArgumentError( getErrorMessage( 2012, this, 'ExternalConnection' ), 2012 );
 			if ( !ExternalInterface.available ) throw new SecurityError();
 			_init = true;
 			ExternalInterface.addCallback( _PROXY_METHOD, this.$call );
-			this._client = this;
-			this._clientName = getName( this );
 			deferredCall( this.init, null, enterFrameBroadcaster, Event.ENTER_FRAME );
 		}
 
@@ -116,76 +99,6 @@ package by.blooddy.core.external {
 			return this._connected;
 		}
 
-		//----------------------------------
-		//  logger
-		//----------------------------------
-
-		/**
-		 * @private
-		 */
-		private const _logger:ConnectionLogger = new ConnectionLogger( 20, 1*60*1E3 );
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get logger():ConnectionLogger {
-			return this._logger; // FIXME: add
-		}
-
-		//----------------------------------
-		//  logging
-		//----------------------------------
-
-		/**
-		 * @private
-		 */
-		private var _logging:Boolean = false;
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get logging():Boolean {
-			return this._logging;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set logging(value:Boolean):void {
-			if ( this._logging == value ) return;
-			this._logging = value;
-		}
-
-		//----------------------------------
-		//  client
-		//----------------------------------
-
-		/**
-		 * @private
-		 */
-		private var _client:Object;
-
-		/**
-		 * @private
-		 */
-		private var _clientName:String;
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get client():Object {
-			return this._client || this;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set client(value:Object):void {
-			if ( this._client === value ) return;
-			this._client = value || this;
-			this._clientName = getName( this._client );
-		}
-
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
@@ -209,17 +122,16 @@ package by.blooddy.core.external {
 		/**
 		 * @inheritDoc
 		 */
-		public function call(commandName:String, ...arguments):* {
+		public override function call(commandName:String, ...parameters):* {
 			if ( !this._connected ) throw new IllegalOperationError();
-			if ( this._logging ) {
-				var command:NetCommand = new NetCommand( commandName, NetCommand.OUTPUT );
-				command.push.apply( arguments );
+			if ( super.logging ) {
+				var command:NetCommand = new NetCommand( commandName, NetCommand.OUTPUT, parameters );
 				if ( !command.system ) {
-					this._logger.addCommand( command );
+					super.logger.addLog( new CommandLog( command ) );
 				}
 			}
-			arguments.unshift( _PROXY_METHOD, ExternalInterface.objectID, commandName );
-			ExternalInterface.call.apply( ExternalInterface, arguments );
+			parameters.unshift( _PROXY_METHOD, ExternalInterface.objectID, commandName );
+			return ExternalInterface.call.apply( ExternalInterface, parameters );
 		}
 
 		//--------------------------------------------------------------------------
@@ -258,6 +170,24 @@ package by.blooddy.core.external {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Overriden protected methods
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		protected override function $callCommand(command:Command):* {
+			switch ( command.name ) {
+				case 'dispatchEvent':	return	this.$dispatchEvent.apply( this, command );		break;
+				case 'getProperty':		return	this.$getProperty.apply( this, command );		break;
+				case 'setProperty':				this.$setProperty.apply( this, command );		break;
+				default:				return	super.$callCommand( command );					break;
+			}
+		}
+
+		//--------------------------------------------------------------------------
+		//
 		//  Private methods
 		//
 		//--------------------------------------------------------------------------
@@ -279,71 +209,12 @@ package by.blooddy.core.external {
 		/**
 		 * @private
 		 */
-		private function $call(id:String, commandName:String, ...arguments):* {
+		private function $call(id:String, commandName:String, ...parameters):* {
 			if ( id != ExternalInterface.objectID ) {
 				super.dispatchEvent( new SecurityErrorEvent( SecurityErrorEvent.SECURITY_ERROR, false, false, 'левое обращение' ) );
-				return;
+			} else {
+				return super.$invokeCallCommand( new NetCommand( commandName, NetCommand.INPUT, parameters ) );
 			}
-
-			try { // отлавливаем ошибки выполнения
-
-				var command:Command;
-
-				if ( this._logging ) {
-					command = new NetCommand( commandName, NetCommand.INPUT );
-					command.push.apply( arguments );
-					if ( !command.system ) {
-						this._logger.addCommand( command as NetCommand );
-					}
-				}
-
-				switch ( commandName ) {
-
-					case 'dispatchEvent':	return	this.$dispatchEvent.apply( this, arguments );
-
-					case 'getProperty':		return	this.$getProperty.apply( this, arguments );
-
-					case 'setProperty':				this.$setProperty.apply( this, arguments );		break;
-
-					default:	
-						try {
-
-							// пытаемся выполнить что-нить
-							return this.client[ commandName ].apply( this.client, arguments );
-
-						} catch ( e:ReferenceError ) {
-
-							if ( // проверим нету хендлера на нашу комманду
-								e.errorID != 1069 ||
-								e.message.indexOf( this._clientName ) < 0 ||
-								!super.hasEventListener( 'command_' + commandName )
-							) throw e;
-
-						} catch ( e:Error ) {
-
-							throw e;
-
-						} finally {
-
-							if ( super.hasEventListener( 'command_' + commandName ) ) {
-								if ( !command ) {
-									command = new Command( commandName );
-									command.push.apply( command, arguments );
-								}
-								super.dispatchEvent( new CommandEvent( 'command_' + commandName, false, false, command ) );
-							}
-
-						}
-						break;
-				}
-
-			} catch ( e:Error ) {
-				// нету. диспатчим ошибку
-				trace( 'Error:', this._clientName + ':: ' + commandName + '(' + arguments + '):', e );
-				super.dispatchEvent( new StackErrorEvent( StackErrorEvent.ERROR, false, false, e.toString(), e.getStackTrace() ) );
-
-			}
-
 		}
 
 		/**

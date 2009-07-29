@@ -58,28 +58,13 @@ package by.blooddy.core.net {
 	 *
 	 * @keyword					isocketasset, socket
 	 */
-	public interface IAbstractSocket extends IEventDispatcher {
+	public interface IAbstractSocket extends IAbstractConnection {
 
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
-
-		//----------------------------------
-		//  connected
-		//----------------------------------
-
-		/**
-		 * true, если соединение установленно.
-		 * false, если разорванно, или ещё не установленно.
-		 *
-		 * @keyword					socket.connected, connected
-		 *
-		 * @see						#connect()
-		 * @see						#close()
-		 */
-		function get connected():Boolean;
 
 		//----------------------------------
 		//  protocol

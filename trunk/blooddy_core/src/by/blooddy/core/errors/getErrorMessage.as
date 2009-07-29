@@ -72,7 +72,7 @@ internal const messages:Object = {
 	2002: 'Operation attempted on invalid socket.',
 	2003: 'Invalid socket port number specified.',
 	2006: 'The supplied index is out of bounds.',
-	2007: 'Parameter child must be non-null.',
+	2007: 'Parameter %s0 must be non-null.',
 	2012: '%class class cannot be instantiated.',
 	2024: 'An object cannot be added as a child of itself.',
 	2025: 'The supplied %class must be a child of the caller.',
