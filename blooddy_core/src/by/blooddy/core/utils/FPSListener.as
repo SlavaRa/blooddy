@@ -6,7 +6,7 @@
 
 package by.blooddy.core.utils {
 
-	import __AS3__.vec.Vector;
+	import by.blooddy.core.utils.time.getTimer;
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;

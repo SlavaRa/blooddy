@@ -4,7 +4,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.utils {
+package by.blooddy.core.utils.time {
 
 	import by.blooddy.core.errors.getErrorMessage;
 	
@@ -16,7 +16,15 @@ package by.blooddy.core.utils {
 	//  Excluded APIs
 	//--------------------------------------
 
-	[Exclude(kind="event",	name="timerComplete")]
+	[Exclude(kind="event", name="timerComplete")]
+
+	[Exclude(kind="property", name="delay")]
+	[Exclude(kind="property", name="currentCount")]
+	[Exclude(kind="property", name="repeatCount")]
+
+	[Exclude(kind="method", name="start")]
+	[Exclude(kind="method", name="stop")]
+	[Exclude(kind="method", name="reset")]
 
 	/**
 	 * @author					BlooDHounD
@@ -45,28 +53,28 @@ package by.blooddy.core.utils {
 		//
 		//--------------------------------------------------------------------------
 
+		[Deprecated(message="свойство запрещено")]
+		/**
+		 * @private
+		 */
 		public override function set delay(value:Number):void {
-			throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
+			throw new IllegalOperationError( getErrorMessage( 2071, this, 'delay' ), 2071 );
 		}
 
 		[Deprecated(message="свойство не используется")]
+		/**
+		 * @private
+		 */
+		public override function get currentCount():int {
+			return 0;
+		}
+
+		[Deprecated(message="свойство запрещено")]
+		/**
+		 * @private
+		 */
 		public override function set repeatCount(value:int):void {
-			throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
-		}
-
-		[Deprecated(message="метод запрещён. включается автоматически.", replacement="addEventListener")]
-		public override function start():void {
-			throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
-		}
-
-		[Deprecated(message="метод запрещён. выключается автоматически.", replacement="removeEventListener")]
-		public override function stop():void {
-			throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
-		}
-
-		[Deprecated(message="метод не использщуется")]
-		public override function reset():void {
-			throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
+			throw new IllegalOperationError( getErrorMessage( 2071, this, 'repeatCount' ), 2071 );
 		}
 
 		//--------------------------------------------------------------------------
@@ -75,6 +83,39 @@ package by.blooddy.core.utils {
 		//
 		//--------------------------------------------------------------------------
 
+		[Deprecated(message="метод запрещён. включается автоматически.", replacement="addEventListener")]
+		/**
+		 * @private
+		 */
+		public override function start():void {
+			throw new IllegalOperationError( getErrorMessage( 2071, this, 'start' ), 2071 );
+		}
+
+		[Deprecated(message="метод запрещён. выключается автоматически.", replacement="removeEventListener")]
+		/**
+		 * @private
+		 */
+		public override function stop():void {
+			throw new IllegalOperationError( getErrorMessage( 2071, this, 'stop' ), 2071 );
+		}
+
+		[Deprecated(message="метод не использщуется")]
+		/**
+		 * @private
+		 */
+		public override function reset():void {
+			throw new IllegalOperationError( getErrorMessage( 2071, this, 'reset' ), 2071 );
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Overriden methods
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
 		public override function addEventListener(type:String, listener:Function, useCapture:Boolean=false, priority:int=0, useWeakReference:Boolean=false):void {
 			super.addEventListener( type, listener, useCapture, priority, useWeakReference );
 			if ( type == TimerEvent.TIMER ) {
@@ -84,6 +125,9 @@ package by.blooddy.core.utils {
 			}
 		}
 
+		/**
+		 * @private
+		 */
 		public override function removeEventListener(type:String, listener:Function, useCapture:Boolean=false):void {
 			super.removeEventListener( type, listener, useCapture );
 			if ( type == TimerEvent.TIMER ) {

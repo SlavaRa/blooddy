@@ -7,7 +7,7 @@
 package by.blooddy.core.logging {
 
 	import by.blooddy.core.utils.ClassUtils;
-	import by.blooddy.core.utils.getTimer;
+	import by.blooddy.core.utils.time.getTimer;
 
 	/**
 	 * @author					BlooDHounD

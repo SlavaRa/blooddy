@@ -7,7 +7,7 @@
 package by.blooddy.core.logging {
 
 	import by.blooddy.core.events.LogEvent;
-	import by.blooddy.core.utils.getTimer;
+	import by.blooddy.core.utils.time.getTimer;
 	
 	import flash.events.EventDispatcher;
 

@@ -4,18 +4,18 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.database {
+package ru.avangardonline.database.world {
 
 	import by.blooddy.core.database.DataContainer;
 	
-
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
-	 * @playerversion			Flash 9
+	 * @playerversion			Flash 10
 	 * @langversion				3.0
+	 * @created					29.07.2009 21:14:56
 	 */
-	public class CharacterData extends DataContainer {
+	public class WorldData extends DataContainer {
 
 		//--------------------------------------------------------------------------
 		//
@@ -26,24 +26,8 @@ package ru.avangardonline.database {
 		/**
 		 * Constructor
 		 */
-		public function CharacterData(id:uint) {
+		public function WorldData() {
 			super();
-			this._id = id;
-		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Proeprties
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		private var _id:uint;
-
-		public function get id():uint {
-			return this._id;
 		}
 
 	}

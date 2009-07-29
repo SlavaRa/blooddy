@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  © 2007 BlooDHounD
+//  (C) 2009 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -13,12 +13,14 @@ package by.blooddy.core.display.resource {
 	import by.blooddy.core.managers.ResourceBundle;
 	import by.blooddy.core.managers.ResourceManager;
 	import by.blooddy.core.net.ILoadable;
+	import by.blooddy.core.utils.DisplayObjectUtils;
 	import by.blooddy.core.utils.RecycleBin;
 	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
+	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.display.Stage;
 	import flash.events.Event;
@@ -65,13 +67,13 @@ package by.blooddy.core.display.resource {
 		/**
 		 * @private
 		 */
-		private static const _TRASH:RecycleBin = new RecycleBin();
+		private static const _BIN:RecycleBin = new RecycleBin();
 
 		/**
 		 * @private
 		 */
-		private static const _SEPERATOR:String = String.fromCharCode( 0 );
-
+		private static const _SEPARATOR:String = String.fromCharCode( 0 );
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -83,12 +85,9 @@ package by.blooddy.core.display.resource {
 		 */
 		public function ResourceSprite() {
 			super();
-			// ХАК
 			super.addEventListener( Event.ADDED_TO_STAGE,		this.handler_addedToStage_hack,			false, int.MAX_VALUE, true );
 			super.addEventListener( Event.REMOVED_FROM_STAGE,	this.handler_removedFromStage_hack1,	false, int.MAX_VALUE, true );
 			super.addEventListener( Event.REMOVED_FROM_STAGE,	this.handler_removedFromStage_hack2,	false, int.MIN_VALUE, true );
-
-			super.addEventListener( Event.REMOVED_FROM_STAGE,	this.handler_removedFromStage,			false, int.MAX_VALUE, true );
 		}
 
 		//--------------------------------------------------------------------------
@@ -166,7 +165,7 @@ package by.blooddy.core.display.resource {
 				}
 			}
 			if ( manager.isUnloadable( bundleName ) ) { // больше нигде не понадобится 100%
-				_TRASH.clear( bundleName + _SEPERATOR );
+				_BIN.clear( bundleName + _SEPARATOR );
 			}
 			manager.removeResourceBundle( bundleName );
 			bundle = manager.getResourceBundle( '$' + bundleName );
@@ -186,7 +185,7 @@ package by.blooddy.core.display.resource {
 		protected final function hasResource(bundleName:String, resourceName:String):Boolean {
 			var manager:ResourceManager = this._resourceManager || this.getResourceManager();
 			if ( !manager ) throw new ArgumentError();
-			if ( _TRASH.has( bundleName + _SEPERATOR + resourceName ) ) return true;
+			if ( _BIN.has( bundleName + _SEPARATOR + resourceName ) ) return true;
 			else {
 				return manager.hasResource( bundleName, resourceName );
 			}
@@ -202,22 +201,28 @@ package by.blooddy.core.display.resource {
 		}
 
 		protected final function getDisplayObject(bundleName:String, resourceName:String):DisplayObject {
-			var resource:Object = this.getResource_get( bundleName, resourceName );
+			var key:String = bundleName + _SEPARATOR + resourceName;
 			var result:DisplayObject;
-			if ( resource is Class ) {
-				var resourceClass:Class = resource as Class;
-				if ( DisplayObject.prototype.isPrototypeOf( resourceClass.prototype ) ) {
-					result = new resourceClass() as DisplayObject;
+			if ( _BIN.has( key ) ) {
+				result = _BIN.takeOut( key ) as DisplayObject;
+				DisplayObjectUtils.reset( result );
+			} else {
+				var resource:Object = this.getResource_get( bundleName, resourceName );
+				if ( resource is Class ) {
+					var resourceClass:Class = resource as Class;
+					if ( DisplayObject.prototype.isPrototypeOf( resourceClass.prototype ) ) {
+						result = new resourceClass() as DisplayObject;
+					}
+				} else if ( resource is DisplayObject ) {
+					result = resource as DisplayObject;
+				} else if ( resource is BitmapData ) {
+					result = new Bitmap( resource as BitmapData );
 				}
-			} else if ( resource is DisplayObject ) {
-				result = resource as DisplayObject;
-			} else if ( resource is BitmapData ) {
-				result = new Bitmap( resource as BitmapData );
 			}
 			if ( result ) {
 				this.getResource_set( bundleName, resourceName, result );
 			}
-			return result; 
+			return result;
 		}
 
 		protected final function getSound(bundleName:String, resourceName:String):Sound {
@@ -235,24 +240,33 @@ package by.blooddy.core.display.resource {
 		protected final function trashResource(resource:Object, time:uint=3*60*1E3):void {
 			var manager:ResourceManager = this._resourceManager || this.getResourceManager();
 			if ( !manager ) throw new ArgumentError();
-
 			var def:ResourceLinker = this._resources[ resource ];
-			if ( !def ) throw new ArgumentError( getErrorMessage( 5101 ), 5101 );
+			if ( !def ) throw new ArgumentError( '' );
 			def.count--;
 			if ( !def.count ) {
 				delete this._resources[ resource ];
 			}
-
 			if ( resource is DisplayObject ) {
 				var mc:DisplayObject = resource as DisplayObject;
+				if ( mc is MovieClip ) {
+					( mc as MovieClip ).stop();
+				}
 				if ( mc.parent ) {
 					mc.parent.removeChild( mc );
 				}
 				if ( time > 0 ) {
-					_TRASH.takeIn( def.bundleName + _SEPERATOR + def.resourceName, resource, time );
+					_BIN.takeIn( def.bundleName + _SEPARATOR + def.resourceName, resource, time );
 				}
 			}
 			super.dispatchEvent( new ResourceEvent( ResourceEvent.TRASH_RESOURCE, true, false, def.bundleName, def.resourceName ) );
+		}
+
+		protected final function lockResourceBundle(bundleName:String):void {
+			super.dispatchEvent( new ResourceEvent( ResourceEvent.LOCK_BUNDLE, true, false, bundleName ) );
+		}
+
+		protected final function unlockResourceBundle(bundleName:String):void {
+			super.dispatchEvent( new ResourceEvent( ResourceEvent.UNLOCK_BUNDLE, true, false, bundleName ) );
 		}
 
 		//--------------------------------------------------------------------------
@@ -266,7 +280,7 @@ package by.blooddy.core.display.resource {
 		 */
 		private function getResourceManager():ResourceManager {
 			if ( !this._resourceManager ) {
-				this._resourceManager = this.getResourceManager();
+				this._resourceManager = this.$getResourceManager();
 			}
 			return this._resourceManager;
 		}
@@ -278,57 +292,47 @@ package by.blooddy.core.display.resource {
 			var manager:ResourceManager = this._resourceManager || this.getResourceManager();
 			if ( !manager ) throw new ArgumentError();
 
-			var key:String = bundleName + _SEPERATOR + resourceName;
+			if ( manager.hasResource( bundleName, resourceName ) ) {
 
-			if ( _TRASH.has( key ) ) {
+				var resource:Object = manager.getResource( bundleName, resourceName );
+				if ( resource is Class ) {
 
-				return _TRASH.takeOut( key );
+					var bundle:ResourceBundle;
+					var resourceClass:Class = resource as Class;
 
-			} else {
+					if (
+						BitmapData.prototype.isPrototypeOf( resourceClass.prototype ) ||
+						Sound.prototype.isPrototypeOf( resourceClass.prototype )
+					) {
 
-				if ( manager.hasResource( bundleName, resourceName ) ) {
+						var name:String = '$' + bundleName;
+						if ( manager.hasResource( name, resourceName ) ) {
 
-					var resource:Object = manager.getResource( bundleName, resourceName );
-					if ( resource is Class ) {
+							resource = manager.getResource( name, resourceName );
 
-						var bundle:ResourceBundle;
-						var resourceClass:Class = resource as Class;
+						} else {
 
-						if (
-							BitmapData.prototype.isPrototypeOf( resourceClass.prototype ) ||
-							Sound.prototype.isPrototypeOf( resourceClass.prototype )
-						) {
-
-							var name:String = '$' + bundleName;
-							if ( manager.hasResource( name, resourceName ) ) {
-
-								resource = manager.getResource( name, resourceName );
-
+							if ( BitmapData.prototype.isPrototypeOf( resourceClass.prototype ) ) {
+								resource = new resourceClass( 0, 0 );
 							} else {
-
-								if ( BitmapData.prototype.isPrototypeOf( resourceClass.prototype ) ) {
-									resource = new resourceClass( 0, 0 );
-								} else {
-									resource = new resourceClass();
-								}
-
-								bundle = manager.getResourceBundle( name ) as ResourceBundle;
-								if ( !bundle ) {
-									bundle = new ResourceBundle( name );
-									manager.addResourceBundle( bundle );
-								}
-								bundle.addResource( resourceName, resource );
-
+								resource = new resourceClass();
 							}
+
+							bundle = manager.getResourceBundle( name ) as ResourceBundle;
+							if ( !bundle ) {
+								bundle = new ResourceBundle( name );
+								manager.addResourceBundle( bundle );
+							}
+							bundle.addResource( resourceName, resource );
 
 						}
 
 					}
-					return resource; 
+
 				}
+				return resource; 
 			}
 			return null;
-
 		}
 
 		/**
@@ -352,19 +356,6 @@ package by.blooddy.core.display.resource {
 		/**
 		 * @private
 		 */
-		private function handler_removedFromStage(event:Event):void {
-			this._resourceManager = null;
-		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Event handlers: ХАК
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
 		private var _addedToStage:Boolean = false;
 
 		/**
@@ -377,7 +368,7 @@ package by.blooddy.core.display.resource {
 				var manager:ResourceManager = this._resourceManager;
 				if ( manager && manager != this.getResourceManager() ) { // у нас появился новый манагер
 					// если у нас остались ресурсы, это ЖОПА!
-					for ( var resource:Object in this._resources ) {
+					for ( var resource:Object in this._resources ) { // TODO: вставить проверку на разблокировку
 						throw new SecurityError( getErrorMessage( 5100 ), 5100 );
 					}
 					this._resourceManager = null;
@@ -412,7 +403,19 @@ package by.blooddy.core.display.resource {
 
 }
 
+//==============================================================================
+//
+//  Inner definitions
+//
+//==============================================================================
+
 import by.blooddy.core.display.resource.ResourceDefinition;
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Helper class: ResourceLinker
+//
+////////////////////////////////////////////////////////////////////////////////
 
 internal final class ResourceLinker extends ResourceDefinition {
 
@@ -432,7 +435,7 @@ internal final class ResourceLinker extends ResourceDefinition {
 
 	//--------------------------------------------------------------------------
 	//
-	//  Constructor
+	//  Proeprties
 	//
 	//--------------------------------------------------------------------------
 

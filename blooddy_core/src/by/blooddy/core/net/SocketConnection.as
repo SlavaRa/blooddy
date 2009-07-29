@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  © 2007 BlooDHounD
+//  © 2004—2008 TimeZero LLC.
 //
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -24,9 +24,6 @@ package by.blooddy.core.net {
 	//  Implements events: IConnection
 	//--------------------------------------
 
-	/**
-	 * @inheritDoc
-	 */
 	[Event(name="open", type="flash.events.Event")]
 
 	/**
@@ -56,7 +53,7 @@ package by.blooddy.core.net {
 	/**
 	 * ошибка сериализации протокола
 	 */
-	[Event(name="serializeError", type="com.timezero.platform.events.SerializeErrorEvent")]	
+	[Event(name="serializeError", type="by.blooddy.core.events.SerializeErrorEvent")]	
 
 	/**
 	 * @author					BlooDHounD
@@ -287,7 +284,7 @@ package by.blooddy.core.net {
 			this._filter.writeCommand( this._socket, command );
 			if ( super.logging && !command.system ) {
 				super.logger.addLog( new CommandLog( command ) );
-				trace( 'OUT:', command );
+				//trace( 'OUT:', command );
 			}
 			this._socket.flush(); 
 		}
@@ -355,8 +352,8 @@ package by.blooddy.core.net {
 					this._inputBuffer.readBytes( data );
 					this._inputBuffer.length = 0;
 
-					if ( this._logging ) {
-						this._logger.addLog( new InfoLog( e.toString(), InfoLog.FATAL ) );
+					if ( super.logging ) {
+						super.logger.addLog( new InfoLog( e.toString(), InfoLog.FATAL ) );
 					}
 					trace( e );
 					trace( ByteArrayUtils.dump( data ) );

@@ -16,6 +16,9 @@ package ru.avangardonline.controllers.battle {
 	import flash.events.ProgressEvent;
 	
 	import ru.avangardonline.database.battle.BattleData;
+	import by.blooddy.core.utils.time.RelativeTime;
+	import by.blooddy.core.utils.time.Time;
+	import by.blooddy.core.events.time.TimeEvent;
 
 	[Event(name="progress", type="flash.events.ProgressEvent")]
 
@@ -36,9 +39,11 @@ package ru.avangardonline.controllers.battle {
 		/**
 		 * Constructor
 		 */
-		public function BattleLogicalController(controller:IBaseController) {
+		public function BattleLogicalController(controller:IBaseController, time:Time) {
 			super();
 			this._baseController = controller;
+			this._time = time;
+			this._time.addEventListener( TimeEvent.RELATIVITY_CHANGE, this.handler_relativityChange );
 			var dataBase:DataBase = this._baseController.dataBase;
 			var child:Data = dataBase.getChildByName( 'battleData' );
 			if ( child ) {
@@ -134,6 +139,19 @@ package ru.avangardonline.controllers.battle {
 		//--------------------------------------------------------------------------
 
 		//----------------------------------
+		//  time
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
+		private var _time:Time;
+
+		public function get time():Time {
+			return this._time;
+		}
+
+		//----------------------------------
 		//  currentTick
 		//----------------------------------
 
@@ -205,6 +223,19 @@ package ru.avangardonline.controllers.battle {
 		 */
 		private function updateTick():void {
 			// TODO: пресчёт модели в зависимости от времени
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Event handlers
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private function handler_relativityChange(event:TimeEvent):void {
+			this.time.currentTime; //
 		}
 
 	}
