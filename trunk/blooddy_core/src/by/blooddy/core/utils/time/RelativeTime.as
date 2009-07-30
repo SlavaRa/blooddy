@@ -54,7 +54,6 @@ package by.blooddy.core.utils.time {
 		 */
 		public override function set currentTime(value:Number):void {
 			super.currentTime = value / this._speed;
-			super.dispatchEvent( new TimeEvent( TimeEvent.RELATIVITY_CHANGE ) );
 		}
 
 		//----------------------------------
