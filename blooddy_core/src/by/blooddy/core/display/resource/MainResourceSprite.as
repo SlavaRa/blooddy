@@ -155,7 +155,7 @@ package by.blooddy.core.display.resource {
 		private function handler_trashResource(event:ResourceEvent):void {
 			var bundleName:String = event.bundleName;
 			var usage:ResourceUsage = this._resourceUsages[ bundleName ] as ResourceUsage;
-			if ( !usage || usage.count <= 0 ) throw new ArgumentError( getErrorMessage( 5101 ), 5101 );
+			if ( !usage || usage.count <= 0 ) throw new ArgumentError( 'Ресурс не был создан.', 5101 );
 			usage.count--;
 			if ( usage.count <= 0 ) usage.lastUse = getTimer();
 		}
@@ -176,9 +176,9 @@ package by.blooddy.core.display.resource {
 		private function handler_unlockResource(event:ResourceEvent):void {
 			var bundleName:String = event.bundleName;
 			var usage:ResourceUsage = this._resourceUsages[ bundleName ] as ResourceUsage;
-			if ( !usage ) throw new ArgumentError( getErrorMessage( 5101 ), 5101 );
+			if ( !usage ) throw new ArgumentError( 'Ресурс не был создан.', 5101 );
 			var lockers:Dictionary = usage.lockers;
-			if ( !lockers[ event.target ] ) throw new ArgumentError( getErrorMessage( 5102 ), 5102 );
+			if ( !lockers[ event.target ] ) throw new ArgumentError( 'Ресурс не был заблокирован.', 5102 );
 			delete usage.lockers[ event.target ];
 			if ( usage.count <= 0 ) usage.lastUse = getTimer();
 		}

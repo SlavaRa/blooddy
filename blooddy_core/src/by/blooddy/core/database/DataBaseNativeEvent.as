@@ -14,8 +14,9 @@ package by.blooddy.core.database {
 	import flash.utils.getDefinitionByName;
 	import flash.utils.getQualifiedSuperclassName;
 
-	//[ExcludeClass]
+	[ExcludeClass]
 	/**
+	 * @private
 	 * Класс прослойка для создания события бублинга.
 	 * Происходит переопределения target и eventPhase, для создания
 	 * всплывающих событи.
@@ -34,10 +35,15 @@ package by.blooddy.core.database {
 		//--------------------------------------------------------------------------
 
 		/**
-		 * Constructor
+		 * @private
+		 * Constructor.
+		 * 
+		 * @param	type
+		 * @param	bubbles
+		 * @param	cancelable
 		 */
 		public function DataBaseNativeEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
-			super( type, bubbles, cancelable );
+			super(type, bubbles, cancelable);
 			var c:Class = ( this as Object ).constructor;
 			if (
 				c === DataBaseNativeEvent ||
@@ -46,7 +52,7 @@ package by.blooddy.core.database {
 					getDefinitionByName( getQualifiedSuperclassName( this ) ) === DataBaseNativeEvent
 				)
 			) {
-				throw new ArgumentError( getErrorMessage( 2012 ), 2012 );
+				throw new ArgumentError( getErrorMessage( 2012, this ), 2012 );
 			}
 		}
 
@@ -111,7 +117,7 @@ package by.blooddy.core.database {
 		 * @private
 		 */
 		public override function formatToString(className:String, ...arguments):String {
-			if ( !className ) className = ClassUtils.getClassName( this );
+			if ( !className ) className = ClassUtils.getClassName(this);
 			arguments.unshift( className );
 			return super.formatToString.apply( this, arguments );
 		}
@@ -120,6 +126,7 @@ package by.blooddy.core.database {
 		 * @private
 		 */
 		public override function stopImmediatePropagation():void {
+			if ( !super.cancelable ) return;
 			super.stopImmediatePropagation();
 			this.stopped = true;
 		}

@@ -6,9 +6,7 @@
 
 package by.blooddy.core.external {
 
-	import by.blooddy.core.errors.getErrorMessage;
 	import by.blooddy.core.events.DynamicEvent;
-	import by.blooddy.core.logging.CommandLog;
 	import by.blooddy.core.net.AbstractRemoter;
 	import by.blooddy.core.net.IConnection;
 	import by.blooddy.core.net.NetCommand;
@@ -27,8 +25,6 @@ package by.blooddy.core.external {
 	//--------------------------------------
 
 	[Event(name="connect", type="flash.events.Event")]
-
-	[Event(name="error", type="com.timezero.platform.events.StackErrorEvent")]
 
 	[Event(name="ioError", type="flash.events.IOErrorEvent")]
 
@@ -69,7 +65,7 @@ package by.blooddy.core.external {
 		 */
 		public function ExternalConnection() {
 			super();
-			if ( _init ) throw new ArgumentError( getErrorMessage( 2012, this, 'ExternalConnection' ), 2012 );
+			if ( _init ) throw new ArgumentError();
 			if ( !ExternalInterface.available ) throw new SecurityError();
 			_init = true;
 			ExternalInterface.addCallback( _PROXY_METHOD, this.$call );
@@ -123,14 +119,9 @@ package by.blooddy.core.external {
 		 */
 		public override function call(commandName:String, ...parameters):* {
 			if ( !this._connected ) throw new IllegalOperationError();
-			if ( super.logging ) {
-				var command:NetCommand = new NetCommand( commandName, NetCommand.OUTPUT, parameters );
-				if ( !command.system ) {
-					super.logger.addLog( new CommandLog( command ) );
-				}
-			}
-			parameters.unshift( _PROXY_METHOD, ExternalInterface.objectID, commandName );
-			return ExternalInterface.call.apply( ExternalInterface, parameters );
+			return super.$invokeCallOutputCommand(
+				new NetCommand( commandName, NetCommand.OUTPUT, parameters )
+			);
 		}
 
 		//--------------------------------------------------------------------------
@@ -176,12 +167,21 @@ package by.blooddy.core.external {
 		/**
 		 * @private
 		 */
-		protected override function $callCommand(command:Command):* {
+		protected override function $callOutputCommand(command:Command):* {
+			var parameters:Array = command.slice();
+			parameters.unshift( _PROXY_METHOD, ExternalInterface.objectID, command.name );
+			return ExternalInterface.call.apply( ExternalInterface, parameters );
+		}
+
+		/**
+		 * @private
+		 */
+		protected override function $callInputCommand(command:Command):* {
 			switch ( command.name ) {
 				case 'dispatchEvent':	return	this.$dispatchEvent.apply( this, command );		break;
 				case 'getProperty':		return	this.$getProperty.apply( this, command );		break;
 				case 'setProperty':				this.$setProperty.apply( this, command );		break;
-				default:				return	super.$callCommand( command );					break;
+				default:				return	super.$callInputCommand( command );				break;
 			}
 		}
 
@@ -212,7 +212,7 @@ package by.blooddy.core.external {
 			if ( id != ExternalInterface.objectID ) {
 				super.dispatchEvent( new SecurityErrorEvent( SecurityErrorEvent.SECURITY_ERROR, false, false, 'левое обращение' ) );
 			} else {
-				return super.$invokeCallCommand( new NetCommand( commandName, NetCommand.INPUT, parameters ) );
+				return super.$invokeCallInputCommand( new NetCommand( commandName, NetCommand.INPUT, parameters ) );
 			}
 		}
 

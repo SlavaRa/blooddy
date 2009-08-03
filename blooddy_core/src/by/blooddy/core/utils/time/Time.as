@@ -14,7 +14,7 @@ package by.blooddy.core.utils.time {
 	//  Events
 	//--------------------------------------
 
-	[Event(name="relativityChange", type="by.blooddy.core.events.time.TimeEvent")]
+	[Event(name="timeRelativityChange", type="by.blooddy.core.events.time.TimeEvent")]
 
 	/**
 	 * @author					BlooDHounD
@@ -61,8 +61,9 @@ package by.blooddy.core.utils.time {
 		 * @private
 		 */
 		public function set currentTime(value:Number):void {
+			var oldTime:Number = this.currentTime;
 			this._zeroTime = getTimer() - value;
-			super.dispatchEvent( new TimeEvent( TimeEvent.RELATIVITY_CHANGE ) );
+			super.dispatchEvent( new TimeEvent( TimeEvent.TIME_RELATIVITY_CHANGE, false, false, this.currentTime - oldTime ) );
 		}
 
 	}

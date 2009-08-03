@@ -25,7 +25,7 @@ package by.blooddy.core.events.time {
 		//
 		//--------------------------------------------------------------------------
 
-		public static const RELATIVITY_CHANGE:String = 'relativityChange';
+		public static const TIME_RELATIVITY_CHANGE:String = 'timeRelativityChange';
 
 		//--------------------------------------------------------------------------
 		//
@@ -36,9 +36,18 @@ package by.blooddy.core.events.time {
 		/**
 		 * Constructor
 		 */
-		public function TimeEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
+		public function TimeEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false, delta:Number=0) {
 			super( type, bubbles, cancelable );
+			this.delta = delta;
 		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Properties
+		//
+		//--------------------------------------------------------------------------
+
+		public var delta:Number;
 
 		//--------------------------------------------------------------------------
 		//
@@ -51,7 +60,7 @@ package by.blooddy.core.events.time {
 		}
 
 		public override function toString():String {
-			return super.formatToString( ClassUtils.getClassName( this ), 'type', 'bubbles', 'cancelable' );
+			return super.formatToString( ClassUtils.getClassName( this ), 'type', 'bubbles', 'cancelable', 'delta' );
 		}
 
 	}

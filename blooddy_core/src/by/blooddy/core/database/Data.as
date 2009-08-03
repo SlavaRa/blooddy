@@ -67,7 +67,7 @@ package by.blooddy.core.database {
 		//--------------------------------------------------------------------------
 
 		/**
-		 * Constructor
+		 * Constructor.
 		 */
 		public function Data() {
 			super();
@@ -165,10 +165,9 @@ package by.blooddy.core.database {
 		 */
 		public override function dispatchEvent(event:Event):Boolean {
 			if ( event.bubbles ) {
-				if ( !( event is DataBaseNativeEvent ) ) throw new ArgumentError(); // TODO: описать ошибку
-				return this.dispatchEventFunction( event as DataBaseNativeEvent );
-			}
-			return super.dispatchEvent( event );
+				if ( event is DataBaseNativeEvent ) return this.dispatchEventFunction( event as DataBaseNativeEvent );
+				else throw new ArgumentError();
+			} else return super.dispatchEvent( event );
 		}
 
 		/**
@@ -207,9 +206,6 @@ package by.blooddy.core.database {
 		//  toLocaleString
 		//----------------------------------
 
-		/**
-		 * @private
-		 */
 		public function toLocaleString():String {
 			return '[' + ClassUtils.getClassName( this ) + ']';
 		}
@@ -271,9 +267,10 @@ internal final class EventContainer extends Event {
 
 	/**
 	 * @private
+	 * Constructor.
 	 */
 	public function EventContainer(event:Event) {
-		super( event.type, event.bubbles, event.cancelable );
+		super(event.type, event.bubbles, event.cancelable);
 		this._event = event;
 	}
 

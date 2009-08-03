@@ -28,6 +28,7 @@ package by.blooddy.core.utils.time {
 		 */
 		public function RelativeTime(speed:Number=1) {
 			super();
+			this.speed = speed;
 		}
 
 		//--------------------------------------------------------------------------
@@ -43,10 +44,10 @@ package by.blooddy.core.utils.time {
 		/**
 		 * @private
 		 */
-		private var _zeroTime:Number = getTimer();
+		private var _currentTime:Number;
 
 		public override function get currentTime():Number {
-			return super.currentTime * this._speed;
+			return this._currentTime || ( super.currentTime * this._speed );
 		}
 
 		/**
@@ -54,6 +55,9 @@ package by.blooddy.core.utils.time {
 		 */
 		public override function set currentTime(value:Number):void {
 			super.currentTime = value / this._speed;
+			if ( this._currentTime ) {
+				this._currentTime  = super.currentTime;
+			}
 		}
 
 		//----------------------------------
@@ -63,7 +67,7 @@ package by.blooddy.core.utils.time {
 		/**
 		 * @private
 		 */
-		private var _speed:Number = 1;
+		private var _speed:Number;
 
 		public function get speed():Number {
 			return this._speed;
@@ -76,7 +80,13 @@ package by.blooddy.core.utils.time {
 			if ( this._speed == value ) return;
 			var old_value:Number = this._speed;
 			this._speed = value;
-			super.currentTime = super.currentTime * old_value / value;
+			if ( value ) {
+				if ( this._currentTime ) this._currentTime = NaN;
+				super.currentTime = super.currentTime * old_value / value;
+			} else {
+				this._currentTime = this.currentTime;
+			}
+
 		}
 
 	}

@@ -10,15 +10,17 @@ package ru.avangardonline.controllers.battle {
 	import by.blooddy.core.controllers.IController;
 	import by.blooddy.core.database.Data;
 	import by.blooddy.core.database.DataBase;
+	import by.blooddy.core.events.time.TimeEvent;
 	import by.blooddy.core.managers.IProgressable;
 	import by.blooddy.core.net.AbstractRemoter;
+	import by.blooddy.core.utils.time.RelativeTime;
 	
+	import flash.events.Event;
 	import flash.events.ProgressEvent;
+	import flash.events.TimerEvent;
+	import flash.utils.Timer;
 	
 	import ru.avangardonline.database.battle.BattleData;
-	import by.blooddy.core.utils.time.RelativeTime;
-	import by.blooddy.core.utils.time.Time;
-	import by.blooddy.core.events.time.TimeEvent;
 
 	[Event(name="progress", type="flash.events.ProgressEvent")]
 
@@ -32,6 +34,14 @@ package ru.avangardonline.controllers.battle {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Class constants
+		//
+		//--------------------------------------------------------------------------
+
+		public static const TICK_TIME:uint = 1E3;
+
+		//--------------------------------------------------------------------------
+		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
@@ -39,11 +49,11 @@ package ru.avangardonline.controllers.battle {
 		/**
 		 * Constructor
 		 */
-		public function BattleLogicalController(controller:IBaseController, time:Time) {
+		public function BattleLogicalController(controller:IBaseController!, time:RelativeTime!) {
 			super();
 			this._baseController = controller;
 			this._time = time;
-			this._time.addEventListener( TimeEvent.RELATIVITY_CHANGE, this.handler_relativityChange );
+			this._time.addEventListener( TimeEvent.TIME_RELATIVITY_CHANGE, this.handler_timeRelativityChange );
 			var dataBase:DataBase = this._baseController.dataBase;
 			var child:Data = dataBase.getChildByName( 'battleData' );
 			if ( child ) {
@@ -54,6 +64,7 @@ package ru.avangardonline.controllers.battle {
 				this._data = new BattleData();
 				dataBase.addChild( this._data );
 			}
+			this._timer.addEventListener( TimerEvent.TIMER, this.updateTick );
 		}
 
 		//--------------------------------------------------------------------------
@@ -66,6 +77,11 @@ package ru.avangardonline.controllers.battle {
 		 * @private
 		 */
 		private var _data:BattleData;
+
+		/**
+		 * @private
+		 */
+		private const _timer:Timer = new Timer( 0 );
 
 		//--------------------------------------------------------------------------
 		//
@@ -115,21 +131,15 @@ package ru.avangardonline.controllers.battle {
 		//  progress
 		//----------------------------------
 
-		/**
-		 * @private
-		 */
-		private var _progress:Number = 0;
-
 		public function get progress():Number {
-			return this._progress;
+			return this._totalTicks * TICK_TIME / this._time.currentTime;
 		}
 
 		/**
 		 * @private
 		 */
 		public function set progress(value:Number):void {
-			if ( this._progress == value ) return;
-			this.currentTick = this._totalTicks * ( value || 0 );
+			this._time.currentTime = this._totalTicks * ( value || 0 ) * TICK_TIME;
 		}
 
 		//--------------------------------------------------------------------------
@@ -145,9 +155,9 @@ package ru.avangardonline.controllers.battle {
 		/**
 		 * @private
 		 */
-		private var _time:Time;
+		private var _time:RelativeTime;
 
-		public function get time():Time {
+		public function get time():RelativeTime {
 			return this._time;
 		}
 
@@ -169,12 +179,9 @@ package ru.avangardonline.controllers.battle {
 		 */
 		public function set currentTick(value:uint):void {
 			if ( this._currentTick == value ) return;
-			if ( value > this._totalTicks ) value = ( totalTicks ? totalTicks - 1 : 0 );
+			if ( value >= this._totalTicks ) throw new RangeError(); 
 			if ( this._currentTick == value ) return;
-			this._currentTick = value;
-			this._progress = ( this._totalTicks ? this._currentTick / ( this._totalTicks - 1 ) : 0 );
-			this.updateTick();
-			super.dispatchEvent( new ProgressEvent( ProgressEvent.PROGRESS, false, false, this._currentTick, this._totalTicks ) );
+			this._time.currentTime = value * TICK_TIME;
 		}
 
 		//----------------------------------
@@ -221,8 +228,12 @@ package ru.avangardonline.controllers.battle {
 		/**
 		 * @private
 		 */
-		private function updateTick():void {
-			// TODO: пресчёт модели в зависимости от времени
+		private function updateTick(event:Event=null):void {
+			var newTick:uint = this._time.currentTime / TICK_TIME;
+			if ( newTick == this._currentTick ) return;
+			this._currentTick = newTick;
+			// TODO: update model
+			super.dispatchEvent( new ProgressEvent( ProgressEvent.PROGRESS, false, false, this._currentTick, this._totalTicks ) );
 		}
 
 		//--------------------------------------------------------------------------
@@ -234,8 +245,18 @@ package ru.avangardonline.controllers.battle {
 		/**
 		 * @private
 		 */
-		private function handler_relativityChange(event:TimeEvent):void {
-			this.time.currentTime; //
+		private function handler_timeRelativityChange(event:TimeEvent):void {
+			if ( this._time.speed ) {
+				this._timer.delay = TICK_TIME / this._time.speed / 4;
+				if ( !this._timer.running ) {
+					this._timer.start();
+				}
+			} else {
+				if ( this._timer.running ) {
+					this._timer.stop();
+				}
+			}
+			this.updateTick( event );
 		}
 
 	}

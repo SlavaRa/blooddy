@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <flexLibProperties version="1">
   <includeClasses>
-    <classEntry path="by.blooddy.core.controllers.BaseController"/>
     <classEntry path="by.blooddy.core.controllers.AbstractController"/>
+    <classEntry path="by.blooddy.core.controllers.BaseController"/>
     <classEntry path="by.blooddy.core.controllers.IBaseController"/>
     <classEntry path="by.blooddy.core.controllers.IController"/>
     <classEntry path="by.blooddy.core.database.Data"/>
@@ -58,6 +58,7 @@
     <classEntry path="by.blooddy.core.events.display.resource.ResourceEvent"/>
     <classEntry path="by.blooddy.core.events.isIntrinsicEvent"/>
     <classEntry path="by.blooddy.core.events.net.LoaderEvent"/>
+    <classEntry path="by.blooddy.core.events.time.TimeEvent"/>
     <classEntry path="by.blooddy.core.external.ExternalConnection"/>
     <classEntry path="by.blooddy.core.external.HistoryExternalConnection"/>
     <classEntry path="by.blooddy.core.filters.AdjustColor"/>
@@ -186,6 +187,7 @@
     <classEntry path="by.blooddy.core.utils.time.AutoTimer"/>
     <classEntry path="by.blooddy.core.utils.time.FrameTimer"/>
     <classEntry path="by.blooddy.core.utils.time.RelativeTime"/>
+    <classEntry path="by.blooddy.core.utils.time.Time"/>
     <classEntry path="by.blooddy.core.utils.time.getTimer"/>
     <classEntry path="by.blooddy.core.utils.time.setTimeout"/>
     <classEntry path="by.blooddy.core.utils.traceObject"/>
@@ -194,8 +196,6 @@
     <classEntry path="by.blooddy.core.utils.version.IVersion"/>
     <classEntry path="by.blooddy.core.utils.version.PlayerVersion"/>
     <classEntry path="by.blooddy.core.utils.version.Version"/>
-    <classEntry path="by.blooddy.core.events.time.TimeEvent"/>
-    <classEntry path="by.blooddy.core.utils.time.Time"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
