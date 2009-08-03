@@ -74,7 +74,6 @@ package by.blooddy.core.utils {
 			if ( resource == null || time <= 0 ) throw new ArgumentError();
 			var resources:Vector.<ResourceContainer> = this._hash[ key ] as Vector.<ResourceContainer>;
 			if ( !resources ) this._hash[ key ] = resources = new Vector.<ResourceContainer>();
-			if ( resources.indexOf( resource ) >= 0 ) return;
 			time += getTimer();
 			for ( var i:int = resources.length - 1; i >= 0; i-- ) {
 				if ( resources[ i ].time > time ) {

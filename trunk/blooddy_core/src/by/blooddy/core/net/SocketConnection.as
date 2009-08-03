@@ -7,9 +7,9 @@
 package by.blooddy.core.net {
 
 	import by.blooddy.core.events.SerializeErrorEvent;
-	import by.blooddy.core.logging.CommandLog;
 	import by.blooddy.core.logging.InfoLog;
 	import by.blooddy.core.utils.ByteArrayUtils;
+	import by.blooddy.core.utils.Command;
 	
 	import flash.errors.IOError;
 	import flash.errors.IllegalOperationError;
@@ -280,12 +280,22 @@ package by.blooddy.core.net {
 		 */
 		public override function call(commandName:String, ...parameters):* {
 			if ( !this._filter ) throw new IllegalOperationError();
-			var command:NetCommand = new NetCommand( commandName, NetCommand.OUTPUT, parameters );
-			this._filter.writeCommand( this._socket, command );
-			if ( super.logging && !command.system ) {
-				super.logger.addLog( new CommandLog( command ) );
-				//trace( 'OUT:', command );
-			}
+			return super.$invokeCallOutputCommand(
+				new NetCommand( commandName, NetCommand.OUTPUT, parameters )
+			);
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Overriden protected methods
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		protected override function $callOutputCommand(command:Command):* {
+			this._filter.writeCommand( this._socket, command as NetCommand );
 			this._socket.flush(); 
 		}
 
@@ -368,7 +378,7 @@ package by.blooddy.core.net {
 					this._inputPosition = this._inputBuffer.position;
 
 					// вызываем метод обработки
-					super.$invokeCallCommand( command );
+					super.$invokeCallInputCommand( command );
 
 				}
 
