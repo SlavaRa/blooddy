@@ -4,7 +4,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.events.database.character {
+package ru.avangardonline.events.database.world {
 
 	import by.blooddy.core.events.database.DataBaseEvent;
 
@@ -14,7 +14,15 @@ package ru.avangardonline.events.database.character {
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
 	 */
-	public class CharacterDataEvent extends DataBaseEvent {
+	public class WorldElementDataEvent extends DataBaseEvent {
+
+		//--------------------------------------------------------------------------
+		//
+		//  Class constants
+		//
+		//--------------------------------------------------------------------------
+
+		public static const COORDINATE_CHANGE:String = 'coordinateChange';
 
 		//--------------------------------------------------------------------------
 		//
@@ -25,7 +33,7 @@ package ru.avangardonline.events.database.character {
 		/**
 		 * Constructor
 		 */
-		public function CharacterDataEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
+		public function WorldElementDataEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super( type, bubbles, cancelable );
 		}
 

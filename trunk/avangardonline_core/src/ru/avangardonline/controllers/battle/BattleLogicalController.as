@@ -21,6 +21,7 @@ package ru.avangardonline.controllers.battle {
 	import flash.utils.Timer;
 	
 	import ru.avangardonline.database.battle.BattleData;
+	import ru.avangardonline.database.character.CharacterData;
 
 	[Event(name="progress", type="flash.events.ProgressEvent")]
 
@@ -62,6 +63,23 @@ package ru.avangardonline.controllers.battle {
 			}
 			if ( !this._data ) {
 				this._data = new BattleData();
+
+				this._data.world.field.width = 9;
+				this._data.world.field.height = 5;
+
+				var id:uint = 0;
+				var x:int;
+				var y:int;
+				var character:CharacterData;
+				for ( y=0; y<5; y++ ) {
+					for ( x = -4; x < -1; x++ ) {
+						character = new CharacterData( ++id );
+						character.x = x;
+						character.y = y;
+						this._data.world.characters.addChild( character );
+					}
+				}
+
 				dataBase.addChild( this._data );
 			}
 			this._timer.addEventListener( TimerEvent.TIMER, this.updateTick );

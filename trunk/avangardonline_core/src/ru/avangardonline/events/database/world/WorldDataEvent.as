@@ -4,18 +4,28 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.database.character {
+package ru.avangardonline.events.database.world {
 
-	import ru.avangardonline.database.world.WorldElementData;
-
+	import by.blooddy.core.events.database.DataBaseEvent;
+	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
-	 * @playerversion			Flash 9
+	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					05.08.2009 22:12:56
+	 * @created					04.08.2009 22:42:55
 	 */
-	public class CharacterData extends WorldElementData {
+	public class WorldDataEvent extends DataBaseEvent {
+
+		//--------------------------------------------------------------------------
+		//
+		//  Class constants
+		//
+		//--------------------------------------------------------------------------
+
+		public static const WIDTH_CHANGE:String =	'widthChange';
+
+		public static const HEIGHT_CHANGE:String =	'heightChange';
 
 		//--------------------------------------------------------------------------
 		//
@@ -26,28 +36,8 @@ package ru.avangardonline.database.character {
 		/**
 		 * Constructor
 		 */
-		public function CharacterData(id:uint) {
-			super();
-			this._id = id;
-		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Proeprties
-		//
-		//--------------------------------------------------------------------------
-
-		//----------------------------------
-		//  id
-		//----------------------------------
-
-		/**
-		 * @private
-		 */
-		private var _id:uint;
-
-		public function get id():uint {
-			return this._id;
+		public function WorldDataEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
+			super( type, bubbles, cancelable );
 		}
 
 	}

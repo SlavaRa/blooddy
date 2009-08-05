@@ -3,6 +3,7 @@
 //  © 2007 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
+
 package by.blooddy.core.database {
 
 	import by.blooddy.core.errors.getErrorMessage;

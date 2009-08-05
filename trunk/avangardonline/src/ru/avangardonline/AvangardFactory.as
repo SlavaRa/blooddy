@@ -4,18 +4,18 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.display {
+package ru.avangardonline {
 
-	import by.blooddy.core.display.resource.MainResourceSprite;
-	
+	import by.blooddy.factory.ApplicationFactory;
 
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
+	 * @created					04.08.2009 22:26:06
 	 */
-	public class BattleField extends MainResourceSprite {
+	public class AvangardFactory extends ApplicationFactory {
 
 		//--------------------------------------------------------------------------
 		//
@@ -26,7 +26,7 @@ package ru.avangardonline.display {
 		/**
 		 * Constructor
 		 */
-		public function BattleField() {
+		public function AvangardFactory() {
 			super();
 		}
 

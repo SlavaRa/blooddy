@@ -43,6 +43,11 @@ package ru.avangardonline.database.character {
 		 */
 		private const _hash:HashArray = new HashArray();
 
+		/**
+		 * @private
+		 */
+		private const _list:Vector.<CharacterData> = new Vector.<CharacterData>();
+
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
@@ -53,23 +58,44 @@ package ru.avangardonline.database.character {
 			return this._hash[ id ];
 		}
 
+		public function getCharacters():Vector.<CharacterData> {
+			return this._list.slice();
+		}
+
+		public function getCharacterAt(x:int, y:int):CharacterData {
+			for each ( var character:CharacterData in this._list ) {
+				if ( character.x == x && character.y == y ) return character;
+			}
+			return null;
+		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @private
+		 */
 		protected override function addChild_before(child:Data):void {
 			if ( child is CharacterData ) {
 				var character:CharacterData = child as CharacterData;
 				if ( this._hash[ character.id ] ) throw new ArgumentError();
 				this._hash[ character.id ] = child;
+				this._list.push( character );
 			}
 		}
 
+		/**
+		 * @private
+		 */
 		protected override function removeChild_before(child:Data):void {
 			if ( child is CharacterData ) {
-				delete this._hash[ ( child as CharacterData ).id ];
+				var character:CharacterData = child as CharacterData;
+				delete this._hash[ character.id ];
+				var i:int = this._list.indexOf( character );
+				if ( i >= 0 ) this._list.splice( i, 0 );
 			}
 		}
 

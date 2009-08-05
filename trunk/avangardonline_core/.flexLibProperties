@@ -1,14 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <flexLibProperties version="1">
   <includeClasses>
-    <classEntry path="ru.avangardonline.display.BattleField"/>
-    <classEntry path="ru.avangardonline.events.database.character.CharacterDataEvent"/>
     <classEntry path="ru.avangardonline.controllers.GameController"/>
-    <classEntry path="ru.avangardonline.database.battle.BattleData"/>
-    <classEntry path="ru.avangardonline.database.world.WorldData"/>
-    <classEntry path="ru.avangardonline.database.character.CharacterCollectionData"/>
-    <classEntry path="ru.avangardonline.database.battle.BattleTurnData"/>
+    <classEntry path="ru.avangardonline.controllers.battle.BattleController"/>
+    <classEntry path="ru.avangardonline.controllers.battle.BattleLogicalController"/>
     <classEntry path="ru.avangardonline.database.battle.BattleActionData"/>
+    <classEntry path="ru.avangardonline.database.battle.BattleData"/>
+    <classEntry path="ru.avangardonline.database.battle.BattleTurnData"/>
+    <classEntry path="ru.avangardonline.database.battle.IActionContainerData"/>
+    <classEntry path="ru.avangardonline.database.character.CharacterCollectionData"/>
+    <classEntry path="ru.avangardonline.database.character.CharacterData"/>
+    <classEntry path="ru.avangardonline.database.world.WorldFieldData"/>
+    <classEntry path="ru.avangardonline.display.world.WorldView"/>
+    <classEntry path="ru.avangardonline.events.database.world.WorldDataEvent"/>
+    <classEntry path="ru.avangardonline.display.world.WorldFieldView"/>
+    <classEntry path="ru.avangardonline.database.world.WorldData"/>
+    <classEntry path="ru.avangardonline.display.character.CharacterView"/>
+    <classEntry path="ru.avangardonline.display.world.WorldElementView"/>
+    <classEntry path="ru.avangardonline.database.world.WorldElementData"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
