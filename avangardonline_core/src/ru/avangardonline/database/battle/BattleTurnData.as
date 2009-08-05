@@ -49,6 +49,10 @@ package ru.avangardonline.database.battle {
 		//
 		//--------------------------------------------------------------------------
 
+		//----------------------------------
+		//  num
+		//----------------------------------
+
 		/**
 		 * @private
 		 */
@@ -57,6 +61,10 @@ package ru.avangardonline.database.battle {
 		public function get num():uint {
 			return this._num;
 		}
+
+		//----------------------------------
+		//  numActions
+		//----------------------------------
 
 		/**
 		 * @inheritDoc

@@ -9,6 +9,7 @@
     <classEntry path="by.blooddy.core.database.DataBase"/>
     <classEntry path="by.blooddy.core.database.DataBaseNativeEvent"/>
     <classEntry path="by.blooddy.core.database.DataContainer"/>
+    <classEntry path="by.blooddy.core.database.DataLinker"/>
     <classEntry path="by.blooddy.core.database.xml.IXMLData"/>
     <classEntry path="by.blooddy.core.database.xml.rss.IRSSElementAsset"/>
     <classEntry path="by.blooddy.core.database.xml.rss.RSSCategoryData"/>
@@ -196,6 +197,7 @@
     <classEntry path="by.blooddy.core.utils.version.IVersion"/>
     <classEntry path="by.blooddy.core.utils.version.PlayerVersion"/>
     <classEntry path="by.blooddy.core.utils.version.Version"/>
+    <classEntry path="by.blooddy.core.display.DisplayObjectLinker"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

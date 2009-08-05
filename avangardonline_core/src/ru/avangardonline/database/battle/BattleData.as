@@ -8,7 +8,10 @@ package ru.avangardonline.database.battle {
 
 	import by.blooddy.core.database.Data;
 	import by.blooddy.core.database.DataContainer;
+	import by.blooddy.core.database.DataLinker;
 	import by.blooddy.core.events.database.DataBaseEvent;
+	
+	import ru.avangardonline.database.world.WorldData;
 
 	/**
 	 * @author					BlooDHounD
@@ -30,6 +33,10 @@ package ru.avangardonline.database.battle {
 		 */
 		public function BattleData() {
 			super();
+			super.name = 'battleData';
+
+			DataLinker.link( this, this.world, true );
+
 			super.addEventListener( DataBaseEvent.ADDED,	this.handler_changed, false, int.MAX_VALUE, true );
 			super.addEventListener( DataBaseEvent.REMOVED,	this.handler_changed, false, int.MAX_VALUE, true );
 		}
@@ -61,9 +68,17 @@ package ru.avangardonline.database.battle {
 		//
 		//--------------------------------------------------------------------------
 
+		//----------------------------------
+		//  numTurns
+		//----------------------------------
+
 		public function get numTurns():uint {
 			return this._turns.length;
 		}
+
+		//----------------------------------
+		//  numActions
+		//----------------------------------
 
 		/**
 		 * @inheritDoc
@@ -86,6 +101,12 @@ package ru.avangardonline.database.battle {
 			}
 			return this._actions.length;
 		}
+
+		//----------------------------------
+		//  battleField
+		//----------------------------------
+
+		public const world:WorldData = new WorldData();
 
 		//--------------------------------------------------------------------------
 		//
@@ -168,6 +189,7 @@ package ru.avangardonline.database.battle {
 				if ( this._actions.length > 0 ) {
 					this._actions.splice( 0, this._actions.length );
 				}
+				this._lastTurn = -1;
 			}
 		}
 

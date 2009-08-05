@@ -94,7 +94,7 @@ internal final class StageObserverItem {
 		super();
 		if ( !target )			throw new ArgumentError( getErrorMessage( 2007, this, 'StageObserverItem', 'target' ),		2007 );
 		if ( !type )			throw new ArgumentError( getErrorMessage( 2007, this, 'StageObserverItem', 'type' ),		2007 );
-		if ( listener != null )	throw new ArgumentError( getErrorMessage( 2007, this, 'StageObserverItem', 'listener' ),	2007 );
+		if ( listener == null )	throw new ArgumentError( getErrorMessage( 2007, this, 'StageObserverItem', 'listener' ),	2007 );
 		this.target = target;
 		this.type = type;
 		this.listener = listener;
