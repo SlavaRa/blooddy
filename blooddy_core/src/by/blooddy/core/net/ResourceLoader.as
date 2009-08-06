@@ -210,6 +210,9 @@ package by.blooddy.core.net {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @private
+		 */
 		private function $unload():void {
 			_MANAGER.removeEventListener( DomainEvent.DOMAIN_UNLOAD, this.handler_unload );
 			for ( var domain:String in this._domains ) {
