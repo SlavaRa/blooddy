@@ -32,19 +32,39 @@ package by.blooddy.core.display.resource {
 	//--------------------------------------
 
 	/**
-	 * @eventType			by.blooddy.core.events.display.resource.ResourceEvent.GET_RESOURCE
-	 */
-	[Event(name="getResource", type="by.blooddy.core.events.display.resource.ResourceEvent")]
-
-	/**
-	 * @eventType			by.blooddy.core.events.display.resource.ResourceEvent.TRASH_RESOURCE
-	 */
-	[Event(name="trashResource", type="by.blooddy.core.events.display.resource.ResourceEvent")]
-
-	/**
 	 * @eventType			by.blooddy.core.events.net.LoaderEvent.LOADER_INIT
 	 */
 	[Event(name="loaderInit", type="by.blooddy.core.events.net.LoaderEvent")]
+
+	/**
+	 * @eventType			by.blooddy.core.events.managers.ResourceEvent.GET_RESOURCE
+	 */
+	[Event(name="getResource", type="by.blooddy.core.events.managers.ResourceEvent")]
+
+	/**
+	 * @eventType			by.blooddy.core.events.managers.ResourceEvent.TRASH_RESOURCE
+	 */
+	[Event(name="trashResource", type="by.blooddy.core.events.managers.ResourceEvent")]
+
+	/**
+	 * @eventType			by.blooddy.core.events.managers.ResourceEvent.LOCK_BUNDLE
+	 */
+	[Event(name="lockBundle", type="by.blooddy.core.events.managers.ResourceEvent")]
+
+	/**
+	 * @eventType			by.blooddy.core.events.managers.ResourceEvent.UNLOCK_BUNDLE
+	 */
+	[Event(name="unlockBundle", type="by.blooddy.core.events.managers.ResourceEvent")]
+
+	/**
+	 * @eventType			by.blooddy.core.events.managers.ResourceEvent.ADDED_TO_RESOURCE_MANAGER
+	 */
+	[Event(name="addedToResourceManager", type="by.blooddy.core.events.managers.ResourceEvent")]
+
+	/**
+	 * @eventType			by.blooddy.core.events.managers.ResourceEvent.REMOVED_FROM_RESOURCE_MANAGER
+	 */
+	[Event(name="removedFromResourceManager", type="by.blooddy.core.events.managers.ResourceEvent")]
 
 	/**
 	 * Класс у когорого есть ссылка на манагер ресурсов.
@@ -85,9 +105,9 @@ package by.blooddy.core.display.resource {
 		 */
 		public function ResourceSprite() {
 			super();
-			super.addEventListener( Event.ADDED_TO_STAGE,		this.handler_addedToStage_hack,			false, int.MAX_VALUE, true );
-			super.addEventListener( Event.REMOVED_FROM_STAGE,	this.handler_removedFromStage_hack1,	false, int.MAX_VALUE, true );
-			super.addEventListener( Event.REMOVED_FROM_STAGE,	this.handler_removedFromStage_hack2,	false, int.MIN_VALUE, true );
+			super.addEventListener( Event.ADDED_TO_STAGE,		this.handler_addedToStage,		false, int.MAX_VALUE, true );
+			super.addEventListener( Event.REMOVED_FROM_STAGE,	this.handler_removedFromStage1,	false, int.MAX_VALUE, true );
+			super.addEventListener( Event.REMOVED_FROM_STAGE,	this.handler_removedFromStage2,	false, int.MIN_VALUE, true );
 		}
 
 		//--------------------------------------------------------------------------
@@ -105,6 +125,11 @@ package by.blooddy.core.display.resource {
 		 * @private
 		 */
 		private var _resourceManager:ResourceManager;
+
+		/**
+		 * @private
+		 */
+		private var _addedToStage:Boolean = false;
 
 		//--------------------------------------------------------------------------
 		//
@@ -356,45 +381,49 @@ package by.blooddy.core.display.resource {
 		/**
 		 * @private
 		 */
-		private var _addedToStage:Boolean = false;
-
-		/**
-		 * @private
-		 */
-		private function handler_addedToStage_hack(event:Event):void {
+		private function handler_addedToStage(event:Event):void {
 			if ( this._addedToStage ) {
 				event.stopImmediatePropagation();
 			} else {
 				var manager:ResourceManager = this._resourceManager;
 				if ( manager && manager != this.getResourceManager() ) { // у нас появился новый манагер
+					if ( super.hasEventListener( ResourceEvent.REMOVED_FROM_RESOURCE_MANAGER ) ) {
+						super.dispatchEvent( new ResourceEvent( ResourceEvent.REMOVED_FROM_RESOURCE_MANAGER ) );
+					}
 					// если у нас остались ресурсы, это ЖОПА!
-					for ( var resource:Object in this._resources ) { // TODO: вставить проверку на разблокировку
-						throw new SecurityError( getErrorMessage( 5100 ), 5100 );
+					for ( var resource:Object in this._resources ) {
+						throw new SecurityError( 'Некоторые ресурсы не были возвращены в мэннеджер ресурсов.', 5100 );
 					}
 					this._resourceManager = null;
 				}
 				this._addedToStage = true;
 				this._stage = super.stage;
+				if ( super.hasEventListener( ResourceEvent.ADDED_TO_RESOURCE_MANAGER ) ) {
+					super.dispatchEvent( new ResourceEvent( ResourceEvent.ADDED_TO_RESOURCE_MANAGER ) );
+				}
 			}
 		}
 
 		/**
 		 * @private
 		 */
-		private function handler_removedFromStage_hack1(event:Event):void {
+		private function handler_removedFromStage1(event:Event):void {
 			this._addedToStage = false;
 		}
 
 		/**
 		 * @private
 		 */
-		private function handler_removedFromStage_hack2(event:Event):void {
-			if ( !this._addedToStage ) { // нас опять добавили
-				this._stage = null;
+		private function handler_removedFromStage2(event:Event):void {
+			if ( !this._addedToStage ) { // нас опять не добавили
+				if ( super.hasEventListener( ResourceEvent.REMOVED_FROM_RESOURCE_MANAGER ) ) {
+					super.dispatchEvent( new ResourceEvent( ResourceEvent.REMOVED_FROM_RESOURCE_MANAGER ) );
+				}
 				// если у нас остались ресурсы, это ЖОПА!
 				for ( var resource:Object in this._resources ) {
-					throw new SecurityError( getErrorMessage( 5100 ), 5100 );
+					throw new SecurityError( 'Некоторые ресурсы не были возвращены в мэннеджер ресурсов.', 5100 );
 				}
+				this._stage = null;
 				this._resourceManager = null;
 			}
 		}

@@ -217,32 +217,17 @@ package by.blooddy.core.net {
 
 		protected function $callInputCommand(command:Command):* {
 			if ( !command ) throw new ArgumentError(); // TODO: описать ошибку
-
 			try {
-
 				// пытаемся выполнить что-нить
-				return command.call( this._client );
-
-			} catch ( e:ReferenceError ) {
-
-				if ( // проверим нету хендлера на нашу комманду
-					e.errorID != 1069 ||
-					e.message.indexOf( this._clientName )<0 ||
-					!super.hasEventListener( 'command_' + command.name )
-				) throw e;
-
-			} catch ( e:Error ) {
-				
-				throw e;
-				
+				if ( command.name in this._client ) {
+					return command.call( this._client );
+				}
 			} finally {
-
+				// проверим нету ли хендлера на нашу комманду
 				if ( super.hasEventListener( 'command_' + command.name ) ) {
 					super.dispatchEvent( new CommandEvent( 'command_' + command.name, false, false, command ) );
 				}
-
 			}
-
 		}
 
 	}

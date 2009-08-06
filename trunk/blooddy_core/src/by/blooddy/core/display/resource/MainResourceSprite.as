@@ -62,7 +62,7 @@ package by.blooddy.core.display.resource {
 		/**
 		 * @private
 		 */
-		private const _timer:Timer = new Timer( 30E3 );
+		private const _timer:Timer = new Timer( 15E3 );
 	
 		//--------------------------------------------------------------------------
 		//
@@ -85,7 +85,7 @@ package by.blooddy.core.display.resource {
 		public final function set resourceLiveTime(value:uint):void {
 			if ( this._resourceLiveTime == value ) return;
 			this._resourceLiveTime = value;
-			this._timer.delay = this._resourceLiveTime / 2;
+			this._timer.delay = this._resourceLiveTime / 4;
 		}
 
 		//--------------------------------------------------------------------------

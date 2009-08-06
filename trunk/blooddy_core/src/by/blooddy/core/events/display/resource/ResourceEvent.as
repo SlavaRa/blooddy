@@ -22,13 +22,17 @@ package by.blooddy.core.events.display.resource {
 		//
 		//--------------------------------------------------------------------------
 
-		public static const GET_RESOURCE:String =	'getResource';
+		public static const GET_RESOURCE:String =					'getResource';
 		
-		public static const TRASH_RESOURCE:String =	'trashResource';
+		public static const TRASH_RESOURCE:String =					'trashResource';
 		
-		public static const LOCK_BUNDLE:String =	'lockBundle';
+		public static const LOCK_BUNDLE:String =					'lockBundle';
 		
-		public static const UNLOCK_BUNDLE:String =	'unlockBundle';
+		public static const UNLOCK_BUNDLE:String =					'unlockBundle';
+		
+		public static const ADDED_TO_RESOURCE_MANAGER:String =		'addedToResourceManager';
+		
+		public static const REMOVED_FROM_RESOURCE_MANAGER:String =	'removedFromResourceManager';
 		
 		//--------------------------------------------------------------------------
 		//

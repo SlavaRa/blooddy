@@ -446,8 +446,8 @@ package by.blooddy.core.net {
 					} catch ( e:Error ) {
 					}
 					try {
-						this._loader.$unloadAndStop();
-					} catch (e:Error) {
+						this._loader.$unload();
+					} catch ( e:Error ) {
 					}
 					this._loaderInfo = null;
 					this._loader = null;
@@ -808,6 +808,7 @@ import flash.media.SoundLoaderContext;
 import flash.net.URLRequest;
 import flash.system.LoaderContext;
 import flash.utils.ByteArray;
+import flash.utils.getTimer;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -826,13 +827,29 @@ internal final class LoaderAsset extends Loader {
 
 	//--------------------------------------------------------------------------
 	//
+	//  Class variables
+	//
+	//--------------------------------------------------------------------------
+
+	/**
+	 * @private
+	 */
+	private static const _GC_CALL_TIMEOUT:uint = 1E3;
+
+	/**
+	 * @private
+	 */
+	private static var _gcCallTime:uint = getTimer();
+
+	//--------------------------------------------------------------------------
+	//
 	//  Constructor
 	//
 	//--------------------------------------------------------------------------
 
 	/**
 	 * @private
-	 		 * Constructor
+	 * Constructor
 	 */
 	public function LoaderAsset(target:HeuristicLoader=null) {
 		super();
@@ -919,22 +936,21 @@ internal final class LoaderAsset extends Loader {
 	 * @private
 	 */
 	internal function $unload():void {
-		super.unload();
+		var time:uint = getTimer();
+		if ( _gcCallTime < time + _GC_CALL_TIMEOUT ) {
+			_gcCallTime = time;
+			super.unloadAndStop( true );
+		} else {
+			super.unloadAndStop( false );
+		}
 	}
 
-	[Deprecated(message="метод запрещен", replacement="$unloadAndStop")]
+	[Deprecated(message="метод запрещен", replacement="$unload")]
 	/**
 	 * @private
 	 */
 	public override function unloadAndStop(gc:Boolean=true):void {
 		throw new IllegalOperationError();
-	}
-
-	/**
-	 * @private
-	 */
-	internal function $unloadAndStop(gc:Boolean=true):void {
-		super.unloadAndStop( gc );
 	}
 
 	/**
@@ -976,7 +992,7 @@ internal final class SoundAsset extends Sound {
 
 	/**
 	 * @private
-	 		 * Constructor
+	 * Constructor
 	 */
 	public function SoundAsset(target:HeuristicLoader=null) {
 		if ( !true ) { // суки из адобы, вызывают load в любом случаи. идиоты.

@@ -90,7 +90,7 @@ package by.blooddy.core.managers {
 		/**
 		 * @private
 		 */
-		private static var _maxLoading:uint = ( Capabilities.playerType == 'StandAlone' ? 240 : 3 );
+		private static var _maxLoading:uint = ( Capabilities.playerType == "StandAlone" ? 240 : 3 );
 
 		public static function get maxLoading():uint {
 			return _maxLoading;
@@ -192,7 +192,7 @@ package by.blooddy.core.managers {
 		//--------------------------------------------------------------------------
 
 		/**
-		 * Constructor
+		 * Constructor.
 		 */
 		public function ResourceManager() {
 			super();
@@ -309,7 +309,9 @@ package by.blooddy.core.managers {
 					this.registerLoadable( loader );
 				}
 			}
-			if ( !loader || loader.loaded )	super.dispatchEvent( new ResourceBundleEvent( ResourceBundleEvent.BUNDLE_ADDED, false, false, bundle ) );
+			if ( ( !loader || loader.loaded ) && super.hasEventListener( ResourceBundleEvent.BUNDLE_ADDED ) ) {
+				super.dispatchEvent( new ResourceBundleEvent( ResourceBundleEvent.BUNDLE_ADDED, false, false, bundle ) );
+			}
 		}
 
 		/**
@@ -342,7 +344,9 @@ package by.blooddy.core.managers {
 						}
 					}
 					this.unregisterLoadable( loader );
-					if ( loaded ) super.dispatchEvent( new ResourceBundleEvent( ResourceBundleEvent.BUNDLE_REMOVED, false, false, bundle ) );
+					if ( loaded && super.hasEventListener( ResourceBundleEvent.BUNDLE_REMOVED ) ) {
+						super.dispatchEvent( new ResourceBundleEvent( ResourceBundleEvent.BUNDLE_REMOVED, false, false, bundle ) );
+					}
 				}
 			}
 		}
@@ -366,10 +370,10 @@ package by.blooddy.core.managers {
 				loader = this._hash[ url ] as ILoader;
 				if ( !loader ) this.removeResourceBundle( url );
 				
-				if (loader is ResourceLoaderAsset && !loader.loaded){
+				if ( loader is ResourceLoaderAsset && !loader.loaded ){
 					asset = loader as ResourceLoaderAsset;
 					
-					if (asset.priority < priority) {
+					if ( asset.priority < priority ) {
 						asset.priority = priority;
 						ResourceManager._LOADING_QUEUE.sortOn( _SORT_FIELDS, _SORT_OPTIONS );
 					}
@@ -391,7 +395,9 @@ package by.blooddy.core.managers {
 				this._hash[ url ] = loader = asset;
 				asset.$managers.push( this );
 				if ( !asset.loaded )	this.registerLoadable( asset );
-				else					super.dispatchEvent( new ResourceBundleEvent( ResourceBundleEvent.BUNDLE_ADDED, false, false, asset ) );
+				else if ( super.hasEventListener( ResourceBundleEvent.BUNDLE_ADDED ) ) {
+					super.dispatchEvent( new ResourceBundleEvent( ResourceBundleEvent.BUNDLE_ADDED, false, false, asset ) );
+				}
 			}
 			return loader;
 		}
@@ -435,12 +441,20 @@ package by.blooddy.core.managers {
 		private function handler_complete(event:Event):void {
 			var loader:ILoadable = event.target as ILoadable;
 			if ( loader ) this.unregisterLoadable( loader );
-			super.dispatchEvent( new ResourceBundleEvent( ResourceBundleEvent.BUNDLE_ADDED, false, false, loader as IResourceBundle ) );
+			if ( super.hasEventListener( ResourceBundleEvent.BUNDLE_ADDED ) ) {
+				super.dispatchEvent( new ResourceBundleEvent( ResourceBundleEvent.BUNDLE_ADDED, false, false, loader as IResourceBundle ) );
+			}
 		}
 
 	}
 
 }
+
+//==============================================================================
+//
+//  Inner definitions
+//
+//==============================================================================
 
 import by.blooddy.core.net.ResourceLoader;
 import by.blooddy.core.utils.ClassUtils;
@@ -451,10 +465,22 @@ import flash.net.URLRequest;
 import flash.system.LoaderContext;
 import flash.utils.getTimer;
 
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Helper class: ResourceLoaderAsset
+//
+////////////////////////////////////////////////////////////////////////////////
+
 /**
  * @private
  */
 internal final class ResourceLoaderAsset extends ResourceLoader {
+
+	//--------------------------------------------------------------------------
+	//
+	//  Event handlers
+	//
+	//--------------------------------------------------------------------------
 
 	public function ResourceLoaderAsset(url:String, priority:int=0.0, loaderContext:LoaderContext=null) {
 		super( null, loaderContext );
@@ -462,11 +488,23 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 		this.priority = priority;
 	}
 
+	//--------------------------------------------------------------------------
+	//
+	//  Variables
+	//
+	//--------------------------------------------------------------------------
+
 	public var priority:int;
 
 	public const time:Number = getTimer();
 
 	internal const $managers:Array = new Array();
+
+	//--------------------------------------------------------------------------
+	//
+	//  Overriden properties
+	//
+	//--------------------------------------------------------------------------
 
 	private var _url:String;
 
@@ -478,12 +516,19 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 		return this._url;
 	}
 
-	internal function $load():void {
-		super.load( new URLRequest( this._url ) );
-	}
+	//--------------------------------------------------------------------------
+	//
+	//  Overriden methods
+	//
+	//--------------------------------------------------------------------------
 
+	[Deprecated(message="метод запрещен", replacement="$load")]
 	public override function load(request:URLRequest):void {
 		throw new IllegalOperationError();
+	}
+
+	internal function $load():void {
+		super.load( new URLRequest( this._url ) );
 	}
 
 	[Deprecated(message="метод запрещен", replacement="$close")]
