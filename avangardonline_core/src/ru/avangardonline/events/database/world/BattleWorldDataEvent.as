@@ -15,7 +15,7 @@ package ru.avangardonline.events.database.world {
 	 * @langversion				3.0
 	 * @created					04.08.2009 22:42:55
 	 */
-	public class WorldDataEvent extends DataBaseEvent {
+	public class BattleWorldDataEvent extends DataBaseEvent {
 
 		//--------------------------------------------------------------------------
 		//
@@ -23,9 +23,13 @@ package ru.avangardonline.events.database.world {
 		//
 		//--------------------------------------------------------------------------
 
-		public static const WIDTH_CHANGE:String =	'widthChange';
+		public static const WIDTH_CHANGE:String =		'widthChange';
 
-		public static const HEIGHT_CHANGE:String =	'heightChange';
+		public static const HEIGHT_CHANGE:String =		'heightChange';
+
+		public static const ADDED_TO_WORLD:String =		'addedToWorld'
+
+		public static const REMOVED_FROM_WORLD:String =	'removedFromWorld';
 
 		//--------------------------------------------------------------------------
 		//
@@ -36,7 +40,7 @@ package ru.avangardonline.events.database.world {
 		/**
 		 * Constructor
 		 */
-		public function WorldDataEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
+		public function BattleWorldDataEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super( type, bubbles, cancelable );
 		}
 

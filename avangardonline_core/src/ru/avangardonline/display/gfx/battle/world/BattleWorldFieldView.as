@@ -4,15 +4,16 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.display.world {
+package ru.avangardonline.display.gfx.battle.world {
 
 	import by.blooddy.core.display.StageObserver;
 	import by.blooddy.core.display.resource.MainResourceSprite;
 	
 	import flash.events.Event;
 	
-	import ru.avangardonline.database.world.WorldFieldData;
-	import ru.avangardonline.events.database.world.WorldDataEvent;
+	import ru.avangardonline.database.battle.world.BattleWorldData;
+	import ru.avangardonline.events.database.world.BattleWorldDataEvent;
+	import by.blooddy.core.events.display.resource.ResourceEvent;
 	
 	/**
 	 * @author					BlooDHounD
@@ -21,7 +22,7 @@ package ru.avangardonline.display.world {
 	 * @langversion				3.0
 	 * @created					05.08.2009 21:32:04
 	 */
-	public class WorldFieldView extends MainResourceSprite {
+	public class BattleWorldFieldView extends MainResourceSprite {
 
 		//--------------------------------------------------------------------------
 		//
@@ -32,14 +33,14 @@ package ru.avangardonline.display.world {
 		/**
 		 * Constructor
 		 */
-		public function WorldFieldView(data:WorldFieldData) {
+		public function BattleWorldFieldView(data:BattleWorldData) {
 			super();
 			this._data = data;
-			super.addEventListener( Event.ADDED_TO_STAGE,		this.render,	false, int.MAX_VALUE, true );
-			super.addEventListener( Event.REMOVED_FROM_STAGE,	this.clear,		false, int.MAX_VALUE, true );
+			super.addEventListener( ResourceEvent.ADDED_TO_RESOURCE_MANAGER,		this.render,	false, int.MAX_VALUE, true );
+			super.addEventListener( ResourceEvent.REMOVED_FROM_RESOURCE_MANAGER,	this.clear,		false, int.MAX_VALUE, true );
 			var observer:StageObserver = new StageObserver( this );
-			observer.registerEventListener( data, WorldDataEvent.WIDTH_CHANGE, this.render );
-			observer.registerEventListener( data, WorldDataEvent.HEIGHT_CHANGE, this.render );
+			observer.registerEventListener( data, BattleWorldDataEvent.WIDTH_CHANGE, this.render );
+			observer.registerEventListener( data, BattleWorldDataEvent.HEIGHT_CHANGE, this.render );
 		}
 
 		public function destruct():void {
@@ -60,9 +61,9 @@ package ru.avangardonline.display.world {
 		/**
 		 * @private
 		 */
-		private var _data:WorldFieldData;
+		private var _data:BattleWorldData;
 
-		public function get data():WorldFieldData {
+		public function get data():BattleWorldData {
 			return this._data;
 		}
 
@@ -95,8 +96,8 @@ package ru.avangardonline.display.world {
 			for ( y=yMin; y<yMax; y++ ) {
 				for ( x=xMin; x<xMax; x++ ) {
 					cell = new BattleFieldCellView();
-					cell.x = x * WorldView.CELL_WIDTH;
-					cell.y = y * WorldView.CELL_WIDTH;
+					cell.x = x * BattleWorldView.CELL_WIDTH;
+					cell.y = y * BattleWorldView.CELL_WIDTH;
 					super.addChild( cell );
 				}
 			}
@@ -118,7 +119,7 @@ package ru.avangardonline.display.world {
 import flash.display.Shape;
 import flash.display.PixelSnapping;
 import flash.display.LineScaleMode;
-import ru.avangardonline.display.world.WorldView;
+import ru.avangardonline.display.gfx.battle.world.BattleWorldView;
 
 internal final class BattleFieldCellView extends Shape {
 
@@ -130,7 +131,7 @@ internal final class BattleFieldCellView extends Shape {
 	/*static*/ {
 		_PROTO.graphics.lineStyle( 3, 0xFFFFFF, 1, false, LineScaleMode.NORMAL );
 		_PROTO.graphics.beginFill( 0xFFFFFF, 0.1 );
-		_PROTO.graphics.drawRect( -WorldView.CELL_WIDTH / 2, -WorldView.CELL_HEIGHT / 2, WorldView.CELL_WIDTH, WorldView.CELL_HEIGHT );
+		_PROTO.graphics.drawRect( -BattleWorldView.CELL_WIDTH / 2, -BattleWorldView.CELL_HEIGHT / 2, BattleWorldView.CELL_WIDTH, BattleWorldView.CELL_HEIGHT );
 		_PROTO.graphics.endFill();
 	}
 

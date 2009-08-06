@@ -64,7 +64,7 @@ package ru.avangardonline.database.character {
 
 		public function getCharacterAt(x:int, y:int):CharacterData {
 			for each ( var character:CharacterData in this._list ) {
-				if ( character.x == x && character.y == y ) return character;
+				if ( int( character.coord.x ) == x && int( character.coord.y ) == y ) return character;
 			}
 			return null;
 		}

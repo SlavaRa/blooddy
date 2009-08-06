@@ -4,20 +4,19 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.database.world {
+package ru.avangardonline.database.battle.world {
 
 	import by.blooddy.core.database.DataContainer;
 	import by.blooddy.core.database.DataLinker;
-	import ru.avangardonline.database.character.CharacterCollectionData;
-
+	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					05.08.2009 21:39:10
+	 * @created					05.08.2009 22:12:56
 	 */
-	public class WorldData extends DataContainer {
+	public class BattleWorldElementData extends BattleWorldAssetDataContainer {
 
 		//--------------------------------------------------------------------------
 		//
@@ -28,29 +27,23 @@ package ru.avangardonline.database.world {
 		/**
 		 * Constructor
 		 */
-		public function WorldData() {
+		public function BattleWorldElementData() {
 			super();
-			DataLinker.link( this, this.field, true );
-			DataLinker.link( this, this.characters, true );
+			DataLinker.link( this, this.coord, true );
 		}
 
 		//--------------------------------------------------------------------------
 		//
-		//  Properties
+		//  Proeprties
 		//
 		//--------------------------------------------------------------------------
 
 		//----------------------------------
-		//  battleField
+		//  coord
 		//----------------------------------
 
-		public const field:WorldFieldData = new WorldFieldData();
+		public const coord:BattleWorldCoordinateData = new BattleWorldCoordinateData();
 
-		//----------------------------------
-		//  characters
-		//----------------------------------
-
-		public const characters:CharacterCollectionData = new CharacterCollectionData();
 
 	}
 

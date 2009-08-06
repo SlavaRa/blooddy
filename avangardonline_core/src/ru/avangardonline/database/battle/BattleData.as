@@ -10,8 +10,9 @@ package ru.avangardonline.database.battle {
 	import by.blooddy.core.database.DataContainer;
 	import by.blooddy.core.database.DataLinker;
 	import by.blooddy.core.events.database.DataBaseEvent;
+	import by.blooddy.core.utils.time.Time;
 	
-	import ru.avangardonline.database.world.WorldData;
+	import ru.avangardonline.database.battle.world.BattleWorldData;
 
 	/**
 	 * @author					BlooDHounD
@@ -31,11 +32,12 @@ package ru.avangardonline.database.battle {
 		/**
 		 * Constructor
 		 */
-		public function BattleData() {
+		public function BattleData(time:Time) {
 			super();
 			super.name = 'battleData';
 
-			DataLinker.link( this, this.world, true );
+			this._world = new BattleWorldData( time )
+			DataLinker.link( this, this._world, true );
 
 			super.addEventListener( DataBaseEvent.ADDED,	this.handler_changed, false, int.MAX_VALUE, true );
 			super.addEventListener( DataBaseEvent.REMOVED,	this.handler_changed, false, int.MAX_VALUE, true );
@@ -103,10 +105,17 @@ package ru.avangardonline.database.battle {
 		}
 
 		//----------------------------------
-		//  battleField
+		//  world
 		//----------------------------------
 
-		public const world:WorldData = new WorldData();
+		/**
+		 * @private
+		 */
+		private var _world:BattleWorldData;
+
+		public function get world():BattleWorldData {
+			return this._world;
+		}
 
 		//--------------------------------------------------------------------------
 		//

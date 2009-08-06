@@ -62,10 +62,10 @@ package ru.avangardonline.controllers.battle {
 				else dataBase.removeChild( child );
 			}
 			if ( !this._data ) {
-				this._data = new BattleData();
+				this._data = new BattleData( time );
 
-				this._data.world.field.width = 9;
-				this._data.world.field.height = 5;
+				this._data.world.width = 9;
+				this._data.world.height = 5;
 
 				var id:uint = 0;
 				var x:int;
@@ -74,8 +74,8 @@ package ru.avangardonline.controllers.battle {
 				for ( y=0; y<5; y++ ) {
 					for ( x = -4; x < -1; x++ ) {
 						character = new CharacterData( ++id );
-						character.x = x;
-						character.y = y;
+						character.coord.x = x;
+						character.coord.y = y;
 						this._data.world.characters.addChild( character );
 					}
 				}

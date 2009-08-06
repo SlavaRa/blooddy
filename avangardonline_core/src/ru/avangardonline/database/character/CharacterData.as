@@ -6,7 +6,7 @@
 
 package ru.avangardonline.database.character {
 
-	import ru.avangardonline.database.world.WorldElementData;
+	import ru.avangardonline.database.battle.world.BattleWorldElementData;
 
 	/**
 	 * @author					BlooDHounD
@@ -15,7 +15,7 @@ package ru.avangardonline.database.character {
 	 * @langversion				3.0
 	 * @created					05.08.2009 22:12:56
 	 */
-	public class CharacterData extends WorldElementData {
+	public class CharacterData extends BattleWorldElementData {
 
 		//--------------------------------------------------------------------------
 		//
