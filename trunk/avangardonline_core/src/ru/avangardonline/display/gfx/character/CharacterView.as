@@ -4,15 +4,17 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.display.character {
+package ru.avangardonline.display.gfx.character {
 
-	import ru.avangardonline.database.character.CharacterData;
-	import ru.avangardonline.display.world.WorldElementView;
-	import flash.events.Event;
 	import by.blooddy.core.net.ILoadable;
+	
+	import flash.display.DisplayObject;
+	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
-	import flash.display.DisplayObject;
+	
+	import ru.avangardonline.database.character.CharacterData;
+	import ru.avangardonline.display.gfx.battle.world.BattleWorldElementView;
 	
 	/**
 	 * @author					BlooDHounD
@@ -21,7 +23,7 @@ package ru.avangardonline.display.character {
 	 * @langversion				3.0
 	 * @created					05.08.2009 22:10:59
 	 */
-	public class CharacterView extends WorldElementView {
+	public class CharacterView extends BattleWorldElementView {
 
 		//--------------------------------------------------------------------------
 		//

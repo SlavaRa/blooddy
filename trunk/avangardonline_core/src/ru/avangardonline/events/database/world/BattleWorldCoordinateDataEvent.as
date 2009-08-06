@@ -14,7 +14,7 @@ package ru.avangardonline.events.database.world {
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
 	 */
-	public class WorldElementDataEvent extends DataBaseEvent {
+	public class BattleWorldCoordinateDataEvent extends DataBaseEvent {
 
 		//--------------------------------------------------------------------------
 		//
@@ -22,7 +22,11 @@ package ru.avangardonline.events.database.world {
 		//
 		//--------------------------------------------------------------------------
 
-		public static const COORDINATE_CHANGE:String = 'coordinateChange';
+		public static const COORDINATE_CHANGE:String =	'coordinateChange';
+
+		public static const MOVING_STOP:String =		'movingStop';
+
+		public static const MOVING_START:String =		'movingStart';
 
 		//--------------------------------------------------------------------------
 		//
@@ -33,7 +37,7 @@ package ru.avangardonline.events.database.world {
 		/**
 		 * Constructor
 		 */
-		public function WorldElementDataEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
+		public function BattleWorldCoordinateDataEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super( type, bubbles, cancelable );
 		}
 

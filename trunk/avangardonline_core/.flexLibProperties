@@ -10,14 +10,13 @@
     <classEntry path="ru.avangardonline.database.battle.IActionContainerData"/>
     <classEntry path="ru.avangardonline.database.character.CharacterCollectionData"/>
     <classEntry path="ru.avangardonline.database.character.CharacterData"/>
-    <classEntry path="ru.avangardonline.database.world.WorldFieldData"/>
-    <classEntry path="ru.avangardonline.display.world.WorldView"/>
-    <classEntry path="ru.avangardonline.events.database.world.WorldDataEvent"/>
-    <classEntry path="ru.avangardonline.display.world.WorldFieldView"/>
-    <classEntry path="ru.avangardonline.database.world.WorldData"/>
-    <classEntry path="ru.avangardonline.display.character.CharacterView"/>
-    <classEntry path="ru.avangardonline.display.world.WorldElementView"/>
-    <classEntry path="ru.avangardonline.database.world.WorldElementData"/>
+    <classEntry path="ru.avangardonline.display.gfx.battle.world.BattleWorldElementView"/>
+    <classEntry path="ru.avangardonline.display.gfx.battle.world.BattleWorldFieldView"/>
+    <classEntry path="ru.avangardonline.display.gfx.character.CharacterView"/>
+    <classEntry path="ru.avangardonline.events.database.world.BattleWorldDataEvent"/>
+    <classEntry path="ru.avangardonline.events.database.world.BattleWorldCoordinateDataEvent"/>
+    <classEntry path="ru.avangardonline.database.battle.world.BattleWorldCoordinateData"/>
+    <classEntry path="ru.avangardonline.database.battle.world.BattleWorldAssetData"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

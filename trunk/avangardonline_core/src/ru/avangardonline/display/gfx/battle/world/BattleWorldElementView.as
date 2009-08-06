@@ -4,15 +4,16 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.display.world {
+package ru.avangardonline.display.gfx.battle.world {
 
+	import by.blooddy.core.display.destruct;
 	import by.blooddy.core.display.resource.ResourceSprite;
+	import by.blooddy.core.events.display.resource.ResourceEvent;
 	
+	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
 	
-	import ru.avangardonline.database.world.WorldElementData;
-	import by.blooddy.core.display.destruct;
-	import flash.errors.IllegalOperationError;
+	import ru.avangardonline.database.battle.world.BattleWorldElementData;
 	
 	/**
 	 * @author					BlooDHounD
@@ -21,7 +22,7 @@ package ru.avangardonline.display.world {
 	 * @langversion				3.0
 	 * @created					05.08.2009 22:12:19
 	 */
-	public class WorldElementView extends ResourceSprite {
+	public class BattleWorldElementView extends ResourceSprite {
 
 		//--------------------------------------------------------------------------
 		//
@@ -32,11 +33,11 @@ package ru.avangardonline.display.world {
 		/**
 		 * Constructor
 		 */
-		public function WorldElementView(data:WorldElementData) {
+		public function BattleWorldElementView(data:BattleWorldElementData) {
 			super();
 			this._data = data;
-			super.addEventListener( Event.ADDED_TO_STAGE,		this.render,	false, int.MAX_VALUE, false );
-			super.addEventListener( Event.REMOVED_FROM_STAGE,	this.clear,		false, int.MAX_VALUE, false );
+			super.addEventListener( ResourceEvent.ADDED_TO_RESOURCE_MANAGER,		this.render,	false, int.MAX_VALUE, false );
+			super.addEventListener( ResourceEvent.REMOVED_FROM_RESOURCE_MANAGER,	this.clear,		false, int.MAX_VALUE, false );
 		}
 
 		public function destruct():void {
@@ -54,7 +55,7 @@ package ru.avangardonline.display.world {
 		/**
 		 * @private
 		 */
-		private var _data:WorldElementData;
+		private var _data:BattleWorldElementData;
 
 		//--------------------------------------------------------------------------
 		//

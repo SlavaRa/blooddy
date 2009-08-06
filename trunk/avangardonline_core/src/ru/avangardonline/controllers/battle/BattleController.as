@@ -20,8 +20,8 @@ package ru.avangardonline.controllers.battle {
 	import flash.geom.Point;
 	
 	import ru.avangardonline.database.battle.BattleData;
-	import ru.avangardonline.database.world.WorldData;
-	import ru.avangardonline.display.world.WorldView;
+	import ru.avangardonline.database.battle.world.BattleWorldData;
+	import ru.avangardonline.display.gfx.battle.world.BattleWorldView;
 
 	/**
 	 * @author					BlooDHounD
@@ -54,12 +54,12 @@ package ru.avangardonline.controllers.battle {
 				else dataBase.removeChild( child );
 			}
 			if ( !battle ) {
-				battle = new BattleData();
+				battle = new BattleData( time );
 				dataBase.addChild( battle );
 			}
 
 			this._data = battle.world;
-			this._view = new WorldView( this._data );
+			this._view = new BattleWorldView( this._data );
 			this._view.addEventListener( Event.ADDED_TO_STAGE,		this.handler_addedToStage,		false, int.MAX_VALUE, true );
 			this._view.addEventListener( Event.REMOVED_FROM_STAGE,	this.handler_removedToStage,	false, int.MAX_VALUE, true );
 
@@ -85,12 +85,12 @@ package ru.avangardonline.controllers.battle {
 		/**
 		 * @private
 		 */
-		private var _data:WorldData;
+		private var _data:BattleWorldData;
 
 		/**
 		 * @private
 		 */
-		private var _view:WorldView;
+		private var _view:BattleWorldView;
 
 		//--------------------------------------------------------------------------
 		//
@@ -134,10 +134,10 @@ package ru.avangardonline.controllers.battle {
 		 * @private
 		 */
 		private function update3D(event:Event=null):void {
-			var x:int = this._view.mouseX;
-			var y:int = ( this._view.mouseY < 0 ? this._view.mouseY * 1.7 : 0 );
+			var x:int = - this._view.mouseX;
+			var y:int = ( this._view.mouseY > 0 ? - this._view.mouseY * 2 : 0 );
 			var projection:PerspectiveProjection = new PerspectiveProjection();
-			projection.fieldOfView = 60;
+			projection.fieldOfView = 80;
 			projection.projectionCenter = new Point( x, y );
 			this._view.transform.perspectiveProjection = projection;
 		}

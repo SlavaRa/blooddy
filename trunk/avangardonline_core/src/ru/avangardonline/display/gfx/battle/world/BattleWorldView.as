@@ -4,17 +4,18 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.display.world {
+package ru.avangardonline.display.gfx.battle.world {
 
 	import by.blooddy.core.display.destruct;
 	import by.blooddy.core.display.resource.MainResourceSprite;
+	import by.blooddy.core.events.display.resource.ResourceEvent;
 	
 	import flash.events.Event;
-	
-	import ru.avangardonline.database.world.WorldData;
 	import flash.utils.Dictionary;
+	
+	import ru.avangardonline.database.battle.world.BattleWorldData;
 	import ru.avangardonline.database.character.CharacterData;
-	import ru.avangardonline.display.character.CharacterView;
+	import ru.avangardonline.display.gfx.character.CharacterView;
 	
 	/**
 	 * @author					BlooDHounD
@@ -23,7 +24,7 @@ package ru.avangardonline.display.world {
 	 * @langversion				3.0
 	 * @created					04.08.2009 19:58:31
 	 */
-	public class WorldView extends MainResourceSprite {
+	public class BattleWorldView extends MainResourceSprite {
 
 		//--------------------------------------------------------------------------
 		//
@@ -44,13 +45,13 @@ package ru.avangardonline.display.world {
 		/**
 		 * Constructor
 		 */
-		public function WorldView(data:WorldData) {
+		public function BattleWorldView(data:BattleWorldData) {
 			super();
 			this._data = data;
-			this._field = new WorldFieldView( data.field );
+			this._field = new BattleWorldFieldView( data );
 			this._field.rotationX = -90;
-			super.addEventListener( Event.ADDED_TO_STAGE,		this.render,	false, int.MAX_VALUE, true );
-			super.addEventListener( Event.REMOVED_FROM_STAGE,	this.clear,		false, int.MAX_VALUE, true );
+			super.addEventListener( ResourceEvent.ADDED_TO_RESOURCE_MANAGER,		this.render,	false, int.MAX_VALUE, true );
+			super.addEventListener( ResourceEvent.REMOVED_FROM_RESOURCE_MANAGER,	this.clear,		false, int.MAX_VALUE, true );
 		}
 
 		public function destruct():void {
@@ -72,7 +73,7 @@ package ru.avangardonline.display.world {
 		/**
 		 * @private
 		 */
-		private var _field:WorldFieldView;
+		private var _field:BattleWorldFieldView;
 
 		//--------------------------------------------------------------------------
 		//
@@ -87,9 +88,9 @@ package ru.avangardonline.display.world {
 		/**
 		 * @private
 		 */
-		private var _data:WorldData;
+		private var _data:BattleWorldData;
 
-		public function get data():WorldData {
+		public function get data():BattleWorldData {
 			return this._data;
 		}
 
@@ -159,8 +160,8 @@ package ru.avangardonline.display.world {
 		 */
 		private function updatePosition(data:CharacterData):void {
 			var view:CharacterView = this._characters[ data ];
-			view.x =   data.x * CELL_WIDTH;
-			view.z = - data.y * CELL_HEIGHT;
+			view.x =   data.coord.x * CELL_WIDTH;
+			view.z = - data.coord.y * CELL_HEIGHT;
 		}
 
 	}
