@@ -4,7 +4,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.managers {
+package by.blooddy.core.managers.drag {
 
 	import flash.display.DisplayObject;
 	import flash.geom.Point;

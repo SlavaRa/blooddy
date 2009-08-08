@@ -4,9 +4,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.managers {
+package by.blooddy.core.managers.drag {
 
-	import by.blooddy.core.events.DragEvent;
+	import by.blooddy.core.events.managers.DragEvent;
 	import by.blooddy.core.events.isIntrinsicEvent;
 	import by.blooddy.core.utils.DisplayObjectUtils;
 	
@@ -28,22 +28,22 @@ package by.blooddy.core.managers {
 	/**
 	 * @eventType			platform.events.DragEvent.DRAG_START
 	 */
-	[Event(name="dragStart", type="by.blooddy.core.events.DragEvent")]
+	[Event(name="dragStart", type="by.blooddy.core.events.managers.DragEvent")]
 
 	/**
 	 * @eventType			platform.events.DragEvent.DRAG_STOP
 	 */
-	[Event(name="dragStop", type="by.blooddy.core.events.DragEvent")]
+	[Event(name="dragStop", type="by.blooddy.core.events.managers.DragEvent")]
 
 	/**
 	 * @eventType			platform.events.DragEvent.DRAG_MOVE
 	 */
-	[Event(name="dragMove", type="by.blooddy.core.events.DragEvent")]
+	[Event(name="dragMove", type="by.blooddy.core.events.managers.DragEvent")]
 
 	/**
 	 * @eventType			platform.events.DragEvent.DRAG_FAIL
 	 */
-	[Event(name="dragFail", type="by.blooddy.core.events.DragEvent")]
+	[Event(name="dragFail", type="by.blooddy.core.events.managers.DragEvent")]
 
 	//--------------------------------------
 	//  Excluded APIs

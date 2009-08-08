@@ -7,8 +7,9 @@
 package ru.avangardonline.database.character {
 
 	import by.blooddy.core.database.Data;
-	import by.blooddy.core.database.DataContainer;
 	import by.blooddy.core.utils.HashArray;
+	
+	import ru.avangardonline.database.battle.world.BattleWorldAssetDataContainer;
 	
 	/**
 	 * @author					BlooDHounD
@@ -17,7 +18,7 @@ package ru.avangardonline.database.character {
 	 * @langversion				3.0
 	 * @created					29.07.2009 21:16:56
 	 */
-	public class CharacterCollectionData extends DataContainer {
+	public class CharacterCollectionData extends BattleWorldAssetDataContainer {
 
 		//--------------------------------------------------------------------------
 		//
@@ -79,6 +80,7 @@ package ru.avangardonline.database.character {
 		 * @private
 		 */
 		protected override function addChild_before(child:Data):void {
+			super.addChild_before( child );
 			if ( child is CharacterData ) {
 				var character:CharacterData = child as CharacterData;
 				if ( this._hash[ character.id ] ) throw new ArgumentError();
@@ -91,6 +93,7 @@ package ru.avangardonline.database.character {
 		 * @private
 		 */
 		protected override function removeChild_before(child:Data):void {
+			super.removeChild_before( child );
 			if ( child is CharacterData ) {
 				var character:CharacterData = child as CharacterData;
 				delete this._hash[ character.id ];

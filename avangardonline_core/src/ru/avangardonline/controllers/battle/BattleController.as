@@ -60,14 +60,15 @@ package ru.avangardonline.controllers.battle {
 
 			this._data = battle.world;
 			this._view = new BattleWorldView( this._data );
-			this._view.addEventListener( Event.ADDED_TO_STAGE,		this.handler_addedToStage,		false, int.MAX_VALUE, true );
-			this._view.addEventListener( Event.REMOVED_FROM_STAGE,	this.handler_removedToStage,	false, int.MAX_VALUE, true );
-
 			this._container.addChild( this._view );
 
-			if ( this._view.stage ) {
-				this.updateStageSize();
-			}
+			this._view.x = 353;
+			this._view.y = 320;
+
+			var projection:PerspectiveProjection = new PerspectiveProjection();
+			projection.fieldOfView = 60;
+			projection.projectionCenter = new Point( 0, -580 );
+			this._view.transform.perspectiveProjection = projection;
 
 		}
 
@@ -140,38 +141,6 @@ package ru.avangardonline.controllers.battle {
 			projection.fieldOfView = 80;
 			projection.projectionCenter = new Point( x, y );
 			this._view.transform.perspectiveProjection = projection;
-		}
-
-		/**
-		 * @private
-		 */
-		private function updateStageSize(event:Event=null):void {
-			this._view.x = this._view.stage.stageWidth / 2;
-			this._view.y = this._view.stage.stageHeight / 2;
-			this.update3D( event );
-		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Event handlers
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		private function handler_addedToStage(event:Event):void {
-			this._view.stage.addEventListener( Event.RESIZE, this.updateStageSize );
-			this._view.stage.addEventListener( MouseEvent.MOUSE_MOVE, this.update3D );
-			this.updateStageSize( event );
-		}
-
-		/**
-		 * @private
-		 */
-		private function handler_removedToStage(event:Event):void {
-			this._view.stage.removeEventListener( Event.RESIZE, this.updateStageSize );
-			this._view.stage.removeEventListener( MouseEvent.MOUSE_MOVE, this.update3D );
 		}
 
 	}

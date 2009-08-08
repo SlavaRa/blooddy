@@ -67,7 +67,7 @@ package by.blooddy.core.utils.time {
 		/**
 		 * @private
 		 */
-		private var _speed:Number;
+		private var _speed:Number = 1;
 
 		public function get speed():Number {
 			return this._speed;

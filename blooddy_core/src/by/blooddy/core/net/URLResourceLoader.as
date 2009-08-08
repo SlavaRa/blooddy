@@ -6,7 +6,7 @@
 
 package by.blooddy.core.net {
 
-	import by.blooddy.core.managers.IResourceBundle;
+	import by.blooddy.core.managers.resource.IResourceBundle;
 	
 	import flash.net.URLRequest;
 

@@ -8,7 +8,7 @@ package by.blooddy.core.net.zip {
 
 	import flash.net.URLRequest;
 
-	import by.blooddy.core.managers.IResourceBundle;
+	import by.blooddy.core.managers.resource.IResourceBundle;
 
 	/**
 	 * @author					BlooDHounD

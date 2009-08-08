@@ -15,8 +15,10 @@ package ru.avangardonline {
 
 	import flash.display.StageScaleMode;
 	import flash.display.StageAlign;
+	import flash.display.Loader;
+	import flash.net.URLRequest;
 
-	[SWF(width="1000", height="600", frameRate="24", backgroundColor="#000000")]
+	[SWF(width="706", height="378", frameRate="21", backgroundColor="#333333")]
 
 	[Frame(factoryClass="ru.avangardonline.AvangardFactory")]
 
@@ -41,6 +43,9 @@ package ru.avangardonline {
 		public function Avangard() {
 			super();
 			super.addEventListener( Event.ADDED_TO_STAGE, this.handler_addedToStage, false, int.MAX_VALUE, true );
+			var loader:Loader = new Loader();
+			loader.load( new URLRequest( 'lib/display/bg.jpg' ) );
+			super.addChild( loader );
 		}
 
 		//--------------------------------------------------------------------------

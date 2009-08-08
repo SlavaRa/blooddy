@@ -4,9 +4,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.managers {
+package by.blooddy.core.managers.resource {
 
-	import by.blooddy.core.events.ResourceBundleEvent;
+	import by.blooddy.core.events.managers.ResourceBundleEvent;
 	import by.blooddy.core.net.ILoadable;
 	import by.blooddy.core.net.ILoader;
 	import by.blooddy.core.net.LoaderPriority;

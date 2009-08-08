@@ -1,11 +1,11 @@
-package by.blooddy.core.events {
+package by.blooddy.core.events.managers {
 
 	import flash.display.DisplayObject;
 	import flash.display.InteractiveObject;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	
-	import by.blooddy.core.managers.DragObject;
+	import by.blooddy.core.managers.drag.DragObject;
 
 	public class DragEvent extends MouseEvent {
 

@@ -4,11 +4,12 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.events {
+package by.blooddy.core.events.net {
 
+	import by.blooddy.core.utils.ClassUtils;
+	
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
-	import by.blooddy.core.utils.ClassUtils;
 
 	/**
 	 * @author					BlooDHounD
@@ -35,8 +36,8 @@ package by.blooddy.core.events {
 		/**
  		 * Constructor
 		 */
-		public function StackErrorEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false, text:String="", stack:String="") {
-			super(type, bubbles, cancelable, text);
+		public function StackErrorEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false, text:String=null, stack:String=null) {
+			super( type, bubbles, cancelable, text );
 			this.stack = stack;
 		}
 
@@ -46,11 +47,11 @@ package by.blooddy.core.events {
 		//
 		//--------------------------------------------------------------------------
 
-		public var stack:String = "";
+		public var stack:String;
 
 		//--------------------------------------------------------------------------
 		//
-		//  Overriden methods: Event
+		//  Overriden methods
 		//
 		//--------------------------------------------------------------------------
 
@@ -59,7 +60,7 @@ package by.blooddy.core.events {
 		}
 
 		public override function toString():String {
-			return super.formatToString( ClassUtils.getClassName( this ), "type", "bubbles", "cancelable", "text", "stack" );
+			return super.formatToString( ClassUtils.getClassName( this ), 'type', 'bubbles', 'cancelable', 'text', 'stack' );
 		}
 
 	}

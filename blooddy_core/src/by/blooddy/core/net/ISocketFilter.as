@@ -6,7 +6,7 @@
 
 package by.blooddy.core.net {
 
-	import by.blooddy.core.events.CommandEvent;
+	import by.blooddy.core.events.net.CommandEvent;
 
 	import flash.utils.IDataInput;
 	import flash.utils.IDataOutput;

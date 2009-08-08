@@ -6,7 +6,7 @@
 
 package by.blooddy.core.text {
 
-	import by.blooddy.core.managers.IResourceBundle;
+	import by.blooddy.core.managers.resource.IResourceBundle;
 	import by.blooddy.core.net.Loader;
 	import by.blooddy.core.utils.ByteArrayUtils;
 	import by.blooddy.core.utils.SWFByteArray;

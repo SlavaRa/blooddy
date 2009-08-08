@@ -1,14 +1,13 @@
 package by.blooddy.core.media {
 
 	import by.blooddy.core.events.net.LoaderEvent;
-	import by.blooddy.core.managers.IResourceManagerOwner;
-	import by.blooddy.core.managers.ResourceManager;
+	import by.blooddy.core.managers.resource.ResourceManager;
 	import by.blooddy.core.net.ILoadable;
 	
 	import flash.events.EventDispatcher;
 	import flash.media.Sound;
 
-	public class SoundContainer extends EventDispatcher implements IResourceManagerOwner {
+	public class SoundContainer extends EventDispatcher {
 
 		private static const _TRASH:Object = new Object();
 

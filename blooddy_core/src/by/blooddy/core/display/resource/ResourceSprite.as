@@ -9,9 +9,9 @@ package by.blooddy.core.display.resource {
 	import by.blooddy.core.errors.getErrorMessage;
 	import by.blooddy.core.events.display.resource.ResourceEvent;
 	import by.blooddy.core.events.net.LoaderEvent;
-	import by.blooddy.core.managers.IResourceBundle;
-	import by.blooddy.core.managers.ResourceBundle;
-	import by.blooddy.core.managers.ResourceManager;
+	import by.blooddy.core.managers.resource.IResourceBundle;
+	import by.blooddy.core.managers.resource.ResourceBundle;
+	import by.blooddy.core.managers.resource.ResourceManager;
 	import by.blooddy.core.net.ILoadable;
 	import by.blooddy.core.utils.DisplayObjectUtils;
 	import by.blooddy.core.utils.RecycleBin;

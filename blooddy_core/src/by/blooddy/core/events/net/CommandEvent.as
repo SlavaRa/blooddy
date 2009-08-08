@@ -4,7 +4,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.events {
+package by.blooddy.core.events.net {
 
 	import by.blooddy.core.utils.ClassUtils;
 	import by.blooddy.core.utils.Command;

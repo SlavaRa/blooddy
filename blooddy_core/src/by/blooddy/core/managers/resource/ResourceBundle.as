@@ -4,7 +4,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.managers {
+package by.blooddy.core.managers.resource {
 
 	/**
 	 * Динамический пучёк ресурсов.
