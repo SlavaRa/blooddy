@@ -4,10 +4,12 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.events {
+package by.blooddy.core.events.managers {
 
+	import by.blooddy.core.managers.resource.IResourceBundle;
+	import by.blooddy.core.utils.ClassUtils;
+	
 	import flash.events.Event;
-	import by.blooddy.core.managers.IResourceBundle;
 
 	/**
 	 * Евент ресурс манагера.
@@ -32,12 +34,12 @@ package by.blooddy.core.events {
 		/**
 		 * @eventType			bundleAdded
 		 */
-		public static const BUNDLE_ADDED:String = "bundleAdded";
+		public static const BUNDLE_ADDED:String =	'bundleAdded';
 
 		/**
 		 * @eventType			bundleRemoved
 		 */
-		public static const BUNDLE_REMOVED:String = "bundleRemoved";
+		public static const BUNDLE_REMOVED:String =	'bundleRemoved';
 
 		//--------------------------------------------------------------------------
 		//
@@ -54,7 +56,7 @@ package by.blooddy.core.events {
 		 * @param	bundle			ПучОк.
 		 */
 		public function ResourceBundleEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false, bundle:IResourceBundle=null) {
-			super(type, bubbles, cancelable);
+			super( type, bubbles, cancelable );
 			this.bundle = bundle;
 		}
 
@@ -77,7 +79,7 @@ package by.blooddy.core.events {
 
 		//--------------------------------------------------------------------------
 		//
-		//  Overridden methods: Event
+		//  Overridden methods
 		//
 		//--------------------------------------------------------------------------
 
@@ -85,14 +87,14 @@ package by.blooddy.core.events {
 	     * @private
 	     */
 		public override function clone():Event {
-			return new ResourceBundleEvent(this.type, this.bubbles, this.cancelable, this.bundle);
+			return new ResourceBundleEvent( super.type, super.bubbles, super.cancelable, this.bundle );
 		}
 
 	    /**
 	     * @private
 	     */
 		public override function toString():String {
-			return super.formatToString("ResourceEvent", "type", "bubbles", "cancelable", "bundleName");
+			return super.formatToString( ClassUtils.getClassName( this ), 'type', 'bubbles', 'cancelable', 'bundleName' );
 		}
 
 	}

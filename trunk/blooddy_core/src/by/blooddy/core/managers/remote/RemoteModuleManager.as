@@ -1,6 +1,6 @@
-package by.blooddy.core.managers {
+package by.blooddy.core.managers.remote {
 
-	import by.blooddy.core.events.RemoteModuleEvent;
+	import by.blooddy.core.events.managers.RemoteModuleEvent;
 	
 	import flash.display.LoaderInfo;
 	import flash.events.Event;
@@ -12,8 +12,8 @@ package by.blooddy.core.managers {
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 
-	[Event(name="init", type="by.blooddy.core.events.RemoteModuleEvent")]
-	[Event(name="unload", type="by.blooddy.core.events.RemoteModuleEvent")]
+	[Event(name="init", type="by.blooddy.core.events.managers.RemoteModuleEvent")]
+	[Event(name="unload", type="by.blooddy.core.events.managers.RemoteModuleEvent")]
 
 	public class RemoteModuleManager extends EventDispatcher implements IRemoteModuleManager {
 
@@ -80,11 +80,11 @@ import flash.utils.ByteArray;
 import by.blooddy.core.net.Loader;
 import flash.events.Event;
 import flash.events.IOErrorEvent;
-import by.blooddy.core.events.RemoteModuleEvent;
-import by.blooddy.core.managers.IRemoteModule;
+import by.blooddy.core.events.managers.RemoteModuleEvent;
+import by.blooddy.core.managers.remote.IRemoteModule;
 import flash.display.LoaderInfo;
 import flash.net.URLRequest;
-import by.blooddy.core.managers.IRemoteModuleManager;
+import by.blooddy.core.managers.remote.IRemoteModuleManager;
 import by.blooddy.core.net.MIME;
 
 internal final class RemoteModuleManagerInstance extends EventDispatcher implements IRemoteModuleManager {

@@ -6,8 +6,8 @@
 
 package by.blooddy.core.net {
 
-	import by.blooddy.core.events.CommandEvent;
-	import by.blooddy.core.events.StackErrorEvent;
+	import by.blooddy.core.events.net.CommandEvent;
+	import by.blooddy.core.events.net.StackErrorEvent;
 	import by.blooddy.core.logging.CommandLog;
 	import by.blooddy.core.logging.ILogging;
 	import by.blooddy.core.logging.InfoLog;
@@ -24,7 +24,7 @@ package by.blooddy.core.net {
 	/**
 	 * какая-то ошибка при исполнении.
 	 */
-	[Event(name="error", type="by.blooddy.core.events.StackErrorEvent")]	
+	[Event(name="error", type="by.blooddy.core.events.net.StackErrorEvent")]	
 
 	/**
 	 * @author					BlooDHounD

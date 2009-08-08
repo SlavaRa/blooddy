@@ -6,7 +6,7 @@
 
 package by.blooddy.core.net {
 
-	import by.blooddy.core.events.CommandEvent;
+	import by.blooddy.core.events.net.CommandEvent;
 	import by.blooddy.core.utils.Command;
 	import by.blooddy.core.utils.ProxyEventDispatcher;
 	
@@ -15,7 +15,7 @@ package by.blooddy.core.net {
 
 	use namespace flash_proxy;
 
-	[Event(name="command", type="by.blooddy.core.events.CommandEvent")]
+	[Event(name="command", type="by.blooddy.core.events.net.CommandEvent")]
 
 	/**
 	 * @author					BlooDHounD

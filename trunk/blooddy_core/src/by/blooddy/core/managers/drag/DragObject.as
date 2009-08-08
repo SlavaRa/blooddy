@@ -4,10 +4,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.managers {
+package by.blooddy.core.managers.drag {
 
-	import by.blooddy.core.utils.getCallerInfo;
-	
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
@@ -21,7 +19,6 @@ package by.blooddy.core.managers {
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.system.Capabilities;
-	import flash.utils.getQualifiedClassName;
 
 	//--------------------------------------
 	//  Events

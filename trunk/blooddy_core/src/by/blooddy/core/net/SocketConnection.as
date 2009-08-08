@@ -6,7 +6,7 @@
 
 package by.blooddy.core.net {
 
-	import by.blooddy.core.events.SerializeErrorEvent;
+	import by.blooddy.core.events.net.SerializeErrorEvent;
 	import by.blooddy.core.logging.InfoLog;
 	import by.blooddy.core.utils.ByteArrayUtils;
 	import by.blooddy.core.utils.Command;
@@ -53,7 +53,7 @@ package by.blooddy.core.net {
 	/**
 	 * ошибка сериализации протокола
 	 */
-	[Event(name="serializeError", type="by.blooddy.core.events.SerializeErrorEvent")]	
+	[Event(name="serializeError", type="by.blooddy.core.events.net.SerializeErrorEvent")]	
 
 	/**
 	 * @author					BlooDHounD

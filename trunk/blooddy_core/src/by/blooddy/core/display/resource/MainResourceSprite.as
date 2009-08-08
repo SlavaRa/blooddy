@@ -8,7 +8,7 @@ package by.blooddy.core.display.resource {
 
 	import by.blooddy.core.errors.getErrorMessage;
 	import by.blooddy.core.events.display.resource.ResourceEvent;
-	import by.blooddy.core.managers.ResourceManager;
+	import by.blooddy.core.managers.resource.ResourceManager;
 	
 	import flash.events.Event;
 	import flash.events.TimerEvent;

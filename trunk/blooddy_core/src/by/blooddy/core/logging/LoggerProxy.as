@@ -6,7 +6,7 @@
 
 package by.blooddy.core.logging {
 
-	import by.blooddy.core.events.LogEvent;
+	import by.blooddy.core.events.logging.LogEvent;
 
 	/**
 	 * @author					BlooDHounD

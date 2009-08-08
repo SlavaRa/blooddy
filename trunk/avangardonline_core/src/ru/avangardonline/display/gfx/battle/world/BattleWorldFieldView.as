@@ -8,12 +8,12 @@ package ru.avangardonline.display.gfx.battle.world {
 
 	import by.blooddy.core.display.StageObserver;
 	import by.blooddy.core.display.resource.MainResourceSprite;
+	import by.blooddy.core.events.display.resource.ResourceEvent;
 	
 	import flash.events.Event;
 	
 	import ru.avangardonline.database.battle.world.BattleWorldData;
 	import ru.avangardonline.events.database.world.BattleWorldDataEvent;
-	import by.blooddy.core.events.display.resource.ResourceEvent;
 	
 	/**
 	 * @author					BlooDHounD
@@ -36,11 +36,11 @@ package ru.avangardonline.display.gfx.battle.world {
 		public function BattleWorldFieldView(data:BattleWorldData) {
 			super();
 			this._data = data;
-			super.addEventListener( ResourceEvent.ADDED_TO_RESOURCE_MANAGER,		this.render,	false, int.MAX_VALUE, true );
-			super.addEventListener( ResourceEvent.REMOVED_FROM_RESOURCE_MANAGER,	this.clear,		false, int.MAX_VALUE, true );
+			super.addEventListener( ResourceEvent.ADDED_TO_RESOURCE_MANAGER,			this.render,	false, int.MAX_VALUE, true );
+			super.addEventListener( ResourceEvent.REMOVED_FROM_RESOURCE_MANAGER,		this.clear,		false, int.MAX_VALUE, true );
 			var observer:StageObserver = new StageObserver( this );
-			observer.registerEventListener( data, BattleWorldDataEvent.WIDTH_CHANGE, this.render );
-			observer.registerEventListener( data, BattleWorldDataEvent.HEIGHT_CHANGE, this.render );
+			observer.registerEventListener( data, BattleWorldDataEvent.WIDTH_CHANGE,	this.render );
+			observer.registerEventListener( data, BattleWorldDataEvent.HEIGHT_CHANGE,	this.render );
 		}
 
 		public function destruct():void {
@@ -83,24 +83,34 @@ package ru.avangardonline.display.gfx.battle.world {
 			var height:uint = this._data.height;
 
 			var xMin:int = -width / 2;
-			var xMax:int = xMin + width;
+			var xMax:int = xMin + width - 1;
 
 			var yMin:int = 0;
-			var yMax:int = height;
+			var yMax:int = height - 1;
 
 			var cell:BattleFieldCellView;
 
 			var x:int;
 			var y:int;
 
-			for ( y=yMin; y<yMax; y++ ) {
-				for ( x=xMin; x<xMax; x++ ) {
+			for ( y=yMin; y<=yMax; y++ ) {
+				for ( x=xMin; x<=xMax; x++ ) {
 					cell = new BattleFieldCellView();
 					cell.x = x * BattleWorldView.CELL_WIDTH;
-					cell.y = y * BattleWorldView.CELL_WIDTH;
+					cell.y = y * BattleWorldView.CELL_HEIGHT;
 					super.addChild( cell );
 				}
 			}
+
+			cell = new BattleFieldCellView();
+			cell.x = ( xMin - 1.5 )				* BattleWorldView.CELL_WIDTH;
+			cell.y = int( yMin + height / 2 )	* BattleWorldView.CELL_HEIGHT;
+			super.addChild( cell );
+
+			cell = new BattleFieldCellView();
+			cell.x = ( xMax + 1.5 )				* BattleWorldView.CELL_WIDTH;
+			cell.y = int( yMin + height / 2 )	* BattleWorldView.CELL_HEIGHT;
+			super.addChild( cell );
 
 			return true;
 		}
@@ -132,6 +142,7 @@ internal final class BattleFieldCellView extends Shape {
 		_PROTO.graphics.lineStyle( 3, 0xFFFFFF, 1, false, LineScaleMode.NORMAL );
 		_PROTO.graphics.beginFill( 0xFFFFFF, 0.1 );
 		_PROTO.graphics.drawRect( -BattleWorldView.CELL_WIDTH / 2, -BattleWorldView.CELL_HEIGHT / 2, BattleWorldView.CELL_WIDTH, BattleWorldView.CELL_HEIGHT );
+		_PROTO.graphics.drawCircle( 0, 0, 3 );
 		_PROTO.graphics.endFill();
 	}
 

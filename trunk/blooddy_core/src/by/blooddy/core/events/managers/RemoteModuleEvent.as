@@ -1,4 +1,4 @@
-package by.blooddy.core.events {
+package by.blooddy.core.events.managers {
 
 	import flash.events.Event;
 	import by.blooddy.core.utils.ClassUtils;

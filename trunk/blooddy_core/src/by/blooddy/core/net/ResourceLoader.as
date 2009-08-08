@@ -6,8 +6,8 @@
 
 package by.blooddy.core.net {
 
-	import by.blooddy.core.managers.IResourceBundle;
-	import by.blooddy.core.managers.ResourceManager;
+	import by.blooddy.core.managers.resource.IResourceBundle;
+	import by.blooddy.core.managers.resource.ResourceManager;
 	import by.blooddy.core.utils.DefinitionFinder;
 	
 	import flash.events.Event;

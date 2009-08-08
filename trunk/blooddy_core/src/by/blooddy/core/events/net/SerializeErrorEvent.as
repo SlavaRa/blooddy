@@ -4,24 +4,19 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.events {
+package by.blooddy.core.events.net {
 
-	import by.blooddy.core.logging.Log;
 	import by.blooddy.core.utils.ClassUtils;
 	
 	import flash.events.Event;
 
 	/**
-	 * Евент ошибки парсера.
-	 * 
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 9
 	 * @langversion				3.0
-	 * 
-	 * @keyword					logevent, log, event
 	 */
-	public class LogEvent extends Event {
+	public class SerializeErrorEvent extends StackErrorEvent {
 
 		//--------------------------------------------------------------------------
 		//
@@ -29,11 +24,8 @@ package by.blooddy.core.events {
 		//
 		//--------------------------------------------------------------------------
 
-		/**
-		 * @eventType			addedLog
-		 */
-		public static const ADDED_LOG:String = "addedLog";
-		
+		public static const SERIALIZE_ERROR:String = 'serializeError';
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -41,11 +33,10 @@ package by.blooddy.core.events {
 		//--------------------------------------------------------------------------
 
 		/**
-		 * @inheritDoc
+ 		 * Constructor
 		 */
-		public function LogEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false, log:Log=null) {
-			super( type, bubbles, cancelable );
-			this.log = log;
+		public function SerializeErrorEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false, text:String=null, stack:String=null, data:*=null) {
+			super( type, bubbles, cancelable, text, stack );
 		}
 
 		//--------------------------------------------------------------------------
@@ -54,26 +45,20 @@ package by.blooddy.core.events {
 		//
 		//--------------------------------------------------------------------------
 
-		public var log:Log;
+		public var data:*;
 
 		//--------------------------------------------------------------------------
 		//
-		//  Overridden methods: Event
+		//  Overriden methods
 		//
 		//--------------------------------------------------------------------------
 
-	    /**
-	     * @private
-	     */
 		public override function clone():Event {
-			return new LogEvent( super.type, super.bubbles, super.cancelable, this.log );
+			return new SerializeErrorEvent( super.type, super.bubbles, super.cancelable, super.text, this.stack, this.data );
 		}
 
-	    /**
-	     * @private
-	     */
 		public override function toString():String {
-			return super.formatToString( ClassUtils.getClassName( this ), 'type', 'bubbles', 'cancelable', 'log' );
+			return super.formatToString( ClassUtils.getClassName( this ), 'type', 'bubbles', 'cancelable', 'text', 'stack', 'data' );
 		}
 
 	}

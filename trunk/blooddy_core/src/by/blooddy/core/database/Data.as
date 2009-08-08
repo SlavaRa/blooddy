@@ -185,16 +185,18 @@ package by.blooddy.core.database {
 			if ( super.hasEventListener( event.type ) ) {
 				result = super.dispatchEvent( event );
 			}
-			if ( result && event.bubbles ) {
+			if ( event.bubbles ) {
 				// надо бублить
 				var target:Data = this._bubble_parent;
 				var e:DataBaseNativeEvent;
-				while ( target && !event.stopped ) {
+				while ( target && !event.$stopped ) {
 					if ( target.hasEventListener( event.type ) ) {
 						e = event.clone() as DataBaseNativeEvent;
 						e.$eventPhase = EventPhase.BUBBLING_PHASE;
 						e.$target = this;
-						result = target.$dispatchEvent( new EventContainer( e ) );
+						e.$canceled = result;
+						target.$dispatchEvent( new EventContainer( e ) );
+						result = e.$canceled;
 					}
 					target = target._bubble_parent;
 				}
@@ -270,7 +272,7 @@ internal final class EventContainer extends Event {
 	 * Constructor.
 	 */
 	public function EventContainer(event:Event) {
-		super(event.type, event.bubbles, event.cancelable);
+		super( event.type, event.bubbles, event.cancelable );
 		this._event = event;
 	}
 

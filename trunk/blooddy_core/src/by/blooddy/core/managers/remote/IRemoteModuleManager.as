@@ -1,4 +1,4 @@
-package by.blooddy.core.managers {
+package by.blooddy.core.managers.remote {
 
 	import flash.events.IEventDispatcher;
 	import flash.net.URLRequest;

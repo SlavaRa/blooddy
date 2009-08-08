@@ -43,7 +43,7 @@ package by.blooddy.core.database {
 		 * @param	cancelable
 		 */
 		public function DataBaseNativeEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
-			super(type, bubbles, cancelable);
+			super( type, bubbles, cancelable );
 			var c:Class = ( this as Object ).constructor;
 			if (
 				c === DataBaseNativeEvent ||
@@ -65,7 +65,12 @@ package by.blooddy.core.database {
 		/**
 		 * @private
 		 */
-		internal var stopped:Boolean = false;
+		internal var $stopped:Boolean = false;
+
+		/**
+		 * @private
+		 */
+		internal var $canceled:Boolean = false;
 
 		//--------------------------------------------------------------------------
 		//
@@ -117,7 +122,7 @@ package by.blooddy.core.database {
 		 * @private
 		 */
 		public override function formatToString(className:String, ...arguments):String {
-			if ( !className ) className = ClassUtils.getClassName(this);
+			if ( !className ) className = ClassUtils.getClassName( this );
 			arguments.unshift( className );
 			return super.formatToString.apply( this, arguments );
 		}
@@ -126,9 +131,29 @@ package by.blooddy.core.database {
 		 * @private
 		 */
 		public override function stopImmediatePropagation():void {
-			if ( !super.cancelable ) return;
 			super.stopImmediatePropagation();
-			this.stopped = true;
+			this.$stopped = true;
+		}
+
+		/**
+		 * @private
+		 */
+		public override function stopPropagation():void {
+			this.$stopped = true;
+		}
+
+		/**
+		 * @private
+		 */
+		public override function preventDefault():void {
+			if ( super.cancelable ) this.$canceled = true;
+		}
+
+		/**
+		 * @private
+		 */
+		public override function isDefaultPrevented():Boolean {
+			return this.$canceled;
 		}
 
 	}
