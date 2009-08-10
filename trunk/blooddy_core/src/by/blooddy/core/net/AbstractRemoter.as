@@ -6,16 +6,16 @@
 
 package by.blooddy.core.net {
 
-	import by.blooddy.core.events.net.CommandEvent;
+	import by.blooddy.core.commands.Command;
+	import by.blooddy.core.commands.CommandDispatcher;
 	import by.blooddy.core.events.net.StackErrorEvent;
-	import by.blooddy.core.logging.CommandLog;
+	import by.blooddy.core.logging.commands.CommandLog;
 	import by.blooddy.core.logging.ILogging;
 	import by.blooddy.core.logging.InfoLog;
 	import by.blooddy.core.logging.Logger;
-	import by.blooddy.core.utils.Command;
 	
-	import flash.events.EventDispatcher;
 	import flash.utils.getQualifiedClassName;
+	import flash.errors.IllegalOperationError;
 
 	//--------------------------------------
 	//  Events
@@ -34,7 +34,7 @@ package by.blooddy.core.net {
 	 *
 	 * @keyword					iconnection, connection
 	 */
-	public class AbstractRemoter extends EventDispatcher implements IRemoter, ILogging {
+	public class AbstractRemoter extends CommandDispatcher implements IRemoter, ILogging {
 
 		//--------------------------------------------------------------------------
 		//
@@ -224,9 +224,10 @@ package by.blooddy.core.net {
 				}
 			} finally {
 				// проверим нету ли хендлера на нашу комманду
-				if ( super.hasEventListener( 'command_' + command.name ) ) {
-					super.dispatchEvent( new CommandEvent( 'command_' + command.name, false, false, command ) );
+				if ( !super.hasCommandListener( command.name ) ) {
+					throw new DefinitionError();
 				}
+				super.dispatchCommand( command );
 			}
 		}
 

@@ -6,6 +6,7 @@
 
 package ru.avangardonline.database.battle.world {
 
+	import by.blooddy.core.database.Data;
 	import by.blooddy.core.events.time.TimeEvent;
 	import by.blooddy.core.utils.ClassUtils;
 	import by.blooddy.core.utils.enterFrameBroadcaster;
@@ -183,8 +184,31 @@ package ru.avangardonline.database.battle.world {
 		//
 		//--------------------------------------------------------------------------
 
+		public function clone():Data {
+			var result:BattleWorldCoordinateData = new BattleWorldCoordinateData();
+			result.copyFrom( this );
+			return result;
+		}
+
+		public function copyFrom(data:Data):void {
+			var target:BattleWorldCoordinateData = data as BattleWorldCoordinateData;
+			if ( !target ) throw new ArgumentError();
+			this.setValues( target._x, target._y );
+			if ( target._moving ) {
+				this._x_start =		target._x_start;
+				this._y_start =		target._y_start;
+				this._time_start =	target._time_start;
+				this.$moveTo(
+					this._x_start + target._x_range,
+					this._y_start + target._y_range,
+					this._time_start + target._time_range
+				);
+			}
+		}
+
 		public function setValues(x:Number, y:Number):void {
 			this.stop();
+			if ( this._x == x || this._y == y ) return;
 			this._x = x;
 			this._y = y;
 			super.dispatchEvent( new BattleWorldCoordinateDataEvent( BattleWorldCoordinateDataEvent.COORDINATE_CHANGE ) );
@@ -198,6 +222,20 @@ package ru.avangardonline.database.battle.world {
 		}
 
 		public function moveTo(x:Number, y:Number, time:Number):void {
+
+			this._x_start =		this._x;
+			this._y_start =		this._y;
+			this._time_start =	this._time.currentTime;
+
+			this.$moveTo( x, y, time );
+
+
+		}
+
+		/**
+		 * @private
+		 */
+		private function $moveTo(x:Number, y:Number, time:Number):void {
 			if ( !this._time ) throw new ArgumentError();
 
 			// подписываемся на собтиео бновления
@@ -205,18 +243,14 @@ package ru.avangardonline.database.battle.world {
 
 			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.update, false, int.MAX_VALUE );
 
-			this._x_start =		this._x;
-			this._y_start =		this._y;
-			this._time_start =	this._time.currentTime;
-
 			this._x_range =		x -		this._x_start;
 			this._y_range =		y -		this._y_start;
 			this._time_range =	time -	this._time_start;
 
-			this._direction = Math.atan2( this._y_range, this._x_range ) * 180 / Math.PI % 360;
+			this._direction =	Math.atan2( this._y_range, this._x_range ) * 180 / Math.PI % 360;
 			if ( this._direction < 0 ) this._direction += 360;
 
-			this._speed = Math.sqrt( this._x_range * this._x_range + this._y_range * this._y_range ) / ( this._time_range / 1E3 ) / 4;
+			this._speed =		Math.sqrt( this._x_range * this._x_range + this._y_range * this._y_range ) / ( this._time_range / 1E3 ) / 4;
 
 			if ( !this._moving ) {
 				this._moving = true;

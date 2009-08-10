@@ -6,22 +6,10 @@
 
 package ru.avangardonline.database.battle.world {
 
-	import by.blooddy.core.database.DataContainer;
+	import by.blooddy.core.database.Data;
 	import by.blooddy.core.database.DataLinker;
 	import by.blooddy.core.utils.time.Time;
 	
-	import ru.avangardonline.database.character.CharacterCollectionData;
-	import ru.avangardonline.events.database.world.BattleWorldDataEvent;
-
-	/**
-	 * @eventType			ru.avangardonline.events.database.world.WorldDataEvent.WIDTH_CHANGE
-	 */
-	[Event(name="widthChange", type="ru.avangardonline.events.database.world.BattleWorldDataEvent")]
-
-	/**
-	 * @eventType			ru.avangardonline.events.database.world.WorldDataEvent.HEIGHT_CHANGE
-	 */
-	[Event(name="heightChange", type="ru.avangardonline.events.database.world.BattleWorldDataEvent")]
 
 	/**
 	 * @author					BlooDHounD
@@ -45,7 +33,8 @@ package ru.avangardonline.database.battle.world {
 			super();
 			this._time = time;
 			super.set$world( this );
-			DataLinker.link( this, this.characters, true );
+			DataLinker.link( this, this.field, true );
+			DataLinker.link( this, this.elements, true );
 		}
 
 		//--------------------------------------------------------------------------
@@ -53,12 +42,6 @@ package ru.avangardonline.database.battle.world {
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
-
-		//----------------------------------
-		//  characters
-		//----------------------------------
-
-		public const characters:CharacterCollectionData = new CharacterCollectionData();
 
 		//----------------------------------
 		//  time
@@ -74,51 +57,35 @@ package ru.avangardonline.database.battle.world {
 		}
 
 		//----------------------------------
-		//  width
+		//  field
 		//----------------------------------
 
-		/**
-		 * @private
-		 */
-		private var _width:uint
-
-		public function get width():uint {
-			return this._width;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set width(value:uint):void {
-			if ( this._width == value ) return;
-			this._width = value;
-			if ( super.hasEventListener( BattleWorldDataEvent.WIDTH_CHANGE ) ) {
-				super.dispatchEvent( new BattleWorldDataEvent( BattleWorldDataEvent.WIDTH_CHANGE ) );
-			}
-		}
+		public const field:BattleWorldFieldData = new BattleWorldFieldData();
 
 		//----------------------------------
-		//  height
+		//  characters
 		//----------------------------------
 
-		/**
-		 * @private
-		 */
-		private var _height:uint
+		public const elements:BattleWorldElementCollectionData = new BattleWorldElementCollectionData();
 
-		public function get height():uint {
-			return this._height;
+		//--------------------------------------------------------------------------
+		//
+		//  Methods
+		//
+		//--------------------------------------------------------------------------
+
+		public function clone():Data {
+			var result:BattleWorldData = new BattleWorldData( this._time );
+			result.copyFrom( this );
+			return result;
 		}
 
-		/**
-		 * @private
-		 */
-		public function set height(value:uint):void {
-			if ( this._height == value ) return;
-			this._height = value;
-			if ( super.hasEventListener( BattleWorldDataEvent.HEIGHT_CHANGE ) ) {
-				super.dispatchEvent( new BattleWorldDataEvent( BattleWorldDataEvent.HEIGHT_CHANGE ) );
-			}
+		public function copyFrom(data:Data):void {
+			var target:BattleWorldData = data as BattleWorldData;
+			if ( !target ) throw new ArgumentError();
+			this._time = target._time;
+			this.field.copyFrom( target.field );
+			this.elements.copyFrom( target.elements );
 		}
 
 	}

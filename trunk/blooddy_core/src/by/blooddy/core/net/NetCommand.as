@@ -6,8 +6,8 @@
 
 package by.blooddy.core.net {
 
+	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.utils.ClassUtils;
-	import by.blooddy.core.utils.Command;
 
 	/**
 	 * Сетевая комманда.

@@ -6,13 +6,13 @@
 
 package by.blooddy.core.controllers {
 
+	import by.blooddy.core.commands.CommandDispatcher;
 	import by.blooddy.core.database.DataBase;
 	import by.blooddy.core.errors.getErrorMessage;
 	import by.blooddy.core.net.ProxySharedObject;
 	
 	import flash.display.DisplayObjectContainer;
 	import flash.errors.IllegalOperationError;
-	import flash.events.EventDispatcher;
 
 	/**
 	 * @author					BlooDHounD
@@ -22,7 +22,7 @@ package by.blooddy.core.controllers {
 	 * 
 	 * @keyword					basecontroller, controller
 	 */
-	public class BaseController extends EventDispatcher implements IBaseController {
+	public class BaseController extends CommandDispatcher implements IBaseController {
 
 		//--------------------------------------------------------------------------
 		//

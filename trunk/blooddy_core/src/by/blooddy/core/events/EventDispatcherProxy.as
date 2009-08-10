@@ -6,8 +6,6 @@
 
 package by.blooddy.core.events {
 
-	import __AS3__.vec.Vector;
-	
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
 	import flash.utils.Dictionary;
@@ -205,11 +203,42 @@ package by.blooddy.core.events {
 
 }
 
+//==============================================================================
+//
+//  Inner definitions
+//
+//==============================================================================
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Helper class: EventListenerProperties
+//
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ */
 internal final class EventListenerProperties {
 
+	//--------------------------------------------------------------------------
+	//
+	//  Constructor
+	//
+	//--------------------------------------------------------------------------
+
+	/**
+	 * @private
+	 * Constructor.
+	 */
 	public function EventListenerProperties() {
 		super();
 	}
+
+	//--------------------------------------------------------------------------
+	//
+	//  Properties
+	//
+	//--------------------------------------------------------------------------
 
 	public var priority:int = 0;
 

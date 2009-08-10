@@ -4,10 +4,10 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.events.net {
+package by.blooddy.core.events.commands {
 
+	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.utils.ClassUtils;
-	import by.blooddy.core.utils.Command;
 	
 	import flash.events.Event;
 
@@ -21,18 +21,51 @@ package by.blooddy.core.events.net {
 	 */
 	public class CommandEvent extends Event {
 
+		//--------------------------------------------------------------------------
+		//
+		//  Class constants
+		//
+		//--------------------------------------------------------------------------
+
 		public static const COMMAND:String = 'command';
 
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * Constructor
+		 */
 		public function CommandEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false, command:Command=null) {
 			super( type, bubbles, cancelable );
 			this.command = command;
 		}
 
+		//--------------------------------------------------------------------------
+		//
+		//  Properties
+		//
+		//--------------------------------------------------------------------------
+
 		public var command:Command;
+
+		//--------------------------------------------------------------------------
+		//
+		//  Methods
+		//
+		//--------------------------------------------------------------------------
 
 		public function call(client:Object, ns:Namespace=null):* {
 			return this.command.call( client, ns );
 		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Overriden methods
+		//
+		//--------------------------------------------------------------------------
 
 		public override function clone():Event {
 			return new CommandEvent( super.type, super.bubbles, super.cancelable, this.command );

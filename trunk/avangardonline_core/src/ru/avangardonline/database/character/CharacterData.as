@@ -6,6 +6,8 @@
 
 package ru.avangardonline.database.character {
 
+	import by.blooddy.core.database.Data;
+	
 	import ru.avangardonline.database.battle.world.BattleWorldElementData;
 
 	/**
@@ -27,8 +29,7 @@ package ru.avangardonline.database.character {
 		 * Constructor
 		 */
 		public function CharacterData(id:uint) {
-			super();
-			this._id = id;
+			super( id );
 		}
 
 		//--------------------------------------------------------------------------
@@ -37,17 +38,16 @@ package ru.avangardonline.database.character {
 		//
 		//--------------------------------------------------------------------------
 
-		//----------------------------------
-		//  id
-		//----------------------------------
+		//--------------------------------------------------------------------------
+		//
+		//  Methods
+		//
+		//--------------------------------------------------------------------------
 
-		/**
-		 * @private
-		 */
-		private var _id:uint;
-
-		public function get id():uint {
-			return this._id;
+		public override function clone():Data {
+			var result:CharacterData = new CharacterData( super.id );
+			result.copyFrom( this );
+			return result;
 		}
 
 	}

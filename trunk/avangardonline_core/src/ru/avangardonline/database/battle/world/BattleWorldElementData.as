@@ -6,8 +6,9 @@
 
 package ru.avangardonline.database.battle.world {
 
-	import by.blooddy.core.database.DataContainer;
+	import by.blooddy.core.database.Data;
 	import by.blooddy.core.database.DataLinker;
+	
 	import ru.avangardonline.events.database.world.BattleWorldCoordinateDataEvent;
 	
 	//--------------------------------------
@@ -36,8 +37,9 @@ package ru.avangardonline.database.battle.world {
 		/**
 		 * Constructor
 		 */
-		public function BattleWorldElementData() {
+		public function BattleWorldElementData(id:uint) {
 			super();
+			this._id = id;
 			DataLinker.link( this, this.coord, true );
 			this.coord.addEventListener( BattleWorldCoordinateDataEvent.COORDINATE_CHANGE,	this.dispatchCoordinateEvent, false, int.MAX_VALUE, true );
 			this.coord.addEventListener( BattleWorldCoordinateDataEvent.MOVING_START,		this.dispatchCoordinateEvent, false, int.MAX_VALUE, true );
@@ -51,10 +53,53 @@ package ru.avangardonline.database.battle.world {
 		//--------------------------------------------------------------------------
 
 		//----------------------------------
+		//  id
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
+		private var _id:uint;
+
+		public function get id():uint {
+			return this._id;
+		}
+
+		//----------------------------------
 		//  coord
 		//----------------------------------
 
 		public const coord:BattleWorldCoordinateData = new BattleWorldCoordinateData();
+
+		//----------------------------------
+		//  moving
+		//----------------------------------
+
+		public function get moving():Boolean {
+			return this.coord.moving;
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Methods
+		//
+		//--------------------------------------------------------------------------
+
+		public function moveTo(x:Number, y:Number, time:Number):void {
+			this.coord.moveTo( x, y, time );
+		}
+
+		public function clone():Data {
+			var result:BattleWorldElementData = new BattleWorldElementData( this._id );
+			result.copyFrom ( this );
+			return result;
+		}
+
+		public function copyFrom(data:Data):void {
+			var target:BattleWorldElementData = data as BattleWorldElementData;
+			if ( !target ) throw new ArgumentError();
+			this.coord.copyFrom( target.coord );
+		}
 
 		//--------------------------------------------------------------------------
 		//

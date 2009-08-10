@@ -6,10 +6,10 @@
 
 package by.blooddy.core.net {
 
+	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.events.net.SerializeErrorEvent;
 	import by.blooddy.core.logging.InfoLog;
 	import by.blooddy.core.utils.ByteArrayUtils;
-	import by.blooddy.core.utils.Command;
 	
 	import flash.errors.IOError;
 	import flash.errors.IllegalOperationError;
