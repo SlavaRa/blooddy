@@ -34,7 +34,6 @@ package ru.avangardonline.database.battle {
 		 */
 		public function BattleData(time:Time) {
 			super();
-			super.name = 'battleData';
 
 			this._world = new BattleWorldData( time )
 			DataLinker.link( this, this._world, true );

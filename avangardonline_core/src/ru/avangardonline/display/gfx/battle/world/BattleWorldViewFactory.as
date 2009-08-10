@@ -4,28 +4,20 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.events.database.world {
+package ru.avangardonline.display.gfx.battle.world {
 
-	import by.blooddy.core.events.database.DataBaseEvent;
-	
+	import ru.avangardonline.database.battle.world.BattleWorldElementData;
+	import ru.avangardonline.database.character.CharacterData;
+	import ru.avangardonline.display.gfx.character.CharacterView;
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					04.08.2009 22:42:55
+	 * @created					09.08.2009 21:30:45
 	 */
-	public class BattleWorldDataEvent extends DataBaseEvent {
-
-		//--------------------------------------------------------------------------
-		//
-		//  Class constants
-		//
-		//--------------------------------------------------------------------------
-
-		public static const ADDED_TO_WORLD:String =		'addedToWorld'
-
-		public static const REMOVED_FROM_WORLD:String =	'removedFromWorld';
+	public class BattleWorldViewFactory {
 
 		//--------------------------------------------------------------------------
 		//
@@ -36,8 +28,19 @@ package ru.avangardonline.events.database.world {
 		/**
 		 * Constructor
 		 */
-		public function BattleWorldDataEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
-			super( type, bubbles, cancelable );
+		public function BattleWorldViewFactory() {
+			super();
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Methods
+		//
+		//--------------------------------------------------------------------------
+
+		public function getElementView(data:BattleWorldElementData):BattleWorldElementView {
+			if ( data is CharacterData ) return new CharacterView( data as CharacterData );
+			return null;
 		}
 
 	}

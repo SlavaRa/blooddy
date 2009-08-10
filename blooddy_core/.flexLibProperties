@@ -40,21 +40,17 @@
     <classEntry path="by.blooddy.core.errors.SerializeError"/>
     <classEntry path="by.blooddy.core.errors.getErrorMessage"/>
     <classEntry path="by.blooddy.core.events.AccumulativeEventDispatcher"/>
-    <classEntry path="by.blooddy.core.events.CommandEvent"/>
-    <classEntry path="by.blooddy.core.events.DragEvent"/>
+    <classEntry path="by.blooddy.core.events.managers.DragEvent"/>
     <classEntry path="by.blooddy.core.events.DynamicEvent"/>
     <classEntry path="by.blooddy.core.events.EventDispatcherProxy"/>
     <classEntry path="by.blooddy.core.events.FZipEvent"/>
-    <classEntry path="by.blooddy.core.events.LogEvent"/>
+    <classEntry path="by.blooddy.core.events.logging.LogEvent"/>
     <classEntry path="by.blooddy.core.events.POP3Event"/>
     <classEntry path="by.blooddy.core.events.ParserErrorEvent"/>
-    <classEntry path="by.blooddy.core.events.RemoteModuleEvent"/>
-    <classEntry path="by.blooddy.core.events.ResourceBundleEvent"/>
-    <classEntry path="by.blooddy.core.events.SerializeErrorEvent"/>
-    <classEntry path="by.blooddy.core.events.StackErrorEvent"/>
-    <classEntry path="by.blooddy.core.events.StyleSheetEvent"/>
-    <classEntry path="by.blooddy.core.events.SystemEvent"/>
-    <classEntry path="by.blooddy.core.events.SystemTimerEvent"/>
+    <classEntry path="by.blooddy.core.events.managers.RemoteModuleEvent"/>
+    <classEntry path="by.blooddy.core.events.managers.ResourceBundleEvent"/>
+    <classEntry path="by.blooddy.core.events.net.SerializeErrorEvent"/>
+    <classEntry path="by.blooddy.core.events.net.StackErrorEvent"/>
     <classEntry path="by.blooddy.core.events.database.DataBaseEvent"/>
     <classEntry path="by.blooddy.core.events.display.resource.ResourceEvent"/>
     <classEntry path="by.blooddy.core.events.isIntrinsicEvent"/>
@@ -71,8 +67,7 @@
     <classEntry path="by.blooddy.core.geom.PolarPoint"/>
     <classEntry path="by.blooddy.core.geom.Quadrangle"/>
     <classEntry path="by.blooddy.core.geom.WeightMatrix"/>
-    <classEntry path="by.blooddy.core.logging.CommandLog"/>
-    <classEntry path="by.blooddy.core.logging.ConnectionLogger"/>
+    <classEntry path="by.blooddy.core.logging.commands.CommandLog"/>
     <classEntry path="by.blooddy.core.logging.ILogging"/>
     <classEntry path="by.blooddy.core.logging.InfoLog"/>
     <classEntry path="by.blooddy.core.logging.InfoLogger"/>
@@ -81,19 +76,18 @@
     <classEntry path="by.blooddy.core.logging.LoggerProxy"/>
     <classEntry path="by.blooddy.core.logging.TextLog"/>
     <classEntry path="by.blooddy.core.managers.CookieManager"/>
-    <classEntry path="by.blooddy.core.managers.DragInfo"/>
-    <classEntry path="by.blooddy.core.managers.DragManager"/>
-    <classEntry path="by.blooddy.core.managers.DragObject"/>
+    <classEntry path="by.blooddy.core.managers.drag.DragInfo"/>
+    <classEntry path="by.blooddy.core.managers.drag.DragManager"/>
+    <classEntry path="by.blooddy.core.managers.drag.DragObject"/>
     <classEntry path="by.blooddy.core.managers.IProgressable"/>
-    <classEntry path="by.blooddy.core.managers.IRemoteModule"/>
-    <classEntry path="by.blooddy.core.managers.IRemoteModuleManager"/>
+    <classEntry path="by.blooddy.core.managers.remote.IRemoteModule"/>
+    <classEntry path="by.blooddy.core.managers.remote.IRemoteModuleManager"/>
     <classEntry path="by.blooddy.core.managers.IResource"/>
-    <classEntry path="by.blooddy.core.managers.IResourceBundle"/>
-    <classEntry path="by.blooddy.core.managers.IResourceManagerOwner"/>
+    <classEntry path="by.blooddy.core.managers.resource.IResourceBundle"/>
     <classEntry path="by.blooddy.core.managers.KeyboardManager"/>
-    <classEntry path="by.blooddy.core.managers.RemoteModuleManager"/>
-    <classEntry path="by.blooddy.core.managers.ResourceBundle"/>
-    <classEntry path="by.blooddy.core.managers.ResourceManager"/>
+    <classEntry path="by.blooddy.core.managers.remote.RemoteModuleManager"/>
+    <classEntry path="by.blooddy.core.managers.resource.ResourceBundle"/>
+    <classEntry path="by.blooddy.core.managers.resource.ResourceManager"/>
     <classEntry path="by.blooddy.core.math.BigInt"/>
     <classEntry path="by.blooddy.core.math.RoundingMode"/>
     <classEntry path="by.blooddy.core.media.Sound3DTransform"/>
@@ -134,7 +128,6 @@
     <classEntry path="by.blooddy.core.net.zip.FZipBundle"/>
     <classEntry path="by.blooddy.core.net.zip.FZipFile"/>
     <classEntry path="by.blooddy.core.parsers.BytesParser"/>
-    <classEntry path="by.blooddy.core.system.SystemTimer"/>
     <classEntry path="by.blooddy.core.text.BitmapFont"/>
     <classEntry path="by.blooddy.core.text.BitmapFontLoaderContext"/>
     <classEntry path="by.blooddy.core.text.FontLoader"/>
@@ -145,7 +138,6 @@
     <classEntry path="by.blooddy.core.utils.Caller"/>
     <classEntry path="by.blooddy.core.utils.CallerQueue"/>
     <classEntry path="by.blooddy.core.utils.ClassUtils"/>
-    <classEntry path="by.blooddy.core.utils.Command"/>
     <classEntry path="by.blooddy.core.utils.DateUtils"/>
     <classEntry path="by.blooddy.core.utils.DefinitionFinder"/>
     <classEntry path="by.blooddy.core.utils.DisplayObjectUtils"/>
@@ -198,6 +190,8 @@
     <classEntry path="by.blooddy.core.utils.version.PlayerVersion"/>
     <classEntry path="by.blooddy.core.utils.version.Version"/>
     <classEntry path="by.blooddy.core.display.DisplayObjectLinker"/>
+    <classEntry path="by.blooddy.core.commands.CommandDispatcher"/>
+    <classEntry path="by.blooddy.core.controllers.DisplayObjectController"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

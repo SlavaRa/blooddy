@@ -133,7 +133,9 @@ package by.blooddy.core.logging {
 		public function addLog(log:Log):void {
 			this._list.push( log );
 			this.updateList();
-			super.dispatchEvent( new LogEvent( LogEvent.ADDED_LOG, false, false, log ) );
+			if ( super.hasEventListener( LogEvent.ADDED_LOG ) ) {
+				super.dispatchEvent( new LogEvent( LogEvent.ADDED_LOG, false, false, log ) );
+			}
 		}
 
 		public function getList():Vector.<Log> {

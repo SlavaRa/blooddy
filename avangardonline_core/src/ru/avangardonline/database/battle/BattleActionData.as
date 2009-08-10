@@ -6,6 +6,7 @@
 
 package ru.avangardonline.database.battle {
 
+	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.database.Data;
 	
 	/**
@@ -48,6 +49,34 @@ package ru.avangardonline.database.battle {
 
 		public function get num():uint {
 			return this._num;
+		}
+
+		//----------------------------------
+		//  command
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
+		private var _command:Command;
+
+		public function get command():Command {
+			return this._command.clone();
+		}
+
+		public function set command(value:Command):void {
+			if ( this._command === value ) return;
+			this._command = value;
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Methods
+		//
+		//--------------------------------------------------------------------------
+
+		public function call(client:Object, ns:Namespace=null):* {
+			return this.command.call( client, ns );
 		}
 
 	}

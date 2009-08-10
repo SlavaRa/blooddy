@@ -6,11 +6,11 @@
 
 package by.blooddy.core.external {
 
+	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.events.DynamicEvent;
 	import by.blooddy.core.net.AbstractRemoter;
 	import by.blooddy.core.net.IConnection;
 	import by.blooddy.core.net.NetCommand;
-	import by.blooddy.core.utils.Command;
 	import by.blooddy.core.utils.copyObject;
 	import by.blooddy.core.utils.nexframeCall;
 	

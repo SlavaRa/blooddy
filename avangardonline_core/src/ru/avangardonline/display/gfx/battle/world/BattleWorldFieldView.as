@@ -12,8 +12,8 @@ package ru.avangardonline.display.gfx.battle.world {
 	
 	import flash.events.Event;
 	
-	import ru.avangardonline.database.battle.world.BattleWorldData;
-	import ru.avangardonline.events.database.world.BattleWorldDataEvent;
+	import ru.avangardonline.database.battle.world.BattleWorldFieldData;
+	import ru.avangardonline.events.database.world.BattleWorldFieldDataEvent;
 	
 	/**
 	 * @author					BlooDHounD
@@ -33,14 +33,14 @@ package ru.avangardonline.display.gfx.battle.world {
 		/**
 		 * Constructor
 		 */
-		public function BattleWorldFieldView(data:BattleWorldData) {
+		public function BattleWorldFieldView(data:BattleWorldFieldData) {
 			super();
 			this._data = data;
 			super.addEventListener( ResourceEvent.ADDED_TO_RESOURCE_MANAGER,			this.render,	false, int.MAX_VALUE, true );
 			super.addEventListener( ResourceEvent.REMOVED_FROM_RESOURCE_MANAGER,		this.clear,		false, int.MAX_VALUE, true );
 			var observer:StageObserver = new StageObserver( this );
-			observer.registerEventListener( data, BattleWorldDataEvent.WIDTH_CHANGE,	this.render );
-			observer.registerEventListener( data, BattleWorldDataEvent.HEIGHT_CHANGE,	this.render );
+			observer.registerEventListener( data, BattleWorldFieldDataEvent.WIDTH_CHANGE,	this.render );
+			observer.registerEventListener( data, BattleWorldFieldDataEvent.HEIGHT_CHANGE,	this.render );
 		}
 
 		public function destruct():void {
@@ -61,9 +61,9 @@ package ru.avangardonline.display.gfx.battle.world {
 		/**
 		 * @private
 		 */
-		private var _data:BattleWorldData;
+		private var _data:BattleWorldFieldData;
 
-		public function get data():BattleWorldData {
+		public function get data():BattleWorldFieldData {
 			return this._data;
 		}
 

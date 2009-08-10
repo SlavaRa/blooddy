@@ -6,6 +6,7 @@
 
 package by.blooddy.core.controllers {
 
+	import by.blooddy.core.commands.ICommandDispatcher;
 	import by.blooddy.core.utils.IAbstractRemoter;
 	
 	import flash.display.DisplayObjectContainer;
@@ -18,7 +19,7 @@ package by.blooddy.core.controllers {
 	 * 
 	 * @keyword					baseconstroller, controller
 	 */
-	public interface IBaseController extends IController, IAbstractRemoter {
+	public interface IBaseController extends IController, IAbstractRemoter, ICommandDispatcher {
 
 		//--------------------------------------------------------------------------
 		//

@@ -4,7 +4,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.utils {
+package by.blooddy.core.commands {
 
 	import by.blooddy.core.utils.ClassUtils;
 

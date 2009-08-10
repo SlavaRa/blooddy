@@ -21,6 +21,8 @@ package ru.avangardonline.display.gfx.battle.world {
 	import ru.avangardonline.database.character.CharacterData;
 	import ru.avangardonline.display.gfx.character.CharacterView;
 	import ru.avangardonline.events.database.world.BattleWorldCoordinateDataEvent;
+	import flash.display.DisplayObject;
+	import by.blooddy.core.events.database.DataBaseEvent;
 	
 	/**
 	 * @author					BlooDHounD
@@ -50,16 +52,19 @@ package ru.avangardonline.display.gfx.battle.world {
 		/**
 		 * Constructor
 		 */
-		public function BattleWorldView(data:BattleWorldData) {
+		public function BattleWorldView(data:BattleWorldData, factory:BattleWorldViewFactory) {
 			super();
 			this._data = data;
-			this._field = new BattleWorldFieldView( data );
+			this._factory = factory;
+			this._field = new BattleWorldFieldView( data.field );
 			this._field.rotationX = 90;
 			super.addEventListener( ResourceEvent.ADDED_TO_RESOURCE_MANAGER,		this.render,	false, int.MAX_VALUE, true );
 			super.addEventListener( ResourceEvent.REMOVED_FROM_RESOURCE_MANAGER,	this.clear,		false, int.MAX_VALUE, true );
 			var observer:StageObserver = new StageObserver( this );
-			observer.registerEventListener( data.characters, BattleWorldCoordinateDataEvent.COORDINATE_CHANGE, this.handler_coordinateChange );
-			observer.registerEventListener( data.characters, BattleWorldCoordinateDataEvent.COORDINATE_CHANGE, this.handler_coordinateChange );
+			observer.registerEventListener( data.elements, DataBaseEvent.ADDED,		this.handler_added );
+			observer.registerEventListener( data.elements, DataBaseEvent.REMOVED,	this.handler_removed );
+			observer.registerEventListener( data.elements, BattleWorldCoordinateDataEvent.COORDINATE_CHANGE, this.handler_coordinateChange );
+			observer.registerEventListener( data.elements, BattleWorldCoordinateDataEvent.COORDINATE_CHANGE, this.handler_coordinateChange );
 		}
 
 		public function destruct():void {
@@ -103,6 +108,11 @@ package ru.avangardonline.display.gfx.battle.world {
 		 */
 		private const _content:Sprite = new Sprite();
 
+		/**
+		 * @private
+		 */
+		private var _factory:BattleWorldViewFactory;
+
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
@@ -137,9 +147,16 @@ package ru.avangardonline.display.gfx.battle.world {
 			super.addChild( this._field );
 			super.addChild( this._content );
 
-			var characters:Vector.<CharacterData> = this._data.characters.getCharacters();
-			for each ( var data:CharacterData in characters ) {
-				this.addCharacter( data );
+			var hash:Dictionary = new Dictionary();
+
+			var characters:Vector.<BattleWorldElementData> = this._data.elements.getElements();
+			for each ( var data:BattleWorldElementData in characters ) {
+				this.addWorldElement( data );
+				hash[ data ] = true;
+			}
+
+			for ( var o:Object in this._elements ) {
+				if ( !( o in hash ) ) this.removeWorldElement( o as BattleWorldElementData );
 			}
 
 			return true;
@@ -150,7 +167,7 @@ package ru.avangardonline.display.gfx.battle.world {
 		 */
 		protected function clear(event:Event=null):Boolean {
 			for ( var o:Object in this._elements ) {
-				this.removeCharacter( o as CharacterData );
+				this.removeWorldElement( o as BattleWorldElementData );
 			}
 			super.removeChild( this._content );
 			super.removeChild( this._field );
@@ -166,9 +183,10 @@ package ru.avangardonline.display.gfx.battle.world {
 		/**
 		 * @private
 		 */
-		private function addCharacter(data:CharacterData):void {
+		private function addWorldElement(data:BattleWorldElementData):void {
 			if ( data in this._elements ) throw new ArgumentError();
-			var view:CharacterView = new CharacterView( data );
+			var view:BattleWorldElementView = this._factory.getElementView( data );
+			if ( !view ) return;
 			this._elements_sorted.push( new SortAsset( data ) );
 			this._content.addChild( view );
 			this._elements[ data ] = view;
@@ -181,12 +199,12 @@ package ru.avangardonline.display.gfx.battle.world {
 		/**
 		 * @private
 		 */
-		private function removeCharacter(data:CharacterData):void {
+		private function removeWorldElement(data:BattleWorldElementData):void {
 			if ( !( data in this._elements) ) throw new ArgumentError();
 			if ( data.coord.moving ) {
 				this.moveStopElement( data );
 			}
-			var view:CharacterView = this._elements[ data ];
+			var view:BattleWorldElementView = this._elements[ data ];
 			if ( !view ) return;
 			delete this._elements[ data ];
 			this._elements_sorted.splice( this._content.getChildIndex( view ), 1 );
@@ -246,6 +264,24 @@ package ru.avangardonline.display.gfx.battle.world {
 		//  Event handlers
 		//
 		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private function handler_added(event:DataBaseEvent):void {
+			if ( event.target is BattleWorldElementData ) {
+				this.addWorldElement( event.target as BattleWorldElementData );
+			}
+		}
+
+		/**
+		 * @private
+		 */
+		private function handler_removed(event:DataBaseEvent):void {
+			if ( event.target is BattleWorldElementData ) {
+				this.removeWorldElement( event.target as BattleWorldElementData );
+			}
+		}
 
 		/**
 		 * @private

@@ -47,16 +47,17 @@ package by.blooddy.core.utils.time {
 		private var _currentTime:Number;
 
 		public override function get currentTime():Number {
-			return this._currentTime || ( super.currentTime * this._speed );
+			return ( isNaN( this._currentTime ) ? super.currentTime * this._speed : this._currentTime );
 		}
 
 		/**
 		 * @private
 		 */
 		public override function set currentTime(value:Number):void {
-			super.currentTime = value / this._speed;
-			if ( this._currentTime ) {
-				this._currentTime  = super.currentTime;
+			if ( this._speed ) {
+				super.currentTime = value / this._speed;
+			} else {
+				this._currentTime = value;
 			}
 		}
 
@@ -81,8 +82,12 @@ package by.blooddy.core.utils.time {
 			var old_value:Number = this._speed;
 			this._speed = value;
 			if ( value ) {
-				if ( this._currentTime ) this._currentTime = NaN;
-				super.currentTime = super.currentTime * old_value / value;
+				if ( !isNaN( this._currentTime ) ) {
+					super.currentTime = this._currentTime;
+					this._currentTime = NaN;
+				} else {
+					super.currentTime = super.currentTime * old_value / value;
+				}
 			} else {
 				this._currentTime = this.currentTime;
 			}

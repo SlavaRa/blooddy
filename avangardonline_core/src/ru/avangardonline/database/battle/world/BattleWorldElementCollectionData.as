@@ -4,12 +4,12 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.database.character {
+package ru.avangardonline.database.battle.world {
 
 	import by.blooddy.core.database.Data;
 	import by.blooddy.core.utils.HashArray;
 	
-	import ru.avangardonline.database.battle.world.BattleWorldAssetDataContainer;
+	import ru.avangardonline.database.character.CharacterData;
 	
 	/**
 	 * @author					BlooDHounD
@@ -18,7 +18,7 @@ package ru.avangardonline.database.character {
 	 * @langversion				3.0
 	 * @created					29.07.2009 21:16:56
 	 */
-	public class CharacterCollectionData extends BattleWorldAssetDataContainer {
+	public class BattleWorldElementCollectionData extends BattleWorldAssetDataContainer {
 
 		//--------------------------------------------------------------------------
 		//
@@ -29,7 +29,7 @@ package ru.avangardonline.database.character {
 		/**
 		 * Constructor
 		 */
-		public function CharacterCollectionData() {
+		public function BattleWorldElementCollectionData() {
 			super();
 		}
 
@@ -47,7 +47,7 @@ package ru.avangardonline.database.character {
 		/**
 		 * @private
 		 */
-		private const _list:Vector.<CharacterData> = new Vector.<CharacterData>();
+		private const _list:Vector.<BattleWorldElementData> = new Vector.<BattleWorldElementData>();
 
 		//--------------------------------------------------------------------------
 		//
@@ -55,15 +55,40 @@ package ru.avangardonline.database.character {
 		//
 		//--------------------------------------------------------------------------
 
-		public function getCharacterByID(id:uint):CharacterData {
+		public function clone():Data {
+			var result:BattleWorldElementCollectionData = new BattleWorldElementCollectionData();
+			result.copyFrom( this );
+			return result;
+		}
+
+		public function copyFrom(data:Data):void {
+			var target:BattleWorldElementCollectionData = data as BattleWorldElementCollectionData
+			if ( !target ) throw new ArgumentError();
+			var hash:Object = new Object();
+			var c1:CharacterData;
+			var c2:CharacterData;
+			var id:uint;
+			for each ( c1 in target._list ) {
+				id = c1.id;
+				c2 = this._hash[ id ];
+				if ( c2 ) c2.copyFrom( c1 );
+				else target.addChild( c1.clone() );
+				hash[ id ] = true;
+			}
+			for each ( c2 in this._list ) {
+				if ( !hash[ c2.id ] ) target.removeChild( c2 );
+			}
+		}
+
+		public function getElement(id:uint):BattleWorldElementData {
 			return this._hash[ id ];
 		}
 
-		public function getCharacters():Vector.<CharacterData> {
+		public function getElements():Vector.<BattleWorldElementData> {
 			return this._list.slice();
 		}
 
-		public function getCharacterAt(x:int, y:int):CharacterData {
+		public function getElementAt(x:int, y:int):BattleWorldElementData {
 			for each ( var character:CharacterData in this._list ) {
 				if ( int( character.coord.x ) == x && int( character.coord.y ) == y ) return character;
 			}
@@ -81,11 +106,11 @@ package ru.avangardonline.database.character {
 		 */
 		protected override function addChild_before(child:Data):void {
 			super.addChild_before( child );
-			if ( child is CharacterData ) {
-				var character:CharacterData = child as CharacterData;
-				if ( this._hash[ character.id ] ) throw new ArgumentError();
-				this._hash[ character.id ] = child;
-				this._list.push( character );
+			if ( child is BattleWorldElementData ) {
+				var element:BattleWorldElementData = child as BattleWorldElementData;
+				if ( this._hash[ element.id ] ) throw new ArgumentError();
+				this._hash[ element.id ] = child;
+				this._list.push( element );
 			}
 		}
 
@@ -94,10 +119,10 @@ package ru.avangardonline.database.character {
 		 */
 		protected override function removeChild_before(child:Data):void {
 			super.removeChild_before( child );
-			if ( child is CharacterData ) {
-				var character:CharacterData = child as CharacterData;
-				delete this._hash[ character.id ];
-				var i:int = this._list.indexOf( character );
+			if ( child is BattleWorldElementData ) {
+				var element:BattleWorldElementData = child as BattleWorldElementData;
+				delete this._hash[ element.id ];
+				var i:int = this._list.indexOf( element );
 				if ( i >= 0 ) this._list.splice( i, 0 );
 			}
 		}
