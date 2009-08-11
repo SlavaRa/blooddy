@@ -100,7 +100,7 @@ package ru.avangardonline.controllers.battle {
 			controller.addCommandListener( 'exitBattle',		this.exitBattle );
 			controller.addCommandListener( 'addCharacter',		this.addCharacter );
 			controller.addCommandListener( 'removeCharacter',	this.removeCharacter );
-			controller.addCommandListener( 'forCharacter',		this.forCharacter );
+			controller.addCommandListener( 'forWorldElement',	this.forWorldElement );
 			controller.addCommandListener( 'syncCharacters',	this.syncCharacters );
 			controller.call( 'enterBattle' );
 		}
@@ -114,7 +114,7 @@ package ru.avangardonline.controllers.battle {
 			controller.removeCommandListener( 'exitBattle',			this.exitBattle );
 			controller.removeCommandListener( 'addCharacter',		this.addCharacter );
 			controller.removeCommandListener( 'removeCharacter',	this.removeCharacter );
-			controller.removeCommandListener( 'forCharacter',		this.forCharacter );
+			controller.removeCommandListener( 'forWorldElement',	this.forWorldElement );
 			controller.removeCommandListener( 'syncCharacters',		this.syncCharacters );
 			if ( this._data ) {
 				this.exitBattle();
@@ -222,7 +222,7 @@ package ru.avangardonline.controllers.battle {
 		/**
 		 * @private
 		 */
-		private function forCharacter(id:uint, command:Command):void {
+		private function forWorldElement(id:uint, command:Command):void {
 			command.call( this._data.elements.getElement( id ) );
 		}
 

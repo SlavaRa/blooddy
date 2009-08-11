@@ -4,19 +4,19 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.database.battle {
+package ru.avangardonline.database.battle.actions {
 
 	import by.blooddy.core.commands.Command;
-	import by.blooddy.core.database.Data;
-	
+	import flash.errors.IllegalOperationError;
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					02.08.2009 13:16:42
+	 * @created					11.08.2009 21:03:12
 	 */
-	public class BattleActionData extends Data {
+	public class BattleWorldElementActionData extends BattleActionData {
 
 		//--------------------------------------------------------------------------
 		//
@@ -27,9 +27,8 @@ package ru.avangardonline.database.battle {
 		/**
 		 * Constructor
 		 */
-		public function BattleActionData(num:uint) {
+		public function BattleWorldElementActionData() {
 			super();
-			this._num = num;
 		}
 
 		//--------------------------------------------------------------------------
@@ -39,44 +38,51 @@ package ru.avangardonline.database.battle {
 		//--------------------------------------------------------------------------
 
 		//----------------------------------
-		//  num
+		//  elementID
 		//----------------------------------
 
 		/**
 		 * @private
 		 */
-		private var _num:uint;
+		private var _elementID:uint;
 
-		public function get num():uint {
-			return this._num;
+		public function get elementID():uint {
+			return this._elementID;
 		}
-
-		//----------------------------------
-		//  command
-		//----------------------------------
 
 		/**
 		 * @private
 		 */
-		private var _command:Command;
-
-		public function get command():Command {
-			return this._command.clone();
-		}
-
-		public function set command(value:Command):void {
-			if ( this._command === value ) return;
-			this._command = value;
+		public function set elementID(value:uint):void {
+			if ( this._elementID === value ) return;
+			this._elementID = value;
 		}
 
 		//--------------------------------------------------------------------------
 		//
-		//  Methods
+		//  Overriden methods
 		//
 		//--------------------------------------------------------------------------
 
-		public function call(client:Object, ns:Namespace=null):* {
-			return this.command.call( client, ns );
+		public override function getCommands():Vector.<Command> {
+			var result:Vector.<Command> = new Vector.<Command>();
+			result.push(
+				new Command(
+					'forWorldElement',
+					new Array( this._elementID, this.getLocalCommand() )
+				)
+			);
+			return result;
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
+
+		protected function getLocalCommand():Command {
+			throw new IllegalOperationError();
 		}
 
 	}

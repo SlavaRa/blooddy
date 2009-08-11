@@ -4,10 +4,9 @@
     <classEntry path="ru.avangardonline.controllers.GameController"/>
     <classEntry path="ru.avangardonline.controllers.battle.BattleController"/>
     <classEntry path="ru.avangardonline.controllers.battle.BattleLogicalController"/>
-    <classEntry path="ru.avangardonline.database.battle.BattleActionData"/>
+    <classEntry path="ru.avangardonline.database.battle.actions.BattleActionData"/>
     <classEntry path="ru.avangardonline.database.battle.BattleData"/>
     <classEntry path="ru.avangardonline.database.battle.BattleTurnData"/>
-    <classEntry path="ru.avangardonline.database.battle.IActionContainerData"/>
     <classEntry path="ru.avangardonline.database.battle.world.BattleWorldElementCollectionData"/>
     <classEntry path="ru.avangardonline.database.character.CharacterData"/>
     <classEntry path="ru.avangardonline.display.gfx.battle.world.BattleWorldElementView"/>
@@ -19,6 +18,9 @@
     <classEntry path="ru.avangardonline.database.battle.world.BattleWorldAssetData"/>
     <classEntry path="ru.avangardonline.database.battle.world.BattleWorldFieldData"/>
     <classEntry path="ru.avangardonline.display.gfx.battle.world.BattleWorldViewFactory"/>
+    <classEntry path="ru.avangardonline.database.battle.actions.BattleMoveActionData"/>
+    <classEntry path="ru.avangardonline.database.battle.actions.BattleWorldElementActionData"/>
+    <classEntry path="ru.avangardonline.database.battle.actions.BattleAtackActionData"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

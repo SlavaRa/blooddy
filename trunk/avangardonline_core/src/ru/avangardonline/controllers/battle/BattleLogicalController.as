@@ -21,8 +21,8 @@ package ru.avangardonline.controllers.battle {
 	import flash.utils.Timer;
 	
 	import ru.avangardonline.database.battle.BattleData;
-	import ru.avangardonline.database.character.CharacterData;
 	import ru.avangardonline.database.battle.world.BattleWorldElementData;
+	import ru.avangardonline.database.character.CharacterData;
 
 	[Event(name="progress", type="flash.events.ProgressEvent")]
 
