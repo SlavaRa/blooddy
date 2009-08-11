@@ -9,6 +9,8 @@ package ru.avangardonline.database.battle {
 	import by.blooddy.core.database.Data;
 	import by.blooddy.core.database.DataContainer;
 	
+	import ru.avangardonline.database.battle.actions.BattleActionData;
+	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -16,7 +18,7 @@ package ru.avangardonline.database.battle {
 	 * @langversion				3.0
 	 * @created					02.08.2009 12:12:51
 	 */
-	public class BattleTurnData extends DataContainer implements IActionContainerData {
+	public class BattleTurnData extends DataContainer {
 
 		//--------------------------------------------------------------------------
 		//
@@ -62,17 +64,6 @@ package ru.avangardonline.database.battle {
 			return this._num;
 		}
 
-		//----------------------------------
-		//  numActions
-		//----------------------------------
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get numActions():uint {
-			return this._actions.length;
-		}
-
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
@@ -82,8 +73,8 @@ package ru.avangardonline.database.battle {
 		/**
 		 * @inheritDoc
 		 */
-		public function getAction(num:uint):BattleActionData {
-			return this._actions[ num ];
+		public function getActions():Vector.<BattleActionData> {
+			return this._actions.slice();
 		}
 
 		//--------------------------------------------------------------------------
@@ -98,7 +89,6 @@ package ru.avangardonline.database.battle {
 		protected override function addChild_before(child:Data):void {
 			if ( child is BattleActionData ) {
 				var data:BattleActionData = child as BattleActionData;
-				if ( data.num != this._actions.length ) throw new ArgumentError();
 				this._actions.push( data );
 			}
 		}
@@ -108,10 +98,8 @@ package ru.avangardonline.database.battle {
 		 */
 		protected override function removeChild_before(child:Data):void {
 			if ( child is BattleActionData ) {
-				var data:BattleActionData = child as BattleActionData;
-				if ( data.num != this._actions.length-1 ) throw new ArgumentError();
-				if ( this._actions[ data.num ] !== data ) throw new ArgumentError();
-				this._actions.pop();
+				var index:int = this._actions.indexOf( child );
+				if ( index >= 0 ) this._actions.splice( index, 1 );
 			}
 		}
 

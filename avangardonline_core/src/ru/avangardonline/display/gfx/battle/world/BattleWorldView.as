@@ -9,6 +9,7 @@ package ru.avangardonline.display.gfx.battle.world {
 	import by.blooddy.core.display.StageObserver;
 	import by.blooddy.core.display.destruct;
 	import by.blooddy.core.display.resource.MainResourceSprite;
+	import by.blooddy.core.events.database.DataBaseEvent;
 	import by.blooddy.core.events.display.resource.ResourceEvent;
 	import by.blooddy.core.utils.enterFrameBroadcaster;
 	
@@ -18,11 +19,8 @@ package ru.avangardonline.display.gfx.battle.world {
 	
 	import ru.avangardonline.database.battle.world.BattleWorldData;
 	import ru.avangardonline.database.battle.world.BattleWorldElementData;
-	import ru.avangardonline.database.character.CharacterData;
 	import ru.avangardonline.display.gfx.character.CharacterView;
 	import ru.avangardonline.events.database.world.BattleWorldCoordinateDataEvent;
-	import flash.display.DisplayObject;
-	import by.blooddy.core.events.database.DataBaseEvent;
 	
 	/**
 	 * @author					BlooDHounD
