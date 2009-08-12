@@ -9,13 +9,11 @@ package by.blooddy.core.net {
 	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.commands.CommandDispatcher;
 	import by.blooddy.core.events.net.StackErrorEvent;
-	import by.blooddy.core.logging.commands.CommandLog;
 	import by.blooddy.core.logging.ILogging;
 	import by.blooddy.core.logging.InfoLog;
 	import by.blooddy.core.logging.Logger;
-	
-	import flash.utils.getQualifiedClassName;
-	import flash.errors.IllegalOperationError;
+	import by.blooddy.core.logging.commands.CommandLog;
+	import by.blooddy.core.utils.ClassUtils;
 
 	//--------------------------------------
 	//  Events
@@ -38,19 +36,6 @@ package by.blooddy.core.net {
 
 		//--------------------------------------------------------------------------
 		//
-		//  Private class methods
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		private static function getName(value:Object):String {
-			return getQualifiedClassName( value ).replace( '::', '.' );
-		}
-
-		//--------------------------------------------------------------------------
-		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
@@ -61,7 +46,6 @@ package by.blooddy.core.net {
 		public function AbstractRemoter() {
 			super();
 			this._client = this;
-			this._clientName = getName( this );
 		}
 
 		//--------------------------------------------------------------------------
@@ -80,11 +64,6 @@ package by.blooddy.core.net {
 		private var _client:Object;
 
 		/**
-		 * @private
-		 */
-		private var _clientName:String;
-
-		/**
 		 * @inheritDoc
 		 */
 		public function get client():Object {
@@ -97,7 +76,6 @@ package by.blooddy.core.net {
 		public function set client(value:Object):void {
 			if ( this._client === value ) return;
 			this._client = value || this;
-			this._clientName = getName( this._client );
 		}
 
 		//----------------------------------
@@ -197,7 +175,7 @@ package by.blooddy.core.net {
 				} catch ( e:Error ) {
 	
 					// нету. диспатчим ошибку
-					var error:String = 'Error: ' + this._clientName + '::' + command.name + '(' + command.toString() + '): ' + e.toString() + ' ' + e.getStackTrace();
+					var error:String = 'Error: ' + ClassUtils.getClassName( this._client ) + '::' + command.name + '(' + command.toString() + '): ' + e.toString() + ' ' + e.getStackTrace();
 	
 					if ( this._logging ) {
 						this._logger.addLog( new InfoLog( error, InfoLog.ERROR ) );

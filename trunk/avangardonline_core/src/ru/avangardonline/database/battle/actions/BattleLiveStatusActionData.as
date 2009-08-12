@@ -5,7 +5,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package ru.avangardonline.database.battle.actions {
-
 	import by.blooddy.core.commands.Command;
 
 	/**
@@ -13,9 +12,9 @@ package ru.avangardonline.database.battle.actions {
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					11.08.2009 21:03:12
+	 * @created					12.08.2009 23:23:12
 	 */
-	public class BattleWorldElementActionData extends BattleActionData {
+	public class BattleLiveStatusActionData extends BattleWorldElementActionData {
 
 		//--------------------------------------------------------------------------
 		//
@@ -26,7 +25,7 @@ package ru.avangardonline.database.battle.actions {
 		/**
 		 * Constructor
 		 */
-		public function BattleWorldElementActionData() {
+		public function BattleLiveStatusActionData() {
 			super();
 		}
 
@@ -37,37 +36,43 @@ package ru.avangardonline.database.battle.actions {
 		//--------------------------------------------------------------------------
 
 		//----------------------------------
-		//  elementID
+		//  live
 		//----------------------------------
 
 		/**
 		 * @private
 		 */
-		private var _elementID:uint;
+		private var _live:Boolean = false;
 
-		public function get elementID():uint {
-			return this._elementID;
+		public function get live():Boolean {
+			return this._live;
 		}
 
 		/**
 		 * @private
 		 */
-		public function set elementID(value:uint):void {
-			if ( this._elementID === value ) return;
-			this._elementID = value;
+		public function set live(value:Boolean):void {
+			if ( this._live === value ) return;
+			this._live = value;
 		}
 
 		//--------------------------------------------------------------------------
 		//
-		//  Protected methods
+		//  Overriden protected methods
 		//
 		//--------------------------------------------------------------------------
 
-		protected final function getCommand(command:Command):Command {
-			return	new Command(
-						'forWorldElement',
-						new Array( this._elementID, command )
-					);
+		public override function getCommands():Vector.<Command> {
+			var result:Vector.<Command> = new Vector.<Command>();
+			result.push(
+				super.getCommand(
+					new Command(
+						'changeLiveStatus',
+						[ this._live ]
+					)
+				)
+			);
+			return result;
 		}
 
 	}

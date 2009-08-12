@@ -19,8 +19,15 @@
     <classEntry path="ru.avangardonline.database.battle.world.BattleWorldFieldData"/>
     <classEntry path="ru.avangardonline.display.gfx.battle.world.BattleWorldViewFactory"/>
     <classEntry path="ru.avangardonline.database.battle.actions.BattleMoveActionData"/>
-    <classEntry path="ru.avangardonline.database.battle.actions.BattleWorldElementActionData"/>
-    <classEntry path="ru.avangardonline.database.battle.actions.BattleAtackActionData"/>
+    <classEntry path="ru.avangardonline.serializers.ISerializer"/>
+    <classEntry path="ru.avangardonline.serializers.txt.database.battle.actions.BattleActionDataSerializer"/>
+    <classEntry path="ru.avangardonline.serializers.txt.database.battle.actions.BattleWorldElemenetActionDataSerializer"/>
+    <classEntry path="ru.avangardonline.serializers.txt.database.battle.actions.BattleMoveActionDataSerializer"/>
+    <classEntry path="ru.avangardonline.serializers.txt.database.battle.actions.BattleAtackActionDataSerializer"/>
+    <classEntry path="ru.avangardonline.database.battle.actions.BattleLiveStatusActionData"/>
+    <classEntry path="ru.avangardonline.serializers.txt.database.battle.actions.BattleLiveStatusActionDataSerializer"/>
+    <classEntry path="ru.avangardonline.serializers.txt.database.battle.BattleDataSerializer"/>
+    <classEntry path="ru.avangardonline.serializers.txt.database.battle.BattleTurnDataSerializer"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
