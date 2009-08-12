@@ -84,11 +84,17 @@ package ru.avangardonline.database.battle.actions {
 		//
 		//--------------------------------------------------------------------------
 
-		protected override function getLocalCommand():Command {
-			return new Command(
-				'move',
-				new Array( this._x, this._y )
+		public override function getCommands():Vector.<Command> {
+			var result:Vector.<Command> = new Vector.<Command>();
+			result.push(
+				super.getCommand(
+					new Command(
+						'move',
+						[ this._x, this._y ]
+					)
+				)
 			);
+			return result;
 		}
 
 	}

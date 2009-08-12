@@ -7,7 +7,7 @@
 package ru.avangardonline.database.battle.actions {
 
 	import by.blooddy.core.commands.Command;
-
+	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -58,24 +58,24 @@ package ru.avangardonline.database.battle.actions {
 		}
 
 		//----------------------------------
-		//  targetHealth
+		//  targetIncreaseHealth
 		//----------------------------------
 
 		/**
 		 * @private
 		 */
-		private var _targetHealth:uint;
+		private var _targetIncreaseHealth:uint;
 
-		public function get targetHealth():uint {
-			return this._targetHealth;
+		public function get targetIncreaseHealth():uint {
+			return this._targetIncreaseHealth;
 		}
 
 		/**
 		 * @private
 		 */
-		public function set targetHealth(value:uint):void {
-			if ( this._targetHealth === value ) return;
-			this._targetHealth = value;
+		public function set targetIncreaseHealth(value:uint):void {
+			if ( this._targetIncreaseHealth === value ) return;
+			this._targetIncreaseHealth = value;
 		}
 
 		//--------------------------------------------------------------------------
@@ -85,30 +85,20 @@ package ru.avangardonline.database.battle.actions {
 		//--------------------------------------------------------------------------
 
 		public override function getCommands():Vector.<Command> {
-			var result:Vector.<Command> = super.getCommands();
+			var result:Vector.<Command> = new Vector.<Command>();
 			result.push(
-				new Command(
-					'forWorldElement',
-					new Array(
-						this._targetID,
-						new Command(
-							'setHealth',
-							[ this._targetHealth ]
-						)
-					)
-				)
+				this.getCommand( new Command(
+					'atack',
+					[ this._targetID ]
+				) )
+			);
+			result.push(
+				this.getCommand( new Command(
+					'increaseHealth',
+					[ this._targetIncreaseHealth ]
+				) )
 			);
 			return result;
-		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Overriden protected methods
-		//
-		//--------------------------------------------------------------------------
-
-		protected override function getLocalCommand():Command {
-			return new Command( 'atack', [ this._targetID ] );
 		}
 
 	}
