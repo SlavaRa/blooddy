@@ -37,6 +37,7 @@ package by.blooddy.core.events.net {
 		 */
 		public function SerializeErrorEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false, text:String=null, stack:String=null, data:*=null) {
 			super( type, bubbles, cancelable, text, stack );
+			this.data = data;
 		}
 
 		//--------------------------------------------------------------------------
