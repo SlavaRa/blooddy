@@ -208,7 +208,7 @@ package ru.avangardonline.database.battle.world {
 
 		public function setValues(x:Number, y:Number):void {
 			this.stop();
-			if ( this._x == x || this._y == y ) return;
+			if ( this._x == x && this._y == y ) return;
 			this._x = x;
 			this._y = y;
 			super.dispatchEvent( new BattleWorldCoordinateDataEvent( BattleWorldCoordinateDataEvent.COORDINATE_CHANGE ) );
@@ -222,14 +222,14 @@ package ru.avangardonline.database.battle.world {
 		}
 
 		public function moveTo(x:Number, y:Number, time:Number):void {
-
-			this._x_start =		this._x;
-			this._y_start =		this._y;
 			this._time_start =	this._time.currentTime;
-
-			this.$moveTo( x, y, time );
-
-
+			if ( this._time_start < time ) {
+				this._x_start =		this._x;
+				this._y_start =		this._y;
+				this.$moveTo( x, y, time );
+			} else {
+				this.setValues( x, y );
+			}
 		}
 
 		/**

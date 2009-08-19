@@ -5,19 +5,16 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package ru.avangardonline.database.character {
-
 	import by.blooddy.core.database.Data;
-	
-	import ru.avangardonline.database.battle.world.BattleWorldElementData;
 
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
-	 * @playerversion			Flash 9
+	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					05.08.2009 22:12:56
+	 * @created					19.08.2009 22:13:38
 	 */
-	public class CharacterData extends BattleWorldElementData {
+	public class MinionCharacterData extends CharacterData {
 
 		//--------------------------------------------------------------------------
 		//
@@ -28,7 +25,7 @@ package ru.avangardonline.database.character {
 		/**
 		 * Constructor
 		 */
-		public function CharacterData(id:uint) {
+		public function MinionCharacterData(id:uint) {
 			super( id );
 		}
 
@@ -45,18 +42,39 @@ package ru.avangardonline.database.character {
 		/**
 		 * @private
 		 */
-		private var _group:uint = 0;
+		private var _type:uint;
 
-		public function get group():uint {
-			return this._group;
+		public function get type():uint {
+			return this._type;
 		}
 
 		/**
 		 * @private
 		 */
-		public function set group(value:uint):void {
-			if ( this._group != value ) return;
-			this._group = value;
+		public function set type(value:uint):void {
+			if ( this._type != value ) return;
+			this._type = value;
+		}
+
+		//----------------------------------
+		//  health
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
+		private var _health:uint;
+
+		public function get health():uint {
+			return this._health;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set health(value:uint):void {
+			if ( this._health != value ) return;
+			this._health = value;
 		}
 
 		//--------------------------------------------------------------------------
@@ -66,15 +84,16 @@ package ru.avangardonline.database.character {
 		//--------------------------------------------------------------------------
 
 		public override function clone():Data {
-			var result:CharacterData = new CharacterData( super.id );
+			var result:MinionCharacterData = new MinionCharacterData( super.id );
 			result.copyFrom( this );
 			return result;
 		}
 
 		public override function copyFrom(data:Data):void {
-			var target:CharacterData = data as CharacterData;
+			var target:MinionCharacterData = data as MinionCharacterData;
 			if ( !target ) throw new ArgumentError();
-			this.group = target._group;
+			this.type = target._type;
+			this.health = target._health;
 		}
 
 	}

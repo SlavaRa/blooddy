@@ -4,18 +4,19 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.serializers.txt.database.battle.actions {
+package ru.avangardonline.serializers.txt.database.character {
 
-	import ru.avangardonline.database.battle.actions.BattleLiveStatusActionData;
+	import ru.avangardonline.database.character.HeroCharacterData;
+	import ru.avangardonline.serializers.ISerializer;
 
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					12.08.2009 23:27:32
+	 * @created					19.08.2009 22:39:30
 	 */
-	public class BattleLiveStatusActionDataSerializer extends BattleWorldElementActionDataSerializer {
+	public class HeroCharacterDataSerializer extends CharacterDataSerializer implements ISerializer {
 
 		//--------------------------------------------------------------------------
 		//
@@ -26,7 +27,7 @@ package ru.avangardonline.serializers.txt.database.battle.actions {
 		/**
 		 * @private
 		 */
-		private static const _serializer:BattleLiveStatusActionDataSerializer = new BattleLiveStatusActionDataSerializer();
+		private static const _serializer:HeroCharacterDataSerializer = new HeroCharacterDataSerializer();
 
 		//--------------------------------------------------------------------------
 		//
@@ -34,8 +35,8 @@ package ru.avangardonline.serializers.txt.database.battle.actions {
 		//
 		//--------------------------------------------------------------------------
 
-		public static function deserialize(source:String, target:BattleLiveStatusActionData=null):BattleLiveStatusActionData {
-			return _serializer.deserialize( source, target ) as BattleLiveStatusActionData;
+		public static function deserialize(source:String, target:HeroCharacterData=null):HeroCharacterData {
+			return _serializer.deserialize( source, target ) as HeroCharacterData;
 		}
 
 		//--------------------------------------------------------------------------
@@ -47,24 +48,26 @@ package ru.avangardonline.serializers.txt.database.battle.actions {
 		/**
 		 * Constructor
 		 */
-		public function BattleLiveStatusActionDataSerializer() {
+		public function HeroCharacterDataSerializer() {
 			super();
 		}
 
 		//--------------------------------------------------------------------------
 		//
-		//  Implements methods
+		//  Overriden methods
 		//
 		//--------------------------------------------------------------------------
 
 		public override function deserialize(source:String, target:*=null):* {
-			if ( source.charAt( 0 ) != 'd' ) throw new ArgumentError();
-			var data:BattleLiveStatusActionData = target as BattleLiveStatusActionData;
-			if ( !data ) data = new BattleLiveStatusActionData();
-			source = source.substr( 1 );
-			data = super.deserialize( source, data );
-			var arr:Array = source.split( '|', 2 );
-			data.live = Boolean( parseInt( arr[ 1 ] ) );
+			if ( source.charAt( 0 ) != 'h' ) throw new ArgumentError();
+			var data:HeroCharacterData = target as HeroCharacterData;
+			var arr:Array = source.substr( 2 ).split( '|', 1 );
+			var arr2:Array = arr[ 0 ].split( ',', 2 );
+			if ( !data ) {
+				data = new HeroCharacterData( parseInt( arr2[ 0 ] ) );
+			}
+			super.deserialize( source, data );
+			data.nick = arr2[1];
 			return data;
 		}
 

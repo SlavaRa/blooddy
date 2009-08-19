@@ -14,7 +14,7 @@ package ru.avangardonline.serializers.txt.database.battle.actions {
 	 * @langversion				3.0
 	 * @created					12.08.2009 23:06:53
 	 */
-	public class BattleAtackActionDataSerializer extends BattleWorldElemenetActionDataSerializer {
+	public class BattleAtackActionDataSerializer extends BattleWorldElementActionDataSerializer {
 
 		//--------------------------------------------------------------------------
 		//
@@ -57,12 +57,14 @@ package ru.avangardonline.serializers.txt.database.battle.actions {
 		//--------------------------------------------------------------------------
 
 		public override function deserialize(source:String, target:*=null):* {
+			if ( source.charAt( 0 ) != 'a' ) throw new ArgumentError();
 			var data:BattleAtackActionData = target as BattleAtackActionData;
 			if ( !data ) data = new BattleAtackActionData();
+			source = source.substr( 1 );
 			data = super.deserialize( source, data );
-			var arr:Array = source.split( ',', 4 );
-			data.targetID = parseInt( arr[ 2 ] );
-			data.targetIncreaseHealth = parseInt( arr[ 3 ] );
+			var arr:Array = source.split( '|', 3 );
+			data.targetID = parseInt( arr[ 1 ] );
+			data.targetIncreaseHealth = parseInt( arr[ 2 ] );
 			return data;
 		}
 

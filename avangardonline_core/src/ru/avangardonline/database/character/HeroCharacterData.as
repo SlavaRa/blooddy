@@ -7,17 +7,15 @@
 package ru.avangardonline.database.character {
 
 	import by.blooddy.core.database.Data;
-	
-	import ru.avangardonline.database.battle.world.BattleWorldElementData;
 
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
-	 * @playerversion			Flash 9
+	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					05.08.2009 22:12:56
+	 * @created					19.08.2009 22:11:37
 	 */
-	public class CharacterData extends BattleWorldElementData {
+	public class HeroCharacterData extends CharacterData {
 
 		//--------------------------------------------------------------------------
 		//
@@ -28,7 +26,7 @@ package ru.avangardonline.database.character {
 		/**
 		 * Constructor
 		 */
-		public function CharacterData(id:uint) {
+		public function HeroCharacterData(id:uint) {
 			super( id );
 		}
 
@@ -45,18 +43,18 @@ package ru.avangardonline.database.character {
 		/**
 		 * @private
 		 */
-		private var _group:uint = 0;
+		private var _nick:String;
 
-		public function get group():uint {
-			return this._group;
+		public function get nick():String {
+			return this._nick;
 		}
 
 		/**
 		 * @private
 		 */
-		public function set group(value:uint):void {
-			if ( this._group != value ) return;
-			this._group = value;
+		public function set nick(value:String):void {
+			if ( this._nick != value ) return;
+			this._nick = value;
 		}
 
 		//--------------------------------------------------------------------------
@@ -66,15 +64,15 @@ package ru.avangardonline.database.character {
 		//--------------------------------------------------------------------------
 
 		public override function clone():Data {
-			var result:CharacterData = new CharacterData( super.id );
+			var result:HeroCharacterData = new HeroCharacterData( super.id );
 			result.copyFrom( this );
 			return result;
 		}
 
 		public override function copyFrom(data:Data):void {
-			var target:CharacterData = data as CharacterData;
+			var target:HeroCharacterData = data as HeroCharacterData;
 			if ( !target ) throw new ArgumentError();
-			this.group = target._group;
+			this.nick = target._nick;
 		}
 
 	}

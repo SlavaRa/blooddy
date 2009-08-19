@@ -87,6 +87,10 @@ package ru.avangardonline.database.battle.actions {
 		//
 		//--------------------------------------------------------------------------
 
+		public function isResult():Boolean {
+			return false;
+		}
+
 		public virtual function getCommands():Vector.<Command> {
 			throw new IllegalOperationError();
 		}

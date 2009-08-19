@@ -21,13 +21,20 @@
     <classEntry path="ru.avangardonline.database.battle.actions.BattleMoveActionData"/>
     <classEntry path="ru.avangardonline.serializers.ISerializer"/>
     <classEntry path="ru.avangardonline.serializers.txt.database.battle.actions.BattleActionDataSerializer"/>
-    <classEntry path="ru.avangardonline.serializers.txt.database.battle.actions.BattleWorldElemenetActionDataSerializer"/>
+    <classEntry path="ru.avangardonline.serializers.txt.database.battle.actions.BattleWorldElementActionDataSerializer"/>
     <classEntry path="ru.avangardonline.serializers.txt.database.battle.actions.BattleMoveActionDataSerializer"/>
     <classEntry path="ru.avangardonline.serializers.txt.database.battle.actions.BattleAtackActionDataSerializer"/>
     <classEntry path="ru.avangardonline.database.battle.actions.BattleLiveStatusActionData"/>
     <classEntry path="ru.avangardonline.serializers.txt.database.battle.actions.BattleLiveStatusActionDataSerializer"/>
     <classEntry path="ru.avangardonline.serializers.txt.database.battle.BattleDataSerializer"/>
     <classEntry path="ru.avangardonline.serializers.txt.database.battle.BattleTurnDataSerializer"/>
+    <classEntry path="ru.avangardonline.serializers.txt.database.battle.world.BattleWorldElementCollectionDataSerializer"/>
+    <classEntry path="ru.avangardonline.database.character.HeroCharacterData"/>
+    <classEntry path="ru.avangardonline.database.character.MinionCharacterData"/>
+    <classEntry path="ru.avangardonline.serializers.txt.database.character.CharacterDataSerializer"/>
+    <classEntry path="ru.avangardonline.serializers.txt.database.character.HeroCharacterDataSerializer"/>
+    <classEntry path="ru.avangardonline.serializers.txt.database.character.MinionCharacterDataSerializer"/>
+    <classEntry path="ru.avangardonline.serializers.txt.database.battle.world.BattleWorldElementDataSerializer"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
