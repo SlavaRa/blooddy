@@ -245,11 +245,11 @@ package by.blooddy.core.net {
 		 * @inheritDoc
 		 */
 		public function connect(host:String, port:int):void {
-			if ( this.connected ) this.close();
+			if ( this.connected ) throw new IOError();
 			switch ( this._connectionType ) {
 				case Protocols.SOCKET:
 					this._socket = new Socket();
-					Security.loadPolicyFile( 'xmlsocket://' + host + ':' + port );
+					//Security.loadPolicyFile( 'xmlsocket://' + host + ':' + port );
 					break;
 				case Protocols.HTTP:
 					this._socket = new ProxySocket();
