@@ -4,24 +4,25 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.serializers.txt.database.battle.actions {
+package ru.avangardonline.serializers.txt.database.battle.world {
 
 	import by.blooddy.core.errors.getErrorMessage;
 	
 	import flash.errors.IllegalOperationError;
 	
-	import ru.avangardonline.database.battle.actions.BattleActionData;
-	import ru.avangardonline.database.battle.actions.BattleWorldElementActionData;
+	import ru.avangardonline.database.battle.world.BattleWorldElementData;
+	import ru.avangardonline.database.character.CharacterData;
 	import ru.avangardonline.serializers.ISerializer;
-	
+	import ru.avangardonline.serializers.txt.database.character.CharacterDataSerializer;
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					12.08.2009 21:42:30
+	 * @created					19.08.2009 23:40:56
 	 */
-	public class BattleActionDataSerializer implements ISerializer {
+	public class BattleWorldElementDataSerializer implements ISerializer {
 
 		//--------------------------------------------------------------------------
 		//
@@ -29,8 +30,8 @@ package ru.avangardonline.serializers.txt.database.battle.actions {
 		//
 		//--------------------------------------------------------------------------
 
-		public static function deserialize(source:String, target:BattleActionData=null):BattleActionData {
-			return BattleWorldElementActionDataSerializer.deserialize( source, target as BattleWorldElementActionData );
+		public static function deserialize(source:String, target:BattleWorldElementData=null):BattleWorldElementData {
+			return CharacterDataSerializer.deserialize( source, target as CharacterData );
 		}
 
 		//--------------------------------------------------------------------------
@@ -42,7 +43,7 @@ package ru.avangardonline.serializers.txt.database.battle.actions {
 		/**
 		 * Constructor
 		 */
-		public function BattleActionDataSerializer() {
+		public function BattleWorldElementDataSerializer() {
 			super();
 		}
 

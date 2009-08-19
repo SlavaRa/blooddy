@@ -18,7 +18,7 @@ package ru.avangardonline.serializers.txt.database.battle.actions {
 	 * @langversion				3.0
 	 * @created					12.08.2009 22:22:27
 	 */
-	public class BattleWorldElemenetActionDataSerializer extends BattleActionDataSerializer {
+	public class BattleWorldElementActionDataSerializer extends BattleActionDataSerializer {
 
 		//--------------------------------------------------------------------------
 		//
@@ -27,7 +27,7 @@ package ru.avangardonline.serializers.txt.database.battle.actions {
 		//--------------------------------------------------------------------------
 
 		public static function deserialize(source:String, target:BattleWorldElementActionData=null):BattleWorldElementActionData {
-			switch ( source.split( ',', 1 )[0] ) {
+			switch ( source.charAt( 0 ) ) {
 				case 'm':	return BattleMoveActionDataSerializer.deserialize( source, target as BattleMoveActionData );
 				case 'a':	return BattleAtackActionDataSerializer.deserialize( source, target as BattleAtackActionData );
 				case 'd':	return BattleLiveStatusActionDataSerializer.deserialize( source, target as BattleLiveStatusActionData );
@@ -44,7 +44,7 @@ package ru.avangardonline.serializers.txt.database.battle.actions {
 		/**
 		 * Constructor
 		 */
-		public function BattleWorldElemenetActionDataSerializer() {
+		public function BattleWorldElementActionDataSerializer() {
 			super();
 		}
 
@@ -57,7 +57,7 @@ package ru.avangardonline.serializers.txt.database.battle.actions {
 		public override function deserialize(source:String, target:*=null):* {
 			var data:BattleWorldElementActionData = target as BattleWorldElementActionData;
 			if ( !data ) throw new ArgumentError();
-			data.elementID = parseInt( source.split( ',', 2 )[1] );
+			data.elementID = parseInt( source.split( '|', 1 )[0] );
 		}
 
 	}

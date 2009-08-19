@@ -62,6 +62,10 @@ package ru.avangardonline.database.battle.actions {
 		//
 		//--------------------------------------------------------------------------
 
+		public override function isResult():Boolean {
+			return true;
+		}
+
 		public override function getCommands():Vector.<Command> {
 			var result:Vector.<Command> = new Vector.<Command>();
 			result.push(
