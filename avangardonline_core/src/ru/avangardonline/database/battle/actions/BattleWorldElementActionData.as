@@ -7,6 +7,10 @@
 package ru.avangardonline.database.battle.actions {
 
 	import by.blooddy.core.commands.Command;
+	
+	import flash.errors.IllegalOperationError;
+	
+	import ru.avangardonline.database.battle.world.BattleWorldElementCollectionData;
 
 	/**
 	 * @author					BlooDHounD
@@ -59,14 +63,34 @@ package ru.avangardonline.database.battle.actions {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Overriden methods
+		//
+		//--------------------------------------------------------------------------
+
+		public override function toLocaleString():String {
+			return super.formatToString( 'elementID', 'live' );
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Methods
+		//
+		//--------------------------------------------------------------------------
+
+		public virtual function apply(collection:BattleWorldElementCollectionData):void {
+			throw new IllegalOperationError();
+		}
+
+		//--------------------------------------------------------------------------
+		//
 		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
 
-		protected final function getCommand(command:Command):Command {
+		protected final function getCommand(command:Command, id:uint=0):Command {
 			return	new Command(
 						'forWorldElement',
-						new Array( this._elementID, command )
+						new Array( id || this._elementID, command )
 					);
 		}
 

@@ -6,8 +6,8 @@
 
 package ru.avangardonline.serializers.txt.database.battle {
 
-	import ru.avangardonline.database.battle.BattleTurnData;
 	import ru.avangardonline.database.battle.actions.BattleActionData;
+	import ru.avangardonline.database.battle.turns.BattleTurnData;
 	import ru.avangardonline.serializers.ISerializer;
 	import ru.avangardonline.serializers.txt.database.battle.actions.BattleActionDataSerializer;
 	

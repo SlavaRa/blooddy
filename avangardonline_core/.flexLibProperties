@@ -6,7 +6,7 @@
     <classEntry path="ru.avangardonline.controllers.battle.BattleLogicalController"/>
     <classEntry path="ru.avangardonline.database.battle.actions.BattleActionData"/>
     <classEntry path="ru.avangardonline.database.battle.BattleData"/>
-    <classEntry path="ru.avangardonline.database.battle.BattleTurnData"/>
+    <classEntry path="ru.avangardonline.database.battle.turns.BattleTurnData"/>
     <classEntry path="ru.avangardonline.database.battle.world.BattleWorldElementCollectionData"/>
     <classEntry path="ru.avangardonline.database.character.CharacterData"/>
     <classEntry path="ru.avangardonline.display.gfx.battle.world.BattleWorldElementView"/>
@@ -35,6 +35,8 @@
     <classEntry path="ru.avangardonline.serializers.txt.database.character.HeroCharacterDataSerializer"/>
     <classEntry path="ru.avangardonline.serializers.txt.database.character.MinionCharacterDataSerializer"/>
     <classEntry path="ru.avangardonline.serializers.txt.database.battle.world.BattleWorldElementDataSerializer"/>
+    <classEntry path="ru.avangardonline.database.battle.turns.BattleTurnWorldElementCollectionData"/>
+    <classEntry path="ru.avangardonline.database.battle.turns.BattleTurnWorldElementContainerData"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

@@ -5,7 +5,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package ru.avangardonline.database.battle.actions {
+
 	import by.blooddy.core.commands.Command;
+	
+	import ru.avangardonline.database.battle.world.BattleWorldElementCollectionData;
+	import ru.avangardonline.database.character.MinionCharacterData;
 
 	/**
 	 * @author					BlooDHounD
@@ -58,9 +62,13 @@ package ru.avangardonline.database.battle.actions {
 
 		//--------------------------------------------------------------------------
 		//
-		//  Overriden protected methods
+		//  Overriden methods
 		//
 		//--------------------------------------------------------------------------
+
+		public override function toLocaleString():String {
+			return super.formatToString( 'elementID', 'live' );
+		}
 
 		public override function isResult():Boolean {
 			return true;
@@ -77,6 +85,11 @@ package ru.avangardonline.database.battle.actions {
 				)
 			);
 			return result;
+		}
+
+		public override function apply(collection:BattleWorldElementCollectionData):void {
+			var element:MinionCharacterData = collection.getElement( super.elementID ) as MinionCharacterData;
+			if ( !element ) throw new ArgumentError();
 		}
 
 	}

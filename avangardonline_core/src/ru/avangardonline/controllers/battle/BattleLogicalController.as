@@ -21,8 +21,12 @@ package ru.avangardonline.controllers.battle {
 	import flash.utils.Timer;
 	
 	import ru.avangardonline.database.battle.BattleData;
-	import ru.avangardonline.database.battle.world.BattleWorldElementData;
-	import ru.avangardonline.database.character.CharacterData;
+	import ru.avangardonline.database.battle.actions.BattleActionData;
+	import ru.avangardonline.database.battle.actions.BattleWorldElementActionData;
+	import ru.avangardonline.database.battle.turns.BattleTurnData;
+	import ru.avangardonline.database.battle.turns.BattleTurnWorldElementCollectionData;
+	import ru.avangardonline.database.battle.turns.BattleTurnWorldElementContainerData;
+	import ru.avangardonline.database.battle.world.BattleWorldElementCollectionData;
 
 	[Event(name="progress", type="flash.events.ProgressEvent")]
 
@@ -51,38 +55,10 @@ package ru.avangardonline.controllers.battle {
 		/**
 		 * Constructor
 		 */
-		public function BattleLogicalController(controller:IBaseController!, time:RelativeTime!) {
+		public function BattleLogicalController(controller:IBaseController!) {
 			super();
-
 			this._baseController = controller;
-
-			this._time = time;
-			this._time.speed = 0;
-			this._time.addEventListener( TimeEvent.TIME_RELATIVITY_CHANGE, this.handler_timeRelativityChange );
-
-			this._data = new BattleData( time );
-
-			this._data.world.field.width = 11;
-			this._data.world.field.height = 5;
-
-			var id:uint = 0;
-			var x:int;
-			var y:int;
-			var character:CharacterData;
-			for ( y=0; y<5; y++ ) {
-				for ( x = -5; x < -1; x++ ) {
-					if ( Math.random() > 0.5 ) continue;
-					character = new CharacterData( ++id );
-					character.coord.x = x;
-					character.coord.y = y;
-					this._data.world.elements.addChild( character );
-				}
-			}
-
-			controller.dataBase.addChild( this._data );
-
 			this._timer.addEventListener( TimerEvent.TIMER, this.updateTick );
-
 		}
 
 		//--------------------------------------------------------------------------
@@ -94,7 +70,12 @@ package ru.avangardonline.controllers.battle {
 		/**
 		 * @private
 		 */
-		private var _data:BattleData;
+		private var _inBattle:Boolean = false;
+
+		/**
+		 * @private
+		 */
+		private var _collections:BattleTurnWorldElementCollectionData;
 
 		/**
 		 * @private
@@ -150,14 +131,14 @@ package ru.avangardonline.controllers.battle {
 		//----------------------------------
 
 		public function get progress():Number {
-			return this._totalTicks * TICK_TIME / this._time.currentTime;
+			return this._time.currentTime / ( this.totalTicks * TICK_TIME );
 		}
 
 		/**
 		 * @private
 		 */
 		public function set progress(value:Number):void {
-			this._time.currentTime = this._totalTicks * ( value || 0 ) * TICK_TIME;
+			this._time.currentTime = this.totalTicks * ( value || 0 ) * TICK_TIME;
 		}
 
 		//--------------------------------------------------------------------------
@@ -197,7 +178,7 @@ package ru.avangardonline.controllers.battle {
 		 */
 		public function set currentTick(value:uint):void {
 			if ( this._currentTick == value ) return;
-			if ( value >= this._totalTicks ) throw new RangeError(); 
+			if ( value >= this.totalTicks ) throw new RangeError(); 
 			if ( this._currentTick == value ) return;
 			this._time.currentTime = value * TICK_TIME;
 		}
@@ -206,27 +187,30 @@ package ru.avangardonline.controllers.battle {
 		//  totalTicks
 		//----------------------------------
 
-		/**
-		 * @private
-		 */
-		private var _totalTicks:uint = 1;
-
 		public function get totalTicks():uint {
-			return this._totalTicks;
+			return this.totalTurns * 4;
 		}
 
 		//----------------------------------
 		//  currentTurn
 		//----------------------------------
 
+		/**
+		 * @private
+		 */
+		private var _currentTurn:uint = 0;
+
 		public function get currentTurn():uint {
-			return 0;
+			return this._currentTurn;
 		}
 
 		/**
 		 * @private
 		 */
 		public function set currentTurn(value:uint):void {
+			if ( this._currentTurn == value ) return;
+			if ( this._currentTick >= this._battle.numTurns ) throw new RangeError();
+			this.currentTick = value * BattleTurnData.TURN_TIME;
 		}
 
 		//----------------------------------
@@ -234,8 +218,84 @@ package ru.avangardonline.controllers.battle {
 		//----------------------------------
 
 		public function get totalTurns():uint {
-			return 0;
+			return this._battle.numTurns;
 		}
+
+		//----------------------------------
+		//  totalTurns
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
+		private var _battle:BattleData;
+
+		public function get battle():BattleData {
+			return this._battle;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set battle(value:BattleData):void {
+			if ( this._battle === value ) return;
+
+			if ( this._battle ) {
+
+				if ( this._inBattle ) {
+					this.exitBattle();
+				}
+
+				this._time.removeEventListener( TimeEvent.TIME_RELATIVITY_CHANGE, this.handler_timeRelativityChange );
+				this._time = null;
+
+				this._collections.removeChild( this._collections );
+				this._collections = null;
+
+				this._baseController.dataBase.removeChild( this._battle );
+
+			}
+			
+			this._battle = value;
+
+			if ( this._battle ) {
+
+				this._baseController.dataBase.addChild( this._battle );
+
+				this._collections = new BattleTurnWorldElementCollectionData();
+				this._collections.addChild( new BattleTurnWorldElementContainerData( 0, this._battle.world.elements.clone() as BattleWorldElementCollectionData ) );
+				this._baseController.dataBase.addChild( this._collections );
+
+				this._time = this._battle.time;
+				this._time.currentTime = 0;
+				this._time.speed = 0;
+				this._time.addEventListener( TimeEvent.TIME_RELATIVITY_CHANGE, this.handler_timeRelativityChange );
+
+				if ( this._inBattle ) {
+					this.call_enterBattle();
+				}
+
+			}
+/*
+			this._battle.world.field.width = 11;
+			this._battle.world.field.height = 5;
+
+			var id:uint = 0;
+			var x:int;
+			var y:int;
+			var character:CharacterData;
+			for ( y=0; y<5; y++ ) {
+				for ( x = -5; x < -1; x++ ) {
+					if ( Math.random() > 0.5 ) continue;
+					character = new CharacterData( ++id );
+					character.coord.x = x;
+					character.coord.y = y;
+					this._battle.world.elements.addChild( character );
+				}
+			}
+*/
+		}
+
 
 		//--------------------------------------------------------------------------
 		//
@@ -264,30 +324,65 @@ package ru.avangardonline.controllers.battle {
 		 * @private
 		 */
 		private function updateTick(event:Event=null):void {
-			trace( this._time.currentTime );
 			var newTick:uint = this._time.currentTime / TICK_TIME;
 			if ( newTick == this._currentTick ) return;
-			if ( Math.abs( newTick - this._currentTick ) != 1 ) {
-				// syncModel
+			var newTurn:uint = newTick / 4;
+			if ( newTurn == this._battle.numTurns ) {
+				this._time.speed = 0;
 			}
-			// TODO: update model
+			if ( newTurn - this._currentTurn != 0 ) {
+				this.syncElements();
+			}
 			this._currentTick = newTick;
-			super.dispatchEvent( new ProgressEvent( ProgressEvent.PROGRESS, false, false, this._currentTick, this._totalTicks ) );
+			// TODO: update model
+			super.dispatchEvent( new ProgressEvent( ProgressEvent.PROGRESS, false, false, this._currentTick, this.totalTicks ) );
 		}
 
 		/**
 		 * @private
 		 */
-		private function syncCharacters():void {
-			var elements:Vector.<BattleWorldElementData> = this._data.world.elements.getElements();
-			var characters:Vector.<CharacterData> = new Vector.<CharacterData>();
-			for each ( var element:BattleWorldElementData in elements ) {
-				if ( element is CharacterData ) {
-					characters.push( element as CharacterData );
+		private function syncElements():void {
+			this.syncTurns();
+			this.$call(
+				'syncElements',
+				this._collections.getCollection( this._currentTurn ).collection
+			);
+		}
+
+		/**
+		 * @private
+		 */
+		private function syncTurns():void {
+
+			var i:uint = this._collections.numTurns;
+			var l:uint = this._currentTurn;
+
+			if ( i > l ) return;
+			// состояние этого хода ещё не рассчитывалось
+
+			var action:BattleActionData;
+			var collection:BattleWorldElementCollectionData = this._collections.getCollection( i-1 ).collection;
+
+			for ( i; i<=l; i++ ) {
+				collection = collection.clone() as BattleWorldElementCollectionData;
+				for each ( action in this._battle.getTurn( i ).getActions() ) {
+					if ( action is BattleWorldElementActionData ) {
+						( action as BattleWorldElementActionData ).apply( collection );
+					}
 				}
-				//this.$call( 'forCharacter', character.id, new Command( 'moveTo', [ -5 + Math.random() * 11, Math.random() * 5, 5E3 + Math.random() * 5E3 ] ) );
+				this._collections.addChild( new BattleTurnWorldElementContainerData( i, collection ) );
 			}
-			this.$call( 'syncCharacters', characters );
+
+		}
+
+		/**
+		 * @private
+		 */
+		private function call_enterBattle():void {
+			this._time.currentTime = 0;
+			this._time.speed = 1;
+			this.$call( 'enterBattle', this._battle.world.field );
+			this.syncElements();
 		}
 
 		//--------------------------------------------------------------------------
@@ -300,13 +395,11 @@ package ru.avangardonline.controllers.battle {
 		 * @private
 		 */
 		private function enterBattle():void {
-			this.$call( 'enterBattle', this._data.world.field );
-
-			this.syncCharacters();
-
-			this._time.currentTime = 0;
-			this._time.speed = 1;
-
+			if ( this._inBattle ) throw new ArgumentError();
+			this._inBattle = true;
+			if ( this._battle ) {
+				this.call_enterBattle();
+			}
 		}
 
 		/**

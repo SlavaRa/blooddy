@@ -4,24 +4,29 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.database.battle {
+package ru.avangardonline.database.battle.turns {
 
 	import by.blooddy.core.database.Data;
 	import by.blooddy.core.database.DataContainer;
-	import by.blooddy.core.database.DataLinker;
-	import by.blooddy.core.utils.time.RelativeTime;
 	
-	import ru.avangardonline.database.battle.turns.BattleTurnData;
-	import ru.avangardonline.database.battle.world.BattleWorldData;
-
+	import ru.avangardonline.database.battle.actions.BattleActionData;
+	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					28.07.2009 20:20:44
+	 * @created					02.08.2009 12:12:51
 	 */
-	public class BattleData extends DataContainer {
+	public class BattleTurnData extends DataContainer {
+
+		//--------------------------------------------------------------------------
+		//
+		//  Class constants
+		//
+		//--------------------------------------------------------------------------
+
+		public static const TURN_TIME:uint = 2E3;
 
 		//--------------------------------------------------------------------------
 		//
@@ -32,10 +37,9 @@ package ru.avangardonline.database.battle {
 		/**
 		 * Constructor
 		 */
-		public function BattleData(time:RelativeTime) {
+		public function BattleTurnData(num:uint) {
 			super();
-			this._world = new BattleWorldData( time )
-			DataLinker.link( this, this._world, true );
+			this._num = num;
 		}
 
 		//--------------------------------------------------------------------------
@@ -47,7 +51,7 @@ package ru.avangardonline.database.battle {
 		/**
 		 * @private
 		 */
-		private const _turns:Vector.<BattleTurnData> = new Vector.<BattleTurnData>();
+		private const _actions:Vector.<BattleActionData> = new Vector.<BattleActionData>();
 
 		//--------------------------------------------------------------------------
 		//
@@ -56,32 +60,16 @@ package ru.avangardonline.database.battle {
 		//--------------------------------------------------------------------------
 
 		//----------------------------------
-		//  world
+		//  num
 		//----------------------------------
 
 		/**
 		 * @private
 		 */
-		private var _world:BattleWorldData;
+		private var _num:uint;
 
-		public function get world():BattleWorldData {
-			return this._world;
-		}
-
-		//----------------------------------
-		//  time
-		//----------------------------------
-
-		public function get time():RelativeTime {
-			return this._world.time;
-		}
-
-		//----------------------------------
-		//  numTurns
-		//----------------------------------
-
-		public function get numTurns():uint {
-			return this._turns.length;
+		public function get num():uint {
+			return this._num;
 		}
 
 		//--------------------------------------------------------------------------
@@ -91,7 +79,7 @@ package ru.avangardonline.database.battle {
 		//--------------------------------------------------------------------------
 
 		public override function toLocaleString():String {
-			return super.formatToString( 'numTurns' );
+			return super.formatToString( 'num' );
 		}
 
 		//--------------------------------------------------------------------------
@@ -100,9 +88,11 @@ package ru.avangardonline.database.battle {
 		//
 		//--------------------------------------------------------------------------
 
-		public function getTurn(num:uint):BattleTurnData {
-			if ( num >= this._turns.length ) return null;
-			return this._turns[ num ];
+		/**
+		 * @inheritDoc
+		 */
+		public function getActions():Vector.<BattleActionData> {
+			return this._actions.slice();
 		}
 
 		//--------------------------------------------------------------------------
@@ -115,10 +105,9 @@ package ru.avangardonline.database.battle {
 		 * @private
 		 */
 		protected override function addChild_before(child:Data):void {
-			if ( child is BattleTurnData ) {
-				var data:BattleTurnData = child as BattleTurnData;
-				if ( data.num != this._turns.length ) throw new ArgumentError();
-				this._turns.push( data );
+			if ( child is BattleActionData ) {
+				var data:BattleActionData = child as BattleActionData;
+				this._actions.push( data );
 			}
 		}
 
@@ -126,11 +115,9 @@ package ru.avangardonline.database.battle {
 		 * @private
 		 */
 		protected override function removeChild_before(child:Data):void {
-			if ( child is BattleTurnData ) {
-				var data:BattleTurnData = child as BattleTurnData;
-				if ( data.num != this._turns.length-1 ) throw new ArgumentError();
-				if ( this._turns[ data.num ] !== data ) throw new ArgumentError();
-				this._turns.pop();
+			if ( child is BattleActionData ) {
+				var index:int = this._actions.indexOf( child );
+				if ( index >= 0 ) this._actions.splice( index, 1 );
 			}
 		}
 

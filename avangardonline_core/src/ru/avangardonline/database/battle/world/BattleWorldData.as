@@ -8,7 +8,7 @@ package ru.avangardonline.database.battle.world {
 
 	import by.blooddy.core.database.Data;
 	import by.blooddy.core.database.DataLinker;
-	import by.blooddy.core.utils.time.Time;
+	import by.blooddy.core.utils.time.RelativeTime;
 	
 
 	/**
@@ -29,7 +29,7 @@ package ru.avangardonline.database.battle.world {
 		/**
 		 * Constructor
 		 */
-		public function BattleWorldData(time:Time) {
+		public function BattleWorldData(time:RelativeTime) {
 			super();
 			this._time = time;
 			super.set$world( this );
@@ -50,9 +50,9 @@ package ru.avangardonline.database.battle.world {
 		/**
 		 * @private
 		 */
-		private var _time:Time;
+		private var _time:RelativeTime;
 
-		public function get time():Time {
+		public function get time():RelativeTime {
 			return this._time;
 		}
 

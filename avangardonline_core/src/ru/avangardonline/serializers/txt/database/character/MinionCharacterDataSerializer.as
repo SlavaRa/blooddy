@@ -59,9 +59,9 @@ package ru.avangardonline.serializers.txt.database.character {
 		//--------------------------------------------------------------------------
 
 		public override function deserialize(source:String, target:*=null):* {
-			if ( source.charAt( 0 ) != 'h' ) throw new ArgumentError();
+			if ( source.charAt( 0 ) != 'u' ) throw new ArgumentError();
 			var data:MinionCharacterData = target as MinionCharacterData;
-			var arr:Array = source.substr( 2 ).split( '|', 2 );
+			var arr:Array = source.substr( 2 ).split( '|', 3 );
 			var arr2:Array = arr[ 0 ].split( ',', 2 );
 			if ( !data ) {
 				data = new MinionCharacterData( parseInt( arr2[ 0 ] ) );

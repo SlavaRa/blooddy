@@ -5,6 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package ru.avangardonline.serializers.txt.database.battle.actions {
+
 	import ru.avangardonline.database.battle.actions.BattleAtackActionData;
 
 	/**
@@ -64,7 +65,7 @@ package ru.avangardonline.serializers.txt.database.battle.actions {
 			data = super.deserialize( source, data );
 			var arr:Array = source.split( '|', 3 );
 			data.targetID = parseInt( arr[ 1 ] );
-			data.targetIncreaseHealth = parseInt( arr[ 2 ] );
+			data.targetHealth = parseInt( arr[ 2 ] );
 			return data;
 		}
 

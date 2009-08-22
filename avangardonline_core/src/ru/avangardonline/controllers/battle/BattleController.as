@@ -9,7 +9,7 @@ package ru.avangardonline.controllers.battle {
 	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.controllers.DisplayObjectController;
 	import by.blooddy.core.controllers.IBaseController;
-	import by.blooddy.core.utils.time.Time;
+	import by.blooddy.core.utils.time.RelativeTime;
 	
 	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
@@ -17,7 +17,7 @@ package ru.avangardonline.controllers.battle {
 	import flash.geom.Point;
 	
 	import ru.avangardonline.database.battle.world.BattleWorldData;
-	import ru.avangardonline.database.battle.world.BattleWorldElementData;
+	import ru.avangardonline.database.battle.world.BattleWorldElementCollectionData;
 	import ru.avangardonline.database.battle.world.BattleWorldFieldData;
 	import ru.avangardonline.database.character.CharacterData;
 	import ru.avangardonline.display.gfx.battle.world.BattleWorldView;
@@ -40,7 +40,7 @@ package ru.avangardonline.controllers.battle {
 		/**
 		 * Constructor
 		 */
-		public function BattleController(controller:IBaseController, time:Time, container:DisplayObjectContainer) {
+		public function BattleController(controller:IBaseController, time:RelativeTime, container:DisplayObjectContainer) {
 			super( controller, container );
 			this._time = time;
 		}
@@ -79,9 +79,9 @@ package ru.avangardonline.controllers.battle {
 		/**
 		 * @private
 		 */
-		private var _time:Time;
+		private var _time:RelativeTime;
 
-		public function get time():Time {
+		public function get time():RelativeTime {
 			return this._time;
 		}
 
@@ -101,7 +101,7 @@ package ru.avangardonline.controllers.battle {
 			controller.addCommandListener( 'addCharacter',		this.addCharacter );
 			controller.addCommandListener( 'removeCharacter',	this.removeCharacter );
 			controller.addCommandListener( 'forWorldElement',	this.forWorldElement );
-			controller.addCommandListener( 'syncCharacters',	this.syncCharacters );
+			controller.addCommandListener( 'syncElements',		this.syncElements );
 			controller.call( 'enterBattle' );
 		}
 
@@ -115,7 +115,7 @@ package ru.avangardonline.controllers.battle {
 			controller.removeCommandListener( 'addCharacter',		this.addCharacter );
 			controller.removeCommandListener( 'removeCharacter',	this.removeCharacter );
 			controller.removeCommandListener( 'forWorldElement',	this.forWorldElement );
-			controller.removeCommandListener( 'syncCharacters',		this.syncCharacters );
+			controller.removeCommandListener( 'syncElements',		this.syncElements );
 			if ( this._data ) {
 				this.exitBattle();
 				controller.call( 'exitBattle' );
@@ -177,24 +177,8 @@ package ru.avangardonline.controllers.battle {
 		/**
 		 * @private
 		 */
-		private function syncCharacters(characters:Vector.<CharacterData>):void {
-			var elements:Vector.<BattleWorldElementData> = this._data.elements.getElements();
-			var element:CharacterData;
-			var hash:Object = new Object();
-			for each ( var character:CharacterData in characters ) {
-				element = this._data.elements.getElement( character.id ) as CharacterData;
-				if ( element ) {
-					element.copyFrom( character );
-				} else {
-					this._data.elements.addChild( character.clone() );
-				}
-				hash[ character.id ] = true;
-			}
-			for each ( element in characters ) {
-				if ( !hash[ element.id ] ) {
-					this._data.elements.removeChild( element );
-				}
-			}
+		private function syncElements(collection:BattleWorldElementCollectionData):void {
+			this._data.elements.copyFrom( collection );
 		}
 
 		/**

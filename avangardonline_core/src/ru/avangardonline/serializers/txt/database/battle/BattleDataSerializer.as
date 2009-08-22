@@ -7,8 +7,8 @@
 package ru.avangardonline.serializers.txt.database.battle {
 
 	import ru.avangardonline.database.battle.BattleData;
-	import ru.avangardonline.database.battle.BattleTurnData;
 	import ru.avangardonline.database.battle.actions.BattleActionData;
+	import ru.avangardonline.database.battle.turns.BattleTurnData;
 	import ru.avangardonline.serializers.ISerializer;
 	import ru.avangardonline.serializers.txt.database.battle.world.BattleWorldElementCollectionDataSerializer;
 	
@@ -65,7 +65,9 @@ package ru.avangardonline.serializers.txt.database.battle {
 			var data:BattleData = target as BattleData;
 			if ( !data ) throw new ArgumentError();
 
-			var tmp:Array = source.split( '#' );
+			var tmp:Array = source.split( /\n?#/ );
+
+			if ( tmp.length < 3 ) throw new ArgumentError();
 
 			// первчиноя валидация
 			if ( tmp[ 0 ].length != 0 ) throw new ArgumentError();
@@ -76,15 +78,16 @@ package ru.avangardonline.serializers.txt.database.battle {
 
 			// персонажи
 			if ( tmp[ 2 ].charAt( 0 ) != 'I' ) throw new ArgumentError();
-			BattleWorldElementCollectionDataSerializer.deserialize( tmp[ 1 ].substr( 1 ), data.world.elements );
+			BattleWorldElementCollectionDataSerializer.deserialize( tmp[ 2 ].substr( 1 ), data.world.elements );
 
 			tmp.splice( 0, 3 );
 
 			// ходы
-			var l:uint = tmp.length;
+			var i:int;
+			var l:int = tmp.length;
 			var turn:BattleTurnData;
 			var action:BattleActionData;
-			for ( var i:uint = 0; i<l; i++ ) {
+			for ( i=0; i<l; i++ ) {
 				if ( tmp[ i ].charAt( 0 ) != 'A' ) throw new ArgumentError();
 				turn = data.getTurn( i );
 				if ( !turn ) {
@@ -95,12 +98,14 @@ package ru.avangardonline.serializers.txt.database.battle {
 				// перебераем экшены и прописываем из значения
 				for each ( action in turn.getActions() ) {
 					if ( action.isResult() ) {
-						action.startTime = BattleTurnData.TURN_TIME;
+						action.startTime = BattleTurnData.TURN_TIME * ( i + 1 );
+					} else {
+						action.startTime = BattleTurnData.TURN_TIME * i;
 					}
 				}
 			}
 			// удаляем лишние ходы
-			for ( i = data.numTurns -1; i>=l; i-- ) {
+			for ( i = data.numTurns; i>l; i-- ) {
 				data.removeChild( data.getTurn( i ) );
 			}
 			return data;
