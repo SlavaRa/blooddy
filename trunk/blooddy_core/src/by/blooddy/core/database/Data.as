@@ -223,6 +223,24 @@ package by.blooddy.core.database {
 			return ( this.$parent ? this.$parent + '.' : '' ) + ( this._name ? this._name : this.toLocaleString() );
 		}
 
+		//----------------------------------
+		//  formatToString
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
+		protected final function formatToString(...arguments):String {
+			var l:uint = arguments.length;
+			var v:*;
+			for ( var i:uint = 0; i<l; i++ ) {
+				v = this[ arguments[ i ] ];
+				if ( v is String )	v = '"' + v + '"';
+				arguments[ i ] += '=' + v; 
+			}
+			return '[' + ClassUtils.getClassName( this ) + ( arguments.length  > 0 ? ' ' + arguments.join( ' ' ) : '' ) + ']';
+		}
+
 	}
 
 }
