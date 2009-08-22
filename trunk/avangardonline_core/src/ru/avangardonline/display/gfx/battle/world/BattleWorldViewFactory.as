@@ -8,6 +8,8 @@ package ru.avangardonline.display.gfx.battle.world {
 
 	import ru.avangardonline.database.battle.world.BattleWorldElementData;
 	import ru.avangardonline.database.character.CharacterData;
+	import ru.avangardonline.database.character.HeroCharacterData;
+	import ru.avangardonline.database.character.MinionCharacterData;
 	import ru.avangardonline.display.gfx.character.CharacterView;
 
 	/**
@@ -39,7 +41,10 @@ package ru.avangardonline.display.gfx.battle.world {
 		//--------------------------------------------------------------------------
 
 		public function getElementView(data:BattleWorldElementData):BattleWorldElementView {
-			if ( data is CharacterData ) return new CharacterView( data as CharacterData );
+			if ( data is CharacterData ) {
+				if ( data is MinionCharacterData )		return new CharacterView( data as CharacterData );
+				else if ( data is HeroCharacterData )	return new CharacterView( data as CharacterData );
+			}
 			return null;
 		}
 

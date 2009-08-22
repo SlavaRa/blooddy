@@ -4,29 +4,19 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.database.battle {
+package ru.avangardonline.database.battle.turns {
 
 	import by.blooddy.core.database.Data;
 	import by.blooddy.core.database.DataContainer;
-	
-	import ru.avangardonline.database.battle.actions.BattleActionData;
 	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					02.08.2009 12:12:51
+	 * @created					20.08.2009 21:51:23
 	 */
-	public class BattleTurnData extends DataContainer {
-
-		//--------------------------------------------------------------------------
-		//
-		//  Class constants
-		//
-		//--------------------------------------------------------------------------
-
-		public static const TURN_TIME:uint = 2E3;
+	public class BattleTurnWorldElementCollectionData extends DataContainer {
 
 		//--------------------------------------------------------------------------
 		//
@@ -37,9 +27,8 @@ package ru.avangardonline.database.battle {
 		/**
 		 * Constructor
 		 */
-		public function BattleTurnData(num:uint) {
+		public function BattleTurnWorldElementCollectionData() {
 			super();
-			this._num = num;
 		}
 
 		//--------------------------------------------------------------------------
@@ -51,7 +40,7 @@ package ru.avangardonline.database.battle {
 		/**
 		 * @private
 		 */
-		private const _actions:Vector.<BattleActionData> = new Vector.<BattleActionData>();
+		private const _collections:Vector.<BattleTurnWorldElementContainerData> = new Vector.<BattleTurnWorldElementContainerData>();
 
 		//--------------------------------------------------------------------------
 		//
@@ -60,16 +49,21 @@ package ru.avangardonline.database.battle {
 		//--------------------------------------------------------------------------
 
 		//----------------------------------
-		//  num
+		//  numTurns
 		//----------------------------------
 
-		/**
-		 * @private
-		 */
-		private var _num:uint;
+		public function get numTurns():uint {
+			return this._collections.length;
+		}
 
-		public function get num():uint {
-			return this._num;
+		//--------------------------------------------------------------------------
+		//
+		//  Overriden methods
+		//
+		//--------------------------------------------------------------------------
+
+		public override function toLocaleString():String {
+			return super.formatToString( 'numTurns' );
 		}
 
 		//--------------------------------------------------------------------------
@@ -78,11 +72,8 @@ package ru.avangardonline.database.battle {
 		//
 		//--------------------------------------------------------------------------
 
-		/**
-		 * @inheritDoc
-		 */
-		public function getActions():Vector.<BattleActionData> {
-			return this._actions.slice();
+		public function getCollection(num:uint):BattleTurnWorldElementContainerData {
+			return this._collections[ num ];
 		}
 
 		//--------------------------------------------------------------------------
@@ -95,9 +86,10 @@ package ru.avangardonline.database.battle {
 		 * @private
 		 */
 		protected override function addChild_before(child:Data):void {
-			if ( child is BattleActionData ) {
-				var data:BattleActionData = child as BattleActionData;
-				this._actions.push( data );
+			if ( child is BattleTurnWorldElementContainerData ) {
+				var data:BattleTurnWorldElementContainerData = child as BattleTurnWorldElementContainerData;
+				if ( data.turnNum != this._collections.length ) throw new ArgumentError();
+				this._collections.push( data );
 			}
 		}
 
@@ -105,9 +97,11 @@ package ru.avangardonline.database.battle {
 		 * @private
 		 */
 		protected override function removeChild_before(child:Data):void {
-			if ( child is BattleActionData ) {
-				var index:int = this._actions.indexOf( child );
-				if ( index >= 0 ) this._actions.splice( index, 1 );
+			if ( child is BattleTurnWorldElementContainerData ) {
+				var data:BattleTurnWorldElementContainerData = child as BattleTurnWorldElementContainerData;
+				if ( data.turnNum != this._collections.length-1 ) throw new ArgumentError();
+				if ( this._collections[ data.turnNum ] !== data ) throw new ArgumentError();
+				this._collections.pop();
 			}
 		}
 

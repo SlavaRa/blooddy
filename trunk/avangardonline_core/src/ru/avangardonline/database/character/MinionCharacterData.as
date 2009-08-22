@@ -5,6 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package ru.avangardonline.database.character {
+
 	import by.blooddy.core.database.Data;
 
 	/**
@@ -52,7 +53,7 @@ package ru.avangardonline.database.character {
 		 * @private
 		 */
 		public function set type(value:uint):void {
-			if ( this._type != value ) return;
+			if ( this._type == value ) return;
 			this._type = value;
 		}
 
@@ -73,7 +74,7 @@ package ru.avangardonline.database.character {
 		 * @private
 		 */
 		public function set health(value:uint):void {
-			if ( this._health != value ) return;
+			if ( this._health == value ) return;
 			this._health = value;
 		}
 
@@ -82,6 +83,10 @@ package ru.avangardonline.database.character {
 		//  Overriden methods
 		//
 		//--------------------------------------------------------------------------
+
+		public override function toLocaleString():String {
+			return super.formatToString( 'id', 'group', 'type', 'health' );
+		}
 
 		public override function clone():Data {
 			var result:MinionCharacterData = new MinionCharacterData( super.id );
@@ -92,6 +97,7 @@ package ru.avangardonline.database.character {
 		public override function copyFrom(data:Data):void {
 			var target:MinionCharacterData = data as MinionCharacterData;
 			if ( !target ) throw new ArgumentError();
+			super.copyFrom( target );
 			this.type = target._type;
 			this.health = target._health;
 		}

@@ -53,7 +53,7 @@ package ru.avangardonline.database.character {
 		 * @private
 		 */
 		public function set nick(value:String):void {
-			if ( this._nick != value ) return;
+			if ( this._nick == value ) return;
 			this._nick = value;
 		}
 
@@ -62,6 +62,10 @@ package ru.avangardonline.database.character {
 		//  Overriden methods
 		//
 		//--------------------------------------------------------------------------
+
+		public override function toLocaleString():String {
+			return super.formatToString( 'id', 'nick', 'group' );
+		}
 
 		public override function clone():Data {
 			var result:HeroCharacterData = new HeroCharacterData( super.id );
@@ -72,6 +76,7 @@ package ru.avangardonline.database.character {
 		public override function copyFrom(data:Data):void {
 			var target:HeroCharacterData = data as HeroCharacterData;
 			if ( !target ) throw new ArgumentError();
+			super.copyFrom( target );
 			this.nick = target._nick;
 		}
 

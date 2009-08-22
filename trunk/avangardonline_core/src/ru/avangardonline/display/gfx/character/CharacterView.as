@@ -90,6 +90,7 @@ package ru.avangardonline.display.gfx.character {
 			if ( super.hasResource( bundleName, resourceName ) ) {
 				this._element = super.getDisplayObject( bundleName, resourceName );
 				super.addChild( this._element );
+				this.updateRotation();
 			}
 
 			return true;
@@ -103,6 +104,20 @@ package ru.avangardonline.display.gfx.character {
 			super.trashResource( this._element );
 			this._element = null;
 			return true;
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Overriden protected methods
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private function updateRotation():void {
+			if ( !this._element ) return;
+			this._element.scaleX = ( this._data.rotation < 90 ? -1 : 1 );
 		}
 
 	}

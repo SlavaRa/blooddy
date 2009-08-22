@@ -129,7 +129,7 @@ package ru.avangardonline.database.battle.world {
 		/**
 		 * @private
 		 */
-		private var _x:Number;
+		private var _x:Number = 0;
 
 		public function get x():Number {
 			return this._x;
@@ -162,7 +162,7 @@ package ru.avangardonline.database.battle.world {
 		/**
 		 * @private
 		 */
-		private var _y:Number;
+		private var _y:Number = 0;
 
 		public function get y():Number {
 			return this._y;
@@ -215,10 +215,7 @@ package ru.avangardonline.database.battle.world {
 		}
 
 		public override function toLocaleString():String {
-			return	'[' + ClassUtils.getClassName( this ) +
-						 ' x=' +	this._x +
-						', y=' +	this._y + 
-					']';
+			return super.formatToString( 'x', 'y' );
 		}
 
 		public function moveTo(x:Number, y:Number, time:Number):void {

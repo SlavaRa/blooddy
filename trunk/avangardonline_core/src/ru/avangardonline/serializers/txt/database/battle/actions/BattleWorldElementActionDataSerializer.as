@@ -58,6 +58,7 @@ package ru.avangardonline.serializers.txt.database.battle.actions {
 			var data:BattleWorldElementActionData = target as BattleWorldElementActionData;
 			if ( !data ) throw new ArgumentError();
 			data.elementID = parseInt( source.split( '|', 1 )[0] );
+			return data;
 		}
 
 	}

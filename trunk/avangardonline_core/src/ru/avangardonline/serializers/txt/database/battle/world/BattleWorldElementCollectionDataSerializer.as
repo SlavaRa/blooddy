@@ -70,7 +70,7 @@ package ru.avangardonline.serializers.txt.database.battle.world {
 				id = parseInt( s.split( ',', 1 )[0].substr( 2 ) );
 				element = data.getElement( id );
 				h = Boolean( element );
-				element = BattleWorldElementDataSerializer.deserialize( source, element );
+				element = BattleWorldElementDataSerializer.deserialize( s, element );
 				if ( !h ) data.addChild( element );
 			}
 			return data;

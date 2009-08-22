@@ -62,7 +62,7 @@ package ru.avangardonline.database.battle.world {
 		}
 
 		public function copyFrom(data:Data):void {
-			var target:BattleWorldElementCollectionData = data as BattleWorldElementCollectionData
+			var target:BattleWorldElementCollectionData = data as BattleWorldElementCollectionData;
 			if ( !target ) throw new ArgumentError();
 			var hash:Object = new Object();
 			var c1:CharacterData;
@@ -72,11 +72,11 @@ package ru.avangardonline.database.battle.world {
 				id = c1.id;
 				c2 = this._hash[ id ];
 				if ( c2 ) c2.copyFrom( c1 );
-				else target.addChild( c1.clone() );
+				else super.addChild( c1.clone() );
 				hash[ id ] = true;
 			}
 			for each ( c2 in this._list ) {
-				if ( !hash[ c2.id ] ) target.removeChild( c2 );
+				if ( !hash[ c2.id ] ) super.removeChild( c2 );
 			}
 		}
 

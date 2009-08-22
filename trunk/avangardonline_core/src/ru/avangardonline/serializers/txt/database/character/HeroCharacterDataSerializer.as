@@ -63,11 +63,14 @@ package ru.avangardonline.serializers.txt.database.character {
 			var data:HeroCharacterData = target as HeroCharacterData;
 			var arr:Array = source.substr( 2 ).split( '|', 1 );
 			var arr2:Array = arr[ 0 ].split( ',', 2 );
+			var id:uint = parseInt( arr2[ 0 ] );
 			if ( !data ) {
-				data = new HeroCharacterData( parseInt( arr2[ 0 ] ) );
+				data = new HeroCharacterData( id );
+			} else if ( data.id != id ) {
+				throw new ArgumentError();
 			}
 			super.deserialize( source, data );
-			data.nick = arr2[1];
+			data.nick = arr2[ 1 ];
 			return data;
 		}
 

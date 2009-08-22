@@ -21,6 +21,7 @@ package ru.avangardonline.display.gfx.battle.world {
 	import ru.avangardonline.database.battle.world.BattleWorldElementData;
 	import ru.avangardonline.display.gfx.character.CharacterView;
 	import ru.avangardonline.events.database.world.BattleWorldCoordinateDataEvent;
+	import ru.avangardonline.database.character.HeroCharacterData;
 	
 	/**
 	 * @author					BlooDHounD
@@ -147,8 +148,8 @@ package ru.avangardonline.display.gfx.battle.world {
 
 			var hash:Dictionary = new Dictionary();
 
-			var characters:Vector.<BattleWorldElementData> = this._data.elements.getElements();
-			for each ( var data:BattleWorldElementData in characters ) {
+			var elements:Vector.<BattleWorldElementData> = this._data.elements.getElements();
+			for each ( var data:BattleWorldElementData in elements ) {
 				this.addWorldElement( data );
 				hash[ data ] = true;
 			}
@@ -235,9 +236,18 @@ package ru.avangardonline.display.gfx.battle.world {
 		 * @private
 		 */
 		private function updatePosition(data:BattleWorldElementData):void {
-			var view:CharacterView = this._elements[ data ];
-			view.x = data.coord.x * CELL_WIDTH;
-			view.z = data.coord.y * CELL_HEIGHT;
+			var view:BattleWorldElementView = this._elements[ data ];
+			var x:Number, y:Number;
+			if ( data is HeroCharacterData ) {
+				y = 2;
+				x = ( ( data as HeroCharacterData ).group == 1 ? -1 : 1 ) * 6.5;
+			} else {
+				x = data.coord.x;
+				y = data.coord.y;
+			}
+			view.x = x * CELL_WIDTH;
+			view.z = y * CELL_HEIGHT;
+
 			var i:uint = this._content.getChildIndex( view );
 			var lastIndex:uint = i;
 			var asset:SortAsset = this._elements_sorted[ i ];

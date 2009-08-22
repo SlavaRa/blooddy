@@ -7,6 +7,9 @@
 package ru.avangardonline.database.battle.actions {
 
 	import by.blooddy.core.commands.Command;
+	
+	import ru.avangardonline.database.battle.world.BattleWorldElementCollectionData;
+	import ru.avangardonline.database.battle.world.BattleWorldElementData;
 
 	/**
 	 * @author					BlooDHounD
@@ -53,7 +56,7 @@ package ru.avangardonline.database.battle.actions {
 		 * @private
 		 */
 		public function set x(value:int):void {
-			if ( this._x === value ) return;
+			if ( this._x == value ) return;
 			this._x = value;
 		}
 
@@ -74,15 +77,19 @@ package ru.avangardonline.database.battle.actions {
 		 * @private
 		 */
 		public function set y(value:int):void {
-			if ( this._y === value ) return;
+			if ( this._y == value ) return;
 			this._y = value;
 		}
 
 		//--------------------------------------------------------------------------
 		//
-		//  Overriden protected methods
+		//  Overriden methods
 		//
 		//--------------------------------------------------------------------------
+
+		public override function toLocaleString():String {
+			return super.formatToString( 'elementID', 'x', 'y' );
+		}
 
 		public override function getCommands():Vector.<Command> {
 			var result:Vector.<Command> = new Vector.<Command>();
@@ -95,6 +102,12 @@ package ru.avangardonline.database.battle.actions {
 				)
 			);
 			return result;
+		}
+
+		public override function apply(collection:BattleWorldElementCollectionData):void {
+			var element:BattleWorldElementData = collection.getElement( super.elementID );
+			if ( !element ) throw new ArgumentError();
+			element.coord.setValues( this._x, this._y );
 		}
 
 	}

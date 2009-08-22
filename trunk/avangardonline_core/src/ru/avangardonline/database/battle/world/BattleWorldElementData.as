@@ -79,6 +79,24 @@ package ru.avangardonline.database.battle.world {
 			return this.coord.moving;
 		}
 
+		//----------------------------------
+		//  rotation
+		//----------------------------------
+
+		public function get rotation():Number {
+			return this.coord.direction;
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Overriden methods
+		//
+		//--------------------------------------------------------------------------
+
+		public override function toLocaleString():String {
+			return super.formatToString( 'id' );
+		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
