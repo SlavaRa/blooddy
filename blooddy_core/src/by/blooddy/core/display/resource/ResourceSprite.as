@@ -219,8 +219,11 @@ package by.blooddy.core.display.resource {
 
 		protected final function getResource(bundleName:String, resourceName:String):Object {
 			var result:Object = this.getResource_get( bundleName, resourceName );
-			if ( result ) {
-				this.getResource_set( bundleName, resourceName, result );
+			switch ( typeof result ) {
+				case 'object':
+				case 'function':
+				case 'xml':
+					this.getResource_set( bundleName, resourceName, result );
 			}
 			return result;
 		}

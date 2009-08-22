@@ -218,7 +218,7 @@ package by.blooddy.core.database {
 		 */
 		public function contains(child:Data):Boolean {
 			// проверим наличие передоваемого объекта
-			if ( !child ) throw new TypeError( getErrorMessage( 2007, this, '$addChildAt', 'child' ), 2007 );
+			if ( !child ) throw new TypeError( getErrorMessage( 2007, this, 'contains', 'child' ), 2007 );
 			return this.$contains( child );
 		}
 
