@@ -12,8 +12,8 @@ package ru.avangardonline.display.gfx.battle.world {
 	
 	import flash.events.Event;
 	
-	import ru.avangardonline.database.battle.world.BattleWorldFieldData;
-	import ru.avangardonline.events.database.world.BattleWorldFieldDataEvent;
+	import ru.avangardonline.data.battle.world.BattleWorldFieldData;
+	import ru.avangardonline.events.data.world.BattleWorldFieldDataEvent;
 	
 	/**
 	 * @author					BlooDHounD

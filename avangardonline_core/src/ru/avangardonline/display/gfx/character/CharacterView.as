@@ -6,6 +6,7 @@
 
 package ru.avangardonline.display.gfx.character {
 
+	import by.blooddy.core.display.StageObserver;
 	import by.blooddy.core.net.ILoadable;
 	
 	import flash.display.DisplayObject;
@@ -13,8 +14,9 @@ package ru.avangardonline.display.gfx.character {
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
 	
-	import ru.avangardonline.database.character.CharacterData;
+	import ru.avangardonline.data.character.CharacterData;
 	import ru.avangardonline.display.gfx.battle.world.BattleWorldElementView;
+	import ru.avangardonline.events.data.world.BattleWorldCoordinateDataEvent;
 	
 	/**
 	 * @author					BlooDHounD
@@ -37,6 +39,10 @@ package ru.avangardonline.display.gfx.character {
 		public function CharacterView(data:CharacterData) {
 			super( data );
 			this._data = data;
+			var observer:StageObserver = new StageObserver( this );
+			observer.registerEventListener( data, BattleWorldCoordinateDataEvent.COORDINATE_CHANGE,	this.updateRotation );
+			observer.registerEventListener( data, BattleWorldCoordinateDataEvent.MOVING_START,		this.updateRotation );
+			observer.registerEventListener( data, BattleWorldCoordinateDataEvent.MOVING_STOP,		this.updateRotation );
 		}
 
 		public override function destruct():void {
@@ -115,9 +121,9 @@ package ru.avangardonline.display.gfx.character {
 		/**
 		 * @private
 		 */
-		private function updateRotation():void {
+		private function updateRotation(event:Event=null):void {
 			if ( !this._element ) return;
-			this._element.scaleX = ( this._data.rotation < 90 ? -1 : 1 );
+			this._element.scaleX = ( this._data.rotation < 90 ? 1 : -1 );
 		}
 
 	}
