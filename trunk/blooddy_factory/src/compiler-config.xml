@@ -2,24 +2,62 @@
 
 	<compiler>
 
+		<define>
+			<name>CONFIG::debug</name>
+			<value>true</value>
+		</define>
+
 		<accessible>false</accessible>
       
 		<locale>
 			<locale-element>en_US</locale-element>
 		</locale>
 
+		<!--
+		<source-path>
+			<path-element>string</path-element>
+		</source-path>
+		-->
+
 		<show-actionscript-warnings>true</show-actionscript-warnings>
 
+		<!--
 		<debug>true</debug>
+		-->
+
+		<!--
+		<external-library-path>
+			<path-element>libs/player</path-element>
+		</external-library-path>
+		-->
+
 
 		<keep-generated-actionscript>true</keep-generated-actionscript>
+
+		<!--
+		<include-libraries>
+			<library>string</library>
+		</include-libraries>
+		-->
+
+		<!--
+		<library-path>
+			<path-element>libs</path-element>
+		</library-path>
+		-->
+
+		<!--namespaces>
+			<namespace>
+				<uri>http://www.tzmedia.ru/platform/</uri>
+				<manifest>manifest.xml</manifest>
+			</namespace>
+		</namespaces-->
       
 		<optimize>true</optimize>
 
 		<keep-as3-metadata>
-			<!--
-			<name>Name</name>
-			-->
+			<name>Event</name>
+			<name>AbstractClass</name>
 		</keep-as3-metadata>
 
 		<show-binding-warnings>true</show-binding-warnings>
@@ -94,13 +132,13 @@
 
 	<static-link-runtime-shared-libraries>false</static-link-runtime-shared-libraries>
    
-	<target-player>version</target-player>
+	<target-player>10.0.0</target-player>
 
 	<use-network>true</use-network>
    
 	<metadata>
-		<title>blooddy factory</title>
-		<description>http://www.blooddy.by/factory/</description>
+		<title>blooddy's factory</title>
+		<description>http://www.blooddy.by/products/factory</description>
 		<publisher>BlooDHounD</publisher>
 		<creator>BlooDHounD</creator>
 		<language>RU</language>
