@@ -4,7 +4,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline {
+package ru.avangardonline.application {
 
 	import by.blooddy.core.display.resource.MainResourceSprite;
 	import by.blooddy.core.utils.ActivityListener;
@@ -20,7 +20,7 @@ package ru.avangardonline {
 
 	[SWF(width="706", height="378", frameRate="21", backgroundColor="#333333")]
 
-	[Frame(factoryClass="ru.avangardonline.AvangardFactory")]
+	[Frame(factoryClass="ru.avangardonline.application.factory.AvangardFactory")]
 
 	/**
 	 * @author					BlooDHounD
