@@ -7,7 +7,7 @@
 package by.blooddy.core.controllers {
 
 	import by.blooddy.core.commands.CommandDispatcher;
-	import by.blooddy.core.database.DataBase;
+	import by.blooddy.core.data.DataBase;
 	import by.blooddy.core.errors.getErrorMessage;
 	import by.blooddy.core.net.ProxySharedObject;
 	

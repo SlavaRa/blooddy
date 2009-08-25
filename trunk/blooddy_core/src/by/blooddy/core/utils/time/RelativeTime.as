@@ -80,16 +80,19 @@ package by.blooddy.core.utils.time {
 		public function set speed(value:Number):void {
 			if ( this._speed == value ) return;
 			var old_value:Number = this._speed;
-			this._speed = value;
 			if ( value ) {
+				this._speed = value;
 				if ( !isNaN( this._currentTime ) ) {
 					super.currentTime = this._currentTime;
 					this._currentTime = NaN;
+					super.dispatchEvent( new TimeEvent( TimeEvent.TIME_RELATIVITY_CHANGE, false, false, 0 ) );
 				} else {
 					super.currentTime = super.currentTime * old_value / value;
 				}
 			} else {
 				this._currentTime = this.currentTime;
+				this._speed = value;
+				super.dispatchEvent( new TimeEvent( TimeEvent.TIME_RELATIVITY_CHANGE, false, false, 0 ) );
 			}
 
 		}
