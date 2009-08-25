@@ -1,21 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (C) 2007 BlooDHounD.
-//  All Rights Reserved. The following is Source Code and is subject to all
-//  restrictions on such code as contained in the End User License Agreement
-//  accompanying this product.
+//  (C) 2009 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.factory {
-
-	import flash.errors.IOError;
-	import flash.errors.IllegalOperationError;
-
-	import flash.events.Event;
-	import flash.events.IOErrorEvent;
-	import flash.events.MouseEvent;
-	import flash.events.ProgressEvent;
 
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
@@ -23,23 +12,28 @@ package by.blooddy.factory {
 	import flash.display.Loader;
 	import flash.display.LoaderInfo;
 	import flash.display.MovieClip;
+	import flash.display.Scene;
 	import flash.display.Sprite;
 	import flash.display.Stage;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
-	import flash.display.Scene;
-
+	import flash.errors.IOError;
+	import flash.errors.IllegalOperationError;
+	import flash.errors.InvalidSWFError;
+	import flash.events.Event;
+	import flash.events.IOErrorEvent;
+	import flash.events.ProgressEvent;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-
 	import flash.net.URLRequest;
-
 	import flash.system.ApplicationDomain;
 	import flash.system.LoaderContext;
-
-	import flash.utils.getQualifiedClassName;
 	import flash.text.TextSnapshot;
-	import flash.ui.ContextMenu;
+	import flash.utils.clearTimeout;
+	import flash.utils.getQualifiedClassName;
+	import flash.utils.setTimeout;
+
+	import flash.utils.getTimer;
 
 	//--------------------------------------
 	//  Excluded APIs
@@ -109,17 +103,17 @@ package by.blooddy.factory {
 		/**
 		 * Constructor
 		 */
-		public function ApplicationFactory(rootClassName:String=null) {
+		public function ApplicationFactory(rootClassName:String=null, initializationTimeout:uint=0) {
 
 			super();
 
-			if ( inited || !super.stage || super.stage != super.parent || super.totalFrames!=2 || super.currentFrame != 1 ) {
-				throw new ReferenceError("The " + getQualifiedClassName( ( this as Object ).constructor ) + "" );
+			if ( inited || !super.stage || super.stage != super.parent || super.totalFrames != 2 || super.currentFrame != 1 ) {
+				throw new ReferenceError( 'The ' + getQualifiedClassName( ( this as Object ).constructor ) + '' );
 			}
 
 			inited = true;
 
-			super.name = getQualifiedClassName( this );
+//			super.name = getQualifiedClassName( this );
 			super.mouseEnabled = false;
 			super.tabEnabled = false;
 			super.enabled = false;
@@ -134,7 +128,7 @@ package by.blooddy.factory {
 
 			super.stage.align = StageAlign.TOP_LEFT;
 			super.stage.scaleMode = StageScaleMode.NO_SCALE;
-			super.stage.addEventListener(Event.RESIZE, this.handler_resize);
+			super.stage.addEventListener( Event.RESIZE, this.handler_resize );
 
 			this._context = new LoaderContext( false, super.loaderInfo.applicationDomain );
 
@@ -144,11 +138,12 @@ package by.blooddy.factory {
 			// рузим себя
 			this.addLoader( super.loaderInfo );
 
-			super.addEventListener(Event.ADDED, this.handler_added_removed, false, int.MAX_VALUE)
-			super.addEventListener(Event.ADDED, this.handler_added_removed, true, int.MAX_VALUE)
-			super.addEventListener(Event.REMOVED, this.handler_added_removed, false, int.MAX_VALUE)
-			super.addEventListener(Event.REMOVED, this.handler_added_removed, true, int.MAX_VALUE)
+			super.addEventListener( Event.ADDED,	this.handler_added_removed,		true,	int.MAX_VALUE, true );
+			super.addEventListener( Event.ADDED,	this.handler_added_removed,		false,	int.MAX_VALUE, true );
+			super.addEventListener( Event.REMOVED,	this.handler_added_removed,		true,	int.MAX_VALUE, true );
+			super.addEventListener( Event.REMOVED,	this.handler_added_removed,		false,	int.MAX_VALUE, true );
 
+			this._initializationTimeout = initializationTimeout;
 			this.showPreloader = true;
 
 		}
@@ -158,6 +153,11 @@ package by.blooddy.factory {
 		//  Variables
 		//
 		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private const _modules:Array = new Array();
 
 		/**
 		 * @private
@@ -192,7 +192,7 @@ package by.blooddy.factory {
 		/**
 		 * @private
 		 */
-		private var _info:Sprite;
+		private var _info:TextSprite;
 
 		//--------------------------------------------------------------------------
 		//
@@ -246,8 +246,8 @@ package by.blooddy.factory {
 		 * @keyword					applicationfactory.loaded, loaded
 		 */
 		public final function get loaded():Boolean {
-			for (var i:uint = 0; i<this._loaders.length; i++) {
-				if (!this._loaded[i]) return false;
+			for ( var i:uint = 0; i < this._loaders.length; i++ ) {
+				if ( !this._loaded[i] ) return false;
 			}
 			return true;
 		}
@@ -274,21 +274,24 @@ package by.blooddy.factory {
 		 * @private
 		 */
 		public final function set showPreloader(value:Boolean):void {
-			if (this._showPreloader==value) return;
+			if ( this._showPreloader == value ) return;
 			this._showPreloader = value;
-			if (this._showPreloader) {
-				if (!this._info) {
+			if ( this._showPreloader ) {
+				if ( !this._info || !( this._info is PreloaderSprite ) ) {
+					if ( this._info && super.contains( this._info ) ) {
+						super.removeChild( this._info );
+					}
 					this._info = new PreloaderSprite( 0, this._color );
 				}
-				if ( !super.contains(this._info) ) {
+				if ( !super.contains( this._info ) ) {
 					super.addChildAt( this._info, 0 );
 				}
-				this.updateInfoPosition();
+				this.updatePosition();
 				if ( this._info is PreloaderSprite ) {
 					( this._info as PreloaderSprite ).progress = this._bytesLoaded / this._bytesTotal
 				}
 			} else {
-				if (this._info) {
+				if ( this._info ) {
 					super.removeChild( this._info );
 				}
 			}
@@ -301,7 +304,7 @@ package by.blooddy.factory {
 		/**
 		 * @private
 		 */
-		private var _color:uint=0xFFFFFF;
+		private var _color:uint = 0xFFFFFF;
 
 		/**
 		 * Цвет
@@ -317,10 +320,68 @@ package by.blooddy.factory {
 		 */
 		public final function set color(value:uint):void {
 			this._color = value;
-			if ( this._info is PreloaderSprite ) {
-				(this._info as PreloaderSprite ).color = this._color;
-			} else if ( this._info is ErrorSprite ) {
-				(this._info as ErrorSprite ).color = this._color;
+			this._info.color = this._color;
+		}
+		
+		//----------------------------------
+		//  stageWidth
+		//----------------------------------
+
+		/**
+		 * @see		flash.display.Stage#stageWidth
+		 */
+		public function get stageWidth():Number {
+			return super.stage.stageWidth;
+		}
+		
+		//----------------------------------
+		//  stageHeight
+		//----------------------------------
+
+		/**
+		 * @see		flash.display.Stage#stageHeight
+		 */
+		public function get stageHeight():Number {
+			return super.stage.stageHeight;
+		}
+
+		//----------------------------------
+		//  initializationTimeout
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
+		private var _timeoutID:uint;
+
+		/**
+		 * @private
+		 */
+		private var _time:uint;
+
+		/**
+		 * @private
+		 */
+		private var _initializationTimeout:uint;
+
+		public function get initializationTimeout():uint {
+			return this._initializationTimeout;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set initializationTimeout(value:uint):void {
+			if ( this._initializationTimeout == value ) return;
+			this._initializationTimeout = value;
+			if ( this._timeoutID ) {
+				var time:uint = getTimer() - time;
+				if ( value <= time ) {
+					this.initialize();
+				} else {
+					clearTimeout( this._timeoutID );
+					this._timeoutID = setTimeout( this.initialize, value - time );
+				} 
 			}
 		}
 
@@ -331,27 +392,41 @@ package by.blooddy.factory {
 		//--------------------------------------------------------------------------
 
 		/**
+		 * Событие инитиализации приложения.
+		 * 
+		 * @keyword					applicationfactory.oninitialize, oninitialize
+		 */
+		protected function onInitialize():void {
+		}
+
+		/**
 		 * Событие окончания загрузки.
 		 * 
-		 * @parma	event			Событие.
-		 *  
 		 * @keyword					applicationfactory.oncomplete, oncomplete
 		 * 
 		 * @see						flash.display.LoaderInfo#complete
 		 */
-		protected function onComplete(event:Event):void {
+		protected function onComplete():void {
 		}
 
 		/**
 		 * Событие процесса загрузки загрузки.
 		 * 
-		 * @parma	event			Событие.
-		 *  
 		 * @keyword					applicationfactory.onprogress, onprogress
 		 * 
 		 * @see						flash.display.LoaderInfo#progress
 		 */
-		protected function onProgress(event:ProgressEvent):void {
+		protected function onProgress():void {
+		}
+
+		/**
+		 * Событие изменение размеров экрана.
+		 * 
+		 * @keyword					applicationfactory.onprogress, onprogress
+		 * 
+		 * @see						flash.display.LoaderInfo#progress
+		 */
+		protected function onResize():void {
 		}
 
 		/**
@@ -362,9 +437,7 @@ package by.blooddy.factory {
 		 * @keyword					applicationfactory.onerror, onerror
 		 */
 		protected function onError(e:Error):void {
-			this._info = new ErrorSprite( e.message, this._color );
-			this.updateInfoPosition();
-			super.addChildAt( this._info, 0 );
+			this.showError( e );
 		}
 
 		/**
@@ -380,7 +453,11 @@ package by.blooddy.factory {
 		protected final function load(request:URLRequest, context:LoaderContext=null):LoaderInfo {
 			var loader:Loader = new Loader();
 			this.addLoader( loader.contentLoaderInfo );
-			loader.load( request, context || this._context );
+			try {
+				loader.load( request, context || this._context );
+			} catch ( e:Error ) {
+				this.throwError( e );
+			}
 			return loader.contentLoaderInfo;
 		}
 
@@ -393,8 +470,8 @@ package by.blooddy.factory {
 		/**
 		 * @private
 		 */
-		private function updateInfoPosition():void {
-			if (!this._info) return;
+		private function updatePosition():void {
+			if ( !this._info ) return;
 			var p:Point = super.globalToLocal( new Point( super.stage.stageWidth / 2, super.stage.stageHeight / 2 ) );
 			this._info.x = p.x;
 			this._info.y = p.y;
@@ -403,16 +480,116 @@ package by.blooddy.factory {
 		/**
 		 * @private
 		 */
+		private function updateProgress():void {
+			var bytesLoaded:uint = 0;
+			var bytesTotal:uint = 0;
+			for each ( var loaderInfo:LoaderInfo in this._loaders ) {
+				if ( loaderInfo.bytesTotal > 0 ) {
+					bytesLoaded += loaderInfo.bytesLoaded;
+					bytesTotal += loaderInfo.bytesTotal;
+				}
+			}
+			if ( this._info is PreloaderSprite ) {
+				( this._info as PreloaderSprite ).progress = this._bytesLoaded / this._bytesTotal
+			}
+			if ( this._bytesLoaded != bytesLoaded || this._bytesTotal != bytesTotal ) {
+				this._bytesLoaded = bytesLoaded;
+				this._bytesTotal = bytesTotal;
+				try {
+					this.onProgress();
+				} catch ( e:Error ) {
+					this.throwError( e );
+				}
+			}
+		}
+
+		/**
+		 * @private
+		 */
+		private function initialize():void {
+
+			clearTimeout( this._timeoutID );
+			this._timeoutID = 0;
+
+			// надо получить имя рутового класса
+			var rootClassName:String = this._rootClassName;
+
+			var appd:ApplicationDomain = super.loaderInfo.applicationDomain;
+			if ( !rootClassName ) {
+				rootClassName = ( super.currentScene.labels.pop() as FrameLabel ).name.replace( /_(?=[^_]+$)/, '::' ).replace( /_/g, '.' );
+				if ( !appd.hasDefinition( rootClassName ) ) rootClassName = null;
+			}
+			if ( !rootClassName ) {
+				rootClassName = super.loaderInfo.loaderURL.match( /[^\\\/]*?(?=(\.[^\.]*)?$)/ )[0] as String;
+				if ( !appd.hasDefinition( rootClassName ) ) rootClassName = null;
+			}
+		    var Root:Class;
+			try {
+				Root = appd.getDefinition( rootClassName ) as Class;
+			} catch ( e:Error ) {
+				this.throwError( e );
+			}
+			if ( Root ) {
+				// вернём stage где был
+				var stage:Stage = super.stage;
+				stage.align = this._stageAlign;
+				stage.scaleMode = this._stageScaleMode;
+				stage.removeEventListener( Event.RESIZE, this.handler_resize );
+				try {
+					// отошлём евент
+					this.onInitialize();
+					// сделаем рут
+					super.parent.removeChild( this );
+					stage.addChild( new Root() as DisplayObject );
+				} catch ( e:Error ) {
+					this.throwError( e );
+				}
+			} else {
+				this.throwError( new InvalidSWFError() ); // TODO: описать ошибку
+			}
+		}
+
+		/**
+		 * @private
+		 */
+		private function throwError(e:Error):void {
+			for each ( var loaderInfo:LoaderInfo in this._loaders ) {
+				this.removeLoader( loaderInfo );
+			}
+			if ( this._info && super.contains( this._info ) ) {
+				super.removeChild( this._info );
+			}
+			try {
+				this.onError( e );
+			} catch ( skip:Error ) { // не важная ошибка
+				this.showError( e );
+			}
+		}
+
+		/**
+		 * @private
+		 */
+		private function showError(e:Error):void {
+			if ( this._info && super.contains( this._info ) ) {
+				super.removeChild( this._info );
+			}
+			this._info = new ErrorSprite( e.message, this._color );
+			this.updatePosition();
+			super.addChildAt( this._info, 0 );
+		}
+
+		/**
+		 * @private
+		 */
 		private function addLoader(loaderInfo:LoaderInfo):void {
 			if ( this._loaders.indexOf( loaderInfo ) >=0 ) return;
-			loaderInfo.addEventListener(Event.COMPLETE, this.handler_comlete);
-			loaderInfo.addEventListener(IOErrorEvent.IO_ERROR, this.handler_ioError);
-			loaderInfo.addEventListener(ProgressEvent.PROGRESS, this.handler_progress);
+			loaderInfo.addEventListener( Event.COMPLETE, this.handler_complete );
+			loaderInfo.addEventListener( IOErrorEvent.IO_ERROR, this.handler_ioError );
+			loaderInfo.addEventListener( ProgressEvent.PROGRESS, this.handler_progress );
 			this._loaders.push( loaderInfo );
-			if (loaderInfo.bytesTotal > 0) {
-				this._bytesLoaded += loaderInfo.bytesLoaded;
-				this._bytesTotal += loaderInfo.bytesTotal;
-				this.onProgress( new ProgressEvent(ProgressEvent.PROGRESS, false, false, this._bytesLoaded, this._bytesTotal) );
+			this._loaded.push( loaderInfo.bytesLoaded >= loaderInfo.bytesTotal );
+			if ( loaderInfo.bytesTotal > 0 ) {
+				this.updateProgress();
 			}
 		}
 
@@ -420,18 +597,14 @@ package by.blooddy.factory {
 		 * @private
 		 */
 		private function removeLoader(loaderInfo:LoaderInfo):void {
-			loaderInfo.removeEventListener(Event.COMPLETE, this.handler_comlete);
-			loaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, this.handler_ioError);
-			loaderInfo.removeEventListener(ProgressEvent.PROGRESS, this.handler_progress);
+			loaderInfo.removeEventListener( Event.COMPLETE, this.handler_complete );
+			loaderInfo.removeEventListener( IOErrorEvent.IO_ERROR, this.handler_ioError );
+			loaderInfo.removeEventListener( ProgressEvent.PROGRESS, this.handler_progress );
 			var index:int = this._loaders.indexOf( loaderInfo );
-			if (index>=0) {
-				this._loaders.splice(index, 1);
-				this._loaded.splice(index, 1);
-			}
-			if (loaderInfo.bytesTotal > 0) {
-				this._bytesLoaded -= loaderInfo.bytesLoaded;
-				this._bytesTotal -= loaderInfo.bytesTotal;
-				this.onProgress( new ProgressEvent(ProgressEvent.PROGRESS, false, false, this._bytesLoaded, this._bytesTotal) );
+			if ( index >= 0 ) {
+				this._loaders.splice( index, 1 );
+				this._loaded.splice( index, 1 );
+				this.updateProgress();
 			}
 		}
 
@@ -443,58 +616,45 @@ package by.blooddy.factory {
 
 		/**
 		 * @private
-		 * стопаем всякіе штуки
 		 */
-		private function handler_added_removed(event:Event):void {
-			if ( event.target === this._info ) event.stopImmediatePropagation();
+		private function handler_progress(event:ProgressEvent):void {
+			this.updateProgress();
 		}
 
 		/**
 		 * @private
 		 */
-		private function handler_comlete(event:Event):void {
-			var loaderInfo:LoaderInfo = ( event.target as LoaderInfo );
+		private function handler_complete(event:Event):void {
+			var loaderInfo:LoaderInfo = event.target as LoaderInfo;
 			var index:uint = this._loaders.indexOf( loaderInfo );
-			if (index>=0) this._loaded[index] = true;
+			if ( index >= 0 ) this._loaded[ index ] = true;
+
 			if ( this.loaded ) {
+
 				// убъем лоадеры
-				for each (loaderInfo in this._loaders) {
+				for each ( loaderInfo in this._loaders ) {
 					this.removeLoader( loaderInfo );
 				}
 
 				super.nextFrame();
 
-				if ( this._info ) super.removeChild( this._info );
-				// надо получить имя рутового класса
-				var rootClassName:String = this._rootClassName;
+				if ( this._info && super.contains( this._info ) ) {
+					super.removeChild( this._info );
+				}
 
-				var appd:ApplicationDomain = super.loaderInfo.applicationDomain;
-				if (!rootClassName) {
-					rootClassName = super.loaderInfo.loaderURL.match( /[^\\\/]*?(?=(\.[^\.]*)?$)/ )[0] as String;
-					if ( !appd.hasDefinition(rootClassName) ) rootClassName = null;
-				}
-				if (!rootClassName) {
-					rootClassName = ( super.currentLabels.pop() as FrameLabel ).name.replace( /_(?=[^_]$)/, "::" ).replace( /_/g, "." );
-					if ( !appd.hasDefinition(rootClassName) ) rootClassName = null;
-				}
-			    var Root:Class;
 				try {
-					Root = appd.getDefinition( rootClassName ) as Class;
-				} catch (e:Error) {
-					this.onError(e);
+					this.onComplete();
+				} catch ( e:Error ) {
+					this.throwError( e );
 				}
-				if (Root) {
-					// вернём stage где был
-					var stage:Stage = super.stage;
-					stage.align = this._stageAlign;
-					stage.scaleMode = this._stageScaleMode;
-					stage.removeEventListener(Event.RESIZE, this.handler_resize);
-					// отошлём евент
-					this.onComplete( event.clone() );
-					// сделаем рут
-					super.parent.removeChild( this );
-					stage.addChild( new Root() as DisplayObject );
+
+				if ( this._initializationTimeout > 0 ) {
+					this._time = getTimer();
+					this._timeoutID = setTimeout( this.initialize, this._initializationTimeout );
+				} else {
+					this.initialize();
 				}
+
 			}
 		}
 
@@ -503,36 +663,27 @@ package by.blooddy.factory {
 		 * прерывает все загрузки и выкидывает исключение
 		 */
 		private function handler_ioError(event:IOErrorEvent):void {
-			for each ( var loaderInfo:LoaderInfo in this._loaders ) {
-				this.removeLoader( loaderInfo );
-			}
-			if ( this._info ) super.removeChild( this._info );
-			this.onError( new IOError(event.text, parseInt( event.text.match( /(?<=^Error #)\d+(?=:.*)/ )[0] ) ) );
-		}
-
-		/**
-		 * @private
-		 */
-		private function handler_progress(event:ProgressEvent):void {
-			this._bytesLoaded = 0;
-			this._bytesTotal = 0;
-			for each ( var loaderInfo:LoaderInfo in this._loaders ) {
-				if (loaderInfo.bytesTotal > 0) {
-					this._bytesLoaded += loaderInfo.bytesLoaded;
-					this._bytesTotal += loaderInfo.bytesTotal;
-				}
-			}
-			if ( this._info is PreloaderSprite ) {
-				(this._info as PreloaderSprite ).progress = this._bytesLoaded / this._bytesTotal
-			}
-			this.onProgress( new ProgressEvent(ProgressEvent.PROGRESS, false, false, this._bytesLoaded, this._bytesTotal) );
+			this.throwError( new IOError( event.text, parseInt( event.text.match( /(?<=^Error #)\d+(?=:.*)/ )[0] ) ) );
 		}
 
 		/**
 		 * @private
 		 */
 		private function handler_resize(event:Event):void {
-			this.updateInfoPosition();
+			this.updatePosition();
+			try {
+				this.onResize();
+			} catch ( e:Error ) {
+				this.throwError( e );
+			}
+		}
+
+		/**
+		 * @private
+		 * стопаем всякие штуки
+		 */
+		private function handler_added_removed(event:Event):void {
+			if ( event.target === this._info ) event.stopImmediatePropagation();
 		}
 
 		//--------------------------------------------------------------------------
@@ -571,7 +722,7 @@ package by.blooddy.factory {
 		public override function set x(value:Number):void {
 			if ( super.x == value ) return;
 			super.x = value;
-			this.updateInfoPosition();
+			this.updatePosition();
 		}
 
 		/**
@@ -580,7 +731,7 @@ package by.blooddy.factory {
 		public override function set y(value:Number):void {
 			if ( super.y == value ) return;
 			super.y = value;
-			this.updateInfoPosition();
+			this.updatePosition();
 		}
 
 		//--------------------------------------------------------------------------
@@ -623,7 +774,7 @@ package by.blooddy.factory {
 		 * @private
 		 */
 		public override function get numChildren():int {
-			if ( this._info && super.contains( this._info) ) return super.numChildren - 1;
+			if ( this._info && super.contains( this._info ) ) return super.numChildren - 1;
 			return super.numChildren;
 		}
 
@@ -763,7 +914,7 @@ package by.blooddy.factory {
 			var result:Array = super.getObjectsUnderPoint( point );
 			if ( this._showPreloader) {
 				var index:int = result.indexOf( this._info );
-				if (index>=0) result.splice( index, 1 );
+				if ( index >= 0 ) result.splice( index, 1 );
 			}
 			return result;
 		}
@@ -887,17 +1038,27 @@ import flash.text.TextFormatAlign;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  Helper class: PreloaderSprite
+//  Helper class: TextSprite
 //
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
  * @private
- * Отображалка загрузки. 
  * 
  * @author					BlooDHounD
  */
-internal final class PreloaderSprite extends Sprite {
+internal class TextSprite extends Sprite {
+
+	//--------------------------------------------------------------------------
+	//
+	//  Class variables
+	//
+	//--------------------------------------------------------------------------
+
+	/**
+	 * @private
+	 */
+	private static const _FORMAT:TextFormat = new TextFormat( '_sans', 10, null, null, null, null, null, null, TextFormatAlign.CENTER );
 
 	//--------------------------------------------------------------------------
 	//
@@ -909,16 +1070,15 @@ internal final class PreloaderSprite extends Sprite {
 	 * @private
 	 * Constructor
 	 */
-	public function PreloaderSprite(progress:Number=0.0, color:uint=0xFFFFFF):void {
+	public function TextSprite(color:uint=0xFFFFFF):void {
 		super();
 		super.mouseEnabled = false;
 		super.mouseChildren = false;
 		super.tabEnabled = false;
-		this._label.width = 100;
-		this._label.y = - 20;
-		this._label.x = - this._label.width / 2;
-		super.addChild( this._label );
-		this._progress = progress;
+		this.label.selectable = false;
+		this.label.defaultTextFormat = _FORMAT;
+		this.label.autoSize = TextFieldAutoSize.CENTER;
+		super.addChild( this.label );
 		this.color = color;
 	}
 
@@ -931,7 +1091,7 @@ internal final class PreloaderSprite extends Sprite {
 	/**
 	 * @private
 	 */
-	private const _label:FactoryTextFiled = new FactoryTextFiled("Initialization...");
+	protected const label:TextField = new TextField();
 
 	//--------------------------------------------------------------------------
 	//
@@ -947,15 +1107,75 @@ internal final class PreloaderSprite extends Sprite {
 	 * @private
 	 */
 	public function get color():uint {
-		return this._label.textColor;
+		return this.label.textColor;
 	}
 
 	/**
 	 * @private
 	 */
 	public function set color(value:uint):void {
-		if (this.color == value) return;
-		this._label.textColor = value;
+		this.label.textColor = value;
+	}
+
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Helper class: PreloaderSprite
+//
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * Отображалка загрузки. 
+ * 
+ * @author					BlooDHounD
+ */
+internal final class PreloaderSprite extends TextSprite {
+
+	//--------------------------------------------------------------------------
+	//
+	//  Constructor
+	//
+	//--------------------------------------------------------------------------
+
+	/**
+	 * @private
+	 * Constructor
+	 */
+	public function PreloaderSprite(progress:Number=0.0, color:uint=0xFFFFFF):void {
+		super( color );
+		this.label.width = 100;
+		this.label.y = - 20;
+		this.label.x = - this.label.width / 2;
+		this.label.text = 'Initialization...';
+		this._progress = progress;
+		this.redraw();
+	}
+
+	//--------------------------------------------------------------------------
+	//
+	//  Properties
+	//
+	//--------------------------------------------------------------------------
+
+	//----------------------------------
+	//  color
+	//----------------------------------
+
+	/**
+	 * @private
+	 */
+	public override function get color():uint {
+		return this.label.textColor;
+	}
+
+	/**
+	 * @private
+	 */
+	public override function set color(value:uint):void {
+		if ( this.label.textColor == value ) return;
+		this.label.textColor = value;
 		this.redraw();
 	}
 
@@ -980,7 +1200,7 @@ internal final class PreloaderSprite extends Sprite {
 	 */
 	public function set progress(value:Number):void {
 		value = Math.min( Math.max( 0, value ), 1 ); 
-		if (this._progress == value) return;
+		if ( this._progress == value ) return;
 		this._progress = value;
 		this.redraw();
 	}
@@ -996,21 +1216,22 @@ internal final class PreloaderSprite extends Sprite {
 	 */
 	private function redraw():void	{
 		var w:Number = this._progress * 100;
-		with (super.graphics) {
+		var color:uint = this.label.textColor;
+		with ( super.graphics ) {
 			clear();
-			beginFill(this.color, 0.5);
-			moveTo(-50, -5);
-			lineTo(-50 + w, -5);
-			lineTo(-50 + w, 5);
-			lineTo(-50, 5);
-			lineTo(-50, -5);
+			beginFill( color, 0.5 );
+			moveTo( -50,     -5 );
+			lineTo( -50 + w, -5 );
+			lineTo( -50 + w,  5 );
+			lineTo( -50,      5 );
+			lineTo( -50,     -5 );
 			endFill();
-			lineStyle(1, this.color);
-			moveTo(-50, -5);
-			lineTo(50, -5);
-			lineTo(50, 5);
-			lineTo(-50, 5);
-			lineTo(-50, -5);
+			lineStyle( 1, color );
+			moveTo( -50,     -5 );
+			lineTo(  50,     -5 );
+			lineTo(  50,      5 );
+			lineTo( -50,      5 );
+			lineTo( -50,     -5 );
 		}
 	}
 
@@ -1028,7 +1249,7 @@ internal final class PreloaderSprite extends Sprite {
  * 
  * @author					BlooDHounD
  */
-internal final class ErrorSprite extends Sprite {
+internal final class ErrorSprite extends TextSprite {
 
 	//--------------------------------------------------------------------------
 	//
@@ -1041,52 +1262,12 @@ internal final class ErrorSprite extends Sprite {
 	 * Constructor
 	 */
 	public function ErrorSprite(text:String=null, color:uint=0xFFFFFF):void {
-		super();
-		super.mouseEnabled = false;
-		super.mouseChildren = false;
-		super.tabEnabled = false;
-		this._label.wordWrap = true;
-		this._label.multiline = true;
-		this._label.width = 200;
-		this._label.x = - this._label.width / 2;
+		super( color );
+		this.label.wordWrap = true;
+		this.label.multiline = true;
+		this.label.width = 200;
+		this.label.x = - this.label.width / 2;
 		this.text = text;
-		super.addChild( this._label );
-		this.color = color;
-	}
-
-	//--------------------------------------------------------------------------
-	//
-	//  Constants
-	//
-	//--------------------------------------------------------------------------
-
-	/**
-	 * @private
-	 */
-	private const _label:FactoryTextFiled = new FactoryTextFiled();
-
-	//--------------------------------------------------------------------------
-	//
-	//  Properties
-	//
-	//--------------------------------------------------------------------------
-
-	//----------------------------------
-	//  color
-	//----------------------------------
-
-	/**
-	 * @private
-	 */
-	public function get color():uint {
-		return this._label.textColor;
-	}
-
-	/**
-	 * @private
-	 */
-	public function set color(value:uint):void {
-		this._label.textColor = value;
 	}
 
 	//----------------------------------
@@ -1097,51 +1278,15 @@ internal final class ErrorSprite extends Sprite {
 	 * @private
 	 */
 	public function get text():String {
-		return this._label.text;
+		return this.label.text;
 	}
 
 	/**
 	 * @private
 	 */
 	public function set text(value:String):void {
-		this._label.text = value || "";
-		this._label.y =  - this._label.height / 2;
-	}
-
-}
-
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Helper class: FactoryTextFiled
-//
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * Текстовое поле для надписей. 
- * 
- * @author					BlooDHounD
- */
-internal final class FactoryTextFiled extends TextField {
-
-	//--------------------------------------------------------------------------
-	//
-	//  Constructor
-	//
-	//--------------------------------------------------------------------------
-
-	/**
-	 * @private
-	 * Constructor
-	 */
-	public function FactoryTextFiled(text:String=null) {
-		super();
-		super.selectable = false;
-		var format:TextFormat = new TextFormat("_sans", 10);
-		format.align = TextFormatAlign.CENTER;
-		super.defaultTextFormat = format;
-		super.autoSize = TextFieldAutoSize.CENTER;
-		super.text = text || "";
+		this.label.text = value || '';
+		this.label.y =  - this.label.height / 2;
 	}
 
 }
