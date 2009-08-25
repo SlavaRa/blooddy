@@ -13,7 +13,7 @@ package ru.avangardonline.display.gfx.battle.world {
 	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
 	
-	import ru.avangardonline.database.battle.world.BattleWorldElementData;
+	import ru.avangardonline.data.battle.world.BattleWorldElementData;
 	
 	/**
 	 * @author					BlooDHounD

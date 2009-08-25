@@ -16,10 +16,10 @@ package ru.avangardonline.controllers.battle {
 	import flash.geom.PerspectiveProjection;
 	import flash.geom.Point;
 	
-	import ru.avangardonline.database.battle.world.BattleWorldData;
-	import ru.avangardonline.database.battle.world.BattleWorldElementCollectionData;
-	import ru.avangardonline.database.battle.world.BattleWorldFieldData;
-	import ru.avangardonline.database.character.CharacterData;
+	import ru.avangardonline.data.battle.world.BattleWorldData;
+	import ru.avangardonline.data.battle.world.BattleWorldElementCollectionData;
+	import ru.avangardonline.data.battle.world.BattleWorldFieldData;
+	import ru.avangardonline.data.character.CharacterData;
 	import ru.avangardonline.display.gfx.battle.world.BattleWorldView;
 	import ru.avangardonline.display.gfx.battle.world.BattleWorldViewFactory;
 

@@ -8,7 +8,7 @@ package ru.avangardonline.controllers {
 
 	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.controllers.BaseController;
-	import by.blooddy.core.database.DataBase;
+	import by.blooddy.core.data.DataBase;
 	import by.blooddy.core.net.ProxySharedObject;
 	import by.blooddy.core.utils.time.RelativeTime;
 	
@@ -23,8 +23,8 @@ package ru.avangardonline.controllers {
 	import flash.events.ErrorEvent;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
-	import ru.avangardonline.serializers.txt.database.battle.BattleDataSerializer;
-	import ru.avangardonline.database.battle.BattleData;
+	import ru.avangardonline.serializers.txt.data.battle.BattleDataSerializer;
+	import ru.avangardonline.data.battle.BattleData;
 	import by.blooddy.core.utils.DataBaseUtils;
 	
 	/**
@@ -46,12 +46,9 @@ package ru.avangardonline.controllers {
 		 */
 		public function GameController(container:DisplayObjectContainer) {
 			super( container, new DataBase(), ProxySharedObject.getLocal( 'avangard' ) );
-
 			this._relativeTime.speed = 0;
-
 			this._battleLogicalController =	new BattleLogicalController	( this );
 			this._battleController =		new BattleController		( this, this._relativeTime, container );
-
 			this.updateBattle();
 		}
 

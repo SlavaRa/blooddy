@@ -9,7 +9,7 @@ package ru.avangardonline.display.gfx.battle.world {
 	import by.blooddy.core.display.StageObserver;
 	import by.blooddy.core.display.destruct;
 	import by.blooddy.core.display.resource.MainResourceSprite;
-	import by.blooddy.core.events.database.DataBaseEvent;
+	import by.blooddy.core.events.data.DataBaseEvent;
 	import by.blooddy.core.events.display.resource.ResourceEvent;
 	import by.blooddy.core.utils.enterFrameBroadcaster;
 	
@@ -17,11 +17,10 @@ package ru.avangardonline.display.gfx.battle.world {
 	import flash.events.Event;
 	import flash.utils.Dictionary;
 	
-	import ru.avangardonline.database.battle.world.BattleWorldData;
-	import ru.avangardonline.database.battle.world.BattleWorldElementData;
-	import ru.avangardonline.display.gfx.character.CharacterView;
-	import ru.avangardonline.events.database.world.BattleWorldCoordinateDataEvent;
-	import ru.avangardonline.database.character.HeroCharacterData;
+	import ru.avangardonline.data.battle.world.BattleWorldData;
+	import ru.avangardonline.data.battle.world.BattleWorldElementData;
+	import ru.avangardonline.data.character.HeroCharacterData;
+	import ru.avangardonline.events.data.world.BattleWorldCoordinateDataEvent;
 	
 	/**
 	 * @author					BlooDHounD
@@ -62,8 +61,9 @@ package ru.avangardonline.display.gfx.battle.world {
 			var observer:StageObserver = new StageObserver( this );
 			observer.registerEventListener( data.elements, DataBaseEvent.ADDED,		this.handler_added );
 			observer.registerEventListener( data.elements, DataBaseEvent.REMOVED,	this.handler_removed );
-			observer.registerEventListener( data.elements, BattleWorldCoordinateDataEvent.COORDINATE_CHANGE, this.handler_coordinateChange );
-			observer.registerEventListener( data.elements, BattleWorldCoordinateDataEvent.COORDINATE_CHANGE, this.handler_coordinateChange );
+			observer.registerEventListener( data.elements, BattleWorldCoordinateDataEvent.COORDINATE_CHANGE,	this.handler_coordinateChange );
+			observer.registerEventListener( data.elements, BattleWorldCoordinateDataEvent.MOVING_START,			this.handler_movingStart );
+			observer.registerEventListener( data.elements, BattleWorldCoordinateDataEvent.MOVING_STOP,			this.handler_movingStop );
 		}
 
 		public function destruct():void {
@@ -189,7 +189,7 @@ package ru.avangardonline.display.gfx.battle.world {
 			this._elements_sorted.push( new SortAsset( data ) );
 			this._content.addChild( view );
 			this._elements[ data ] = view;
-			if ( data.coord.moving ) {
+			if ( data.moving ) {
 				this.moveStartElement( data );
 			}
 			this.updatePosition( data );
@@ -336,7 +336,7 @@ package ru.avangardonline.display.gfx.battle.world {
 //
 //==============================================================================
 
-import ru.avangardonline.database.battle.world.BattleWorldElementData;
+import ru.avangardonline.data.battle.world.BattleWorldElementData;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
