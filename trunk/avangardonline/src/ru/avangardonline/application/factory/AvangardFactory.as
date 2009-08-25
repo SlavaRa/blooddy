@@ -4,7 +4,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline {
+package ru.avangardonline.application.factory {
 
 	import by.blooddy.factory.ApplicationFactory;
 
