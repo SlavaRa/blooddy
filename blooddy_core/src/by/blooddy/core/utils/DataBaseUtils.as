@@ -6,8 +6,8 @@
 
 package by.blooddy.core.utils {
 
-	import by.blooddy.core.database.Data;
-	import by.blooddy.core.database.DataContainer;
+	import by.blooddy.core.data.Data;
+	import by.blooddy.core.data.DataContainer;
 
 	/**
 	 * @author					BlooDHounD

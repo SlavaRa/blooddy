@@ -7,7 +7,7 @@
 	import by.blooddy.core.errors.ErrorsManager;
 	import flash.errors.IllegalOperationError;
 
-	import by.blooddy.core.database.Data;
+	import by.blooddy.core.data.Data;
 
 	//--------------------------------------------------------------------------
 	//

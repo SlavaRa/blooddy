@@ -132,15 +132,15 @@
 
 	<static-link-runtime-shared-libraries>false</static-link-runtime-shared-libraries>
    
-	<target-player>9.0.115</target-player>
+	<target-player>10.0.0</target-player>
 
 	<use-network>true</use-network>
    
 	<metadata>
-		<title>TimeZero ZGC Application</title>
-		<description>http://www.tzmedia.ru/products/platform</description>
+		<title>blooddy's core</title>
+		<description>http://www.blooddy.by/products/core</description>
 		<publisher>BlooDHounD</publisher>
-		<creator>TimeZero Team</creator>
+		<creator>BlooDHounD</creator>
 		<language>RU</language>
 	</metadata>
 
