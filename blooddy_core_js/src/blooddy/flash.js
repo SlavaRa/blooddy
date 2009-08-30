@@ -233,14 +233,14 @@ if ( !blooddy.Flash ) {
 		/**
 		 * @private
 		 * @property
-     	 * @type 		String
+	 	 * @type 		String
 		 */
 		Flash.prototype._id = null;
 
 		/**
 		 * @private
 		 * @property
-     	 * @type 		String
+	 	 * @type 		String
 		 */
 		Flash.prototype._uri = null;
 
