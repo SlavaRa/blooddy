@@ -85,9 +85,25 @@ package by.blooddy.core.display {
 
 }
 
+//==============================================================================
+//
+//  Inner definitions
+//
+//==============================================================================
+
 import flash.events.IEventDispatcher;
 import by.blooddy.core.errors.getErrorMessage;
 
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Helper class: StageObserverItem
+//
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * Вспомогательный класс.
+ */
 internal final class StageObserverItem {
 
 	public function StageObserverItem(target:IEventDispatcher!, type:String!, listener:Function, useCapture:Boolean=false, priority:int=0, useWeakReference:Boolean=false) {

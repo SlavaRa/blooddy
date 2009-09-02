@@ -20,11 +20,27 @@ package by.blooddy.core.utils {
 
 }
 
+//==============================================================================
+//
+//  Inner definitions
+//
+//==============================================================================
+
 import flash.events.IEventDispatcher;
 import flash.events.Event;
 import flash.events.EventPhase;
 import by.blooddy.core.utils.Caller;
 
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Helper class: Listener
+//
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * Вспомогательный класс.
+ */
 internal final class Listener extends Caller {
 
 	public function Listener(listener:Function, args:Array) {

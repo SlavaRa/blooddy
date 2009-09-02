@@ -1,9 +1,22 @@
+////////////////////////////////////////////////////////////////////////////////
+//
+//  (C) 2009 BlooDHounD
+//
+////////////////////////////////////////////////////////////////////////////////
+
 package by.blooddy.core.utils {
 
+	/**
+	 * @author					BlooDHounD
+	 * @version					1.0
+	 * @playerversion			Flash 10
+	 * @langversion				3.0
+	 */
 	public function compareObjects(o1:Object, o2:Object):Boolean {
 		if ( o1 === o2 ) return true;
 		if ( o1 == o2 ) return true;
 
+		if ( !o1 || !o2 ) return false;
 		if ( o1.constructor !== o2.constructor ) return false;
 
 		if ( o1 is IEquable ) {

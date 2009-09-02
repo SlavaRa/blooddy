@@ -26,6 +26,7 @@ package by.blooddy.core.display.resource {
 	import flash.events.Event;
 	import flash.media.Sound;
 	import flash.utils.Dictionary;
+	import flash.utils.getQualifiedClassName;
 
 	//--------------------------------------
 	//  Events
@@ -93,6 +94,21 @@ package by.blooddy.core.display.resource {
 		 * @private
 		 */
 		private static const _SEPARATOR:String = String.fromCharCode( 0 );
+		
+		/**
+		 * @private
+		 */
+		private static const _NAME_DISPLAY_OBJECT:String = getQualifiedClassName( DisplayObject );
+		
+		/**
+		 * @private
+		 */
+		private static const _NAME_BITMAP_DATA:String = getQualifiedClassName( BitmapData );
+		
+		/**
+		 * @private
+		 */
+		private static const _NAME_SOUND:String = getQualifiedClassName( Sound );
 		
 		//--------------------------------------------------------------------------
 		//
@@ -238,7 +254,10 @@ package by.blooddy.core.display.resource {
 				var resource:Object = this.getResource_get( bundleName, resourceName );
 				if ( resource is Class ) {
 					var resourceClass:Class = resource as Class;
-					if ( DisplayObject.prototype.isPrototypeOf( resourceClass.prototype ) ) {
+					if (
+						DisplayObject.prototype.isPrototypeOf( resourceClass.prototype ) ||
+						this._resourceManager.getResource( bundleName, _NAME_DISPLAY_OBJECT ).prototype.isPrototypeOf( resourceClass.prototype ) // проверяем на поддоменность
+					) {
 						result = new resourceClass() as DisplayObject;
 					}
 				} else if ( resource is DisplayObject ) {
@@ -330,7 +349,9 @@ package by.blooddy.core.display.resource {
 
 					if (
 						BitmapData.prototype.isPrototypeOf( resourceClass.prototype ) ||
-						Sound.prototype.isPrototypeOf( resourceClass.prototype )
+						Sound.prototype.isPrototypeOf( resourceClass.prototype ) ||
+						manager.getResource( bundleName, _NAME_BITMAP_DATA ).prototype.isPrototypeOf( resourceClass.prototype ) ||
+						manager.getResource( bundleName, _NAME_SOUND ).prototype.isPrototypeOf( resourceClass.prototype )
 					) {
 
 						var name:String = '$' + bundleName;
@@ -340,7 +361,10 @@ package by.blooddy.core.display.resource {
 
 						} else {
 
-							if ( BitmapData.prototype.isPrototypeOf( resourceClass.prototype ) ) {
+							if (
+								BitmapData.prototype.isPrototypeOf( resourceClass.prototype ) ||
+								manager.getResource( bundleName, _NAME_BITMAP_DATA ).prototype.isPrototypeOf( resourceClass.prototype )
+							) {
 								resource = new resourceClass( 0, 0 );
 							} else {
 								resource = new resourceClass();

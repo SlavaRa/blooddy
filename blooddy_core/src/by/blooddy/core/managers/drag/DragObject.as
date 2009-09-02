@@ -123,8 +123,8 @@ package by.blooddy.core.managers.drag {
 			this._bounds = bounds;
 			//this._snapAngle = snapAngle;
 			//this._lastMouseEvent = new MouseEvent(MouseEvent.MOUSE_DOWN, true, false, this._offset.x, this._offset.y, null, false, false, false, true, 0);
-			super.addEventListener(Event.ADDED_TO_STAGE, this.handler_addedToStage, false, int.MAX_VALUE);
-			super.addEventListener(Event.REMOVED_FROM_STAGE, this.handler_removedFromStage, false, int.MAX_VALUE);
+			super.addEventListener( Event.ADDED_TO_STAGE, this.handler_addedToStage, false, int.MAX_VALUE );
+			super.addEventListener( Event.REMOVED_FROM_STAGE, this.handler_removedFromStage, false, int.MAX_VALUE );
 		}
 
 		//--------------------------------------------------------------------------
