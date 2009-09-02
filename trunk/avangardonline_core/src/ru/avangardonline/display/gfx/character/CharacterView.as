@@ -6,17 +6,16 @@
 
 package ru.avangardonline.display.gfx.character {
 
-	import by.blooddy.core.display.StageObserver;
-	import by.blooddy.core.net.ILoadable;
+	import by.blooddy.core.display.BitmapMovieClip;
+	import by.blooddy.core.display.resource.ResourceDefinition;
 	
 	import flash.display.DisplayObject;
+	import flash.display.MovieClip;
 	import flash.events.Event;
-	import flash.events.IOErrorEvent;
-	import flash.events.SecurityErrorEvent;
 	
 	import ru.avangardonline.data.character.CharacterData;
-	import ru.avangardonline.display.gfx.battle.world.BattleWorldElementView;
-	import ru.avangardonline.events.data.world.BattleWorldCoordinateDataEvent;
+	import ru.avangardonline.display.gfx.battle.world.animation.Animation;
+	import ru.avangardonline.display.gfx.battle.world.animation.BattleWorldAnimatedElementView;
 	
 	/**
 	 * @author					BlooDHounD
@@ -25,7 +24,18 @@ package ru.avangardonline.display.gfx.character {
 	 * @langversion				3.0
 	 * @created					05.08.2009 22:10:59
 	 */
-	public class CharacterView extends BattleWorldElementView {
+	public class CharacterView extends BattleWorldAnimatedElementView {
+
+		//--------------------------------------------------------------------------
+		//
+		//  Class variable
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private static const _HASH:Object = new Object();
 
 		//--------------------------------------------------------------------------
 		//
@@ -39,10 +49,7 @@ package ru.avangardonline.display.gfx.character {
 		public function CharacterView(data:CharacterData) {
 			super( data );
 			this._data = data;
-			var observer:StageObserver = new StageObserver( this );
-			observer.registerEventListener( data, BattleWorldCoordinateDataEvent.COORDINATE_CHANGE,	this.updateRotation );
-			observer.registerEventListener( data, BattleWorldCoordinateDataEvent.MOVING_START,		this.updateRotation );
-			observer.registerEventListener( data, BattleWorldCoordinateDataEvent.MOVING_STOP,		this.updateRotation );
+			this.setAnimation( new Animation() );
 		}
 
 		public override function destruct():void {
@@ -61,11 +68,6 @@ package ru.avangardonline.display.gfx.character {
 		 */
 		private var _data:CharacterData;
 
-		/**
-		 * @private
-		 */
-		private var _element:DisplayObject;
-
 		//--------------------------------------------------------------------------
 		//
 		//  Overriden protected methods
@@ -75,7 +77,7 @@ package ru.avangardonline.display.gfx.character {
 		/**
 		 * @private
 		 */
-		protected override function render(event:Event=null):Boolean {
+/*		protected override function render(event:Event=null):Boolean {
 			if ( !super.render( event ) ) return false;
 
 			var bundleName:String =		'lib/display/character/knight.swf';
@@ -94,36 +96,60 @@ package ru.avangardonline.display.gfx.character {
 			}
 
 			if ( super.hasResource( bundleName, resourceName ) ) {
-				this._element = super.getDisplayObject( bundleName, resourceName );
-				super.addChild( this._element );
-				this.updateRotation();
+				this.$element = super.getDisplayObject( bundleName, resourceName );
+				super.addChild( this.$element );
+				this.updateRotation( event );
 			}
 
 			return true;
+		}*/
+
+		protected override function renderAnimation(event:Event=null):Boolean {
+			if ( !super.renderAnimation( event ) ) return false;
+			if ( this.$element ) {
+				//this.$element.scaleX = this.$element.scaleY = this.$element.scaleZ = .75;
+			}
+			return true;
+		}
+
+		protected override function getAnimation():DisplayObject {
+			var key:String = 'key';
+			var result:BitmapMovieClip;
+			if ( key in _HASH ) {
+				result = ( _HASH[ key ] as BitmapMovieClip ).clone();
+			} else {
+				var resource:DisplayObject = super.getAnimation();
+				result = new BitmapMovieClip();
+				if ( resource is MovieClip ) {
+					var totalFrames:uint = ( resource as MovieClip ).totalFrames;
+					for ( var i:uint = 1; i<totalFrames; i++ ) {
+						( resource as MovieClip ).gotoAndStop( i+1 );
+						result.addBitmap( resource );
+					}
+				} else {
+					result.addBitmap( resource );
+				}
+				super.trashResource( resource );
+				_HASH[ key ] = result;
+			}
+			return result;
 		}
 
 		/**
 		 * @private
 		 */
 		protected override function clear(event:Event=null):Boolean {
+			if ( this.$element ) {
+				super.removeChild( this.$element );
+				( this.$element as BitmapMovieClip ).dispose();
+				this.$element = null;
+			}
 			if ( !super.clear( event ) ) return false;
-			super.trashResource( this._element );
-			this._element = null;
 			return true;
 		}
 
-		//--------------------------------------------------------------------------
-		//
-		//  Overriden protected methods
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		private function updateRotation(event:Event=null):void {
-			if ( !this._element ) return;
-			this._element.scaleX = ( this._data.rotation < 90 ? 1 : -1 );
+		protected override function getAnimationDefinition():ResourceDefinition {
+			return new ResourceDefinition( 'lib/display/character/c1.swf', 'x' );
 		}
 
 	}

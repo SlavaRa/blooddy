@@ -289,7 +289,6 @@ package ru.avangardonline.controllers.battle {
 				}
 			}
 			this._currentTurn = nextTurn;
-			trace( nextTurn, nextUpdate );
 			// поизошёл сильный скачёк. надо сбросить всё нафиг
 			var dt:int = nextTurn - prevTurn;
 			if ( dt != 0 && dt != 1 ) { // поизошёл тотальный пиздец :(
@@ -300,8 +299,8 @@ package ru.avangardonline.controllers.battle {
 			// надо запустить все экшены, которые подходят по времени
 			var turn:BattleTurnData;
 			var actions:Vector.<BattleActionData>;
-			if ( prevTurn != nextTurn ) {
-				turn = this._battle.getTurn( prevTurn );
+			turn = this._battle.getTurn( prevTurn );
+			if ( turn ) {
 				actions = turn.getActions();
 			}
 			turn = this._battle.getTurn( nextTurn );

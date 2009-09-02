@@ -65,8 +65,8 @@ package ru.avangardonline.serializers.txt.data.battle.actions {
 			super.deserialize( source, data );
 			var arr:Array = source.substr( 1 ).split( '|', 2 );
 			arr = arr[1].split( ',', 2 );
-			data.x = parseInt( arr[ 0 ] );
-			data.y = parseInt( arr[ 1 ] );
+			data.x = parseInt( arr[ 0 ] ) - 5;
+			data.y = parseInt( arr[ 1 ] ) - 1;
 			return data;
 		}
 

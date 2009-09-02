@@ -9,23 +9,22 @@ package ru.avangardonline.controllers {
 	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.controllers.BaseController;
 	import by.blooddy.core.data.DataBase;
+	import by.blooddy.core.managers.resource.ResourceManager;
+	import by.blooddy.core.net.ILoadable;
 	import by.blooddy.core.net.ProxySharedObject;
+	import by.blooddy.core.utils.DataBaseUtils;
 	import by.blooddy.core.utils.time.RelativeTime;
 	
 	import flash.display.DisplayObjectContainer;
 	import flash.errors.IllegalOperationError;
+	import flash.events.Event;
+	import flash.events.IOErrorEvent;
+	import flash.events.SecurityErrorEvent;
 	
 	import ru.avangardonline.controllers.battle.BattleController;
 	import ru.avangardonline.controllers.battle.BattleLogicalController;
-	import by.blooddy.core.net.ILoadable;
-	import by.blooddy.core.managers.resource.ResourceManager;
-	import flash.events.Event;
-	import flash.events.ErrorEvent;
-	import flash.events.IOErrorEvent;
-	import flash.events.SecurityErrorEvent;
-	import ru.avangardonline.serializers.txt.data.battle.BattleDataSerializer;
 	import ru.avangardonline.data.battle.BattleData;
-	import by.blooddy.core.utils.DataBaseUtils;
+	import ru.avangardonline.serializers.txt.data.battle.BattleDataSerializer;
 	
 	/**
 	 * @author					BlooDHounD
@@ -141,9 +140,9 @@ package ru.avangardonline.controllers {
 				this._loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.updateBattle );
 			}
 			this._battleLogicalController.battle = null;
-			this._loader = ResourceManager.manager.loadResourceBundle( 'battle.txt' );
+			this._loader = ResourceManager.manager.loadResourceBundle( 'battle2.txt' );
 			if ( this._loader.loaded ) {
-				var txt:String = ResourceManager.manager.getResource( 'battle.txt', '' );
+				var txt:String = ResourceManager.manager.getResource( 'battle2.txt', '' );
 				if ( !txt ) {
 					this.error( 'Произошла ошибка загрзуки боя.' );
 				} else {

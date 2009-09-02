@@ -100,9 +100,9 @@ package ru.avangardonline.serializers.txt.data.battle {
 				BattleTurnDataSerializer.deserialize( tmp[ i ].substr( 1 ), turn );
 				// перебераем экшены и прописываем из значения
 				for each ( action in turn.getActions() ) {
-					action.startTime = BattleTurnData.TURN_DELAY * i;
+					action.startTime = BattleTurnData.TURN_DELAY * i + 200 * Math.random();
 					if ( action.isResult() ) {
-						action.startTime += BattleTurnData.TURN_LENGTH;
+						action.startTime += BattleTurnData.TURN_LENGTH - 400 * Math.random();
 					}
 				}
 			}

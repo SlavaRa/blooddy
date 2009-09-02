@@ -26,7 +26,7 @@ package ru.avangardonline.data.battle.turns {
 		//
 		//--------------------------------------------------------------------------
 
-		public static const TURN_LENGTH:uint = 1000;
+		public static const TURN_LENGTH:uint = 700;
 
 		public static const TURN_DELAY:uint = 500;
 

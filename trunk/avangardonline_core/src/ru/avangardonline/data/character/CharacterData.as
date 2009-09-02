@@ -114,6 +114,9 @@ package ru.avangardonline.data.character {
 		public function atack(itargetID:uint):void {
 		}
 
+		public function victory():void {
+		}
+
 	}
 
 }
