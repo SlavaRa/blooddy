@@ -126,11 +126,26 @@ package ru.avangardonline.display.gfx.battle.world {
 
 }
 
+//==============================================================================
+//
+//  Inner definitions
+//
+//==============================================================================
+
 import flash.display.Shape;
 import flash.display.PixelSnapping;
 import flash.display.LineScaleMode;
 import ru.avangardonline.display.gfx.battle.world.BattleWorldView;
 
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Helper class: BattleFieldCellView
+//
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ */
 internal final class BattleFieldCellView extends Shape {
 
 	/**

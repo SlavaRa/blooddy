@@ -66,6 +66,27 @@ package ru.avangardonline.data.character {
 
 		public const health:PointsData = new PointsData();
 
+		//----------------------------------
+		//  live
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
+		private var _live:Boolean;
+
+		public function get live():Boolean {
+			return this._live;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set live(value:Boolean):void {
+			if ( this._live == value ) return;
+			this._live = value;
+		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Overriden methods
@@ -97,6 +118,10 @@ package ru.avangardonline.data.character {
 		//  Methods
 		//
 		//--------------------------------------------------------------------------
+
+		public function changeLiveStatus(live:Boolean):void {
+			this.live = live;
+		}
 
 		public function setHealth(health:uint):void {
 			this.health.current = health;

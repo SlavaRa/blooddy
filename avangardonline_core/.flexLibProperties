@@ -9,6 +9,7 @@
     <classEntry path="ru.avangardonline.data.battle.actions.BattleAtackActionData"/>
     <classEntry path="ru.avangardonline.data.battle.actions.BattleLiveStatusActionData"/>
     <classEntry path="ru.avangardonline.data.battle.actions.BattleMoveActionData"/>
+    <classEntry path="ru.avangardonline.data.battle.actions.BattleVictoryActionData"/>
     <classEntry path="ru.avangardonline.data.battle.actions.BattleWorldElementActionData"/>
     <classEntry path="ru.avangardonline.data.battle.turns.BattleTurnData"/>
     <classEntry path="ru.avangardonline.data.battle.turns.BattleTurnWorldElementCollectionData"/>
@@ -28,7 +29,10 @@
     <classEntry path="ru.avangardonline.display.gfx.battle.world.BattleWorldFieldView"/>
     <classEntry path="ru.avangardonline.display.gfx.battle.world.BattleWorldView"/>
     <classEntry path="ru.avangardonline.display.gfx.battle.world.BattleWorldViewFactory"/>
+    <classEntry path="ru.avangardonline.display.gfx.battle.world.animation.BattleWorldAnimatedElementView"/>
+    <classEntry path="ru.avangardonline.display.gfx.battle.world.animation.Animation"/>
     <classEntry path="ru.avangardonline.display.gfx.character.CharacterView"/>
+    <classEntry path="ru.avangardonline.display.gfx.character.MinionCharacterView"/>
     <classEntry path="ru.avangardonline.events.data.world.BattleWorldCoordinateDataEvent"/>
     <classEntry path="ru.avangardonline.events.data.world.BattleWorldDataEvent"/>
     <classEntry path="ru.avangardonline.events.data.world.BattleWorldFieldDataEvent"/>
@@ -38,6 +42,7 @@
     <classEntry path="ru.avangardonline.serializers.txt.data.battle.actions.BattleAtackActionDataSerializer"/>
     <classEntry path="ru.avangardonline.serializers.txt.data.battle.actions.BattleLiveStatusActionDataSerializer"/>
     <classEntry path="ru.avangardonline.serializers.txt.data.battle.actions.BattleMoveActionDataSerializer"/>
+    <classEntry path="ru.avangardonline.serializers.txt.data.battle.actions.BattleVictoryActionDataSerializer"/>
     <classEntry path="ru.avangardonline.serializers.txt.data.battle.actions.BattleWorldElementActionDataSerializer"/>
     <classEntry path="ru.avangardonline.serializers.txt.data.battle.world.BattleWorldElementCollectionDataSerializer"/>
     <classEntry path="ru.avangardonline.serializers.txt.data.battle.world.BattleWorldElementDataSerializer"/>

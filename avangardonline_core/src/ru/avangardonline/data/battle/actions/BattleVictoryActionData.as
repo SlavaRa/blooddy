@@ -9,16 +9,15 @@ package ru.avangardonline.data.battle.actions {
 	import by.blooddy.core.commands.Command;
 	
 	import ru.avangardonline.data.battle.world.BattleWorldElementCollectionData;
-	import ru.avangardonline.data.character.MinionCharacterData;
 
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					12.08.2009 23:23:12
+	 * @created					30.08.2009 15:52:17
 	 */
-	public class BattleLiveStatusActionData extends BattleWorldElementActionData {
+	public class BattleVictoryActionData extends BattleWorldElementActionData {
 
 		//--------------------------------------------------------------------------
 		//
@@ -29,35 +28,8 @@ package ru.avangardonline.data.battle.actions {
 		/**
 		 * Constructor
 		 */
-		public function BattleLiveStatusActionData() {
+		public function BattleVictoryActionData() {
 			super();
-		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Properties
-		//
-		//--------------------------------------------------------------------------
-
-		//----------------------------------
-		//  live
-		//----------------------------------
-
-		/**
-		 * @private
-		 */
-		private var _live:Boolean = false;
-
-		public function get live():Boolean {
-			return this._live;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set live(value:Boolean):void {
-			if ( this._live === value ) return;
-			this._live = value;
 		}
 
 		//--------------------------------------------------------------------------
@@ -67,11 +39,7 @@ package ru.avangardonline.data.battle.actions {
 		//--------------------------------------------------------------------------
 
 		public override function toLocaleString():String {
-			return super.formatToString( 'startTime', 'elementID', 'live' );
-		}
-
-		public override function isResult():Boolean {
-			return true;
+			return super.formatToString( 'startTime', 'elementID' );
 		}
 
 		public override function getCommands():Vector.<Command> {
@@ -79,8 +47,7 @@ package ru.avangardonline.data.battle.actions {
 			result.push(
 				super.getCommand(
 					new Command(
-						'changeLiveStatus',
-						[ this._live ]
+						'victory'
 					)
 				)
 			);
@@ -88,9 +55,6 @@ package ru.avangardonline.data.battle.actions {
 		}
 
 		public override function apply(collection:BattleWorldElementCollectionData):void {
-			var element:MinionCharacterData = collection.getElement( super.elementID ) as MinionCharacterData;
-			if ( !element ) throw new ArgumentError();
-			element.live = this._live;
 		}
 
 	}

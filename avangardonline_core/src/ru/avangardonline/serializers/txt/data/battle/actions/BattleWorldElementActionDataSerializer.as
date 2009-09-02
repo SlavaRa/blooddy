@@ -9,6 +9,7 @@ package ru.avangardonline.serializers.txt.data.battle.actions {
 	import ru.avangardonline.data.battle.actions.BattleAtackActionData;
 	import ru.avangardonline.data.battle.actions.BattleLiveStatusActionData;
 	import ru.avangardonline.data.battle.actions.BattleMoveActionData;
+	import ru.avangardonline.data.battle.actions.BattleVictoryActionData;
 	import ru.avangardonline.data.battle.actions.BattleWorldElementActionData;
 
 	/**
@@ -31,6 +32,7 @@ package ru.avangardonline.serializers.txt.data.battle.actions {
 				case 'm':	return BattleMoveActionDataSerializer.deserialize( source, target as BattleMoveActionData );
 				case 'a':	return BattleAtackActionDataSerializer.deserialize( source, target as BattleAtackActionData );
 				case 'd':	return BattleLiveStatusActionDataSerializer.deserialize( source, target as BattleLiveStatusActionData );
+				case 'v':	return BattleVictoryActionDataSerializer.deserialize( source, target as BattleVictoryActionData );
 			}
 			throw new ArgumentError();
 		}
