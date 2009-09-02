@@ -87,6 +87,16 @@ package by.blooddy.core.managers.resource {
 		//
 		//--------------------------------------------------------------------------
 
+		//----------------------------------
+		//  manager
+		//----------------------------------
+
+		public static const manager:ResourceManager = new ResourceManager();
+
+		//----------------------------------
+		//  maxLoading
+		//----------------------------------
+
 		/**
 		 * @private
 		 */
@@ -107,7 +117,17 @@ package by.blooddy.core.managers.resource {
 			}
 		}
 
-		public static const manager:ResourceManager = new ResourceManager();
+		//----------------------------------
+		//  baseURL
+		//----------------------------------
+
+		public static function get baseURL():String {
+			return ResourceLoaderAsset.baseURL || '';
+		}
+
+		public static function set baseURL(value:String):void {
+			ResourceLoaderAsset.baseURL = value;
+		}
 
 		//--------------------------------------------------------------------------
 		//
@@ -478,7 +498,26 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 
 	//--------------------------------------------------------------------------
 	//
-	//  Event handlers
+	//  Class properties
+	//
+	//--------------------------------------------------------------------------
+
+	public static var baseURL:String;
+
+	//--------------------------------------------------------------------------
+	//
+	//  Class variables
+	//
+	//--------------------------------------------------------------------------
+
+	/**
+	 * @private
+	 */
+	private static const _URL:RegExp = /^(https?|file|ftps?|):\/\//;
+
+	//--------------------------------------------------------------------------
+	//
+	//  Constructor
 	//
 	//--------------------------------------------------------------------------
 
@@ -506,6 +545,9 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 	//
 	//--------------------------------------------------------------------------
 
+	/**
+	 * @private
+	 */
 	private var _url:String;
 
 	public override function get url():String {
@@ -528,7 +570,13 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 	}
 
 	internal function $load():void {
-		super.load( new URLRequest( this._url ) );
+		var url:String;
+		if ( !baseURL || _URL.test( this._url ) ) {
+			url = this._url;
+		} else {
+			url = baseURL + '/' + this._url;
+		}
+		super.load( new URLRequest( url ) );
 	}
 
 	[Deprecated(message="метод запрещен", replacement="$close")]

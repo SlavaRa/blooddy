@@ -66,6 +66,11 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
+		private const _resourceHash:Object = new Object();
+
+		/**
+		 * @private
+		 */
 		private const _resources:Object = new Object();
 
 		/**
@@ -73,6 +78,9 @@ package by.blooddy.core.net {
 		 */
 		private const _domains:Object = new Object();
 
+		/**
+		 * @private
+		 */
 		private var _hasDomain:Boolean = false;
 
 		/**
@@ -147,15 +155,19 @@ package by.blooddy.core.net {
 		 * @inheritDoc
 		 */
 		public function getResource(name:String):* {
-			if ( !name ) return super.content;
-			else if ( name in this._resources ) {
-				return _MANAGER.getResource( this._resources[ name ], name );
-			} else if ( super.loaderInfo && super.loaderInfo.applicationDomain && super.loaderInfo.applicationDomain.hasDefinition( name ) ) {
-				return super.loaderInfo.applicationDomain.getDefinition( name );
-			} else if ( super.content && name in super.content ) {
+			if ( !name ) {
+				return super.content;
+			} else if ( name in this._resourceHash ) { // пытаемся найти в кэше
+				return this._resourceHash[ name ];
+			} else if ( name in this._resources ) { // пытаемся найти в шарных либах
+				return this._resourceHash[ name ] = _MANAGER.getResource( this._resources[ name ], name );
+			} else if ( super.loaderInfo && super.loaderInfo.applicationDomain && super.loaderInfo.applicationDomain.hasDefinition( name ) ) { // пытаемся найти в домене
+				return this._resourceHash[ name ] = super.loaderInfo.applicationDomain.getDefinition( name );
+			} else if ( super.content && name in super.content ) { // пытаемся найти в контэнте
 				return super.content[ name ];
+			} else { // закэшируем пустоту :(
+				this._resourceHash[ name ] = null;
 			}
-			return null;
 		}
 
 		/**
@@ -164,10 +176,11 @@ package by.blooddy.core.net {
 		public function hasResource(name:String):Boolean {
 			return (
 				this._complete && (
-					!name ||
-					( ( name in this._resources ) && _MANAGER.hasResource( this._resources[ name ], name ) ) ||
-					( super.loaderInfo && super.loaderInfo.applicationDomain && super.loaderInfo.applicationDomain.hasDefinition( name ) ) ||
-					( super.content && name in super.content )
+					this._resourceHash[ name ] || // пытаемся найти в кэше
+					( !name && super.content ) ||
+					( ( name in this._resources ) && _MANAGER.hasResource( this._resources[ name ], name ) ) || // пытаемся найти в шарных либах
+					( super.loaderInfo && super.loaderInfo.applicationDomain && super.loaderInfo.applicationDomain.hasDefinition( name ) ) || // пытаемся найти в домене
+					( super.content && name in super.content ) // пытаемся найти в контэнте
 				)
 			);
 		}
@@ -220,6 +233,9 @@ package by.blooddy.core.net {
 					_MANAGER.removeResourceBundle( domain );
 					delete this._domains[ domain ];
 				}
+			}
+			for ( var name:String in this._resourceHash ) {
+				delete this._resourceHash[ name ];
 			}
 		}
 
@@ -378,9 +394,21 @@ package by.blooddy.core.net {
 
 }
 
+//==============================================================================
+//
+//  Inner definitions
+//
+//==============================================================================
+
 import by.blooddy.core.utils.ClassUtils;
 
 import flash.events.Event;
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Helper namespaces
+//
+////////////////////////////////////////////////////////////////////////////////
 
 /**
  * @private
@@ -392,8 +420,15 @@ internal const rdf:Namespace = new Namespace( 'http://www.w3.org/1999/02/22-rdf-
  */
 internal const shared:Namespace = new Namespace( 'http://timezero.com/library/shared/' );
 
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Helper class: DomainEvent
+//
+////////////////////////////////////////////////////////////////////////////////
+
 /**
  * @private
+ * Вспомогательный класс.
  */
 internal final class DomainEvent extends Event {
 

@@ -8,6 +8,7 @@ package by.blooddy.core.net {
 
 	import by.blooddy.core.utils.ClassUtils;
 	
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.HTTPStatusEvent;
@@ -286,7 +287,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private function handler_error(event:IOErrorEvent):void {
+		private function handler_error(event:ErrorEvent):void {
 			// Перенапрвляем, только если есть листенер
 			// иначе возникает ошибка.
 			if ( super.hasEventListener( event.type ) ) super.dispatchEvent( event );

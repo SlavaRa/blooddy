@@ -164,10 +164,15 @@ package by.blooddy.core.net {
 		//----------------------------------
 
 		/**
+		 * @private
+		 */
+		private var _host:String;
+
+		/**
 		 * @inheritDoc
 		 */
 		public function get host():String {
-			return this._socket.host;
+			return this._host;
 		}
 
 		//----------------------------------
@@ -175,10 +180,15 @@ package by.blooddy.core.net {
 		//----------------------------------
 
 		/**
+		 * @private
+		 */
+		private var _port:int;
+
+		/**
 		 * @inheritDoc
 		 */
 		public function get port():int {
-			return this._socket.port;
+			return this._port;
 		}
 
 		//----------------------------------
@@ -245,7 +255,7 @@ package by.blooddy.core.net {
 		 * @inheritDoc
 		 */
 		public function connect(host:String, port:int):void {
-			if ( this.connected ) throw new IOError();
+			if ( this.connected ) throw new IOError();//this.close();
 			switch ( this._connectionType ) {
 				case Protocols.SOCKET:
 					this._socket = new Socket();
@@ -258,12 +268,14 @@ package by.blooddy.core.net {
 			if ( !this._socket ) throw new ArgumentError(); /** TODO: описать обшибку */
 			this._socket.timeout = this._connectionTimeout;
 			this._socket.addEventListener( Event.OPEN,							super.dispatchEvent );
-			this._socket.addEventListener( Event.CONNECT,						super.dispatchEvent );
+			this._socket.addEventListener( Event.CONNECT,						this.handler_connect );
 			this._socket.addEventListener( ProgressEvent.SOCKET_DATA,			this.handler_socketData );
 			this._socket.addEventListener( IOErrorEvent.IO_ERROR,				super.dispatchEvent );
 			this._socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	super.dispatchEvent );
 			this._socket.addEventListener( Event.CLOSE,							this.handler_close );
 			this._socket.connect( host, port );
+			this._host = this._socket.host;
+			this._port = this._socket.port;
 		}
 
 		/**
@@ -307,9 +319,24 @@ package by.blooddy.core.net {
 
 		/**
 		 * @private
+		 */
+		private function handler_connect(event:Event):void {
+			if ( super.logging ) {
+				super.logger.addLog( new InfoLog( 'Connect: ' + this._host + ':' + this._port, InfoLog.INFO ) );
+			}
+			super.dispatchEvent( event )
+		}
+
+		/**
+		 * @private
 		 * Соединение закрылось.
 		 */
 		private function handler_close(event:Event):void {
+			if ( super.logging ) {
+				super.logger.addLog( new InfoLog( 'Close: ' + this._host + ':' + this._port, InfoLog.INFO ) );
+			}
+			this._host = null;
+			this._port = 0;
 			this._socket.removeEventListener( Event.OPEN,							super.dispatchEvent );
 			this._socket.removeEventListener( Event.CONNECT,						super.dispatchEvent );
 			this._socket.removeEventListener( ProgressEvent.SOCKET_DATA,			this.handler_socketData );
@@ -340,10 +367,10 @@ package by.blooddy.core.net {
 			}
 
 
-//			var pos:uint = this._inputBuffer.length;
+			//var pos:uint = this._inputBuffer.length;
 			// запихиваем фсё в буфер
 			this._socket.readBytes( this._inputBuffer, this._inputBuffer.length );
-//			trace( ByteArrayUtils.dump( this._inputBuffer, pos  ) );
+			//trace( ByteArrayUtils.dump( this._inputBuffer, pos  ) );
 
 			var command:NetCommand;
 

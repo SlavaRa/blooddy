@@ -6,14 +6,16 @@
 
 package by.blooddy.core.display {
 
+	import by.blooddy.core.errors.getErrorMessage;
+	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
 	import flash.display.IBitmapDrawable;
+	import flash.display.MovieClip;
 	import flash.errors.IllegalOperationError;
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
-	import by.blooddy.core.errors.getErrorMessage;
 
 	/**
 	 * @author					BlooDHounD
@@ -31,6 +33,9 @@ package by.blooddy.core.display {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @private
+		 */
 		private static const _EMPTY:BitmapData = new BitmapData( 1, 1, true, 0x000000 );
 
 		//--------------------------------------------------------------------------
@@ -39,6 +44,9 @@ package by.blooddy.core.display {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @private
+		 */
 		private static function getElement(bitmap:IBitmapDrawable):CollectionElement {
 			var bmp:BitmapData;
 			var x:Number = 0;
@@ -64,6 +72,46 @@ package by.blooddy.core.display {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Class methods
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * 
+		 * @param	mc
+		 * @param	pixelSnapping
+		 * @param	smoothing
+		 * 
+		 * @return
+		 * 
+		 * @note					после выполнения метода MovieClip будет остановлен на последнем кадре. 
+		 *  
+		 */
+		public static function getAsMovieClip(bitmap:IBitmapDrawable, pixelSnapping:String='auto', smoothing:Boolean=false):BitmapMovieClip {
+			var result:BitmapMovieClip;
+			if ( bitmap is MovieClip ) {
+				if ( bitmap is BitmapMovieClip ) {
+					result = ( bitmap as BitmapMovieClip ).clone();
+					result.pixelSnapping = pixelSnapping;
+					result.smoothing = smoothing;
+				} else {
+					var mc:MovieClip = bitmap as MovieClip;
+					result = new BitmapMovieClip();
+					const l:uint = mc.totalFrames;
+					for ( var i:uint = 0; i<l; i++ ) {
+						mc.gotoAndStop( i + 1 );
+						result.addBitmap( mc );
+					}
+				}
+			} else {
+				result = new BitmapMovieClip();
+				result.addBitmap( bitmap );
+			}
+			return result;
+		}
+
+		//--------------------------------------------------------------------------
+		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
@@ -71,7 +119,7 @@ package by.blooddy.core.display {
 		/**
  		 * Constructor
 		 */
-		public function BitmapMovieClip(pixelSnapping:String="auto", smoothing:Boolean=false) {
+		public function BitmapMovieClip(pixelSnapping:String='auto', smoothing:Boolean=false) {
 			super();
 			this._container.pixelSnapping = pixelSnapping;
 			this._container.smoothing = smoothing;
@@ -87,7 +135,7 @@ package by.blooddy.core.display {
 		/**
 		 * @private
 		 */
-		private const _list:Array = new Array();
+		private const _list:Vector.<CollectionElement> = new Vector.<CollectionElement>();
 
 		/**
 		 * @private
@@ -206,12 +254,15 @@ package by.blooddy.core.display {
 		 */
 		public function clone(bind:Boolean=true):BitmapMovieClip {
 			var result:BitmapMovieClip = new BitmapMovieClip( this._container.pixelSnapping, this._container.smoothing );
+			var i:uint;
+			const l:uint = this._list.length;
 			if ( bind ) {
-				result._list.push.apply( result._list, this._list );
+				for ( i=0; i<l; i++ ) {
+					result._list.push( this._list[ i ] );
+				}
 			} else {
-				var l:uint = this._list.length;
-				for ( var i:uint = 0; i<l; i++ ) {
-					result._list.push( ( this._list[ i ] as CollectionElement ).clone() );
+				for ( i=0; i<l; i++ ) {
+					result._list.push( this._list[ i ].clone() );
 				}
 			}
 			result._totalFrames = this._totalFrames;
@@ -230,7 +281,7 @@ package by.blooddy.core.display {
 		public function addBitmapAt(bitmap:IBitmapDrawable, index:int, x:Number=0, y:Number=0):BitmapData {
 			var element:CollectionElement = getElement( bitmap );
 			element.x += x;
-			element.x += x;
+			element.y += y;
 			this._list.splice( index, 0, element );
 			this._totalFrames++;
 			if ( index <= this._currentFrame ) this._currentFrame++;
@@ -273,7 +324,7 @@ package by.blooddy.core.display {
 			this._container.bitmapData = null;
 			this._totalFrames = 0;
 			while ( this._list.length ) {
-				( this._list.pop() as CollectionElement ).bmp.dispose();
+				this._list.pop().bmp.dispose();
 			}
 			this.stop();
 		}
@@ -286,7 +337,7 @@ package by.blooddy.core.display {
 
 		protected override function setCurrentFrame(value:int):void {
 			this._currentFrame = value;
-			var element:CollectionElement = this._list[ value - 1 ] as CollectionElement;
+			var element:CollectionElement = this._list[ value - 1 ];
 			this._container.bitmapData = element.bmp;
 			this._container.x = element.x;
 			this._container.y = element.y;
@@ -298,28 +349,43 @@ package by.blooddy.core.display {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @private
+		 */
 		private function $removeBitmapAt(index:Number):BitmapData {
 			this._totalFrames--;
-			return ( this._list.splice( index, 1 )[0] as CollectionElement ).bmp;
+			return this._list.splice( index, 1 )[0].bmp;
 		}
 
+		/**
+		 * @private
+		 */
 		private function $getBitmapIndex(bitmap:BitmapData):int {
 			var l:uint = this._list.length;
 			for ( var i:uint=0; i<l; i++ ) {
-				if ( ( this._list[i] as CollectionElement ).bmp === bitmap ) return i;
+				if ( this._list[i].bmp === bitmap ) return i;
 			}
 			return -1;
 		}
 
+		/**
+		 * @private
+		 */
 		private function $getBitmapAt(index:int):BitmapData {
-			return ( this._list[ index ] as CollectionElement ).bmp;
+			return this._list[ index ].bmp;
 		}
 
+		/**
+		 * @private
+		 */
 		private function $setBitmapIndex(bitmap:BitmapData, index:int):void {
 			this._list.splice( this.$getBitmapIndex( bitmap ), 1 );
 			this._list.splice( index, 0, bitmap );
 		}
 
+		/**
+		 * @private
+		 */
 		private function $swapBitmaps(bmp1:BitmapData, bmp2:BitmapData, index1:int, index2:int):void {
 			// надо сперва поставить того кто выше
 			if ( index1 > index2 ) {
@@ -335,8 +401,24 @@ package by.blooddy.core.display {
 
 }
 
+//==============================================================================
+//
+//  Inner definitions
+//
+//==============================================================================
+
 import flash.display.BitmapData;
 
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Helper class: CollectionElement
+//
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * Вспомогательный класс.
+ */
 internal final class CollectionElement {
 
 	public function CollectionElement(bmp:BitmapData, x:Number=0, y:Number=0) {

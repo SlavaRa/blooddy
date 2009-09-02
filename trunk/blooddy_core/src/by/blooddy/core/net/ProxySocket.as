@@ -204,7 +204,6 @@ package by.blooddy.core.net {
 		 * @inheritDoc
 		 */
 		public function get host():String {
-			if ( !this._sesID ) throw new ArgumentError(); /** TODO: описать ошибку */
 			return this._host;
 		}
 
@@ -221,7 +220,6 @@ package by.blooddy.core.net {
 		 * @inheritDoc
 		 */
 		public function get port():int {
-			if ( !this._sesID ) throw new ArgumentError(); /** TODO: описать ошибку */
 			return this._port;
 		}
 
@@ -812,8 +810,20 @@ package by.blooddy.core.net {
 
 }
 
+//==============================================================================
+//
+//  Inner definitions
+//
+//==============================================================================
+
 import flash.net.URLStream;
 import flash.net.URLRequest;
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Helper class: URLStreamAsset
+//
+////////////////////////////////////////////////////////////////////////////////
 
 /**
  * @private
