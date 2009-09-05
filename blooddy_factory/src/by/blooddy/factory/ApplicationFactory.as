@@ -25,6 +25,7 @@ package by.blooddy.factory {
 	import flash.events.ProgressEvent;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.media.SoundTransform;
 	import flash.net.URLRequest;
 	import flash.system.ApplicationDomain;
 	import flash.system.LoaderContext;
@@ -32,28 +33,25 @@ package by.blooddy.factory {
 	import flash.utils.clearTimeout;
 	import flash.utils.getQualifiedClassName;
 	import flash.utils.setTimeout;
-
-	import flash.utils.getTimer;
+	import flash.system.SecurityDomain;
 
 	//--------------------------------------
 	//  Excluded APIs
 	//--------------------------------------
 
 	[Exclude(name="name", kind="property")]
-	[Exclude(name="stage", kind="property")]
 	[Exclude(name="parent", kind="property")]
+	[Exclude(name="root", kind="property")]
+	[Exclude(name="stage", kind="property")]
+	[Exclude(name="doubleClickEnabled", kind="property")]
+	[Exclude(name="focusRect", kind="property")]
 	[Exclude(name="mouseEnabled", kind="property")]
 	[Exclude(name="tabEnabled", kind="property")]
-	[Exclude(name="textSnapshot", kind="property")]
+	[Exclude(name="tabIndex", kind="property")]
 	[Exclude(name="buttonMode", kind="property")]
 	[Exclude(name="hitArea", kind="property")]
 	[Exclude(name="useHandCursor", kind="property")]
-	[Exclude(name="currentFrame", kind="property")]
-	[Exclude(name="currentLabel", kind="property")]
-	[Exclude(name="currentLabels", kind="property")]
-	[Exclude(name="currentScene", kind="property")]
-	[Exclude(name="framesLoaded", kind="property")]
-	[Exclude(name="scenes", kind="property")]
+	[Exclude(name="soundTransform", kind="property")]
 
 	[Exclude(name="startDrag", kind="method")]
 	[Exclude(name="stopDrag", kind="method")]
@@ -66,6 +64,12 @@ package by.blooddy.factory {
 	[Exclude(name="nextScene", kind="method")]
 	[Exclude(name="prevFrame", kind="method")]
 	[Exclude(name="prevScene", kind="method")]
+
+	//--------------------------------------
+	//  Events
+	//--------------------------------------
+
+	[Event(name="init", type="flash.events.Event")]
 
 	/**
 	 * Создатель приложения. Покаывает процесс загрузки как самого
@@ -104,25 +108,51 @@ package by.blooddy.factory {
 		 * Constructor
 		 */
 		public function ApplicationFactory(rootClassName:String=null, initializationTimeout:uint=0) {
-
 			super();
 
-			if ( inited || !super.stage || super.stage != super.parent || super.totalFrames != 2 || super.currentFrame != 1 ) {
+			super.mouseEnabled = false;
+			super.tabEnabled = false;
+			super.enabled = false;
+
+			super.stop();
+
+			// сохраним наш класс для дальнейшей работы
+			this._rootClassName = rootClassName;
+			this._initializationTimeout = initializationTimeout;
+
+			super.addEventListener( Event.ADDED, this.handler_added_removed, false, int.MAX_VALUE, true );
+			super.addEventListener( Event.ADDED, this.handler_added_removed, true, int.MAX_VALUE, true );
+			super.addEventListener( Event.REMOVED, this.handler_added_removed, false, int.MAX_VALUE, true );
+			super.addEventListener( Event.REMOVED, this.handler_added_removed, true, int.MAX_VALUE, true );
+
+			super.addEventListener( Event.ADDED_TO_STAGE, this.handler_addedToStage, false, int.MAX_VALUE );
+
+		}
+
+		/**
+		 * @private
+		 */
+		private function handler_addedToStage(event:Event):void {
+
+			super.removeEventListener( Event.ADDED_TO_STAGE, this.handler_addedToStage );
+
+			if (
+				inited ||										// кто-то уже инитиализировался
+				super.totalFrames != 2 || super.currentFrame != 1 || (
+					super.stage != super.parent && (			// мы не на stage
+						!( super.parent is Loader ) ||			// нас никто не грузит
+						!( ( super.parent as Loader ).parent is ApplicationFactoryLoader )
+					)
+				) 
+			) {
 				throw new ReferenceError( 'The ' + getQualifiedClassName( ( this as Object ).constructor ) + '' );
 			}
 
 			inited = true;
 
+			super.addEventListener( Event.REMOVED_FROM_STAGE, this.handler_removedFromStage, false, int.MAX_VALUE );
+
 //			super.name = getQualifiedClassName( this );
-			super.mouseEnabled = false;
-			super.tabEnabled = false;
-			super.enabled = false;
-			super.buttonMode = false;
-			super.hitArea = null;
-			super.useHandCursor = false;
-
-			super.stop();
-
 			this._stageAlign = super.stage.align;
 			this._stageScaleMode = super.stage.scaleMode;
 
@@ -130,22 +160,26 @@ package by.blooddy.factory {
 			super.stage.scaleMode = StageScaleMode.NO_SCALE;
 			super.stage.addEventListener( Event.RESIZE, this.handler_resize );
 
-			this._context = new LoaderContext( false, super.loaderInfo.applicationDomain );
-
-			// сохраним наш класс для дальнейшей работы
-			this._rootClassName = rootClassName;
+			this._context = new LoaderContext( false, ApplicationDomain.currentDomain, SecurityDomain.currentDomain );
 
 			// рузим себя
 			this.addLoader( super.loaderInfo );
 
-			super.addEventListener( Event.ADDED,	this.handler_added_removed,		true,	int.MAX_VALUE, true );
-			super.addEventListener( Event.ADDED,	this.handler_added_removed,		false,	int.MAX_VALUE, true );
-			super.addEventListener( Event.REMOVED,	this.handler_added_removed,		true,	int.MAX_VALUE, true );
-			super.addEventListener( Event.REMOVED,	this.handler_added_removed,		false,	int.MAX_VALUE, true );
-
-			this._initializationTimeout = initializationTimeout;
 			this.showPreloader = true;
 
+			try {
+				this.onConstruct();
+			} catch ( e:Error ) {
+				this.throwError( e );
+			}
+
+		}
+
+		/**
+		 * @private
+		 */
+		private function handler_removedFromStage(event:Event):void {
+			throw new IllegalOperationError();
 		}
 
 		//--------------------------------------------------------------------------
@@ -153,11 +187,6 @@ package by.blooddy.factory {
 		//  Variables
 		//
 		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		private const _modules:Array = new Array();
 
 		/**
 		 * @private
@@ -177,12 +206,12 @@ package by.blooddy.factory {
 		/**
 		 * @private
 		 */
-		private const _loaded:Array = new Array();
+		private const _loaded:Vector.<Boolean> = new Vector.<Boolean>();
 
 		/**
 		 * @private
 		 */
-		private const _loaders:Array = new Array();
+		private const _loaders:Vector.<LoaderInfo> = new Vector.<LoaderInfo>();
 
 		/**
 		 * @private
@@ -193,6 +222,16 @@ package by.blooddy.factory {
 		 * @private
 		 */
 		private var _info:TextSprite;
+
+		/**
+		 * @private
+		 */
+		private var _initializationTimeout:uint;
+
+		/**
+		 * @private
+		 */
+		private var _timeoutID:uint;
 
 		//--------------------------------------------------------------------------
 		//
@@ -247,7 +286,7 @@ package by.blooddy.factory {
 		 */
 		public final function get loaded():Boolean {
 			for ( var i:uint = 0; i < this._loaders.length; i++ ) {
-				if ( !this._loaded[i] ) return false;
+				if ( !this._loaded[ i ] ) return false;
 			}
 			return true;
 		}
@@ -345,51 +384,19 @@ package by.blooddy.factory {
 			return super.stage.stageHeight;
 		}
 
-		//----------------------------------
-		//  initializationTimeout
-		//----------------------------------
-
-		/**
-		 * @private
-		 */
-		private var _timeoutID:uint;
-
-		/**
-		 * @private
-		 */
-		private var _time:uint;
-
-		/**
-		 * @private
-		 */
-		private var _initializationTimeout:uint;
-
-		public function get initializationTimeout():uint {
-			return this._initializationTimeout;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set initializationTimeout(value:uint):void {
-			if ( this._initializationTimeout == value ) return;
-			this._initializationTimeout = value;
-			if ( this._timeoutID ) {
-				var time:uint = getTimer() - time;
-				if ( value <= time ) {
-					this.initialize();
-				} else {
-					clearTimeout( this._timeoutID );
-					this._timeoutID = setTimeout( this.initialize, value - time );
-				} 
-			}
-		}
-
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
+
+		/**
+		 * Событие инитиализации приложения.
+		 * 
+		 * @keyword					applicationfactory.oninitialize, oninitialize
+		 */
+		protected function onConstruct():void {
+		}
 
 		/**
 		 * Событие инитиализации приложения.
@@ -424,7 +431,7 @@ package by.blooddy.factory {
 		 * 
 		 * @keyword					applicationfactory.onprogress, onprogress
 		 * 
-		 * @see						flash.display.LoaderInfo#progress
+		 * @see						flash.display.Stage#resize
 		 */
 		protected function onResize():void {
 		}
@@ -450,15 +457,16 @@ package by.blooddy.factory {
 		 * @see					flash.display.Loader#load()
 		 * @see					flash.display.Loader#contentLoaderInfo
 		 */
-		protected final function load(request:URLRequest, context:LoaderContext=null):LoaderInfo {
-			var loader:Loader = new Loader();
+		protected final function load(request:URLRequest):LoaderInfo {
+			var loader:LoaderAsset = new LoaderAsset();
 			this.addLoader( loader.contentLoaderInfo );
 			try {
-				loader.load( request, context || this._context );
+				loader.$load( request, this._context );
+				return loader.contentLoaderInfo;
 			} catch ( e:Error ) {
 				this.throwError( e );
 			}
-			return loader.contentLoaderInfo;
+			return null;
 		}
 
 		//--------------------------------------------------------------------------
@@ -507,20 +515,19 @@ package by.blooddy.factory {
 		 * @private
 		 */
 		private function initialize():void {
-
+			
 			clearTimeout( this._timeoutID );
-			this._timeoutID = 0;
-
+			
 			// надо получить имя рутового класса
 			var rootClassName:String = this._rootClassName;
 
 			var appd:ApplicationDomain = super.loaderInfo.applicationDomain;
 			if ( !rootClassName ) {
-				rootClassName = ( super.currentScene.labels.pop() as FrameLabel ).name.replace( /_(?=[^_]+$)/, '::' ).replace( /_/g, '.' );
+				rootClassName = ( super.currentScene.labels.pop() as FrameLabel ).name.replace( /_(?=[^_]$)/, '::' ).replace( /_/g, '.' );
 				if ( !appd.hasDefinition( rootClassName ) ) rootClassName = null;
 			}
 			if ( !rootClassName ) {
-				rootClassName = super.loaderInfo.loaderURL.match( /[^\\\/]*?(?=(\.[^\.]*)?$)/ )[0] as String;
+				rootClassName = super.loaderInfo.url.match( /[^\\\/]*?(?=(\.[^\.]*)?$)/ )[0] as String;
 				if ( !appd.hasDefinition( rootClassName ) ) rootClassName = null;
 			}
 		    var Root:Class;
@@ -528,6 +535,7 @@ package by.blooddy.factory {
 				Root = appd.getDefinition( rootClassName ) as Class;
 			} catch ( e:Error ) {
 				this.throwError( e );
+				return;
 			}
 			if ( Root ) {
 				// вернём stage где был
@@ -539,8 +547,18 @@ package by.blooddy.factory {
 					// отошлём евент
 					this.onInitialize();
 					// сделаем рут
-					super.parent.removeChild( this );
 					stage.addChild( new Root() as DisplayObject );
+					// удалим себя
+					super.removedEventListener( Event.REMOVED_FROM_STAGE, this.handler_removedFromStage );
+					if ( super.parent is Loader )	( new Sprite() ).addChild( this ); // стараемся для FactoryLoader
+					else							super.parent.removeChild( this );
+					// диспатчим увент
+					if ( super.hasEventListener( Event.INIT ) ) {
+						try {
+							super.dispatchEvent( new Event( Event.INIT ) );
+						} catch ( skip:Error ) { // ошибка уже не важна
+						}
+					}
 				} catch ( e:Error ) {
 					this.throwError( e );
 				}
@@ -597,6 +615,10 @@ package by.blooddy.factory {
 		 * @private
 		 */
 		private function removeLoader(loaderInfo:LoaderInfo):void {
+			try {
+				if ( loaderInfo.loader ) loaderInfo.loader.close();
+			} catch ( e:Error ) {
+			}
 			loaderInfo.removeEventListener( Event.COMPLETE, this.handler_complete );
 			loaderInfo.removeEventListener( IOErrorEvent.IO_ERROR, this.handler_ioError );
 			loaderInfo.removeEventListener( ProgressEvent.PROGRESS, this.handler_progress );
@@ -646,10 +668,10 @@ package by.blooddy.factory {
 					this.onComplete();
 				} catch ( e:Error ) {
 					this.throwError( e );
+					return;
 				}
 
 				if ( this._initializationTimeout > 0 ) {
-					this._time = getTimer();
 					this._timeoutID = setTimeout( this.initialize, this._initializationTimeout );
 				} else {
 					this.initialize();
@@ -668,6 +690,14 @@ package by.blooddy.factory {
 
 		/**
 		 * @private
+		 * стопаем всякіе штуки
+		 */
+		private function handler_added_removed(event:Event):void {
+			if ( event.target === this._info ) event.stopImmediatePropagation();
+		}
+
+		/**
+		 * @private
 		 */
 		private function handler_resize(event:Event):void {
 			this.updatePosition();
@@ -678,48 +708,52 @@ package by.blooddy.factory {
 			}
 		}
 
-		/**
-		 * @private
-		 * стопаем всякие штуки
-		 */
-		private function handler_added_removed(event:Event):void {
-			if ( event.target === this._info ) event.stopImmediatePropagation();
-		}
+		//--------------------------------------------------------------------------
+		//
+		//  Overriden properties
+		//
+		//--------------------------------------------------------------------------
 
-		//--------------------------------------------------------------------------
-		//
-		//  Overriden properties: DisplayObject
-		//
-		//--------------------------------------------------------------------------
+		//----------------------------------
+		//  DisplayObject
+		//----------------------------------
 
 		[Deprecated(message="свойство не используется")]
 		/**
 		 * @throw	IllegalOperationError
 		 */
-		public override function set name(value:String):void {
+		public override final function set name(value:String):void {
 			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="свойство не используется")]
+		[Deprecated(message="свойство запрещено")]
 		/**
 		 * @private
 		 */
-		public override function get stage():Stage {
+		public override final function get parent():DisplayObjectContainer {
 			return null;
 		}
 
-		[Deprecated(message="свойство не используется")]
+		[Deprecated(message="свойство запрещено")]
 		/**
 		 * @private
 		 */
-		public override function get parent():DisplayObjectContainer {
+		public override final function get root():DisplayObject {
+			return null;
+		}
+
+		[Deprecated(message="свойство запрещено")]
+		/**
+		 * @private
+		 */
+		public override final function get stage():Stage {
 			return null;
 		}
 
 		/**
 		 * @private
 		 */
-		public override function set x(value:Number):void {
+		public override final function set x(value:Number):void {
 			if ( super.x == value ) return;
 			super.x = value;
 			this.updatePosition();
@@ -728,23 +762,21 @@ package by.blooddy.factory {
 		/**
 		 * @private
 		 */
-		public override function set y(value:Number):void {
+		public override final function set y(value:Number):void {
 			if ( super.y == value ) return;
 			super.y = value;
 			this.updatePosition();
 		}
 
-		//--------------------------------------------------------------------------
-		//
-		//  Overriden properties: InteractiveObject
-		//
-		//--------------------------------------------------------------------------
+		//----------------------------------
+		//  InteractiveObject
+		//----------------------------------
 
 		[Deprecated(message="свойство не используется")]
 		/**
 		 * @throw	IllegalOperationError
 		 */
-		public override function set mouseEnabled(enabled:Boolean):void {
+		public override final function set doubleClickEnabled(enabled:Boolean):void {
 			throw new IllegalOperationError();
 		}
 
@@ -752,43 +784,61 @@ package by.blooddy.factory {
 		/**
 		 * @throw	IllegalOperationError
 		 */
-		public override function set tabEnabled(enabled:Boolean):void {
+		public override final function set focusRect(focusRect:Object):void {
 			throw new IllegalOperationError();
 		}
 
-		//--------------------------------------------------------------------------
-		//
-		//  Overriden properties: DisplayObjectContainer
-		//
-		//--------------------------------------------------------------------------
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @throw	IllegalOperationError
+		 */
+		public override final function set mouseEnabled(enabled:Boolean):void {
+			throw new IllegalOperationError();
+		}
 
 		[Deprecated(message="свойство не используется")]
+		/**
+		 * @throw	IllegalOperationError
+		 */
+		public override final function set tabEnabled(enabled:Boolean):void {
+			throw new IllegalOperationError();
+		}
+
+		[Deprecated(message="свойство не используется")]
+		/**
+		 * @throw	IllegalOperationError
+		 */
+		public override final function set tabIndex(index:int):void {
+			throw new IllegalOperationError();
+		}
+
+		//----------------------------------
+		//  DisplayObjectContainer
+		//----------------------------------
+
 		/**
 		 * @private
 		 */
-		public override function get textSnapshot():TextSnapshot {
+		public override final function get textSnapshot():TextSnapshot {
 			return null;
 		}
 
 		/**
 		 * @private
 		 */
-		public override function get numChildren():int {
-			if ( this._info && super.contains( this._info ) ) return super.numChildren - 1;
-			return super.numChildren;
+		public override final function get numChildren():int {
+			return super.numChildren - ( this._info && super.contains( this._info ) ? 1 : 0 );
 		}
 
-		//--------------------------------------------------------------------------
-		//
-		//  Overriden properties: Sprite
-		//
-		//--------------------------------------------------------------------------
+		//----------------------------------
+		//  Sprite
+		//----------------------------------
 
 		[Deprecated(message="свойство не используется")]
 		/**
 		 * @throw	IllegalOperationError
 		 */
-		public override function set buttonMode(value:Boolean):void {
+		public override final function set buttonMode(value:Boolean):void {
 			throw new IllegalOperationError();
 		}
 
@@ -796,7 +846,7 @@ package by.blooddy.factory {
 		/**
 		 * @throw	IllegalOperationError
 		 */
-		public override function set hitArea(value:Sprite):void {
+		public override final function set hitArea(value:Sprite):void {
 			throw new IllegalOperationError();
 		}
 
@@ -804,82 +854,98 @@ package by.blooddy.factory {
 		/**
 		 * @throw	IllegalOperationError
 		 */
-		public override function set useHandCursor(value:Boolean):void {
+		public override final function set useHandCursor(value:Boolean):void {
 			throw new IllegalOperationError();
 		}
 
-		//--------------------------------------------------------------------------
-		//
-		//  Overriden properties: MovieClip
-		//
-		//--------------------------------------------------------------------------
-
 		[Deprecated(message="свойство не используется")]
+		/**
+		 * @throw	IllegalOperationError
+		 */
+		public override final function set soundTransform(sndTransform:SoundTransform):void {
+			throw new IllegalOperationError();
+		} 
+
+		//----------------------------------
+		//  MovieClip
+		//----------------------------------
+
 		/**
 		 * @private
 		 */
-		public override function get currentFrame():int {
+		public override final function get currentFrame():int {
 			return 1;
 		}
 
-		[Deprecated(message="свойство не используется")]
 		/**
 		 * @private
 		 */
-		public override function get currentLabel():String {
+		public override final function get currentLabel():String {
 			return null;
 		}
 
-		[Deprecated(message="свойство не используется")]
 		/**
 		 * @private
 		 */
-		public override function get currentLabels():Array {
+		public override final function get currentLabels():Array {
 			return new Array();
 		}
 
-		[Deprecated(message="свойство не используется")]
 		/**
 		 * @private
 		 */
-		public override function get currentScene():Scene {
+		public override final function get currentScene():Scene {
 			return null;
 		}
 
-		[Deprecated(message="свойство не используется")]
 		/**
 		 * @private
 		 */
-		public override function get framesLoaded():int {
+		public override final function get framesLoaded():int {
 			return 0;
 		}
 
-		[Deprecated(message="свойство не используется")]
 		/**
 		 * @private
 		 */
-		public override function get scenes():Array {
+		public override final function get scenes():Array {
 			return new Array();
 		}
 
-		[Deprecated(message="свойство не используется")]
 		/**
 		 * @private
 		 */
-		public override function get totalFrames():int {
+		public override final function get totalFrames():int {
 			return 0;
 		}
 
 		//--------------------------------------------------------------------------
 		//
-		//  Overriden methods: DisplayObjectContainer
+		//  Overriden methods
 		//
 		//--------------------------------------------------------------------------
+
+		//----------------------------------
+		//  EventDispatcher
+		//----------------------------------
+
+
+		[Deprecated(message="метод запрещён")]
+		/**
+		 * @throw	IllegalOperationError
+		 */
+		public override final function dispatchEvent(event:Event):Boolean {
+			throw new IllegalOperationError();
+		}
+
+		//----------------------------------
+		//  DisplayObjectContainer
+		//----------------------------------
 
 		/**
 		 * @private
 		 */
-		public override function addChildAt(child:DisplayObject, index:int):DisplayObject {
+		public override final function addChildAt(child:DisplayObject, index:int):DisplayObject {
 			if ( this._showPreloader ) index++;
 			return super.addChildAt( child, index );
 		}
@@ -887,7 +953,7 @@ package by.blooddy.factory {
 		/**
 		 * @private
 		 */
-		public override function removeChildAt(index:int):DisplayObject {
+		public override final function removeChildAt(index:int):DisplayObject {
 			if ( this._showPreloader ) index--;
 			return super.removeChildAt( index );
 		}
@@ -895,7 +961,7 @@ package by.blooddy.factory {
 		/**
 		 * @private
 		 */
-		public override function getChildAt(index:int):DisplayObject {
+		public override final function getChildAt(index:int):DisplayObject {
 			if ( this._showPreloader ) index--;
 			return super.getChildAt( index );
 		}
@@ -903,14 +969,14 @@ package by.blooddy.factory {
 		/**
 		 * @private
 		 */
-		public override function getChildIndex(child:DisplayObject):int {
+		public override final function getChildIndex(child:DisplayObject):int {
 			return super.getChildIndex( child ) + ( this._showPreloader ? -1 : 0 );
 		}
 
 		/**
 		 * @private
 		 */
-		public override function getObjectsUnderPoint(point:Point):Array {
+		public override final function getObjectsUnderPoint(point:Point):Array {
 			var result:Array = super.getObjectsUnderPoint( point );
 			if ( this._showPreloader) {
 				var index:int = result.indexOf( this._info );
@@ -919,103 +985,99 @@ package by.blooddy.factory {
 			return result;
 		}
 
-		//--------------------------------------------------------------------------
-		//
-		//  Overriden methods: Sprite
-		//
-		//--------------------------------------------------------------------------
+		//----------------------------------
+		//  Sprite
+		//----------------------------------
 
-		[Deprecated(message="метод не используется")]
+		[Deprecated(message="метод запрещён")]
 		/**
 		 * @throw	IllegalOperationError
 		 */
-		public override function startDrag(lockCenter:Boolean=false, bounds:Rectangle=null):void {
+		public override final function startDrag(lockCenter:Boolean=false, bounds:Rectangle=null):void {
 			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="метод не используется")]
+		[Deprecated(message="метод запрещён")]
 		/**
 		 * @throw	IllegalOperationError
 		 */
-		public override function stopDrag():void {
+		public override final function stopDrag():void {
 			throw new IllegalOperationError();
 		}
 
-		//--------------------------------------------------------------------------
-		//
-		//  Overriden methods: MovieClip
-		//
-		//--------------------------------------------------------------------------
+		//----------------------------------
+		//  MovieClip
+		//----------------------------------
 
-		[Deprecated(message="метод не используется")]
+		[Deprecated(message="метод запрещён")]
 		/**
 		 * @throw	IllegalOperationError
 		 */
-		public override function addFrameScript(...args):void {
+		public override final function addFrameScript(...args):void {
 			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="метод не используется")]
+		[Deprecated(message="метод запрещён")]
 		/**
 		 * @throw	IllegalOperationError
 		 */
-		public override function gotoAndPlay(frame:Object, scene:String=null):void {
+		public override final function gotoAndPlay(frame:Object, scene:String=null):void {
 			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="метод не используется")]
+		[Deprecated(message="метод запрещён")]
 		/**
 		 * @throw	IllegalOperationError
 		 */
-		public override function gotoAndStop(frame:Object, scene:String=null):void {
+		public override final function gotoAndStop(frame:Object, scene:String=null):void {
 			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="метод не используется")]
+		[Deprecated(message="метод запрещён")]
 		/**
 		 * @throw	IllegalOperationError
 		 */
-		public override function play():void {
+		public override final function play():void {
 			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="метод не используется")]
+		[Deprecated(message="метод запрещён")]
 		/**
 		 * @throw	IllegalOperationError
 		 */
-		public override function stop():void {
+		public override final function stop():void {
 			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="метод не используется")]
+		[Deprecated(message="метод запрещён")]
 		/**
 		 * @throw	IllegalOperationError
 		 */
-		public override function nextFrame():void {
+		public override final function nextFrame():void {
 			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="метод не используется")]
+		[Deprecated(message="метод запрещён")]
 		/**
 		 * @throw	IllegalOperationError
 		 */
-		public override function nextScene():void {
+		public override final function nextScene():void {
 			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="метод не используется")]
+		[Deprecated(message="метод запрещён")]
 		/**
 		 * @throw	IllegalOperationError
 		 */
-		public override function prevFrame():void {
+		public override final function prevFrame():void {
 			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="метод не используется")]
+		[Deprecated(message="метод запрещён")]
 		/**
 		 * @throw	IllegalOperationError
 		 */
-		public override function prevScene():void {
+		public override final function prevScene():void {
 			throw new IllegalOperationError();
 		}
 
@@ -1287,6 +1349,152 @@ internal final class ErrorSprite extends TextSprite {
 	public function set text(value:String):void {
 		this.label.text = value || '';
 		this.label.y =  - this.label.height / 2;
+	}
+
+}
+
+//==============================================================================
+//
+//  Inner definitions
+//
+//==============================================================================
+
+import flash.display.DisplayObject;
+import flash.display.Loader;
+import flash.errors.IllegalOperationError;
+import flash.net.URLRequest;
+import flash.system.LoaderContext;
+import flash.utils.ByteArray;
+import flash.events.Event;
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Helper class: LoaderAsset
+//
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * Вспомогательный класс.
+ * 
+ * необходим, что бы при попытки обратится через различные ссылки, типа loaderInfo,
+ * свойства были перекрыты
+ */
+internal final class LoaderAsset extends Loader {
+
+	//--------------------------------------------------------------------------
+	//
+	//  Class variables
+	//
+	//--------------------------------------------------------------------------
+
+	/**
+	 * @private
+	 */
+	private static const _JUNK:Sprite = new Sprite();
+
+	//--------------------------------------------------------------------------
+	//
+	//  Constructor
+	//
+	//--------------------------------------------------------------------------
+
+	/**
+	 * @private
+	 * Constructor
+	 */
+	public function LoaderAsset() {
+		super();
+		super.addEventListener( Event.ADDED_TO_STAGE, this.handler_addedToStage, false, int.MAX_VALUE, true );
+	}
+
+	//--------------------------------------------------------------------------
+	//
+	//  Properties
+	//
+	//--------------------------------------------------------------------------
+
+	[Deprecated(message="свойство запрещено", replacement="$content")]
+	/**
+	 * @private
+	 */
+	public override function get content():DisplayObject {
+		throw new IllegalOperationError();
+	}
+
+	/**
+	 * @private
+	 */
+	internal function get $content():DisplayObject {
+		return super.content;
+	}
+
+	//--------------------------------------------------------------------------
+	//
+	//  Methods
+	//
+	//--------------------------------------------------------------------------
+
+	[Deprecated(message="метод запрещен", replacement="$load")]
+	/**
+	 * @private
+	 */
+	public override function load(request:URLRequest, context:LoaderContext=null):void {
+		throw new IllegalOperationError();
+	}
+
+	/**
+	 * @private
+	 */
+	internal function $load(request:URLRequest, context:LoaderContext=null):void {
+		super.load( request, context );
+	}
+
+	[Deprecated(message="метод запрещен", replacement="$loadBytes")]
+	/**
+	 * @private
+	 */
+	public override function loadBytes(bytes:ByteArray, context:LoaderContext=null):void {
+		throw new IllegalOperationError();
+	}
+
+	[Deprecated(message="метод запрещен")]
+	/**
+	 * @private
+	 */
+	public override function unload():void {
+		throw new IllegalOperationError();
+	}
+
+	[Deprecated(message="метод запрещен")]
+	/**
+	 * @private
+	 */
+	public override function unloadAndStop(gc:Boolean=true):void {
+		throw new IllegalOperationError();
+	}
+
+	[Deprecated(message="метод запрещен")]
+	/**
+	 * @private
+	 */
+	public override function close():void {
+		throw new IllegalOperationError();
+	}
+
+	//--------------------------------------------------------------------------
+	//
+	//  Event handlers
+	//
+	//--------------------------------------------------------------------------
+
+	/**
+	 * @private
+	 */
+	private function handler_addedToStage(event:Event):void {
+		_JUNK.addChild( this );
+		_JUNK.removeChild( this );
+		throw new IllegalOperationError();
 	}
 
 }
