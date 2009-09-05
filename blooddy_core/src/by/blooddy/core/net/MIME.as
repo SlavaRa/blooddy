@@ -87,7 +87,7 @@ package by.blooddy.core.net {
 			return null;
 		}
 
-		private static const _EXTENSION:RegExp = /^[^\?]*?\.(.+?)(\?.*?)?$/;
+		private static const _EXTENSION:RegExp = /^[^\?]*?\.([^\.\?]+)(\?.+?)?$/;
 
 		public static function analyseURL(url:String):String {
 			if ( url ) {

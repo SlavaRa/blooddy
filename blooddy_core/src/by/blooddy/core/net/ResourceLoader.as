@@ -418,7 +418,7 @@ internal const rdf:Namespace = new Namespace( 'http://www.w3.org/1999/02/22-rdf-
 /**
  * @private
  */
-internal const shared:Namespace = new Namespace( 'http://timezero.com/library/shared/' );
+internal const shared:Namespace = new Namespace( 'http://blooddy.by/library/shared/' );
 
 ////////////////////////////////////////////////////////////////////////////////
 //
