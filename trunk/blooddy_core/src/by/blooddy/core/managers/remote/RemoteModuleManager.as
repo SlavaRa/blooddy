@@ -17,8 +17,8 @@ package by.blooddy.core.managers.remote {
 	import flash.system.LoaderContext;
 	import flash.utils.ByteArray;
 
-	[Event(name="init", type="com.timezero.platform.events.RemoteModuleEvent")]
-	[Event(name="unload", type="com.timezero.platform.events.RemoteModuleEvent")]
+	[Event(name="init", type="by.blooddy.core.events.managers.RemoteModuleEvent")]
+	[Event(name="unload", type="by.blooddy.core.events.managers.RemoteModuleEvent")]
 
 	/**
 	 * @author					BlooDHounD

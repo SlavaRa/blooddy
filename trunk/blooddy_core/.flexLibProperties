@@ -85,7 +85,6 @@
     <classEntry path="by.blooddy.core.managers.IProgressable"/>
     <classEntry path="by.blooddy.core.managers.IResource"/>
     <classEntry path="by.blooddy.core.managers.KeyboardManager"/>
-    <classEntry path="by.blooddy.core.managers.drag.DragInfo"/>
     <classEntry path="by.blooddy.core.managers.drag.DragManager"/>
     <classEntry path="by.blooddy.core.managers.drag.DragObject"/>
     <classEntry path="by.blooddy.core.managers.remote.IRemoteModule"/>
@@ -136,7 +135,6 @@
     <classEntry path="by.blooddy.core.parsers.BytesParser"/>
     <classEntry path="by.blooddy.core.text.BitmapFont"/>
     <classEntry path="by.blooddy.core.text.BitmapFontLoaderContext"/>
-    <classEntry path="by.blooddy.core.text.FontLoader"/>
     <classEntry path="by.blooddy.core.ui.KeyboardCode"/>
     <classEntry path="by.blooddy.core.utils.ActivityListener"/>
     <classEntry path="by.blooddy.core.utils.ArrayEventDispatcher"/>

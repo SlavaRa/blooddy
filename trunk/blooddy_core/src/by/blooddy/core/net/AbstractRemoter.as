@@ -195,17 +195,23 @@ package by.blooddy.core.net {
 
 		protected function $callInputCommand(command:Command):* {
 			if ( !command ) throw new ArgumentError(); // TODO: описать ошибку
+			var hasError:Boolean = false;
 			try {
 				// пытаемся выполнить что-нить
 				if ( command.name in this._client ) {
 					return command.call( this._client );
 				}
+			} catch ( e:Error ) {
+				hasError = true;
+				throw e;
 			} finally {
-				// проверим нету ли хендлера на нашу комманду
-				if ( !super.hasCommandListener( command.name ) ) {
-					throw new DefinitionError();
+				if ( !hasError ) {
+					// проверим нету ли хендлера на нашу комманду
+					if ( !super.hasCommandListener( command.name ) ) {
+						throw new DefinitionError();
+					}
+					super.dispatchCommand( command );
 				}
-				super.dispatchCommand( command );
 			}
 		}
 

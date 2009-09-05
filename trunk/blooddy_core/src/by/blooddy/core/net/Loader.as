@@ -14,8 +14,10 @@ package by.blooddy.core.net {
 	import flash.display.IBitmapDrawable;
 	import flash.display.Loader;
 	import flash.display.LoaderInfo;
+	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.errors.IllegalOperationError;
+	import flash.errors.InvalidSWFError;
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -100,11 +102,35 @@ package by.blooddy.core.net {
 		//  Class variables
 		//
 		//--------------------------------------------------------------------------
-
+	
 		/**
 		 * @private
 		 */
 		private static const _JUNK:Sprite = new Sprite();
+
+		/**
+		 * @private
+		 * статус загрузки. ожидание
+		 */
+		private static const _STATE_IDLE:uint =		0;
+
+		/**
+		 * @private
+		 * статус загрузки. прогресс
+		 */
+		private static const _STATE_PROGRESS:uint =	_STATE_IDLE		+ 1;
+
+		/**
+		 * @private
+		 * статус загрузки. всё зашибись
+		 */
+		private static const _STATE_COMPLETE:uint =	_STATE_PROGRESS	+ 1;
+
+		/**
+		 * @private
+		 * статус загрузки. ошибка
+		 */
+		private static const _STATE_ERROR:uint =	_STATE_COMPLETE	+ 1;
 
 		//--------------------------------------------------------------------------
 		//
@@ -113,32 +139,16 @@ package by.blooddy.core.net {
 		//--------------------------------------------------------------------------
 	
 		/**
-		 * Constructor
+		 * Constructor.
 		 *
 		 * @param	request			Если надо, то сразу передадим и начнётся загрузка.
 		 * @param	loaderContext	Если надо грузить, то возможно пригодится.
 		 */
 		public function Loader(request:URLRequest=null, loaderContext:LoaderContext=null) {
 			super();
-			var li:LoaderInfo = this._loader.contentLoaderInfo;
-			li.addEventListener( Event.OPEN,					super.dispatchEvent,	false, int.MAX_VALUE );
-			li.addEventListener( ProgressEvent.PROGRESS,		super.dispatchEvent,	false, int.MAX_VALUE );
-			li.addEventListener( HTTPStatusEvent.HTTP_STATUS,	super.dispatchEvent,	false, int.MAX_VALUE );
-			li.addEventListener( IOErrorEvent.IO_ERROR,			this.handler_error,		false, int.MAX_VALUE );
-			li.addEventListener( Event.COMPLETE,				this.handler_complete,	false, int.MAX_VALUE );
-			li.addEventListener( Event.INIT,					this.handler_init,		false, int.MAX_VALUE );
-			li.addEventListener( Event.UNLOAD,					super.dispatchEvent,	false, int.MAX_VALUE );
 			this._loaderContext = loaderContext;
 			if ( request ) this.load( request );
 		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Includes
-		//
-		//--------------------------------------------------------------------------
-
-		include "../../../../includes/override_EventDispatcher.as"
 
 		//--------------------------------------------------------------------------
 		//
@@ -149,12 +159,25 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private const _loader:LoaderAsset = new LoaderAsset();
+		private var _loader:LoaderAsset;
 
 		/**
 		 * @private
 		 */
 		private var _request:URLRequest;
+
+		//--------------------------------------------------------------------------
+		//
+		//  Overiden methods: EventDispatcher
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		public override final function dispatchEvent(event:Event):Boolean {
+			throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
+		}
 
 		//--------------------------------------------------------------------------
 		//
@@ -170,7 +193,7 @@ package by.blooddy.core.net {
 		 * @copy					by.blooddy.core.net.ILoadable#bytesLoaded
 		 */
 		public function get bytesLoaded():uint {
-			return this.loaderInfo.bytesLoaded;
+			return ( this.loaderInfo ? this.loaderInfo.bytesLoaded : 0 );
 		}
 
 		//----------------------------------
@@ -181,7 +204,7 @@ package by.blooddy.core.net {
 		 * @copy					by.blooddy.core.net.ILoadable#bytesTotal
 		 */
 		public function get bytesTotal():uint {
-			return this.loaderInfo.bytesTotal;
+			return ( this.loaderInfo ? this.loaderInfo.bytesTotal : 0 );
 		}
 
 		//----------------------------------
@@ -191,13 +214,13 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		protected var _status:uint = 0;
+		private var _state:uint = _STATE_IDLE;
 
 		/**
 		 * @copy					by.blooddy.core.net.ILoadable#loaded
 		 */
 		public function get loaded():Boolean {
-			return this._status == 2;
+			return this._state >= _STATE_COMPLETE;
 		}
 
 		//--------------------------------------------------------------------------
@@ -214,7 +237,7 @@ package by.blooddy.core.net {
 		 * @copy					by.blooddy.core.net.ILoader#url
 		 */
 		public function get url():String {
-			return ( this._request ? this._request.url : this.loaderInfo.url );
+			return ( this._request ? this._request.url : null );
 		}
 
 		//--------------------------------------------------------------------------
@@ -261,8 +284,13 @@ package by.blooddy.core.net {
 		//  contentType
 		//----------------------------------
 
+		/**
+		 * @private
+		 */
+		private var _contentType:String;
+
 		public function get contentType():String {
-			return this._loader.contentLoaderInfo.contentType;
+			return this._contentType;
 		}
 
 		//----------------------------------
@@ -289,7 +317,7 @@ package by.blooddy.core.net {
 		 * @copy					flash.display.Loader#contentLoaderInfo
 		 */
 		public final function get loaderInfo():LoaderInfo {
-			return this._loader.contentLoaderInfo;
+			return ( this._loader ? this._loader.contentLoaderInfo : null );
 		}
 
 		//--------------------------------------------------------------------------
@@ -302,10 +330,18 @@ package by.blooddy.core.net {
 		 * @copy					by.blooddy.core.net.ILoader#load()
 		 */
 		public function load(request:URLRequest):void {
-			if ( this._status == 1 ) throw new IllegalOperationError(); // TODO: описать ошибку
-			else if ( this._status == 2 ) this.clear();
+			if ( this._state != _STATE_IDLE ) throw new ArgumentError();
+			else if ( this._state > _STATE_PROGRESS ) this.clear();
+			this._state = _STATE_PROGRESS;
+			this._loader = new LoaderAsset( this );
+			var li:LoaderInfo = this._loader.contentLoaderInfo;
+			li.addEventListener( Event.OPEN,					super.dispatchEvent,		false, int.MAX_VALUE );
+			li.addEventListener( ProgressEvent.PROGRESS,		super.dispatchEvent,		false, int.MAX_VALUE );
+			li.addEventListener( HTTPStatusEvent.HTTP_STATUS,	super.dispatchEvent,		false, int.MAX_VALUE );
+			li.addEventListener( IOErrorEvent.IO_ERROR,			this.handler_error,			false, int.MAX_VALUE );
+			li.addEventListener( Event.COMPLETE,				this.handler_complete,		false, int.MAX_VALUE );
+			li.addEventListener( Event.INIT,					this.handler_security_init,	false, int.MAX_VALUE );
 			this._request = copyURLRequest( request );
-			this._status = 1;
 			this._loader.$load( this._request, this._loaderContext );
 		}
 
@@ -313,7 +349,7 @@ package by.blooddy.core.net {
 		 * @copy					by.blooddy.core.net.ILoader#close()
 		 */
 		public function close():void {
-			if ( this._status != 1 ) throw new IllegalOperationError(); // TODO: описать ошибку
+			if ( this._state != _STATE_PROGRESS ) throw new ArgumentError();
 			this.clear();
 		}
 
@@ -327,9 +363,17 @@ package by.blooddy.core.net {
 		 * @copy					flash.display.Loader#loadBytes()
 		 */
 		public function loadBytes(bytes:ByteArray):void {
-			if ( this._status == 1 ) throw new IllegalOperationError(); // TODO: описать ошибку
-			else if ( this._status == 2 ) this.clear();
-			this._status = 1;
+			if ( this._state != _STATE_IDLE ) throw new ArgumentError();
+			else if ( this._state > _STATE_PROGRESS ) this.clear();
+			this._state = _STATE_PROGRESS;
+			this._loader = new LoaderAsset( this );
+			var li:LoaderInfo = this._loader.contentLoaderInfo;
+			li.addEventListener( Event.OPEN,					super.dispatchEvent,	false, int.MAX_VALUE );
+			li.addEventListener( ProgressEvent.PROGRESS,		super.dispatchEvent,	false, int.MAX_VALUE );
+			li.addEventListener( HTTPStatusEvent.HTTP_STATUS,	super.dispatchEvent,	false, int.MAX_VALUE );
+			li.addEventListener( IOErrorEvent.IO_ERROR,			this.handler_error,		false, int.MAX_VALUE );
+			li.addEventListener( Event.COMPLETE,				this.handler_complete,	false, int.MAX_VALUE );
+			li.addEventListener( Event.INIT,					this.handler_init,		false, int.MAX_VALUE );
 			this._loader.$loadBytes( bytes, this._loaderContext );
 		}
 
@@ -337,14 +381,27 @@ package by.blooddy.core.net {
 		 * @copy					flash.display.Loader#unload()
 		 */
 		public function unload():void {
-			this._loader.$unload();
+			if ( this._state <= _STATE_PROGRESS ) throw new ArgumentError();
+			this.clear();
 		}
 
 		/**
 		 * @private
 		 */
 		public override function toString():String {
-			return '[' + ClassUtils.getClassName( this ) + ' url="' + ( this.url || "" ) + '"]';
+			return '[' + ClassUtils.getClassName(this) + ' url="' + ( this.url || "" ) + '"]';
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 */
+		protected function $dispatchEvent(event:Event):Boolean {
+			return super.dispatchEvent( event );
 		}
 
 		//--------------------------------------------------------------------------
@@ -357,6 +414,29 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		private function clear():void {
+			var unload:Boolean = ( this._content || this._loader );
+			this.clear_loader();
+			this._state = _STATE_IDLE;
+			this._request = null;
+			this._contentType = null;
+			if ( unload && super.hasEventListener( Event.UNLOAD ) ) {
+				super.dispatchEvent( new Event( Event.UNLOAD ) );
+			}
+		}
+
+		/**
+		 * @private
+		 */
+		private function clear_loader():void {
+			var li:LoaderInfo = this._loader.contentLoaderInfo;
+			li.removeEventListener( Event.OPEN,						super.dispatchEvent );
+			li.removeEventListener( ProgressEvent.PROGRESS,			super.dispatchEvent );
+			li.removeEventListener( HTTPStatusEvent.HTTP_STATUS,	super.dispatchEvent );
+			li.removeEventListener( IOErrorEvent.IO_ERROR,			this.handler_error );
+			li.removeEventListener( Event.COMPLETE,					this.handler_security_complete );
+			li.removeEventListener( Event.COMPLETE,					this.handler_complete );
+			li.removeEventListener( Event.INIT,						this.handler_security_init );
+			li.removeEventListener( Event.INIT,						this.handler_init );
 			try {
 				this._loader.$close();
 			} catch ( e:Error ) {
@@ -365,8 +445,7 @@ package by.blooddy.core.net {
 				this._loader.$unload();
 			} catch ( e:Error ) {
 			}
-			this._status = 0;
-			this._request = null;
+			this._loader = null;
 		}
 
 		//--------------------------------------------------------------------------
@@ -378,11 +457,52 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
+		private function handler_security_init(event:Event):void {
+			try {
+
+				this._loader.$content;
+				this.handler_init( event );
+
+			} catch ( e:SecurityError ) {
+
+				var li:LoaderInfo = this._loader.contentLoaderInfo;
+				this._contentType = li.contentType;
+				li.removeEventListener( Event.COMPLETE, this.handler_complete );
+				li.addEventListener( Event.COMPLETE, this.handler_security_complete );
+
+			}
+		}
+
+		/**
+		 * @private
+		 */
 		private function handler_init(event:Event):void {
 			var content:DisplayObject = this._loader.$content;
 
 			_JUNK.addChild( content );
 			_JUNK.removeChild( content );
+
+			if ( this._contentType && this._contentType != this._loader.contentLoaderInfo.contentType ) {
+				switch ( this._loader.contentLoaderInfo.contentType ) {
+					case MIME.FLASH:	break;
+					default:			throw new InvalidSWFError();
+				}
+				switch ( this._contentType ) {
+					case MIME.PNG:
+					case MIME.JPEG:
+					case MIME.GIF:		break;
+					default:			throw new InvalidSWFError();
+				}
+				if ( !( content is MovieClip ) && ( content as MovieClip ).numChildren <= 0 ) {
+					throw new InvalidSWFError();
+				}
+				content = ( content as MovieClip ).getChildAt( 0 );
+				if ( !( content is Bitmap ) ) {
+					throw new InvalidSWFError();
+				}
+			} else {
+				this._contentType = this._loader.contentLoaderInfo.contentType;
+			}
 
 			switch ( this._loader.contentLoaderInfo.contentType ) {
 				case MIME.FLASH:
@@ -394,15 +514,38 @@ package by.blooddy.core.net {
 					this._content = ( content as Bitmap ).bitmapData;
 					break;
 			}
+			if ( super.hasEventListener( Event.INIT ) ) {
+				super.dispatchEvent( event );
+			}
+		}
 
-			super.dispatchEvent( event );
+		/**
+		 * @private
+		 */
+		private function handler_security_complete(event:Event):void {
+
+			var bytes:ByteArray = new ByteArray();
+			bytes.writeBytes( this._loader.contentLoaderInfo.bytes );
+
+			this.clear_loader();
+
+			this._loader = new LoaderAsset( this );
+			var li:LoaderInfo = this._loader.contentLoaderInfo;
+			li.addEventListener( ProgressEvent.PROGRESS,		super.dispatchEvent,	false, int.MAX_VALUE );
+			li.addEventListener( Event.COMPLETE,				this.handler_complete,	false, int.MAX_VALUE );
+			li.addEventListener( IOErrorEvent.IO_ERROR,			this.handler_error,		false, int.MAX_VALUE );
+			li.addEventListener( Event.INIT,					this.handler_init,		false, int.MAX_VALUE );
+			this._loader.$loadBytes( bytes, this._loaderContext );
+
+			bytes.clear();
+
 		}
 
 		/**
 		 * @private
 		 */
 		private function handler_complete(event:Event):void {
-			this._status = 2;
+			this._state = _STATE_COMPLETE;
 			super.dispatchEvent( event );
 		}
 
@@ -410,10 +553,9 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		private function handler_error(event:ErrorEvent):void {
-			this.clear();
+			this.clear_loader();
 			// Перенапрвляем, только если есть листенер
-			// иначе возникает ошибка.
-			if ( super.hasEventListener( event.type ) ) super.dispatchEvent( event );
+			super.dispatchEvent( event );
 		}
 
 	}
@@ -434,6 +576,8 @@ import flash.errors.IllegalOperationError;
 import flash.net.URLRequest;
 import flash.system.LoaderContext;
 import flash.utils.ByteArray;
+import flash.events.Event;
+import flash.display.Sprite;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -449,6 +593,17 @@ internal final class LoaderAsset extends flash.display.Loader {
 
 	//--------------------------------------------------------------------------
 	//
+	//  Class variables
+	//
+	//--------------------------------------------------------------------------
+
+	/**
+	 * @private
+	 */
+	private static const _JUNK:Sprite = new Sprite();
+
+	//--------------------------------------------------------------------------
+	//
 	//  Constructor
 	//
 	//--------------------------------------------------------------------------
@@ -456,9 +611,10 @@ internal final class LoaderAsset extends flash.display.Loader {
 	/**
 	 * @private
 	 */
-	public function LoaderAsset(target:by.blooddy.core.net.Loader=null) {
+	public function LoaderAsset(target:by.blooddy.core.net.Loader) {
 		super();
 		this._target = target;
+		super.addEventListener( Event.ADDED_TO_STAGE, this.handler_addedToStage, false, int.MAX_VALUE, true );
 	}
 
 	//--------------------------------------------------------------------------
@@ -573,6 +729,21 @@ internal final class LoaderAsset extends flash.display.Loader {
 	 */
 	internal function $close():void {
 		super.close();
+	}
+
+	//--------------------------------------------------------------------------
+	//
+	//  Event handlers
+	//
+	//--------------------------------------------------------------------------
+
+	/**
+	 * @private
+	 */
+	private function handler_addedToStage(event:Event):void {
+		_JUNK.addChild( this );
+		_JUNK.removeChild( this );
+		throw new IllegalOperationError();
 	}
 
 }

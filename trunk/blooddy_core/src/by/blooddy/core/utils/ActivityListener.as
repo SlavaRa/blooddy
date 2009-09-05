@@ -858,7 +858,7 @@ package by.blooddy.core.utils {
 		 * Обрабатывался менюшки.
 		 */
 		private function handler_menuItemSelect(event:ContextMenuEvent):void {
-			navigateToURL( new URLRequest( 'http://www.timezero.com' ), '_blank' );
+			navigateToURL( new URLRequest( 'http://www.blooddy.by' ), '_blank' );
 		}
 
 	}
