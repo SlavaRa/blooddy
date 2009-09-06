@@ -6,7 +6,7 @@
 
 package by.blooddy.core.net {
 
-	import by.blooddy.core.utils.ProxyObject;
+	import by.blooddy.core.utils.proxy.ProxyObject;
 	import flash.events.IEventDispatcher;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -20,12 +20,12 @@ package by.blooddy.core.net {
 	/**
 	 * @copy		flash.events.EventDispatcher#deactivate
 	 */
-	[Event(name="activate", type="flash.events.Event")]
+	[Event( name="activate", type="flash.events.Event" )]
 
 	/**
 	 * @copy		flash.events.EventDispatcher#activate
 	 */
-	[Event(name="deactivate", type="flash.events.Event")]
+	[Event( name="deactivate", type="flash.events.Event" )]
 
 	/**
 	 * @author					BlooDHounD

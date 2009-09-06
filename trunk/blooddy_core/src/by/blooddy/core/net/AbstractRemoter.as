@@ -22,7 +22,7 @@ package by.blooddy.core.net {
 	/**
 	 * какая-то ошибка при исполнении.
 	 */
-	[Event(name="error", type="by.blooddy.core.events.net.StackErrorEvent")]	
+	[Event( name="error", type="by.blooddy.core.events.net.StackErrorEvent" )]	
 
 	/**
 	 * @author					BlooDHounD

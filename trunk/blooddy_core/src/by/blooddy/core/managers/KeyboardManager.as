@@ -26,14 +26,14 @@ package by.blooddy.core.managers {
 	 *
 	 * @eventType			flash.events.KeyboardEvent.KEY_DOWN
 	 */
-	[Event(name="keyDown", type="flash.events.KeyboardEvent")]
+	[Event( name="keyDown", type="flash.events.KeyboardEvent" )]
 
 	/**
 	 * Транслируется, при подъёме кнопки.
 	 *
 	 * @eventType			flash.events.KeyboardEvent.KEY_UP
 	 */
-	[Event(name="keyUp", type="flash.events.KeyboardEvent")]
+	[Event( name="keyUp", type="flash.events.KeyboardEvent" )]
 
 	/**
 	 * Глобальный следитель, за нажиманием и отпусканием клавиш.

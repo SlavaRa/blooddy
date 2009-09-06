@@ -30,32 +30,32 @@ package by.blooddy.core.net.zip {
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="complete", type="flash.events.Event")]
+	[Event( name="complete", type="flash.events.Event" )]
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="httpStatus", type="flash.events.HTTPStatusEvent")]
+	[Event( name="httpStatus", type="flash.events.HTTPStatusEvent" )]
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="ioError", type="flash.events.IOErrorEvent")]
+	[Event( name="ioError", type="flash.events.IOErrorEvent" )]
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="open", type="flash.events.Event")]
+	[Event( name="open", type="flash.events.Event" )]
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="progress", type="flash.events.ProgressEvent")]
+	[Event( name="progress", type="flash.events.ProgressEvent" )]
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="securityError", type="flash.events.SecurityErrorEvent")]
+	[Event( name="securityError", type="flash.events.SecurityErrorEvent" )]
 
 	//--------------------------------------
 	//  Events
@@ -66,14 +66,14 @@ package by.blooddy.core.net.zip {
 	 * 
 	 * @eventType			by.blooddy.core.events.FZipEvent.EXTRACT
 	 */
-	[Event(name="extract", type="by.blooddy.core.events.FZipEvent")]
+	[Event( name="extract", type="by.blooddy.core.events.FZipEvent" )]
 
 	/**
 	 * Ошибка парсинга.
 	 * 
 	 * @eventType			by.blooddy.core.events.ParserErrorEvent.PARSER_ERROR
 	 */
-	[Event(name="parserError", type="by.blooddy.core.events.ParserErrorEvent")]
+	[Event( name="parserError", type="by.blooddy.core.events.ParserErrorEvent" )]
 
 	/**
 	 * @author					BlooDHounD, Claus Wahlers, Max Herkender
@@ -188,7 +188,7 @@ package by.blooddy.core.net.zip {
 		 */
 		private var _url:String;
 
-	    [Bindable("open")]
+	    [Bindable( "open" )]
 		/**
 		 * @inheritDoc
 		 */
@@ -205,7 +205,7 @@ package by.blooddy.core.net.zip {
 		 */
 		private var _bytesLoaded:uint = 0;
 
-	    [Bindable("open")]
+	    [Bindable( "open" )]
 		/**
 		 * @inheritDoc
 		 */
@@ -222,7 +222,7 @@ package by.blooddy.core.net.zip {
 		 */
 		private var _bytesTotal:uint = 0;
 
-	    [Bindable("complete")]
+	    [Bindable( "complete" )]
 		/**
 		 * @inheritDoc
 		 */
@@ -239,7 +239,7 @@ package by.blooddy.core.net.zip {
 		 */
 		private var _loaded:Boolean = false;
 
-	    [Bindable("complete")]
+	    [Bindable( "complete" )]
 		/**
 		 * @inheritDoc
 		 */
@@ -257,7 +257,7 @@ package by.blooddy.core.net.zip {
 		//  fileCount
 		//----------------------------------
 
-	    [Bindable("complete")]
+	    [Bindable( "complete" )]
 		/**
 		 * Количество файлов.
 		 * 
@@ -276,8 +276,8 @@ package by.blooddy.core.net.zip {
 		 */
 		private var _fileList:Array;
 
-		[ArrayElementType("String")]
-	    [Bindable("complete")]
+		[ArrayElementType( "String" )]
+	    [Bindable( "complete" )]
 		/**
 		 * Список файлов.
 		 * 

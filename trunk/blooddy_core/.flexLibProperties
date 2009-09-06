@@ -156,9 +156,6 @@
     <classEntry path="by.blooddy.core.utils.MapedByteArray"/>
     <classEntry path="by.blooddy.core.utils.MathUtils"/>
     <classEntry path="by.blooddy.core.utils.ObjectInfo"/>
-    <classEntry path="by.blooddy.core.utils.Proxy"/>
-    <classEntry path="by.blooddy.core.utils.ProxyEventDispatcher"/>
-    <classEntry path="by.blooddy.core.utils.ProxyObject"/>
     <classEntry path="by.blooddy.core.utils.RecycleBin"/>
     <classEntry path="by.blooddy.core.utils.SWFByteArray"/>
     <classEntry path="by.blooddy.core.utils.StringUtils"/>
@@ -182,6 +179,9 @@
     <classEntry path="by.blooddy.core.utils.math.Flatness3D"/>
     <classEntry path="by.blooddy.core.utils.math.NumberUtils"/>
     <classEntry path="by.blooddy.core.utils.nexframeCall"/>
+    <classEntry path="by.blooddy.core.utils.proxy.Proxy"/>
+    <classEntry path="by.blooddy.core.utils.proxy.ProxyEventDispatcher"/>
+    <classEntry path="by.blooddy.core.utils.proxy.ProxyObject"/>
     <classEntry path="by.blooddy.core.utils.time.AutoTimer"/>
     <classEntry path="by.blooddy.core.utils.time.FrameTimer"/>
     <classEntry path="by.blooddy.core.utils.time.RelativeTime"/>

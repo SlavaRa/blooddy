@@ -24,27 +24,27 @@ package by.blooddy.core.net {
 	//  Implements events: IConnection
 	//--------------------------------------
 
-	[Event(name="open", type="flash.events.Event")]
+	[Event( name="open", type="flash.events.Event" )]
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="connect", type="flash.events.Event")]
+	[Event( name="connect", type="flash.events.Event" )]
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="close", type="flash.events.Event")]
+	[Event( name="close", type="flash.events.Event" )]
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="ioError", type="flash.events.IOErrorEvent")]		
+	[Event( name="ioError", type="flash.events.IOErrorEvent" )]		
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="securityError", type="flash.events.SecurityErrorEvent")]	
+	[Event( name="securityError", type="flash.events.SecurityErrorEvent" )]	
 
 	//--------------------------------------
 	//  Events
@@ -53,7 +53,7 @@ package by.blooddy.core.net {
 	/**
 	 * ошибка сериализации протокола
 	 */
-	[Event(name="serializeError", type="by.blooddy.core.events.net.SerializeErrorEvent")]	
+	[Event( name="serializeError", type="by.blooddy.core.events.net.SerializeErrorEvent" )]	
 
 	/**
 	 * @author					BlooDHounD

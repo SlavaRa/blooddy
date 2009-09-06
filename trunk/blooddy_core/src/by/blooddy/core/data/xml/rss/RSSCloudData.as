@@ -23,7 +23,7 @@ package by.blooddy.core.data.xml.rss {
 			super();
 		}
 
-		[Deprecated(message="свойство устарело", replacement="domain")]
+		[Deprecated( message="свойство устарело", replacement="domain" )]
 		public override function set name(value:String):void {
 			super.name = name;
 		}

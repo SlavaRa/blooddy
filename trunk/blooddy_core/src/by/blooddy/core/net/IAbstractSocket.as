@@ -17,35 +17,35 @@ package by.blooddy.core.net {
 	 *
 	 * @eventType				flash.events.EventEvent.CONNECT
 	 */
-	[Event(name="open", type="flash.events.Event")]
+	[Event( name="open", type="flash.events.Event" )]
 
 	/**
 	 * Устанавилось соединение с сервером.
 	 *
 	 * @eventType				flash.events.EventEvent.CONNECT
 	 */
-	[Event(name="connect", type="flash.events.Event")]
+	[Event( name="connect", type="flash.events.Event" )]
 
 	/**
 	 * Соединение разорвалось, по какой-то ошибке, или со стороны сервера.
 	 *
 	 * @eventType				flash.events.EventEvent.CLOSE
 	 */
-	[Event(name="close", type="flash.events.Event")]
+	[Event( name="close", type="flash.events.Event" )]
 
 	/**
 	 * Ошибка :)
 	 *
 	 * @eventType				flash.events.IOErrorEvent.IO_ERROR
 	 */
-	[Event(name="ioError", type="flash.events.IOErrorEvent")]
+	[Event( name="ioError", type="flash.events.IOErrorEvent" )]
 
 	/**
 	 * Секъюрная ошибка. Обращение запрещено со стороны сервера.
 	 *
 	 * @eventType				flash.events.SecurityErrorEvent.SECURITY_ERROR
 	 */
-	[Event(name="securityError", type="flash.events.SecurityErrorEvent")]	
+	[Event( name="securityError", type="flash.events.SecurityErrorEvent" )]	
 
 	/**
 	 * ISocket является интерфейсом для любых типов сокетных сединений,

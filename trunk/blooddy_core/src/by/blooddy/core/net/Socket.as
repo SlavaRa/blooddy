@@ -11,7 +11,7 @@ package by.blooddy.core.net {
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
 
-	[Event(name="open", type="flash.events.Event")]
+	[Event( name="open", type="flash.events.Event" )]
 
 	/**
 	 * @author					BlooDHounD

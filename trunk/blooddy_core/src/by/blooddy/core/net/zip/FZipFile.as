@@ -27,22 +27,22 @@ package by.blooddy.core.net.zip {
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="complete", type="flash.events.Event")]
+	[Event( name="complete", type="flash.events.Event" )]
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="ioError", type="flash.events.IOErrorEvent")]
+	[Event( name="ioError", type="flash.events.IOErrorEvent" )]
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="open", type="flash.events.Event")]
+	[Event( name="open", type="flash.events.Event" )]
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="progress", type="flash.events.ProgressEvent")]
+	[Event( name="progress", type="flash.events.ProgressEvent" )]
 
 	/**
 	 * @author					BlooDHounD, Claus Wahlers, Max Herkender
@@ -274,7 +274,7 @@ package by.blooddy.core.net.zip {
 		 */
 		private var _bytesLoaded:uint = 0;
 
-	    [Bindable("progress")]
+	    [Bindable( "progress" )]
 		/**
 		 * @inheritDoc
 		 */
@@ -291,7 +291,7 @@ package by.blooddy.core.net.zip {
 		 */
 		private var _bytesTotal:uint = 0;
 
-	    [Bindable("complete")]
+	    [Bindable( "complete" )]
 		/**
 		 * @inheritDoc
 		 */
@@ -308,7 +308,7 @@ package by.blooddy.core.net.zip {
 		 */
 		private var _loaded:Boolean = false;
 
-	    [Bindable("complete")]
+	    [Bindable( "complete" )]
 		/**
 		 * @inheritDoc
 		 */
@@ -331,7 +331,7 @@ package by.blooddy.core.net.zip {
 		 */
 		private var _filename:String;
 
-	    [Bindable("open")]
+	    [Bindable( "open" )]
 		/**
 		 * Имя файла.
 		 * 
@@ -350,7 +350,7 @@ package by.blooddy.core.net.zip {
 		 */
 		private var _version:Number;
 
-	    [Bindable("open")]
+	    [Bindable( "open" )]
 		/**
 		 * The ZIP specification version supported by the software 
 		 * used to encode the file.
@@ -370,7 +370,7 @@ package by.blooddy.core.net.zip {
 		 */
 		private var _date:Date;
 
-	    [Bindable("open")]
+	    [Bindable( "open" )]
 		/**
 		 * The Date and time the file was created.
 		 * 
@@ -389,7 +389,7 @@ package by.blooddy.core.net.zip {
 		 */
 		private var _sizeCompressed:uint = 0;
 
-	    [Bindable("open")]
+	    [Bindable( "open" )]
 		/**
 		 * The size of the compressed file (in bytes).
 		 * 
@@ -408,7 +408,7 @@ package by.blooddy.core.net.zip {
 		 */
 		private var _sizeUncompressed:uint = 0;
 
-	    [Bindable("open")]
+	    [Bindable( "open" )]
 		/**
 		 * The size of the uncompressed file (in bytes).
 		 * 

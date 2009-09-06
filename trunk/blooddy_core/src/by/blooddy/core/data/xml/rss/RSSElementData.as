@@ -33,7 +33,7 @@ package by.blooddy.core.data.xml.rss {
 			return this.$element;
 		}
 
-		[Deprecated(message="свойство устарело", replacement="title")]
+		[Deprecated( message="свойство устарело", replacement="title" )]
 		public override function set name(value:String):void {
 			this.setName( value );
 		}

@@ -35,37 +35,37 @@ package by.blooddy.core.display.resource {
 	/**
 	 * @eventType			by.blooddy.core.events.net.LoaderEvent.LOADER_INIT
 	 */
-	[Event(name="loaderInit", type="by.blooddy.core.events.net.LoaderEvent")]
+	[Event( name="loaderInit", type="by.blooddy.core.events.net.LoaderEvent" )]
 
 	/**
 	 * @eventType			by.blooddy.core.events.managers.ResourceEvent.GET_RESOURCE
 	 */
-	[Event(name="getResource", type="by.blooddy.core.events.managers.ResourceEvent")]
+	[Event( name="getResource", type="by.blooddy.core.events.managers.ResourceEvent" )]
 
 	/**
 	 * @eventType			by.blooddy.core.events.managers.ResourceEvent.TRASH_RESOURCE
 	 */
-	[Event(name="trashResource", type="by.blooddy.core.events.managers.ResourceEvent")]
+	[Event( name="trashResource", type="by.blooddy.core.events.managers.ResourceEvent" )]
 
 	/**
 	 * @eventType			by.blooddy.core.events.managers.ResourceEvent.LOCK_BUNDLE
 	 */
-	[Event(name="lockBundle", type="by.blooddy.core.events.managers.ResourceEvent")]
+	[Event( name="lockBundle", type="by.blooddy.core.events.managers.ResourceEvent" )]
 
 	/**
 	 * @eventType			by.blooddy.core.events.managers.ResourceEvent.UNLOCK_BUNDLE
 	 */
-	[Event(name="unlockBundle", type="by.blooddy.core.events.managers.ResourceEvent")]
+	[Event( name="unlockBundle", type="by.blooddy.core.events.managers.ResourceEvent" )]
 
 	/**
 	 * @eventType			by.blooddy.core.events.managers.ResourceEvent.ADDED_TO_RESOURCE_MANAGER
 	 */
-	[Event(name="addedToResourceManager", type="by.blooddy.core.events.managers.ResourceEvent")]
+	[Event( name="addedToResourceManager", type="by.blooddy.core.events.managers.ResourceEvent" )]
 
 	/**
 	 * @eventType			by.blooddy.core.events.managers.ResourceEvent.REMOVED_FROM_RESOURCE_MANAGER
 	 */
-	[Event(name="removedFromResourceManager", type="by.blooddy.core.events.managers.ResourceEvent")]
+	[Event( name="removedFromResourceManager", type="by.blooddy.core.events.managers.ResourceEvent" )]
 
 	/**
 	 * Класс у когорого есть ссылка на манагер ресурсов.

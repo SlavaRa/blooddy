@@ -22,7 +22,7 @@ package by.blooddy.core.text {
 	 * 
 	 * @eventType			flash.events.Event.INIT
 	 */
-	[Event(name="init", type="flash.events.Event")]
+	[Event( name="init", type="flash.events.Event" )]
 
 	/**
 	 * @author					BlooDHounD

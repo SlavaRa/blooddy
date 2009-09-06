@@ -4,10 +4,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.utils {
+package by.blooddy.core.utils.proxy {
 
 	import flash.utils.Proxy;
 	import flash.utils.flash_proxy;
+	import by.blooddy.core.utils.ClassUtils;
 
 	use namespace flash_proxy;
 

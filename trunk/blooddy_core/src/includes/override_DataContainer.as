@@ -15,7 +15,7 @@
 	//
 	//--------------------------------------------------------------------------
 
-	[Deprecated(message="метод запрещён")]
+	[Deprecated( message="метод запрещён" )]
 	/**
 	 * @private
 	 */
@@ -23,7 +23,7 @@
 		throw new IllegalOperationError( ErrorsManager.getErrorMessage(2071), 2071 );
 	}
 
-	[Deprecated(message="метод запрещён")]
+	[Deprecated( message="метод запрещён" )]
 	/**
 	 * @private
 	 */
@@ -31,7 +31,7 @@
 		throw new IllegalOperationError( ErrorsManager.getErrorMessage(2071), 2071 );
 	}
 
-	[Deprecated(message="метод запрещён")]
+	[Deprecated( message="метод запрещён" )]
 	/**
 	 * @private
 	 */
@@ -39,7 +39,7 @@
 		throw new IllegalOperationError( ErrorsManager.getErrorMessage(2071), 2071 );
 	}
 
-	[Deprecated(message="метод запрещён")]
+	[Deprecated( message="метод запрещён" )]
 	/**
 	 * @private
 	 */

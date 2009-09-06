@@ -9,7 +9,7 @@ package by.blooddy.core.external {
 	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
 
-	[Event(name="historyChange", type="by.blooddy.core.events.DynamicEvent")]
+	[Event( name="historyChange", type="by.blooddy.core.events.DynamicEvent" )]
 
 	/**
 	 * @author					BlooDHounD

@@ -8,6 +8,7 @@ package by.blooddy.core.utils {
 
 	import flash.utils.flash_proxy;
 	import flash.events.Event;
+	import by.blooddy.core.utils.proxy.ProxyEventDispatcher;
 
 	use namespace flash_proxy;
 
@@ -20,7 +21,7 @@ package by.blooddy.core.utils {
 	 * 
 	 * @eventType				flash.events.Event#CHANGE
 	 */
-	[Event(name="change", type="flash.events.Event")]
+	[Event( name="change", type="flash.events.Event" )]
 
 	/**
 	 * @author					BlooDHounD

@@ -104,7 +104,7 @@ package by.blooddy.core.events {
 			}
 		}
 
-		[Deprecated(message="метод не используется")]
+		[Deprecated( message="метод не используется" )]
 		/**
 		 * 
 		 */
