@@ -4,7 +4,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.events.data.world {
+package ru.avangardonline.events.data.battle.world {
 
 	import by.blooddy.core.events.data.DataBaseEvent;
 	

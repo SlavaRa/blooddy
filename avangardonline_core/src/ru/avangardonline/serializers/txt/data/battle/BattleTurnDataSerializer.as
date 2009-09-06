@@ -74,6 +74,7 @@ package ru.avangardonline.serializers.txt.data.battle {
 			var tmp:Array = source.split( '\n' );
 			var l:uint = tmp.length;
 			for ( var i:int = 0; i<l; i++ ) {
+				if ( !tmp[ i ] ) continue;
 				action = BattleActionDataSerializer.deserialize( tmp[ i ] );
 				data.addChild( action );
 			}

@@ -9,15 +9,15 @@ package ru.avangardonline.data.battle.world {
 	import by.blooddy.core.data.Data;
 	import by.blooddy.core.data.DataLinker;
 	
-	import ru.avangardonline.events.data.world.BattleWorldCoordinateDataEvent;
+	import ru.avangardonline.events.data.battle.world.BattleWorldCoordinateDataEvent;
 	
 	//--------------------------------------
 	//  Events
 	//--------------------------------------
 
-	[Event(name="coordinateChange", type="ru.avangardonline.events.database.world.BattleWorldCoordinateDataEvent")]
-	[Event(name="movingStart", type="ru.avangardonline.events.database.world.BattleWorldCoordinateDataEvent")]
-	[Event(name="movingStop", type="ru.avangardonline.events.database.world.BattleWorldCoordinateDataEvent")]
+	[Event( name="coordinateChange", type="ru.avangardonline.events.database.world.BattleWorldCoordinateDataEvent" )]
+	[Event( name="movingStart", type="ru.avangardonline.events.database.world.BattleWorldCoordinateDataEvent" )]
+	[Event( name="movingStop", type="ru.avangardonline.events.database.world.BattleWorldCoordinateDataEvent" )]
 
 	/**
 	 * @author					BlooDHounD

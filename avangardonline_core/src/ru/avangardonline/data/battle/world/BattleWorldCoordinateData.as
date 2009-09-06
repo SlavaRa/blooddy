@@ -13,16 +13,16 @@ package ru.avangardonline.data.battle.world {
 	
 	import flash.events.Event;
 	
-	import ru.avangardonline.events.data.world.BattleWorldCoordinateDataEvent;
-	import ru.avangardonline.events.data.world.BattleWorldDataEvent;
+	import ru.avangardonline.events.data.battle.world.BattleWorldCoordinateDataEvent;
+	import ru.avangardonline.events.data.battle.world.BattleWorldDataEvent;
 
 	//--------------------------------------
 	//  Events
 	//--------------------------------------
 
-	[Event(name="coordinateChange", type="ru.avangardonline.events.data.world.BattleWorldCoordinateDataEvent")]
-	[Event(name="movingStart", type="ru.avangardonline.events.data.world.BattleWorldCoordinateDataEvent")]
-	[Event(name="movingStop", type="ru.avangardonline.events.data.world.BattleWorldCoordinateDataEvent")]
+	[Event( name="coordinateChange", type="ru.avangardonline.events.data.battle.world.BattleWorldCoordinateDataEvent" )]
+	[Event( name="movingStart", type="ru.avangardonline.events.data.battle.world.BattleWorldCoordinateDataEvent" )]
+	[Event( name="movingStop", type="ru.avangardonline.events.data.battle.world.BattleWorldCoordinateDataEvent" )]
 
 	/**
 	 * @author					BlooDHounD

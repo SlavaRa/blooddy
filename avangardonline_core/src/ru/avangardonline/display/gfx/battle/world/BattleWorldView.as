@@ -20,7 +20,7 @@ package ru.avangardonline.display.gfx.battle.world {
 	import ru.avangardonline.data.battle.world.BattleWorldData;
 	import ru.avangardonline.data.battle.world.BattleWorldElementData;
 	import ru.avangardonline.data.character.HeroCharacterData;
-	import ru.avangardonline.events.data.world.BattleWorldCoordinateDataEvent;
+	import ru.avangardonline.events.data.battle.world.BattleWorldCoordinateDataEvent;
 	
 	/**
 	 * @author					BlooDHounD

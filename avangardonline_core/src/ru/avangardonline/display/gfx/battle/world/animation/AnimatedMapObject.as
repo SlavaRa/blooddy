@@ -570,12 +570,12 @@ package com.timezero.game.display.gfx.animation {
 			return true;
 		}
 
-		[ArrayElementType("CharacterResource")]
+		[ArrayElementType( "CharacterResource" )]
 		protected virtual function getResourceList():Array {
 			throw new ReferenceError();
 		}
 
-		[ArrayElementType("CharacterLoaderResource")]
+		[ArrayElementType( "CharacterLoaderResource" )]
 		protected virtual function getLoaderResource():ResourceDefinition {
 			return null;
 		}
