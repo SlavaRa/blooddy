@@ -27,7 +27,7 @@ package ru.avangardonline.application.factory {
 		 * Constructor
 		 */
 		public function AvangardFactory() {
-			super();
+			super( 'ru.avangardonline.application.Avangard' );
 		}
 
 	}
