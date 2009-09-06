@@ -7,7 +7,7 @@
 package ru.avangardonline.display.gfx.character {
 
 	import by.blooddy.core.display.BitmapMovieClip;
-	import by.blooddy.core.display.resource.ResourceDefinition;
+	import by.blooddy.core.display.StageObserver;
 	
 	import flash.display.DisplayObject;
 	import flash.display.MovieClip;
@@ -16,6 +16,8 @@ package ru.avangardonline.display.gfx.character {
 	import ru.avangardonline.data.character.CharacterData;
 	import ru.avangardonline.display.gfx.battle.world.animation.Animation;
 	import ru.avangardonline.display.gfx.battle.world.animation.BattleWorldAnimatedElementView;
+	import ru.avangardonline.events.data.character.CharacterDataEvent;
+	import ru.avangardonline.events.data.character.CharacterInteractionDataEvent;
 	
 	/**
 	 * @author					BlooDHounD
@@ -46,9 +48,13 @@ package ru.avangardonline.display.gfx.character {
 		/**
 		 * Constructor
 		 */
-		public function CharacterView(data:CharacterData) {
+		public function CharacterView(data:CharacterData!) {
 			super( data );
 			this._data = data;
+			var observer:StageObserver = new StageObserver( this );
+			observer.registerEventListener( data, CharacterDataEvent.VICTORY,				this.handler_victory );
+			observer.registerEventListener( data, CharacterInteractionDataEvent.ATACK,		this.handler_atack );
+			observer.registerEventListener( data, CharacterInteractionDataEvent.DEFENCE,	this.handler_defence );
 			this.setAnimation( new Animation() );
 		}
 
@@ -113,7 +119,7 @@ package ru.avangardonline.display.gfx.character {
 		}
 
 		protected override function getAnimation():DisplayObject {
-			var key:String = 'key';
+			var key:String = this.getAnimationKey();
 			var result:BitmapMovieClip;
 			if ( key in _HASH ) {
 				result = ( _HASH[ key ] as BitmapMovieClip ).clone();
@@ -135,21 +141,48 @@ package ru.avangardonline.display.gfx.character {
 			return result;
 		}
 
+		protected virtual function getAnimationKey():String {
+			throw new ArgumentError();
+		}
+
 		/**
 		 * @private
 		 */
 		protected override function clear(event:Event=null):Boolean {
 			if ( this.$element ) {
 				super.removeChild( this.$element );
-				( this.$element as BitmapMovieClip ).dispose();
+				//( this.$element as BitmapMovieClip ).dispose();
 				this.$element = null;
 			}
 			if ( !super.clear( event ) ) return false;
 			return true;
 		}
 
-		protected override function getAnimationDefinition():ResourceDefinition {
-			return new ResourceDefinition( 'lib/display/character/c1.swf', 'x' );
+		//--------------------------------------------------------------------------
+		//
+		//  Event handlers
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private function handler_victory(event:CharacterDataEvent):void {
+			trace( event );
+		}
+
+		/**
+		 * @private
+		 */
+		private function handler_atack(event:CharacterInteractionDataEvent):void {
+			trace( event );
+		}
+
+		/**
+		 * @private
+		 */
+		private function handler_defence(event:CharacterInteractionDataEvent):void {
+			trace( event );
 		}
 
 	}

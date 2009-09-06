@@ -28,7 +28,7 @@ package ru.avangardonline.controllers.battle {
 	import ru.avangardonline.data.battle.turns.BattleTurnWorldElementContainerData;
 	import ru.avangardonline.data.battle.world.BattleWorldElementCollectionData;
 
-	[Event(name="progress", type="flash.events.ProgressEvent")]
+	[Event( name="progress", type="flash.events.ProgressEvent" )]
 
 	/**
 	 * @author					BlooDHounD

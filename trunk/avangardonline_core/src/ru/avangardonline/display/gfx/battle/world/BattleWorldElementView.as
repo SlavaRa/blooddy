@@ -11,11 +11,10 @@ package ru.avangardonline.display.gfx.battle.world {
 	import by.blooddy.core.events.display.resource.ResourceEvent;
 	
 	import flash.display.DisplayObject;
-	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
 	
 	import ru.avangardonline.data.battle.world.BattleWorldElementData;
-	import ru.avangardonline.events.data.world.BattleWorldCoordinateDataEvent;
+	import ru.avangardonline.events.data.battle.world.BattleWorldCoordinateDataEvent;
 	
 	/**
 	 * @author					BlooDHounD
@@ -35,7 +34,7 @@ package ru.avangardonline.display.gfx.battle.world {
 		/**
 		 * Constructor
 		 */
-		public function BattleWorldElementView(data:BattleWorldElementData) {
+		public function BattleWorldElementView(data:BattleWorldElementData!) {
 			super();
 			this._data = data;
 			super.addEventListener( ResourceEvent.ADDED_TO_RESOURCE_MANAGER,		this.render,		false, int.MAX_VALUE, true );

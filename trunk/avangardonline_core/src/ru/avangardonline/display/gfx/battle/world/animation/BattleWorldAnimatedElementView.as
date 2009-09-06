@@ -41,7 +41,7 @@ package ru.avangardonline.display.gfx.battle.world.animation {
 		/**
 		 * Constructor
 		 */
-		public function BattleWorldAnimatedElementView(data:BattleWorldElementData) {
+		public function BattleWorldAnimatedElementView(data:BattleWorldElementData!) {
 			super( data );
 			this._data = data;
 			this._timer.addEventListener( TimerEvent.TIMER,	this.renderFrame,	false, int.MAX_VALUE, true );

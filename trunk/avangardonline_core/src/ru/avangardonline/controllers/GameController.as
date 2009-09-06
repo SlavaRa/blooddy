@@ -140,9 +140,9 @@ package ru.avangardonline.controllers {
 				this._loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.updateBattle );
 			}
 			this._battleLogicalController.battle = null;
-			this._loader = ResourceManager.manager.loadResourceBundle( 'battle2.txt' );
+			this._loader = ResourceManager.manager.loadResourceBundle( 'test.txt' );
 			if ( this._loader.loaded ) {
-				var txt:String = ResourceManager.manager.getResource( 'battle2.txt', '' );
+				var txt:String = ResourceManager.manager.getResource( 'test.txt', '' );
 				if ( !txt ) {
 					this.error( 'Произошла ошибка загрзуки боя.' );
 				} else {

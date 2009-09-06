@@ -9,6 +9,8 @@ package ru.avangardonline.data.character {
 	import by.blooddy.core.data.Data;
 	
 	import ru.avangardonline.data.battle.world.BattleWorldElementData;
+	import ru.avangardonline.events.data.character.CharacterInteractionDataEvent;
+	import ru.avangardonline.events.data.character.CharacterDataEvent;
 
 	/**
 	 * @author					BlooDHounD
@@ -111,10 +113,16 @@ package ru.avangardonline.data.character {
 		//
 		//--------------------------------------------------------------------------
 
-		public function atack(itargetID:uint):void {
+		public function defence(targetID:uint):void {
+			super.dispatchEvent( new CharacterInteractionDataEvent( CharacterInteractionDataEvent.DEFENCE, false, true, targetID ) );
+		}
+
+		public function atack(targetID:uint):void {
+			super.dispatchEvent( new CharacterInteractionDataEvent( CharacterInteractionDataEvent.ATACK, false, true, targetID ) );
 		}
 
 		public function victory():void {
+			super.dispatchEvent( new CharacterDataEvent( CharacterDataEvent.VICTORY ) );
 		}
 
 	}

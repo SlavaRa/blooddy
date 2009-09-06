@@ -8,17 +8,17 @@ package ru.avangardonline.data.battle.world {
 
 	import by.blooddy.core.data.Data;
 	
-	import ru.avangardonline.events.data.world.BattleWorldFieldDataEvent;
+	import ru.avangardonline.events.data.battle.world.BattleWorldFieldDataEvent;
 
 	/**
-	 * @eventType			ru.avangardonline.events.database.world.BattleWorldFieldDataEvent.WIDTH_CHANGE
+	 * @eventType			ru.avangardonline.events.data.battle.world.BattleWorldFieldDataEvent.WIDTH_CHANGE
 	 */
-	[Event(name="widthChange", type="ru.avangardonline.events.database.world.BattleWorldFieldDataEvent")]
+	[Event( name="widthChange", type="ru.avangardonline.events.data.battle.world.BattleWorldFieldDataEvent" )]
 
 	/**
-	 * @eventType			ru.avangardonline.events.database.world.BattleWorldFieldDataEvent.HEIGHT_CHANGE
+	 * @eventType			ru.avangardonline.events.data.battle.world.BattleWorldFieldDataEvent.HEIGHT_CHANGE
 	 */
-	[Event(name="heightChange", type="ru.avangardonline.events.database.world.BattleWorldFieldDataEvent")]
+	[Event( name="heightChange", type="ru.avangardonline.events.data.battle.world.BattleWorldFieldDataEvent" )]
 
 	/**
 	 * @author					BlooDHounD

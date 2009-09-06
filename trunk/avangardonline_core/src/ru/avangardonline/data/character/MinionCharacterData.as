@@ -8,7 +8,8 @@ package ru.avangardonline.data.character {
 
 	import by.blooddy.core.data.Data;
 	import by.blooddy.core.data.DataLinker;
-	import by.blooddy.game.data.PointsData;
+	import ru.avangardonline.data.PointsData;
+	import ru.avangardonline.events.data.character.MinionCharacterDataEvent;
 
 	/**
 	 * @author					BlooDHounD
@@ -85,6 +86,7 @@ package ru.avangardonline.data.character {
 		public function set live(value:Boolean):void {
 			if ( this._live == value ) return;
 			this._live = value;
+			super.dispatchEvent( new MinionCharacterDataEvent( MinionCharacterDataEvent.LIVE_CHANGE ) );
 		}
 
 		//--------------------------------------------------------------------------
@@ -108,9 +110,7 @@ package ru.avangardonline.data.character {
 			if ( !target ) throw new ArgumentError();
 			super.copyFrom( target );
 			this.type = target._type;
-			this.health.min =		target.health.min;
-			this.health.current =	target.health.current;
-			this.health.max =		target.health.max;
+			this.health.copyFrom( target.health );
 		}
 
 		//--------------------------------------------------------------------------

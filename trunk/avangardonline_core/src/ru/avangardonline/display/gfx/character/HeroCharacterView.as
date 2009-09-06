@@ -6,22 +6,20 @@
 
 package ru.avangardonline.display.gfx.character {
 
-	import by.blooddy.core.display.StageObserver;
 	import by.blooddy.core.display.resource.ResourceDefinition;
 	
 	import flash.events.Event;
 	
-	import ru.avangardonline.data.character.MinionCharacterData;
-	import ru.avangardonline.events.data.character.MinionCharacterDataEvent;
+	import ru.avangardonline.data.character.HeroCharacterData;
 	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					25.08.2009 12:40:03
+	 * @created					06.09.2009 16:13:00
 	 */
-	public class MinionCharacterView extends CharacterView {
+	public class HeroCharacterView extends CharacterView {
 
 		//--------------------------------------------------------------------------
 		//
@@ -32,11 +30,9 @@ package ru.avangardonline.display.gfx.character {
 		/**
 		 * Constructor
 		 */
-		public function MinionCharacterView(data:MinionCharacterData) {
+		public function HeroCharacterView(data:HeroCharacterData) {
 			super( data );
 			this._data = data;
-			var observer:StageObserver = new StageObserver( this );
-			observer.registerEventListener( data, MinionCharacterDataEvent.LIVE_CHANGE, this.handler_liveChange );
 		}
 
 		//--------------------------------------------------------------------------
@@ -48,7 +44,7 @@ package ru.avangardonline.display.gfx.character {
 		/**
 		 * @private
 		 */
-		private var _data:MinionCharacterData;
+		private var _data:HeroCharacterData;
 
 		//--------------------------------------------------------------------------
 		//
@@ -76,18 +72,6 @@ package ru.avangardonline.display.gfx.character {
 
 		protected override function getAnimationKey():String {
 			return null;
-		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Event handlers
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		private function handler_liveChange(event:MinionCharacterDataEvent):void {
 		}
 
 	}

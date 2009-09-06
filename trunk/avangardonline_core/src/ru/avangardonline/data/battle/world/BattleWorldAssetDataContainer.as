@@ -9,7 +9,7 @@ package ru.avangardonline.data.battle.world {
 	import by.blooddy.core.data.Data;
 	import by.blooddy.core.data.DataContainer;
 	
-	import ru.avangardonline.events.data.world.BattleWorldDataEvent;
+	import ru.avangardonline.events.data.battle.world.BattleWorldDataEvent;
 	
 	/**
 	 * @author					BlooDHounD

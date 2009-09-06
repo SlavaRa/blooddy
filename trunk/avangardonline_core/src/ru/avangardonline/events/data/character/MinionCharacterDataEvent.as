@@ -4,18 +4,16 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.events.data.world {
+package ru.avangardonline.events.data.character {
 
-	import by.blooddy.core.events.data.DataBaseEvent;
-	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					04.08.2009 22:42:55
+	 * @created					06.09.2009 17:17:38
 	 */
-	public class BattleWorldFieldDataEvent extends DataBaseEvent {
+	public class MinionCharacterDataEvent extends CharacterDataEvent {
 
 		//--------------------------------------------------------------------------
 		//
@@ -23,9 +21,7 @@ package ru.avangardonline.events.data.world {
 		//
 		//--------------------------------------------------------------------------
 
-		public static const WIDTH_CHANGE:String =		'widthChange';
-
-		public static const HEIGHT_CHANGE:String =		'heightChange';
+		public static const LIVE_CHANGE:String = 'liveChange';
 
 		//--------------------------------------------------------------------------
 		//
@@ -36,7 +32,7 @@ package ru.avangardonline.events.data.world {
 		/**
 		 * Constructor
 		 */
-		public function BattleWorldFieldDataEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
+		public function MinionCharacterDataEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super( type, bubbles, cancelable );
 		}
 

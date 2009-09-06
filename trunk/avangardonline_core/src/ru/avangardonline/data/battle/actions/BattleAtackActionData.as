@@ -99,9 +99,14 @@ package ru.avangardonline.data.battle.actions {
 						'atack',
 						[ this._targetID ]
 					)
-				)
-			);
-			result.push(
+				),
+				this.getCommand(
+					new Command(
+						'defence',
+						[ super.elementID ]
+					),
+					this._targetID
+				),
 				this.getCommand(
 					new Command(
 						'setHealth',
