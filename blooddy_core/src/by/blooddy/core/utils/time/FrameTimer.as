@@ -14,12 +14,12 @@ package by.blooddy.core.utils.time {
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
 
-	[Exclude(kind="event", name="timerComplete")]
+	[Exclude( kind="event", name="timerComplete" )]
 
-	[Exclude(kind="property", name="currentCount")]
-	[Exclude(kind="property", name="repeatCount")]
+	[Exclude( kind="property", name="currentCount" )]
+	[Exclude( kind="property", name="repeatCount" )]
 
-	[Exclude(kind="method", name="reset")]
+	[Exclude( kind="method", name="reset" )]
 
 	/**
 	 * @author					BlooDHounD
@@ -119,7 +119,7 @@ package by.blooddy.core.utils.time {
 		//  currentCount
 		//----------------------------------
 
-		[Deprecated(message="свойство не используется")]
+		[Deprecated( message="свойство не используется" )]
 		/**
 		 * @private
 		 */
@@ -131,7 +131,7 @@ package by.blooddy.core.utils.time {
 		//  repeatCount
 		//----------------------------------
 
-		[Deprecated(message="свойство запрещено")]
+		[Deprecated( message="свойство запрещено" )]
 		/**
 		 * @private
 		 */
@@ -185,7 +185,7 @@ package by.blooddy.core.utils.time {
 			this._running = false;
 		}
 
-		[Deprecated(message="метод запрещен")]
+		[Deprecated( message="метод запрещен" )]
 		/**
 		 * @private
 		 */

@@ -43,7 +43,7 @@
 	//  numChildren
 	//----------------------------------
 
-	[Deprecated(message="свойство запрещено")]
+	[Deprecated( message="свойство запрещено" )]
 	/**
 	 * @private
 	 */
@@ -55,7 +55,7 @@
 	//  textSnapshot
 	//----------------------------------
 
-	[Deprecated(message="свойство запрещено")]
+	[Deprecated( message="свойство запрещено" )]
 	/**
 	 * @private
 	 */
@@ -69,7 +69,7 @@
 	//
 	//--------------------------------------------------------------------------
 
-	[Deprecated(message="метод запрещён")]
+	[Deprecated( message="метод запрещён" )]
 	/**
 	 * @private
 	 */
@@ -77,7 +77,7 @@
 		throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
 	}
 
-	[Deprecated(message="метод запрещён")]
+	[Deprecated( message="метод запрещён" )]
 	/**
 	 * @private
 	 */
@@ -85,7 +85,7 @@
 		throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
 	}
 
-	[Deprecated(message="метод запрещён")]
+	[Deprecated( message="метод запрещён" )]
 	/**
 	 * @private
 	 */
@@ -93,7 +93,7 @@
 		return false;
 	}
 
-	[Deprecated(message="метод запрещён")]
+	[Deprecated( message="метод запрещён" )]
 	/**
 	 * @private
 	 */
@@ -101,7 +101,7 @@
 		return super.getChildAt(-1);
 	}
 
-	[Deprecated(message="метод запрещён")]
+	[Deprecated( message="метод запрещён" )]
 	/**
 	 * @private
 	 */
@@ -109,7 +109,7 @@
 		return null;
 	}
 
-	[Deprecated(message="метод запрещён")]
+	[Deprecated( message="метод запрещён" )]
 	/**
 	 * @private
 	 */
@@ -117,7 +117,7 @@
 		return super.getChildIndex(this);
 	}
 
-	[Deprecated(message="метод запрещён")]
+	[Deprecated( message="метод запрещён" )]
 	/**
 	 * @private
 	 */
@@ -125,7 +125,7 @@
 		return new Array();
 	}
 
-	[Deprecated(message="метод запрещён")]
+	[Deprecated( message="метод запрещён" )]
 	/**
 	 * @private
 	 */
@@ -133,7 +133,7 @@
 		return super.removeChild( child ? this : null );
 	}
 
-	[Deprecated(message="метод запрещён")]
+	[Deprecated( message="метод запрещён" )]
 	/**
 	 * @private
 	 */
@@ -141,7 +141,7 @@
 		return super.removeChildAt(-1);
 	}
 
-	[Deprecated(message="метод запрещён")]
+	[Deprecated( message="метод запрещён" )]
 	/**
 	 * @private
 	 */
@@ -149,7 +149,7 @@
 		super.setChildIndex(this, -1);
 	}
 
-	[Deprecated(message="метод запрещён")]
+	[Deprecated( message="метод запрещён" )]
 	/**
 	 * @private
 	 */
@@ -157,7 +157,7 @@
 		super.swapChildren(this, this);
 	}
 
-	[Deprecated(message="метод запрещён")]
+	[Deprecated( message="метод запрещён" )]
 	/**
 	 * @private
 	 */

@@ -24,22 +24,22 @@ package by.blooddy.core.parsers {
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="complete", type="flash.events.Event")]
+	[Event( name="complete", type="flash.events.Event" )]
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="ioError", type="flash.events.IOErrorEvent")]
+	[Event( name="ioError", type="flash.events.IOErrorEvent" )]
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="open", type="flash.events.Event")]
+	[Event( name="open", type="flash.events.Event" )]
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="progress", type="flash.events.ProgressEvent")]
+	[Event( name="progress", type="flash.events.ProgressEvent" )]
 
 	/**
 	 * Класс для парсинга больших данных. В несколько этапов, что бы
@@ -101,7 +101,7 @@ package by.blooddy.core.parsers {
 		 */
 		private var _loaded:Boolean = false;
 
-	    [Bindable("complete")]
+	    [Bindable( "complete" )]
 		/**
 		 * @inheritDoc
 		 */
@@ -113,7 +113,7 @@ package by.blooddy.core.parsers {
 		//  bytesLoaded
 		//----------------------------------
 
-	    [Bindable("progress")]
+	    [Bindable( "progress" )]
 		/**
 		 * @inheritDoc
 		 */
@@ -125,7 +125,7 @@ package by.blooddy.core.parsers {
 		//  bytesTotal
 		//----------------------------------
 
-	    [Bindable("complete")]
+	    [Bindable( "complete" )]
 		/**
 		 * @inheritDoc
 		 */

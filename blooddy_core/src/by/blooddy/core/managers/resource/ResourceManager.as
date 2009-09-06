@@ -29,14 +29,14 @@ package by.blooddy.core.managers.resource {
 	 *
 	 * @eventType			flash.events.ResourceEvent.BUNDLE_ADDED
 	 */
-	[Event(name="bundleAdded", type="flash.events.ResourceEvent")]
+	[Event( name="bundleAdded", type="flash.events.ResourceEvent" )]
 
 	/**
 	 * Транслируется, при удаление "пучка".
 	 *
 	 * @eventType			flash.events.ResourceEvent.BUNDLE_REMOVED
 	 */
-	[Event(name="bundleRemoved", type="flash.events.ResourceEvent")]
+	[Event( name="bundleRemoved", type="flash.events.ResourceEvent" )]
 
 	/**
 	 * Следитель за ресурсами.
@@ -293,7 +293,7 @@ package by.blooddy.core.managers.resource {
 			return ( !bundle || !( bundle is ResourceLoaderAsset ) || ( bundle as ResourceLoaderAsset ).$managers.length <= 1 );
 		}
 
-		[ArrayElementType('String')]
+		[ArrayElementType( 'String')]
 		public function getResourceBundles():Array {
 			var result:Array = new Array();
 			for ( var name:String in this._hash ) {
@@ -564,7 +564,7 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 	//
 	//--------------------------------------------------------------------------
 
-	[Deprecated(message="метод запрещен", replacement="$load")]
+	[Deprecated( message="метод запрещен", replacement="$load" )]
 	public override function load(request:URLRequest):void {
 		throw new IllegalOperationError();
 	}
@@ -579,7 +579,7 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 		super.load( new URLRequest( url ) );
 	}
 
-	[Deprecated(message="метод запрещен", replacement="$close")]
+	[Deprecated( message="метод запрещен", replacement="$close" )]
 	public override function close():void {
 		throw new IllegalOperationError();
 	}
@@ -591,7 +591,7 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 		}
 	}
 
-	[Deprecated(message="метод запрещен", replacement="$unload")]
+	[Deprecated( message="метод запрещен", replacement="$unload" )]
 	public override function unload():void {
 		throw new IllegalOperationError();
 	}

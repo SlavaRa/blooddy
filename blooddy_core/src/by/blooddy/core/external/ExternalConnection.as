@@ -24,11 +24,11 @@ package by.blooddy.core.external {
 	//  Events
 	//--------------------------------------
 
-	[Event(name="connect", type="flash.events.Event")]
+	[Event( name="connect", type="flash.events.Event" )]
 
-	[Event(name="ioError", type="flash.events.IOErrorEvent")]
+	[Event( name="ioError", type="flash.events.IOErrorEvent" )]
 
-	[Event(name="securityError", type="flash.events.SecurityErrorEvent")]
+	[Event( name="securityError", type="flash.events.SecurityErrorEvent" )]
 
 	/**
 	 * @author					BlooDHounD

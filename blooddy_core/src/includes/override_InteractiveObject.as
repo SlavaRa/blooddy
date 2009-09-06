@@ -19,7 +19,7 @@
 	//  contextMenu
 	//----------------------------------
 
-	[Deprecated(message="свойство запрещено")]
+	[Deprecated( message="свойство запрещено" )]
 	/**
 	 * @private
 	 */

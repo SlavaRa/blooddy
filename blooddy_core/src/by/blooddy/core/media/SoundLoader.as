@@ -18,22 +18,22 @@ package by.blooddy.core.media {
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="complete", type="flash.events.Event")]
+	[Event( name="complete", type="flash.events.Event" )]
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="ioError", type="flash.events.IOErrorEvent")]
+	[Event( name="ioError", type="flash.events.IOErrorEvent" )]
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="open", type="flash.events.Event")]
+	[Event( name="open", type="flash.events.Event" )]
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="progress", type="flash.events.ProgressEvent")]
+	[Event( name="progress", type="flash.events.ProgressEvent" )]
 
 	//--------------------------------------
 	//  Events
@@ -44,7 +44,7 @@ package by.blooddy.core.media {
 	 * 
 	 * @eventType			flash.events.Event.ID3
 	 */
-	[Event(name="id3", type="flash.events.Event")]
+	[Event( name="id3", type="flash.events.Event" )]
 
 	/**
 	 * @author					BlooDHounD

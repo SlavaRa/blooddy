@@ -26,32 +26,32 @@ package by.blooddy.core.net {
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="complete", type="flash.events.Event")]
+	[Event( name="complete", type="flash.events.Event" )]
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="httpStatus", type="flash.events.HTTPStatusEvent")]
+	[Event( name="httpStatus", type="flash.events.HTTPStatusEvent" )]
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="ioError", type="flash.events.IOErrorEvent")]
+	[Event( name="ioError", type="flash.events.IOErrorEvent" )]
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="open", type="flash.events.Event")]
+	[Event( name="open", type="flash.events.Event" )]
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="progress", type="flash.events.ProgressEvent")]
+	[Event( name="progress", type="flash.events.ProgressEvent" )]
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="securityError", type="flash.events.SecurityErrorEvent")]
+	[Event( name="securityError", type="flash.events.SecurityErrorEvent" )]
 
 	//--------------------------------------
 	//  Events
@@ -63,7 +63,7 @@ package by.blooddy.core.net {
 	 * 
 	 * @eventType			flash.events.HTTPStatusEvent.HTTP_RESPONSE_STATUS
 	 */
-	[Event(name="httpResponseStatus", type="flash.events.HTTPStatusEvent")]
+	[Event( name="httpResponseStatus", type="flash.events.HTTPStatusEvent" )]
 
 	/**
 	 * @author					BlooDHounD

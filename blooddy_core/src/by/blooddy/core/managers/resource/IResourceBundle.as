@@ -65,7 +65,7 @@ package by.blooddy.core.managers.resource {
 
 		function hasResource(name:String):Boolean;
 
-		[ArrayElementType('String')]
+		[ArrayElementType( 'String')]
 		function getResources():Array;
 
 	}

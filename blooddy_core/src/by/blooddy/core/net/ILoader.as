@@ -18,14 +18,14 @@ package by.blooddy.core.net {
 	 * 
 	 * @eventType			flash.events.HTTPStatusEvent.HTTP_STATUS
 	 */
-	[Event(name="httpStatus", type="flash.events.HTTPStatusEvent")]
+	[Event( name="httpStatus", type="flash.events.HTTPStatusEvent" )]
 
 	/**
 	 * Секъюрная ошибка.
 	 * 
 	 * @eventType			flash.events.SecurityErrorEvent.SECURITY_ERROR
 	 */
-	[Event(name="securityError", type="flash.events.SecurityErrorEvent")]
+	[Event( name="securityError", type="flash.events.SecurityErrorEvent" )]
 
 	/**
 	 * @author					BlooDHounD

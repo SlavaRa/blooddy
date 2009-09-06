@@ -12,7 +12,7 @@ package by.blooddy.core.net {
 	 * 
 	 * @eventType				flash.events.ProgressEvent.SOCKET_DATA
 	 */
-	[Event(name="socketData", type="flash.events.ProgressEvent")]
+	[Event( name="socketData", type="flash.events.ProgressEvent" )]
 
 	/**
 	 * @author					BlooDHounD

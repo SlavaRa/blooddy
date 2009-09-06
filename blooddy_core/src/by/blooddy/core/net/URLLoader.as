@@ -25,22 +25,22 @@ package by.blooddy.core.net {
 	/**
 	 * @copy					by.blooddy.core.net.ILoadable#complete
 	 */
-	[Event(name="complete", type="flash.events.Event")]
+	[Event( name="complete", type="flash.events.Event" )]
 
 	/**
 	 * @copy					by.blooddy.core.net.ILoadable#ioError
 	 */
-	[Event(name="ioError", type="flash.events.IOErrorEvent")]
+	[Event( name="ioError", type="flash.events.IOErrorEvent" )]
 
 	/**
 	 * @copy					by.blooddy.core.net.ILoadable#open
 	 */
-	[Event(name="open", type="flash.events.Event")]
+	[Event( name="open", type="flash.events.Event" )]
 
 	/**
 	 * @copy					by.blooddy.core.net.ILoadable#progress
 	 */
-	[Event(name="progress", type="flash.events.ProgressEvent")]
+	[Event( name="progress", type="flash.events.ProgressEvent" )]
 
 	//--------------------------------------
 	//  Implements events: ILoader
@@ -49,12 +49,12 @@ package by.blooddy.core.net {
 	/**
 	 * @copy					by.blooddy.core.net.ILoader#httpStatus
 	 */
-	[Event(name="httpStatus", type="flash.events.HTTPStatusEvent")]
+	[Event( name="httpStatus", type="flash.events.HTTPStatusEvent" )]
 
 	/**
 	 * @copy					by.blooddy.core.net.ILoader#securityError
 	 */
-	[Event(name="securityError", type="flash.events.SecurityErrorEvent")]
+	[Event( name="securityError", type="flash.events.SecurityErrorEvent" )]
 
 	/**
 	 * @author					BlooDHounD
@@ -167,7 +167,7 @@ package by.blooddy.core.net {
 		 */
 		private var _url:String = null;
 
-	    [Bindable("open")]
+	    [Bindable( "open" )]
 		/**
 		 * @copy					by.blooddy.core.net.ILoader#url
 		 */

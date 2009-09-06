@@ -17,7 +17,7 @@ package by.blooddy.core.logging {
 
 	/**
 	 */
-	[Event(name="addedLog", type="by.blooddy.core.events.logging.LogEvent")]
+	[Event( name="addedLog", type="by.blooddy.core.events.logging.LogEvent" )]
 
 	/**
 	 * @author					BlooDHounD

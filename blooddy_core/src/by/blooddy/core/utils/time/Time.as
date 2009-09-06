@@ -14,7 +14,7 @@ package by.blooddy.core.utils.time {
 	//  Events
 	//--------------------------------------
 
-	[Event(name="timeRelativityChange", type="by.blooddy.core.events.time.TimeEvent")]
+	[Event( name="timeRelativityChange", type="by.blooddy.core.events.time.TimeEvent" )]
 
 	/**
 	 * @author					BlooDHounD

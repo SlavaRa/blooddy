@@ -4,7 +4,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.utils {
+package by.blooddy.core.utils.proxy {
 
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -17,12 +17,12 @@ package by.blooddy.core.utils {
 	/**
 	 * @copy		flash.events.EventDispatcher#activate
 	 */
-	[Event(name="activate", type="flash.events.Event")]
+	[Event( name="activate", type="flash.events.Event" )]
 
 	/**
 	 * @copy		flash.events.EventDispatcher#deactivate
 	 */
-	[Event(name="deactivate", type="flash.events.Event")]
+	[Event( name="deactivate", type="flash.events.Event" )]
 
 	/**
 	 * @author					BlooDHounD

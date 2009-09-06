@@ -15,7 +15,7 @@ package by.blooddy.core.net {
 	 *
 	 * @eventType				flash.events.DataEvent.DATA
 	 */
-	[Event(name="data", type="flash.events.DataEvent")]
+	[Event( name="data", type="flash.events.DataEvent" )]
 
 	/**
 	 * @author					BlooDHounD

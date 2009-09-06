@@ -17,28 +17,28 @@ package by.blooddy.core.net {
 	 * 
 	 * @eventType			flash.events.Event.COMPLETE
 	 */
-	[Event(name="complete", type="flash.events.Event")]
+	[Event( name="complete", type="flash.events.Event" )]
 
 	/**
 	 * Ошибка.
 	 * 
 	 * @eventType			flash.events.IOErrorEvent.IO_ERROR
 	 */
-	[Event(name="ioError", type="flash.events.IOErrorEvent")]
+	[Event( name="ioError", type="flash.events.IOErrorEvent" )]
 
 	/**
 	 * Транслируется, когда начинается загрузка.
 	 * 
 	 * @eventType			flash.events.Event.OPEN
 	 */
-	[Event(name="open", type="flash.events.Event")]
+	[Event( name="open", type="flash.events.Event" )]
 
 	/**
 	 * Транслиуется, когда приходят байты данных.
 	 * 
 	 * @eventType			flash.events.ProgressEvent.PROGRESS
 	 */
-	[Event(name="progress", type="flash.events.ProgressEvent")]
+	[Event( name="progress", type="flash.events.ProgressEvent" )]
 
 	/**
 	 * @author					BlooDHounD

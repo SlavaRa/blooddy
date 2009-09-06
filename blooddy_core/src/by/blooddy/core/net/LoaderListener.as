@@ -9,8 +9,8 @@ package by.blooddy.core.net {
 	//  Events
 	//--------------------------------------
 
-	[Event(name="loaderEnabled", type="by.blooddy.core.events.net.LoaderEvent")]
-	[Event(name="loaderDisabled", type="by.blooddy.core.events.net.LoaderEvent")]
+	[Event( name="loaderEnabled", type="by.blooddy.core.events.net.LoaderEvent" )]
+	[Event( name="loaderDisabled", type="by.blooddy.core.events.net.LoaderEvent" )]
 
 	public class LoaderListener extends LoaderDispatcher {
 

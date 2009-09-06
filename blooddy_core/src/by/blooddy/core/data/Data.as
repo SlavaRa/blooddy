@@ -22,14 +22,14 @@ package by.blooddy.core.data {
 	 * 
 	 * @eventType			by.blooddy.core.events.data.DataBaseEvent.ADDED
 	 */
-	[Event(name="added", type="by.blooddy.core.events.data.DataBaseEvent")]
+	[Event( name="added", type="by.blooddy.core.events.data.DataBaseEvent" )]
 
 	/**
 	 * Удалили из контэйнера.
 	 * 
 	 * @eventType			by.blooddy.core.events.data.DataBaseEvent.REMOVED
 	 */
-	[Event(name="removed", type="by.blooddy.core.events.data.DataBaseEvent")]
+	[Event( name="removed", type="by.blooddy.core.events.data.DataBaseEvent" )]
 
 	/**
 	 * Транслируется, когда объект добавляется в базу.
@@ -38,7 +38,7 @@ package by.blooddy.core.data {
 	 * 
 	 * @see					by.blooddy.core.data.DataBase
 	 */
-	[Event(name="addedToBase", type="by.blooddy.core.events.data.DataBaseEvent")]
+	[Event( name="addedToBase", type="by.blooddy.core.events.data.DataBaseEvent" )]
 
 	/**
 	 * Транслируется, когда объект удаляется из базы.
@@ -47,7 +47,7 @@ package by.blooddy.core.data {
 	 * 
 	 * @see					by.blooddy.core.data.DataBase
 	 */
-	[Event(name="removedFromBase", type="by.blooddy.core.events.data.DataBaseEvent")]
+	[Event( name="removedFromBase", type="by.blooddy.core.events.data.DataBaseEvent" )]
 
 	/**
 	 * @author					BlooDHounD

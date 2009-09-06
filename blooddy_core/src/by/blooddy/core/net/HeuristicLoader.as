@@ -35,27 +35,27 @@ package by.blooddy.core.net {
 	/**
 	 * @copy					by.blooddy.core.net.ILoadable#complete
 	 */
-	[Event(name="complete", type="flash.events.Event")]
+	[Event( name="complete", type="flash.events.Event" )]
 
 	/**
 	 * @copy					by.blooddy.core.net.ILoadable#ioError
 	 */
-	[Event(name="ioError", type="flash.events.IOErrorEvent")]
+	[Event( name="ioError", type="flash.events.IOErrorEvent" )]
 
 	/**
 	 * @copy					by.blooddy.core.net.ILoadable#open
 	 */
-	[Event(name="open", type="flash.events.Event")]
+	[Event( name="open", type="flash.events.Event" )]
 
 	/**
 	 * @copy					by.blooddy.core.net.ILoadable#progress
 	 */
-	[Event(name="progress", type="flash.events.ProgressEvent")]
+	[Event( name="progress", type="flash.events.ProgressEvent" )]
 
 	/**
 	 * @copy					by.blooddy.core.net.ILoadable#progress
 	 */
-	[Event(name="unload", type="flash.events.Event")]
+	[Event( name="unload", type="flash.events.Event" )]
 
 	//--------------------------------------
 	//  Implements events: ILoader
@@ -64,12 +64,12 @@ package by.blooddy.core.net {
 	/**
 	 * @copy					by.blooddy.core.net.ILoader#httpStatus
 	 */
-	[Event(name="httpStatus", type="flash.events.HTTPStatusEvent")]
+	[Event( name="httpStatus", type="flash.events.HTTPStatusEvent" )]
 
 	/**
 	 * @copy					by.blooddy.core.net.ILoader#securityError
 	 */
-	[Event(name="securityError", type="flash.events.SecurityErrorEvent")]
+	[Event( name="securityError", type="flash.events.SecurityErrorEvent" )]
 
 	//--------------------------------------
 	//  Events
@@ -80,7 +80,7 @@ package by.blooddy.core.net {
 	 * 
 	 * @eventType			flash.events.Event.INIT
 	 */
-	[Event(name="init", type="flash.events.Event")]
+	[Event( name="init", type="flash.events.Event" )]
 
 	/**
 	 * @author					BlooDHounD
@@ -985,7 +985,7 @@ internal final class LoaderAsset extends Loader {
 	//
 	//--------------------------------------------------------------------------
 
-	[Deprecated(message="свойство запрещено", replacement="$content")]
+	[Deprecated( message="свойство запрещено", replacement="$content" )]
 	/**
 	 * @private
 	 */
@@ -1006,7 +1006,7 @@ internal final class LoaderAsset extends Loader {
 	//
 	//--------------------------------------------------------------------------
 
-	[Deprecated(message="метод запрещен", replacement="$load")]
+	[Deprecated( message="метод запрещен", replacement="$load" )]
 	/**
 	 * @private
 	 */
@@ -1021,7 +1021,7 @@ internal final class LoaderAsset extends Loader {
 		super.load( request, context );
 	}
 
-	[Deprecated(message="метод запрещен", replacement="$loadBytes")]
+	[Deprecated( message="метод запрещен", replacement="$loadBytes" )]
 	/**
 	 * @private
 	 */
@@ -1036,7 +1036,7 @@ internal final class LoaderAsset extends Loader {
 		super.loadBytes( bytes, context );
 	}
 
-	[Deprecated(message="метод запрещен", replacement="$unload")]
+	[Deprecated( message="метод запрещен", replacement="$unload" )]
 	/**
 	 * @private
 	 */
@@ -1057,7 +1057,7 @@ internal final class LoaderAsset extends Loader {
 		}
 	}
 
-	[Deprecated(message="метод запрещен", replacement="$unload")]
+	[Deprecated( message="метод запрещен", replacement="$unload" )]
 	/**
 	 * @private
 	 */
@@ -1151,7 +1151,7 @@ internal final class SoundAsset extends Sound {
 	//
 	//--------------------------------------------------------------------------
 
-	[Deprecated(message="метод запрещен", replacement="$load")]
+	[Deprecated( message="метод запрещен", replacement="$load" )]
 	/**
 	 * @private
 	 */

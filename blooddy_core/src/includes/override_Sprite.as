@@ -19,7 +19,7 @@
 	//  graphics
 	//----------------------------------
 
-	[Deprecated(message="свойство запрещено")]
+	[Deprecated( message="свойство запрещено" )]
 	/**
 	 * @private
 	 */
@@ -27,7 +27,7 @@
 		throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
 	}
 
-	[Deprecated(message="метод запрещён")]
+	[Deprecated( message="метод запрещён" )]
 	/**
 	 * @private
 	 */
@@ -35,7 +35,7 @@
 		throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
 	}
 
-	[Deprecated(message="метод запрещён")]
+	[Deprecated( message="метод запрещён" )]
 	/**
 	 * @private
 	 */

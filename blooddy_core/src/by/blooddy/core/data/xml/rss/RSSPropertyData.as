@@ -10,7 +10,7 @@ package by.blooddy.core.data.xml.rss {
 	import by.blooddy.core.events.data.DataBaseEvent;
 	import flash.errors.IllegalOperationError;
 
-	[Event(name="change", type="by.blooddy.core.events.data.DataBaseEvent")]
+	[Event( name="change", type="by.blooddy.core.events.data.DataBaseEvent" )]
 
 	/**
 	 * @author					BlooDHounD

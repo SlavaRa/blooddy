@@ -16,15 +16,15 @@ package by.blooddy.core.utils.time {
 	//  Excluded APIs
 	//--------------------------------------
 
-	[Exclude(kind="event", name="timerComplete")]
+	[Exclude( kind="event", name="timerComplete" )]
 
-	[Exclude(kind="property", name="delay")]
-	[Exclude(kind="property", name="currentCount")]
-	[Exclude(kind="property", name="repeatCount")]
+	[Exclude( kind="property", name="delay" )]
+	[Exclude( kind="property", name="currentCount" )]
+	[Exclude( kind="property", name="repeatCount" )]
 
-	[Exclude(kind="method", name="start")]
-	[Exclude(kind="method", name="stop")]
-	[Exclude(kind="method", name="reset")]
+	[Exclude( kind="method", name="start" )]
+	[Exclude( kind="method", name="stop" )]
+	[Exclude( kind="method", name="reset" )]
 
 	/**
 	 * @author					BlooDHounD
@@ -53,7 +53,7 @@ package by.blooddy.core.utils.time {
 		//
 		//--------------------------------------------------------------------------
 
-		[Deprecated(message="свойство запрещено")]
+		[Deprecated( message="свойство запрещено" )]
 		/**
 		 * @private
 		 */
@@ -61,7 +61,7 @@ package by.blooddy.core.utils.time {
 			throw new IllegalOperationError( getErrorMessage( 2071, this, 'delay' ), 2071 );
 		}
 
-		[Deprecated(message="свойство не используется")]
+		[Deprecated( message="свойство не используется" )]
 		/**
 		 * @private
 		 */
@@ -69,7 +69,7 @@ package by.blooddy.core.utils.time {
 			return 0;
 		}
 
-		[Deprecated(message="свойство запрещено")]
+		[Deprecated( message="свойство запрещено" )]
 		/**
 		 * @private
 		 */
@@ -83,7 +83,7 @@ package by.blooddy.core.utils.time {
 		//
 		//--------------------------------------------------------------------------
 
-		[Deprecated(message="метод запрещён. включается автоматически.", replacement="addEventListener")]
+		[Deprecated( message="метод запрещён. включается автоматически.", replacement="addEventListener" )]
 		/**
 		 * @private
 		 */
@@ -91,7 +91,7 @@ package by.blooddy.core.utils.time {
 			throw new IllegalOperationError( getErrorMessage( 2071, this, 'start' ), 2071 );
 		}
 
-		[Deprecated(message="метод запрещён. выключается автоматически.", replacement="removeEventListener")]
+		[Deprecated( message="метод запрещён. выключается автоматически.", replacement="removeEventListener" )]
 		/**
 		 * @private
 		 */
@@ -99,7 +99,7 @@ package by.blooddy.core.utils.time {
 			throw new IllegalOperationError( getErrorMessage( 2071, this, 'stop' ), 2071 );
 		}
 
-		[Deprecated(message="метод не использщуется")]
+		[Deprecated( message="метод не использщуется" )]
 		/**
 		 * @private
 		 */

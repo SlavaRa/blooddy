@@ -27,29 +27,29 @@ package by.blooddy.core.managers.drag {
 	/**
 	 * @eventType			platform.events.DragEvent.DRAG_STOP
 	 */
-	[Event(name="dragStop", type="platform.events.DragEvent")]
+	[Event( name="dragStop", type="platform.events.DragEvent" )]
 
 	/**
 	 * @eventType			platform.events.DragEvent.DRAG_MOVE
 	 */
-	[Event(name="dragMove", type="platform.events.DragEvent")]
+	[Event( name="dragMove", type="platform.events.DragEvent" )]
 
 	/**
 	 * @eventType			platform.events.DragEvent.DRAG_FAIL
 	 */
-	[Event(name="dragFail", type="platform.events.DragEvent")]
+	[Event( name="dragFail", type="platform.events.DragEvent" )]
 
 	//--------------------------------------
 	//  Excluded APIs
 	//--------------------------------------
 
-	[Exclude(kind="property", name="graphics")]
-	[Exclude(kind="property", name="parent")]
-	[Exclude(kind="property", name="$parent")]
-	[Exclude(kind="property", name="stage")]
-	[Exclude(kind="property", name="visible")]
+	[Exclude( kind="property", name="graphics" )]
+	[Exclude( kind="property", name="parent" )]
+	[Exclude( kind="property", name="$parent" )]
+	[Exclude( kind="property", name="stage" )]
+	[Exclude( kind="property", name="visible" )]
 
-	[Exclude(kind="method", name="$getInstance")]
+	[Exclude( kind="method", name="$getInstance" )]
 
 	/**
 	 * @author					BlooDHounD
@@ -180,7 +180,7 @@ package by.blooddy.core.managers.drag {
 		//  parent
 		//--------------------------------------
 	
-		[Deprecated(message="свойство не используется")]
+		[Deprecated( message="свойство не используется" )]
 		/**
 		 * @default	null
 		 */
@@ -199,7 +199,7 @@ package by.blooddy.core.managers.drag {
 		//  stage
 		//--------------------------------------
 	
-		[Deprecated(message="свойство не используется")]
+		[Deprecated( message="свойство не используется" )]
 		/**
 		 * @default	null
 		 */
@@ -211,7 +211,7 @@ package by.blooddy.core.managers.drag {
 		//  visible
 		//--------------------------------------
 	
-		[Deprecated(message="свойство не используется")]
+		[Deprecated( message="свойство не используется" )]
 		/**
 		 * @private
 		 */
@@ -236,7 +236,7 @@ package by.blooddy.core.managers.drag {
 		//  graphics
 		//--------------------------------------
 	
-		[Deprecated(message="свойство не используется")]
+		[Deprecated( message="свойство не используется" )]
 		/**
 		 * @default	null
 		 */

@@ -31,32 +31,32 @@ package by.blooddy.core.net {
 	//  Implements events: ISocket
 	//--------------------------------------
 
-	[Event(name="open", type="flash.events.Event")]
+	[Event( name="open", type="flash.events.Event" )]
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="connect", type="flash.events.Event")]
+	[Event( name="connect", type="flash.events.Event" )]
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="close", type="flash.events.Event")]
+	[Event( name="close", type="flash.events.Event" )]
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="ioError", type="flash.events.IOErrorEvent")]		
+	[Event( name="ioError", type="flash.events.IOErrorEvent" )]		
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="securityError", type="flash.events.SecurityErrorEvent")]	
+	[Event( name="securityError", type="flash.events.SecurityErrorEvent" )]	
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event(name="socketData", type="flash.events.ProgressEvent")]
+	[Event( name="socketData", type="flash.events.ProgressEvent" )]
 
 	/**
 	 * @author					BlooDHounD

@@ -132,7 +132,7 @@ package by.blooddy.core.utils {
 			return null;
 		}
 
-		[ArrayElementType("by.blooddy.core.utils.ObjectInfo")]
+		[ArrayElementType( "by.blooddy.core.utils.ObjectInfo" )]
 		public function getMembers(type:uint=7, pattern:uint=0):Array {
 			var hash:HashArray = new HashArray();
 			this.$addMembers(hash, type, pattern);

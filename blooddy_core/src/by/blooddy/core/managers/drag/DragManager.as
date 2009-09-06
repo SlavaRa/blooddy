@@ -27,22 +27,22 @@ package by.blooddy.core.managers.drag {
 	/**
 	 * @eventType			platform.events.DragEvent.DRAG_START
 	 */
-	[Event(name="dragStart", type="by.blooddy.core.events.managers.DragEvent")]
+	[Event( name="dragStart", type="by.blooddy.core.events.managers.DragEvent" )]
 
 	/**
 	 * @eventType			platform.events.DragEvent.DRAG_STOP
 	 */
-	[Event(name="dragStop", type="by.blooddy.core.events.managers.DragEvent")]
+	[Event( name="dragStop", type="by.blooddy.core.events.managers.DragEvent" )]
 
 	/**
 	 * @eventType			platform.events.DragEvent.DRAG_MOVE
 	 */
-	[Event(name="dragMove", type="by.blooddy.core.events.managers.DragEvent")]
+	[Event( name="dragMove", type="by.blooddy.core.events.managers.DragEvent" )]
 
 	/**
 	 * @eventType			platform.events.DragEvent.DRAG_FAIL
 	 */
-	[Event(name="dragFail", type="by.blooddy.core.events.managers.DragEvent")]
+	[Event( name="dragFail", type="by.blooddy.core.events.managers.DragEvent" )]
 
 	/**
 	 * @author					BlooDHounD

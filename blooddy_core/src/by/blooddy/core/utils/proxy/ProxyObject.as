@@ -4,7 +4,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.utils {
+package by.blooddy.core.utils.proxy {
 
 	import flash.utils.ByteArray;
 	import flash.utils.flash_proxy;
