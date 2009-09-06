@@ -2,6 +2,7 @@
 <flexLibProperties version="1">
   <includeClasses>
     <classEntry path="by.blooddy.factory.ApplicationFactory"/>
+    <classEntry path="by.blooddy.factory.ApplicationFactoryLoader"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

@@ -39,37 +39,37 @@ package by.blooddy.factory {
 	//  Excluded APIs
 	//--------------------------------------
 
-	[Exclude(name="name", kind="property")]
-	[Exclude(name="parent", kind="property")]
-	[Exclude(name="root", kind="property")]
-	[Exclude(name="stage", kind="property")]
-	[Exclude(name="doubleClickEnabled", kind="property")]
-	[Exclude(name="focusRect", kind="property")]
-	[Exclude(name="mouseEnabled", kind="property")]
-	[Exclude(name="tabEnabled", kind="property")]
-	[Exclude(name="tabIndex", kind="property")]
-	[Exclude(name="buttonMode", kind="property")]
-	[Exclude(name="hitArea", kind="property")]
-	[Exclude(name="useHandCursor", kind="property")]
-	[Exclude(name="soundTransform", kind="property")]
+	[Exclude( name="name", kind="property" )]
+	[Exclude( name="parent", kind="property" )]
+	[Exclude( name="root", kind="property" )]
+	[Exclude( name="stage", kind="property" )]
+	[Exclude( name="doubleClickEnabled", kind="property" )]
+	[Exclude( name="focusRect", kind="property" )]
+	[Exclude( name="mouseEnabled", kind="property" )]
+	[Exclude( name="tabEnabled", kind="property" )]
+	[Exclude( name="tabIndex", kind="property" )]
+	[Exclude( name="buttonMode", kind="property" )]
+	[Exclude( name="hitArea", kind="property" )]
+	[Exclude( name="useHandCursor", kind="property" )]
+	[Exclude( name="soundTransform", kind="property" )]
 
-	[Exclude(name="startDrag", kind="method")]
-	[Exclude(name="stopDrag", kind="method")]
-	[Exclude(name="addFrameScript", kind="method")]
-	[Exclude(name="gotoAndPlay", kind="method")]
-	[Exclude(name="gotoAndStop", kind="method")]
-	[Exclude(name="play", kind="method")]
-	[Exclude(name="stop", kind="method")]
-	[Exclude(name="nextFrame", kind="method")]
-	[Exclude(name="nextScene", kind="method")]
-	[Exclude(name="prevFrame", kind="method")]
-	[Exclude(name="prevScene", kind="method")]
+	[Exclude( name="startDrag", kind="method" )]
+	[Exclude( name="stopDrag", kind="method" )]
+	[Exclude( name="addFrameScript", kind="method" )]
+	[Exclude( name="gotoAndPlay", kind="method" )]
+	[Exclude( name="gotoAndStop", kind="method" )]
+	[Exclude( name="play", kind="method" )]
+	[Exclude( name="stop", kind="method" )]
+	[Exclude( name="nextFrame", kind="method" )]
+	[Exclude( name="nextScene", kind="method" )]
+	[Exclude( name="prevFrame", kind="method" )]
+	[Exclude( name="prevScene", kind="method" )]
 
 	//--------------------------------------
 	//  Events
 	//--------------------------------------
 
-	[Event(name="init", type="flash.events.Event")]
+	[Event( name="init", type="flash.events.Event" )]
 
 	/**
 	 * Создатель приложения. Покаывает процесс загрузки как самого
@@ -718,7 +718,7 @@ package by.blooddy.factory {
 		//  DisplayObject
 		//----------------------------------
 
-		[Deprecated(message="свойство не используется")]
+		[Deprecated( message="свойство не используется" )]
 		/**
 		 * @throw	IllegalOperationError
 		 */
@@ -726,7 +726,7 @@ package by.blooddy.factory {
 			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="свойство запрещено")]
+		[Deprecated( message="свойство запрещено" )]
 		/**
 		 * @private
 		 */
@@ -734,7 +734,7 @@ package by.blooddy.factory {
 			return null;
 		}
 
-		[Deprecated(message="свойство запрещено")]
+		[Deprecated( message="свойство запрещено" )]
 		/**
 		 * @private
 		 */
@@ -742,7 +742,7 @@ package by.blooddy.factory {
 			return null;
 		}
 
-		[Deprecated(message="свойство запрещено")]
+		[Deprecated( message="свойство запрещено" )]
 		/**
 		 * @private
 		 */
@@ -772,7 +772,7 @@ package by.blooddy.factory {
 		//  InteractiveObject
 		//----------------------------------
 
-		[Deprecated(message="свойство не используется")]
+		[Deprecated( message="свойство не используется" )]
 		/**
 		 * @throw	IllegalOperationError
 		 */
@@ -780,7 +780,7 @@ package by.blooddy.factory {
 			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="свойство не используется")]
+		[Deprecated( message="свойство не используется" )]
 		/**
 		 * @throw	IllegalOperationError
 		 */
@@ -788,7 +788,7 @@ package by.blooddy.factory {
 			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="свойство не используется")]
+		[Deprecated( message="свойство не используется" )]
 		/**
 		 * @throw	IllegalOperationError
 		 */
@@ -796,7 +796,7 @@ package by.blooddy.factory {
 			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="свойство не используется")]
+		[Deprecated( message="свойство не используется" )]
 		/**
 		 * @throw	IllegalOperationError
 		 */
@@ -804,7 +804,7 @@ package by.blooddy.factory {
 			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="свойство не используется")]
+		[Deprecated( message="свойство не используется" )]
 		/**
 		 * @throw	IllegalOperationError
 		 */
@@ -834,7 +834,7 @@ package by.blooddy.factory {
 		//  Sprite
 		//----------------------------------
 
-		[Deprecated(message="свойство не используется")]
+		[Deprecated( message="свойство не используется" )]
 		/**
 		 * @throw	IllegalOperationError
 		 */
@@ -842,7 +842,7 @@ package by.blooddy.factory {
 			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="свойство не используется")]
+		[Deprecated( message="свойство не используется" )]
 		/**
 		 * @throw	IllegalOperationError
 		 */
@@ -850,7 +850,7 @@ package by.blooddy.factory {
 			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="свойство не используется")]
+		[Deprecated( message="свойство не используется" )]
 		/**
 		 * @throw	IllegalOperationError
 		 */
@@ -858,7 +858,7 @@ package by.blooddy.factory {
 			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="свойство не используется")]
+		[Deprecated( message="свойство не используется" )]
 		/**
 		 * @throw	IllegalOperationError
 		 */
@@ -930,7 +930,7 @@ package by.blooddy.factory {
 		//----------------------------------
 
 
-		[Deprecated(message="метод запрещён")]
+		[Deprecated( message="метод запрещён" )]
 		/**
 		 * @throw	IllegalOperationError
 		 */
@@ -989,7 +989,7 @@ package by.blooddy.factory {
 		//  Sprite
 		//----------------------------------
 
-		[Deprecated(message="метод запрещён")]
+		[Deprecated( message="метод запрещён" )]
 		/**
 		 * @throw	IllegalOperationError
 		 */
@@ -997,7 +997,7 @@ package by.blooddy.factory {
 			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="метод запрещён")]
+		[Deprecated( message="метод запрещён" )]
 		/**
 		 * @throw	IllegalOperationError
 		 */
@@ -1009,7 +1009,7 @@ package by.blooddy.factory {
 		//  MovieClip
 		//----------------------------------
 
-		[Deprecated(message="метод запрещён")]
+		[Deprecated( message="метод запрещён" )]
 		/**
 		 * @throw	IllegalOperationError
 		 */
@@ -1017,7 +1017,7 @@ package by.blooddy.factory {
 			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="метод запрещён")]
+		[Deprecated( message="метод запрещён" )]
 		/**
 		 * @throw	IllegalOperationError
 		 */
@@ -1025,7 +1025,7 @@ package by.blooddy.factory {
 			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="метод запрещён")]
+		[Deprecated( message="метод запрещён" )]
 		/**
 		 * @throw	IllegalOperationError
 		 */
@@ -1033,7 +1033,7 @@ package by.blooddy.factory {
 			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="метод запрещён")]
+		[Deprecated( message="метод запрещён" )]
 		/**
 		 * @throw	IllegalOperationError
 		 */
@@ -1041,7 +1041,7 @@ package by.blooddy.factory {
 			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="метод запрещён")]
+		[Deprecated( message="метод запрещён" )]
 		/**
 		 * @throw	IllegalOperationError
 		 */
@@ -1049,7 +1049,7 @@ package by.blooddy.factory {
 			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="метод запрещён")]
+		[Deprecated( message="метод запрещён" )]
 		/**
 		 * @throw	IllegalOperationError
 		 */
@@ -1057,7 +1057,7 @@ package by.blooddy.factory {
 			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="метод запрещён")]
+		[Deprecated( message="метод запрещён" )]
 		/**
 		 * @throw	IllegalOperationError
 		 */
@@ -1065,7 +1065,7 @@ package by.blooddy.factory {
 			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="метод запрещён")]
+		[Deprecated( message="метод запрещён" )]
 		/**
 		 * @throw	IllegalOperationError
 		 */
@@ -1073,7 +1073,7 @@ package by.blooddy.factory {
 			throw new IllegalOperationError();
 		}
 
-		[Deprecated(message="метод запрещён")]
+		[Deprecated( message="метод запрещён" )]
 		/**
 		 * @throw	IllegalOperationError
 		 */
@@ -1414,7 +1414,7 @@ internal final class LoaderAsset extends Loader {
 	//
 	//--------------------------------------------------------------------------
 
-	[Deprecated(message="свойство запрещено", replacement="$content")]
+	[Deprecated( message="свойство запрещено", replacement="$content" )]
 	/**
 	 * @private
 	 */
@@ -1435,7 +1435,7 @@ internal final class LoaderAsset extends Loader {
 	//
 	//--------------------------------------------------------------------------
 
-	[Deprecated(message="метод запрещен", replacement="$load")]
+	[Deprecated( message="метод запрещен", replacement="$load" )]
 	/**
 	 * @private
 	 */
@@ -1450,7 +1450,7 @@ internal final class LoaderAsset extends Loader {
 		super.load( request, context );
 	}
 
-	[Deprecated(message="метод запрещен", replacement="$loadBytes")]
+	[Deprecated( message="метод запрещен", replacement="$loadBytes" )]
 	/**
 	 * @private
 	 */
@@ -1458,7 +1458,7 @@ internal final class LoaderAsset extends Loader {
 		throw new IllegalOperationError();
 	}
 
-	[Deprecated(message="метод запрещен")]
+	[Deprecated( message="метод запрещен" )]
 	/**
 	 * @private
 	 */
@@ -1466,7 +1466,7 @@ internal final class LoaderAsset extends Loader {
 		throw new IllegalOperationError();
 	}
 
-	[Deprecated(message="метод запрещен")]
+	[Deprecated( message="метод запрещен" )]
 	/**
 	 * @private
 	 */
@@ -1474,7 +1474,7 @@ internal final class LoaderAsset extends Loader {
 		throw new IllegalOperationError();
 	}
 
-	[Deprecated(message="метод запрещен")]
+	[Deprecated( message="метод запрещен" )]
 	/**
 	 * @private
 	 */
