@@ -11,7 +11,7 @@ package by.blooddy.game.data {
 	
 	import flash.events.ProgressEvent;
 
-	[Event(name="progress", type="flash.events.ProgressEvent")]
+	[Event( name="progress", type="flash.events.ProgressEvent" )]
 
 	/**
 	 * @author					BlooDHounD
