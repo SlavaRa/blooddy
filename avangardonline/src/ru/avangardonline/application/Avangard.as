@@ -18,9 +18,9 @@ package ru.avangardonline.application {
 	import flash.display.Loader;
 	import flash.net.URLRequest;
 
-	[SWF(width="706", height="378", frameRate="21", backgroundColor="#333333")]
+	[SWF( width="706", height="378", frameRate="21", backgroundColor="#333333" )]
 
-	[Frame(factoryClass="ru.avangardonline.application.factory.AvangardFactory")]
+	[Frame( factoryClass="ru.avangardonline.application.factory.AvangardFactory" )]
 
 	/**
 	 * @author					BlooDHounD
