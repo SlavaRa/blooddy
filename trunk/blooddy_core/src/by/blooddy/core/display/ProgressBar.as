@@ -1,82 +1,160 @@
+////////////////////////////////////////////////////////////////////////////////
+//
+//  (C) 2009 BlooDHounD
+//
+////////////////////////////////////////////////////////////////////////////////
+
 package by.blooddy.core.display {
 
-	import by.blooddy.core.display.IProgressBar;
 	import by.blooddy.core.managers.IProgressable;
+	import by.blooddy.core.utils.css.ColorUtils;
 	
 	import flash.display.Shape;
-	import flash.display.Sprite;
 	import flash.events.Event;
-	import flash.events.IEventDispatcher;
 	import flash.events.ProgressEvent;
-	import by.blooddy.core.utils.css.ColorUtils;
 
+	/**
+	 * @author					BlooDHounD
+	 * @version					1.0
+	 * @playerversion			Flash 10
+	 * @langversion				3.0
+	 */
 	public class ProgressBar extends Shape implements IProgressBar {
 
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * Constructor
+		 */
 		public function ProgressBar() {
 			super();
-			super.addEventListener(Event.ADDED_TO_STAGE, this.render, false, int.MAX_VALUE, true);
-			super.addEventListener(Event.REMOVED_FROM_STAGE, this.clear, false, int.MAX_VALUE, true);
+			super.addEventListener( Event.ADDED_TO_STAGE, this.render, false, int.MAX_VALUE, true );
+			super.addEventListener( Event.REMOVED_FROM_STAGE, this.clear, false, int.MAX_VALUE, true );
 		}
 
+		//--------------------------------------------------------------------------
+		//
+		//  Properties
+		//
+		//--------------------------------------------------------------------------
+
+		//----------------------------------
+		//  width
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
 		private var _width:Number = 40;
 
 		public override function get width():Number {
 			return this._width;
 		}
 
+		/**
+		 * @private
+		 */
 		public override function set width(value:Number):void {
 			if ( this._width == value ) return;
 			this._width = value;
 			this.render();
 		}
 
+		//----------------------------------
+		//  height
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
 		private var _height:Number = 2;
 
 		public override function get height():Number {
 			return this._height;
 		}
 
+		/**
+		 * @private
+		 */
 		public override function set height(value:Number):void {
 			if ( this._height == value ) return;
 			this._height = value;
 			this.render();
 		}
 
+		//----------------------------------
+		//  borderColor32
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
 		private var _borderColor32:Object;
 
 		public function get borderColor32():Object {
 			return this._borderColor32;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set borderColor32(value:Object):void {
 			if ( this._borderColor32 == value ) return;
 			this._borderColor32 = value;
 			this.render();
 		}
 
+		//----------------------------------
+		//  bgColor32
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
 		private var _bgColor32:Object;
 
 		public function get bgColor32():Object {
 			return this._bgColor32;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set bgColor32(value:Object):void {
 			if ( this._bgColor32 == value ) return;
 			this._bgColor32 = value;
 			this.render();
 		}
 
+		//----------------------------------
+		//  indicatorColor32
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
 		private var _indicatorColor32:Object;
 
 		public function get indicatorColor32():Object {
 			return this._indicatorColor32;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set indicatorColor32(value:Object):void {
 			if ( this._indicatorColor32 == value ) return;
 			this._indicatorColor32 = value;
 			this.render();
 		}
+
+		//----------------------------------
+		//  progressDispatcher
+		//----------------------------------
 
 		/**
 		 * @private
@@ -87,6 +165,9 @@ package by.blooddy.core.display {
 			return this._progressDispatcher;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set progressDispatcher(value:IProgressable):void {
 			if ( this._progressDispatcher === value ) return;
 			if ( this._progressDispatcher ) {
@@ -102,6 +183,10 @@ package by.blooddy.core.display {
 			this.render();
 		}
 		
+		//----------------------------------
+		//  progress
+		//----------------------------------
+
 		/**
 		 * @private
 		 */
@@ -111,6 +196,9 @@ package by.blooddy.core.display {
 			return this._progress;
 		}
 		
+		/**
+		 * @private
+		 */
 		public function set progress(value:Number):void {
 			if ( this._progressDispatcher || this._progress == value ) return;
 			value = Math.max( Math.min( 0, value ), 1 );
@@ -119,6 +207,12 @@ package by.blooddy.core.display {
 			this.render();
 		}
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
+
 		protected function render(event:Event=null):Boolean {
 			if ( !super.stage ) return false;
 
@@ -189,6 +283,15 @@ package by.blooddy.core.display {
 			return true;
 		}
 
+		//--------------------------------------------------------------------------
+		//
+		//  Event handlers
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
 		private function handler_progress(event:ProgressEvent):void {
 			this._progress = Math.min( Math.max( 0, this._progressDispatcher.progress ), 1 );
 			this.render( event );
