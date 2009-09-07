@@ -18,6 +18,8 @@ package ru.avangardonline.display.gfx.character {
 	import ru.avangardonline.display.gfx.battle.world.animation.BattleWorldAnimatedElementView;
 	import ru.avangardonline.events.data.character.CharacterDataEvent;
 	import ru.avangardonline.events.data.character.CharacterInteractionDataEvent;
+	import ru.avangardonline.data.battle.world.BattleWorldCoordinateData;
+	import ru.avangardonline.events.data.battle.world.BattleWorldCoordinateDataEvent;
 	
 	/**
 	 * @author					BlooDHounD
@@ -39,6 +41,26 @@ package ru.avangardonline.display.gfx.character {
 		 */
 		private static const _HASH:Object = new Object();
 
+		/**
+		 * @private
+		 */
+		private static const _ANIM_IDLE:Animation =		new Animation();
+
+		/**
+		 * @private
+		 */
+		private static const _ANIM_MOVE:Animation =		new Animation( 1, 0 );
+
+		/**
+		 * @private
+		 */
+		private static const _ANIM_ATACK:Animation =	new Animation( 3, 1, 2 );
+
+		/**
+		 * @private
+		 */
+		private static const _ANIM_DEFENCE:Animation =	new Animation( 4, 1, 1 );
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -52,10 +74,13 @@ package ru.avangardonline.display.gfx.character {
 			super( data );
 			this._data = data;
 			var observer:StageObserver = new StageObserver( this );
-			observer.registerEventListener( data, CharacterDataEvent.VICTORY,				this.handler_victory );
-			observer.registerEventListener( data, CharacterInteractionDataEvent.ATACK,		this.handler_atack );
-			observer.registerEventListener( data, CharacterInteractionDataEvent.DEFENCE,	this.handler_defence );
-			this.setAnimation( new Animation() );
+			observer.registerEventListener( data, CharacterDataEvent.VICTORY,						this.handler_victory );
+			observer.registerEventListener( data, CharacterInteractionDataEvent.ATACK,				this.handler_atack );
+			observer.registerEventListener( data, CharacterInteractionDataEvent.DEFENCE,			this.handler_defence );
+			observer.registerEventListener( data, BattleWorldCoordinateDataEvent.MOVING_START,		this.handler_movingStart );
+			observer.registerEventListener( data, BattleWorldCoordinateDataEvent.MOVING_STOP,		this.handler_movingStop );
+			observer.registerEventListener( data, BattleWorldCoordinateDataEvent.COORDINATE_CHANGE,	this.handler_coordinateChange );
+			this.setAnimation( _ANIM_IDLE );
 		}
 
 		public override function destruct():void {
@@ -168,21 +193,42 @@ package ru.avangardonline.display.gfx.character {
 		 * @private
 		 */
 		private function handler_victory(event:CharacterDataEvent):void {
-			trace( event );
+//			trace( event );
 		}
 
 		/**
 		 * @private
 		 */
 		private function handler_atack(event:CharacterInteractionDataEvent):void {
-			trace( event );
+			this.setAnimation( _ANIM_ATACK );
 		}
 
 		/**
 		 * @private
 		 */
 		private function handler_defence(event:CharacterInteractionDataEvent):void {
-			trace( event );
+			this.setAnimation( _ANIM_DEFENCE );
+		}
+
+		/**
+		 * @private
+		 */
+		private function handler_movingStart(event:BattleWorldCoordinateDataEvent):void {
+			this.setAnimation( _ANIM_MOVE );
+		}
+
+		/**
+		 * @private
+		 */
+		private function handler_movingStop(event:BattleWorldCoordinateDataEvent):void {
+			this.setAnimation( _ANIM_IDLE );
+		}
+
+		/**
+		 * @private
+		 */
+		private function handler_coordinateChange(event:BattleWorldCoordinateDataEvent):void {
+			this.setAnimation( _ANIM_IDLE );
 		}
 
 	}

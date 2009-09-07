@@ -71,7 +71,7 @@ package ru.avangardonline.display.gfx.character {
 		}
 
 		protected override function getAnimationKey():String {
-			return null;
+			return this.currentAnim.id.toString();
 		}
 
 	}
