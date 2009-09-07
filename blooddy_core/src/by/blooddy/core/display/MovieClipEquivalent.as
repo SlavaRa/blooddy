@@ -10,6 +10,7 @@ package by.blooddy.core.display {
 
 	import flash.display.DisplayObject;
 	import flash.display.MovieClip;
+	import flash.errors.IllegalOperationError;
 
 	/**
 	 * @author					BlooDHounD
@@ -41,7 +42,15 @@ package by.blooddy.core.display {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @private
+		 */
 		private var _running:Boolean = true;
+
+		/**
+		 * @private
+		 */
+		private var _frameScripts:Object;
 
 		//--------------------------------------------------------------------------
 		//
@@ -149,8 +158,9 @@ package by.blooddy.core.display {
 			if ( this._running ) this.stop();
 		}
 
+		[Deprecated( message="метод не используется" )]
 		public override function addFrameScript(...args):void {
-			// TODO: добавить функционал
+			throw new IllegalOperationError();
 		}
 
 		//--------------------------------------------------------------------------
