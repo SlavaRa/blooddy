@@ -12,6 +12,14 @@ package ru.avangardonline.data.character {
 	import ru.avangardonline.events.data.character.CharacterInteractionDataEvent;
 	import ru.avangardonline.events.data.character.CharacterDataEvent;
 
+	//--------------------------------------
+	//  Events
+	//--------------------------------------
+
+	[Event( name="victory", type="ru.avangardonline.events.data.character.CharacterDataEvent" )]
+	[Event( name="atack", type="ru.avangardonline.events.data.character.CharacterInteractionDataEvent" )]
+	[Event( name="defence", type="ru.avangardonline.events.data.character.CharacterInteractionDataEventDataEvent" )]
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0

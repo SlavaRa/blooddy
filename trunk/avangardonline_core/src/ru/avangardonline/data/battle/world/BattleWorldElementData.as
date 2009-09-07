@@ -87,6 +87,14 @@ package ru.avangardonline.data.battle.world {
 			return this.coord.direction;
 		}
 
+		//----------------------------------
+		//  speed
+		//----------------------------------
+
+		public function get speed():Number {
+			return this.coord.speed;
+		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Overriden methods

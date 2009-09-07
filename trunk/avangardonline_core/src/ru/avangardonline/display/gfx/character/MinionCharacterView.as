@@ -12,7 +12,9 @@ package ru.avangardonline.display.gfx.character {
 	import flash.events.Event;
 	
 	import ru.avangardonline.data.character.MinionCharacterData;
+	import ru.avangardonline.display.gfx.battle.world.animation.Animation;
 	import ru.avangardonline.events.data.character.MinionCharacterDataEvent;
+	import by.blooddy.core.display.ProgressBar;
 	
 	/**
 	 * @author					BlooDHounD
@@ -22,6 +24,17 @@ package ru.avangardonline.display.gfx.character {
 	 * @created					25.08.2009 12:40:03
 	 */
 	public class MinionCharacterView extends CharacterView {
+
+		//--------------------------------------------------------------------------
+		//
+		//  Class variables
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private static const _ANIM_DEAD:Animation =		new Animation( 2, 1, 3 );
 
 		//--------------------------------------------------------------------------
 		//
@@ -50,6 +63,8 @@ package ru.avangardonline.display.gfx.character {
 		 */
 		private var _data:MinionCharacterData;
 
+		private var _health:ProgressBar = new ProgressBar();
+
 		//--------------------------------------------------------------------------
 		//
 		//  Overriden protected methods
@@ -75,7 +90,7 @@ package ru.avangardonline.display.gfx.character {
 		}
 
 		protected override function getAnimationKey():String {
-			return null;
+			return this.currentAnim.id.toString();
 		}
 
 		//--------------------------------------------------------------------------
@@ -88,6 +103,7 @@ package ru.avangardonline.display.gfx.character {
 		 * @private
 		 */
 		private function handler_liveChange(event:MinionCharacterDataEvent):void {
+			this.setAnimation( _ANIM_DEAD );
 		}
 
 	}

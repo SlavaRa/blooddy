@@ -8,8 +8,15 @@ package ru.avangardonline.data.character {
 
 	import by.blooddy.core.data.Data;
 	import by.blooddy.core.data.DataLinker;
+	
 	import ru.avangardonline.data.PointsData;
 	import ru.avangardonline.events.data.character.MinionCharacterDataEvent;
+
+	//--------------------------------------
+	//  Events
+	//--------------------------------------
+
+	[Event( name="liveChange", type="ru.avangardonline.events.data.character.MinionCharacterDataEvent" )]
 
 	/**
 	 * @author					BlooDHounD
@@ -74,7 +81,7 @@ package ru.avangardonline.data.character {
 		/**
 		 * @private
 		 */
-		private var _live:Boolean;
+		private var _live:Boolean = true;
 
 		public function get live():Boolean {
 			return this._live;

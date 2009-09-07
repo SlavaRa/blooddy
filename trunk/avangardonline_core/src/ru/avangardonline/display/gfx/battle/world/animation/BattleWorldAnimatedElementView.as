@@ -66,7 +66,36 @@ package ru.avangardonline.display.gfx.battle.world.animation {
 		/**
 		 * @private
 		 */
+		private var _startTime:uint;
+
+		/**
+		 * @private
+		 */
+		private var _animation:MovieClip;
+
+		/**
+		 * @private
+		 */
+		private var _currentAnim_count:uint = 0;
+
+		//--------------------------------------------------------------------------
+		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
 		private var _currentAnim:Animation;
+
+		protected function get currentAnim():Animation {
+			return this._currentAnim;
+		}
+
+		protected function get animationSpeed():Number {
+			return ( this._data.moving ? this._data.speed : 1 );
+		}
 
 		//--------------------------------------------------------------------------
 		//
@@ -96,17 +125,18 @@ package ru.avangardonline.display.gfx.battle.world.animation {
 
 		protected function renderAnimation(event:Event=null):Boolean {
 			if ( !super.stage || !this._currentAnim ) return false;
+
 			this.$element = this.getAnimation();
-			if ( this.$element ) {
-				super.addChild( this.$element );
-				if ( this.$element is MovieClip && ( this.$element as MovieClip ).totalFrames > 1 ) {
-					this._data.world.time.addEventListener( TimeEvent.TIME_RELATIVITY_CHANGE, this.updateDelay );
-					this.updateDelay();
-					this._timer.start();
-					this.renderFrame( event );
-				}
+			super.addChild( this.$element );
+			if ( this.$element is MovieClip && ( this.$element as MovieClip ).totalFrames > 1 ) {
+				this._data.world.time.addEventListener( TimeEvent.TIME_RELATIVITY_CHANGE, this.updateDelay );
+				this._animation = this.$element as MovieClip;
+				this.updateDelay( event );
+				this._timer.start();
+				this.renderFrame( event );
 			}
 			this.updateRotation( event );
+
 			return true;
 		}
 
@@ -124,13 +154,31 @@ package ru.avangardonline.display.gfx.battle.world.animation {
 		}
 
 		protected function renderFrame(event:Event=null):Boolean {
-			var mc:MovieClip = this.$element as MovieClip;
-			if ( !mc ) return false;
+
+			if ( !this._animation ) throw new IllegalOperationError();
+
+			var totalFrames:int = this._animation.totalFrames;
+			var time:Number = BattleTurnData.TURN_LENGTH / this.animationSpeed;
 			
-			var ratio:Number = this._data.world.time.currentTime / BattleTurnData.TURN_LENGTH;
+			var currentTime:Number = this._data.world.time.currentTime;
+			if ( currentTime < this._startTime ) this._startTime = currentTime;
 			
-			mc.gotoAndStop( Math.round( ratio * ( mc.totalFrames - 1 ) ) % mc.totalFrames + 1 );
-			
+			var timesCount:Number = ( currentTime - this._startTime ) / time;
+			var currentFrame:uint = Math.round( timesCount * ( totalFrames - 1 ) ) % totalFrames + 1;
+
+			this._currentAnim_count = timesCount;
+
+			this._animation.gotoAndStop( currentFrame );
+
+			//если текущая анимация закончилась
+			if ( this._currentAnim.repeatCount>0 && this._currentAnim_count >= this._currentAnim.repeatCount ) {
+				this._currentAnim = null;
+				this._currentAnim_count = 0;
+				this._timer.stop();
+				this._animation.gotoAndStop( this._animation.totalFrames );
+				this.onAnimationComplete( event );
+			}			
+
 			return true;
 		}
 
@@ -144,8 +192,13 @@ package ru.avangardonline.display.gfx.battle.world.animation {
 		}
 
 		protected function setAnimation(anim:Animation):void {
+			if ( this._currentAnim && anim && this._currentAnim.priority > anim.priority ) return;
 			this._currentAnim = anim;
+			this._startTime = this._data.world.time.currentTime;
 			this.render();
+		}
+
+		protected function onAnimationComplete(event:Event=null):void {
 		}
 
 		//--------------------------------------------------------------------------
@@ -157,10 +210,9 @@ package ru.avangardonline.display.gfx.battle.world.animation {
 		/**
 		 * @private
 		 */
-		private function updateDelay(event:TimeEvent=null):void {
-			if ( this.$element is MovieClip ) {
-				this._timer.delay = ( BattleTurnData.TURN_LENGTH * this._data.world.time.speed ) / ( this.$element as MovieClip ).totalFrames;
-				trace( this._timer.delay );
+		private function updateDelay(event:Event=null):void {
+			if ( this.$element is MovieClip && ( this.$element as MovieClip ).totalFrames > 1 ) {
+				this._timer.delay = BattleTurnData.TURN_LENGTH / this.animationSpeed / ( this.$element as MovieClip ).totalFrames * 0.7;
 			}
 		}
 
