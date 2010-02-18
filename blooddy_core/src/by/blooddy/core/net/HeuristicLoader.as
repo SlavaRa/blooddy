@@ -682,7 +682,7 @@ package by.blooddy.core.net {
 					case MIME.GIF:
 						this.clear_stream();	// закрываем поток
 						this.clear_input();
-						this._loader = this.create_loader();
+						this._loader = this.create_loader(); // TODO: ioError срабатывает неправильно!!!!
 						this._loader.$load( this._request, this._loaderContext );
 						break;
 
@@ -918,41 +918,49 @@ package by.blooddy.core.net {
 			_JUNK.addChild( content ); // хачим его.
 			_JUNK.removeChild( content );
 
+			var invalidSWF:Boolean = false;
+
 			if ( this._contentType != this._loader.$loaderInfo.contentType ) { // если они не равны, то протикала загрузка через loadBytes.
 				// BUGFIX: если грузить каринку черезе loadBytes, то она неправильно обрабатывается, и почему-то кладётся в MovieClip, что нас не устраивает.
 				switch ( this._loader.$loaderInfo.contentType ) {
-					case MIME.FLASH:	break;
-					default:			throw new InvalidSWFError();
+					case MIME.FLASH: break;
+					default: invalidSWF = true;
 				}
+				if ( !invalidSWF ) {
+					switch ( this._contentType ) {
+						case MIME.PNG: case MIME.JPEG: case MIME.GIF: break;
+						default: invalidSWF = true;
+					}
+					if ( !invalidSWF && !( content is MovieClip ) && ( content as MovieClip ).numChildren <= 0 ) {
+						invalidSWF = true;
+					}
+					if ( !invalidSWF ) {
+						content = ( content as MovieClip ).getChildAt( 0 );
+						if ( !( content is Bitmap ) ) {
+							invalidSWF = true;
+						}
+					}
+				}
+			}
 
+			if ( invalidSWF ) {
+				this.clear_loader();
+				this._state = _STATE_ERROR;
+				super.dispatchEvent( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, 'плохой swf подсунулся' ) );
+			} else {
 				switch ( this._contentType ) {
+					case MIME.FLASH:
+						this._content = content;
+						break;
 					case MIME.PNG:
 					case MIME.JPEG:
-					case MIME.GIF:		break;
-					default:			throw new InvalidSWFError();
+					case MIME.GIF:
+						this._content = ( content as Bitmap ).bitmapData;
+						break;
 				}
-				if ( !( content is MovieClip ) && ( content as MovieClip ).numChildren <= 0 ) {
-					throw new InvalidSWFError();
+				if ( super.hasEventListener( Event.INIT ) ) {
+					super.dispatchEvent( event );
 				}
-				content = ( content as MovieClip ).getChildAt( 0 );
-				if ( !( content is Bitmap ) ) {
-					throw new InvalidSWFError();
-				}
-			}
-
-			switch ( this._contentType ) {
-				case MIME.FLASH:
-					this._content = content;
-					break;
-				case MIME.PNG:
-				case MIME.JPEG:
-				case MIME.GIF:
-					this._content = ( content as Bitmap ).bitmapData;
-					break;
-			}
-
-			if ( super.hasEventListener( Event.INIT ) ) {
-				super.dispatchEvent( event );
 			}
 		}
 

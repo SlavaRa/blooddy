@@ -161,7 +161,7 @@ package by.blooddy.core.managers.drag {
 		//--------------------------------------------------------------------------
 
 		public function stopDrag():void {
-			if (!this._dragSource) throw new IllegalOperationError();
+			if ( !this._dragSource ) throw new IllegalOperationError();
 			this.dispatchDragEvent( DragEvent.DRAG_FAIL );
 			this.clear();
 		}
@@ -170,7 +170,7 @@ package by.blooddy.core.managers.drag {
 		 * @private
 		 */
 		public function startDrag(dragSource:DisplayObject, rescale:Boolean=false, offset:Point=null, bounds:Rectangle=null):void {
-			if (!dragSource.stage) throw new ArgumentError();
+			if ( !dragSource.stage ) throw new ArgumentError();
 
 			if ( this._dragSource == dragSource ) return;
 

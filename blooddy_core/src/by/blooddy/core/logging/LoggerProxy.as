@@ -18,6 +18,27 @@ package by.blooddy.core.logging {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Private class methods
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		 * @private
+		 */
+		private static function isCross(l1:LoggerProxy, l2:LoggerProxy):Boolean {
+			if ( l1 === l2 ) return true;
+			var l:Logger;
+			for each ( l in l1._loggers ) {
+				if ( l is LoggerProxy ) isCross( l as LoggerProxy, l2 );
+			} 
+			for each ( l in l2._loggers ) {
+				if ( l is LoggerProxy ) isCross( l1, l as LoggerProxy );
+			}
+			return false;
+		}
+		
+		//--------------------------------------------------------------------------
+		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
@@ -48,7 +69,7 @@ package by.blooddy.core.logging {
 
 		public function addLogger(logger:Logger):void {
 			if ( this._loggers.indexOf( logger ) >= 0 ) return;
-			if ( logger is LoggerProxy && this.isCross( this, logger as LoggerProxy) ) throw new ArgumentError();
+			if ( logger is LoggerProxy && isCross( this, logger as LoggerProxy) ) throw new ArgumentError();
 			this._loggers.push( logger );
 			logger.addEventListener( LogEvent.ADDED_LOG, this.handler_addedLog );
 		}
@@ -62,27 +83,6 @@ package by.blooddy.core.logging {
 
 		public function hasLogger(logger:Logger):Boolean {
 			return this._loggers.indexOf( logger ) >= 0;
-		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Private methods
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		private function isCross(l1:LoggerProxy, l2:LoggerProxy):Boolean {
-			if ( l1 === l2 ) return true;
-			var l:Logger;
-			for each ( l in l1._loggers ) {
-				if ( l is LoggerProxy ) this.isCross( l as LoggerProxy, l2 );
-			} 
-			for each ( l in l2._loggers ) {
-				if ( l is LoggerProxy ) this.isCross( l1, l as LoggerProxy );
-			}
-			return false;
 		}
 
 		//--------------------------------------------------------------------------
