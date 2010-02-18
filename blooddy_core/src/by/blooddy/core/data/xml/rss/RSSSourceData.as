@@ -7,7 +7,7 @@
 package by.blooddy.core.data.xml.rss {
 
 	import by.blooddy.core.events.data.DataBaseEvent;
-	import by.blooddy.core.utils.XMLUtils;
+	import by.blooddy.core.utils.xml.XMLUtils;
 
 	/**
 	 * @author					BlooDHounD
@@ -19,29 +19,63 @@ package by.blooddy.core.data.xml.rss {
 	 */
 	public class RSSSourceData extends RSSPropertyData {
 
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * Contructor
+		 */
 		public function RSSSourceData() {
 			super();
 		}
 
+		//--------------------------------------------------------------------------
+		//
+		//  Properties
+		//
+		//--------------------------------------------------------------------------
+
+		//----------------------------------
+		//  url
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
 		private var _url:String;
 
 		public function get url():String {
 			return this._url;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set url(value:String):void {
 			if ( this._url == value ) return;
 			this._url = value;
-			if ( !this.$lock ) super.dispatchEvent( new DataBaseEvent( DataBaseEvent.CHANGE, true ) );
+			this.dispatchChange();
 		}
 
+		//--------------------------------------------------------------------------
+		//
+		//  Overriden methods
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
 		public override function parseXML(xml:XML):void {
-			if ( xml.name().toString() != "source" ) throw new ArgumentError();
+			if ( xml.name().toString() != 'source' ) throw new ArgumentError();
 			this.$lock++;
-			this._url =		XMLUtils.parseStringNode( xml.@url );
-			super.name =	XMLUtils.parseStringNode( xml.* );
+			super.name =	XMLUtils.parseListToString( xml.* );
+			this._url =		XMLUtils.parseListToString( xml.@url );
 			this.$lock--;
-			if ( !this.$lock ) super.dispatchEvent( new DataBaseEvent( DataBaseEvent.CHANGE, true ) );
+			this.dispatchChange();
 		}
 
 	}

@@ -7,7 +7,7 @@
 package by.blooddy.core.data.xml.rss {
 
 	import by.blooddy.core.events.data.DataBaseEvent;
-	import by.blooddy.core.utils.XMLUtils;
+	import by.blooddy.core.utils.xml.XMLUtils;
 
 	/**
 	 * @author					BlooDHounD
@@ -19,55 +19,107 @@ package by.blooddy.core.data.xml.rss {
 	 */
 	public class RSSImageData extends RSSElementData {
 
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * Contructor
+		 */
 		public function RSSImageData() {
 			super();
 		}
 
+		//--------------------------------------------------------------------------
+		//
+		//  Properties
+		//
+		//--------------------------------------------------------------------------
+
+		//----------------------------------
+		//  url
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
 		private var _url:String;
 
 		public function get url():String {
 			return this._url;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set url(value:String):void {
 			if ( this._url == value ) return;
 			this._url = value;
-			if ( !this.$lock ) super.dispatchEvent( new DataBaseEvent( DataBaseEvent.CHANGE, true ) );
+			this.dispatchChange();
 		}
 
+		//----------------------------------
+		//  width
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
 		private var _width:uint;
 
 		public function get width():uint {
 			return this._width;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set width(value:uint):void {
 			if ( this._width == value ) return;
 			this._width = value;
-			if ( !this.$lock ) super.dispatchEvent( new DataBaseEvent( DataBaseEvent.CHANGE, true ) );
+			this.dispatchChange();
 		}
 
+		//----------------------------------
+		//  height
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
 		private var _height:uint;
 
 		public function get height():uint {
 			return this._height;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set height(value:uint):void {
 			if ( this._height == value ) return;
 			this._height = value;
-			if ( !this.$lock ) super.dispatchEvent( new DataBaseEvent( DataBaseEvent.CHANGE, true ) );
+			this.dispatchChange();
 		}
 
+		//--------------------------------------------------------------------------
+		//
+		//  Overriden methods
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
 		public override function parseXML(xml:XML):void {
-			if ( xml.name().toString() != "image" ) throw new ArgumentError();
-			this.$lock++;
+			if ( xml.name().toString() != 'image' ) throw new ArgumentError();
 			super.parseXML( xml );
-			this._url =		XMLUtils.parseStringNode( xml.image );
-			this._width =	XMLUtils.parseUIntNode( xml.width );
-			this._height =	XMLUtils.parseUIntNode( xml.height );
-			this.$lock--;
-			if ( !this.$lock ) super.dispatchEvent( new DataBaseEvent( DataBaseEvent.CHANGE, true ) );
+			this._url =		XMLUtils.parseListToString( xml.image );
+			this._width =	XMLUtils.parseListToInt( xml.width );
+			this._height =	XMLUtils.parseListToInt( xml.height );
+			this.dispatchChange();
 		}
 
 	}

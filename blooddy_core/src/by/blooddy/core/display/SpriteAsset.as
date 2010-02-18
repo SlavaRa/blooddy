@@ -32,6 +32,7 @@ package by.blooddy.core.display {
 		public function SpriteAsset() {
 			super();
 			// ХАК
+			this._stage = super.stage;
 			super.addEventListener( Event.ADDED_TO_STAGE, this.handler_addedToStage_hack, false, int.MAX_VALUE, true );
 			super.addEventListener( Event.REMOVED_FROM_STAGE, this.handler_removedFromStage_hack1, false, int.MAX_VALUE, true );
 			super.addEventListener( Event.REMOVED_FROM_STAGE, this.handler_removedFromStage_hack2, false, int.MIN_VALUE, true );

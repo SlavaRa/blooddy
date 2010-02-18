@@ -6,7 +6,7 @@ package by.blooddy.core.net {
 	import flash.net.URLRequestHeader;
 	import flash.net.URLVariables;
 
-	public function copyURLRequest(request:URLRequest):URLRequest {
+	internal function copyURLRequest(request:URLRequest):URLRequest {
 		var result:URLRequest = new URLRequest();
 		result.url = request.url;
 		result.method = request.method;

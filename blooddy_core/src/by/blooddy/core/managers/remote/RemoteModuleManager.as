@@ -33,7 +33,7 @@ package by.blooddy.core.managers.remote {
 			this._applicationDomain = applicationDomain || ApplicationDomain.currentDomain;
 		}
 	
-		private const _loaders:Array = new Array();
+		private const _loaders:Vector.<ModuleLoader> = new Vector.<ModuleLoader>();
 	
 		private var _applicationDomain:ApplicationDomain;
 	
@@ -87,7 +87,7 @@ package by.blooddy.core.managers.remote {
 			var loader:ModuleLoader;
 			var id:String;
 			while ( this._loaders.length ) {
-				loader = this._loaders.pop() as ModuleLoader;
+				loader = this._loaders.pop();
 				id = loader.id;
 				loader.unload();
 				super.dispatchEvent( new RemoteModuleEvent( RemoteModuleEvent.UNLOAD, false, false, id ) );

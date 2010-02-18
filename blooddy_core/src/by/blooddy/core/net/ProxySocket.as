@@ -319,7 +319,7 @@ package by.blooddy.core.net {
 				throw e;
 			}
 
-			super.dispatchEvent( new Event( Event.OPEN ) );
+			super.dispatchEvent( new Event( Event.OPEN ) ); // TODO: перенести на задержку
 
 			if ( this._timeout > 0 ) {
 				this._timeoutTime = getTimer();
@@ -409,7 +409,7 @@ package by.blooddy.core.net {
 		private function handler_connection_complete(event:Event):void {
 
 			// должна придти сессия. поэтому независимо от того что пришло пытаемся получить сессию
-			this._sesID = ( new XML( this._conn1.readUTFBytes( this._conn1.bytesAvailable ) ) ).@id.toString();
+			this._sesID = this._conn1.readUTFBytes( this._conn1.bytesAvailable );
 
 			if ( this._sesID ) { // приконектились! надо сообщить
 
@@ -475,11 +475,11 @@ package by.blooddy.core.net {
 				this._input.clear();
 			}
 			var conn:URLStreamAsset = event.target as URLStreamAsset;
-			if ( conn === this._conn1 ) {
+			//if ( conn === this._conn1 ) {
 				//if ( this._conn2.connected ) this._conn2.close();
-			} else {
+			//} else {
 				//if ( this._conn1.connected ) this._conn1.close();
-			}
+			//}
 			
 			var pos:uint = this._input.position;
 			conn.readBytes( this._input, this._input.length );

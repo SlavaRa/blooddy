@@ -38,10 +38,6 @@ package by.blooddy.core.external {
 
 		/**
  		 * Constructor
-		 *  
-		 * @param	baseController
-		 * @param	dataBase
-		 * @param	sharedObject
 		 */
 		public function HistoryExternalConnection() {
 			super();

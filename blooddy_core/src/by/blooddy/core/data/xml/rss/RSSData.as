@@ -6,8 +6,6 @@
 
 package by.blooddy.core.data.xml.rss {
 
-	import flash.events.EventDispatcher;
-	import flash.events.IEventDispatcher;
 	import by.blooddy.core.data.DataContainer;
 
 	/**
@@ -20,48 +18,111 @@ package by.blooddy.core.data.xml.rss {
 	 */
 	public class RSSData extends DataContainer implements IRSSElementAsset {
 
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * Contructor
+		 */
 		public function RSSData() {
 			super();
 		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Implements properties
+		//
+		//--------------------------------------------------------------------------
+
+		//----------------------------------
+		//  element
+		//----------------------------------
 
 		public function get element():RSSElementData {
 			return null;
 		}
 
+		//--------------------------------------------------------------------------
+		//
+		//  Properties
+		//
+		//--------------------------------------------------------------------------
+
+		//----------------------------------
+		//  channel
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
 		private var _channel:RSSChannelData;
 
 		public function get channel():RSSChannelData {
 			return this._channel;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set channel(value:RSSChannelData):void {
 			if ( this._channel === value ) return;
 			if ( value )	super.addChild( value );
 			else			super.removeChild( this._channel );
 		}
 
+		//----------------------------------
+		//  version
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
 		private var _version:Number;
 
 		public function get version():Number {
 			return this._version;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set version(value:Number):void {
 			if ( this._version == value ) return;
 			this._version = value;
 		}
 
+		//--------------------------------------------------------------------------
+		//
+		//  Implements methods
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @inheritDoc
+		 */
 		public function parseXML(xml:XML):void {
 			if ( this._channel ) super.removeChild( this._channel );
 			this.update( xml );
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function toXML():XML { // TODO: реализовать
 			return null;
 		}
 
+		//--------------------------------------------------------------------------
+		//
+		//  Methods
+		//
+		//--------------------------------------------------------------------------
+
 		public function update(xml:XML):void {
-			if ( xml.name().toString() != "rss" ) throw new ArgumentError();
+			if ( xml.name().toString() != 'rss' ) throw new ArgumentError();
 			var version:Number = parseFloat( xml.@version );
 			if ( this._version && this._version != version ) throw new ArgumentError();
 			switch ( parseFloat( xml.@version ) ) {

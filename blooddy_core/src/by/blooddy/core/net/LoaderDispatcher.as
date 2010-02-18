@@ -93,7 +93,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private const _loaders:Array = new Array();
+		private const _loaders:Vector.<ILoadable> = new Vector.<ILoadable>();
 
 		//--------------------------------------------------------------------------
 		//
@@ -220,23 +220,6 @@ package by.blooddy.core.net {
 
 		//--------------------------------------------------------------------------
 		//
-		//  Methods
-		//
-		//--------------------------------------------------------------------------
-
-		public function getLog():String {
-			var result:String = 'Listener:';
-			
-			for (var i:uint = 0;i <  this._loaders.length;i++) {
-				var loader:ILoadable = this._loaders[i] as ILoadable;
-				result += '\nLoader: ' + (loader as Object).toString() + ', loaded='+loader.loaded + ', ' + loader.bytesLoaded + '/' + loader.bytesTotal;
-			}
-						
-			return result;
-		}
-
-		//--------------------------------------------------------------------------
-		//
 		//  Private methods
 		//
 		//--------------------------------------------------------------------------
@@ -292,8 +275,10 @@ package by.blooddy.core.net {
 		 */
 		private function updateLoaders():void {
 			this._toLoaders = false;
-			var arr:Array = new Array();
-			this.getUniqLoaders( arr, new Dictionary() );
+			var arr:Vector.<ILoadable> = new Vector.<ILoadable>();
+			var hash:Dictionary = new Dictionary();
+			hash[ this ] = true;
+			this.getUniqLoaders( arr, hash );
 			this._loadersTotal = arr.length;
 			var loaded:uint = 0;
 			for each ( var loader:ILoadable in arr ) {
@@ -370,10 +355,16 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private function getUniqLoaders(target:Array, hash:Dictionary):void {
+		private function getUniqLoaders(target:Vector.<ILoadable>, hash:Dictionary):void {
 			for each ( var loader:ILoadable in this._loaders ) {
-				if ( loader is LoaderDispatcher )			( loader as LoaderDispatcher ).getUniqLoaders( target, hash );
-				else if ( target.indexOf( loader ) < 0 )	target.push( loader );
+				if ( !( loader in hash ) ) {
+					hash[ loader ] = true;
+					if ( loader is LoaderDispatcher ) {
+						( loader as LoaderDispatcher ).getUniqLoaders( target, hash );
+					} else {
+						target.push( loader );
+					}
+				}
 			}
 		}
 

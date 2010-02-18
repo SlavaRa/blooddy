@@ -8,6 +8,7 @@ package by.blooddy.core.events.net {
 
 	import by.blooddy.core.utils.ClassUtils;
 	
+	import flash.events.AsyncErrorEvent;
 	import flash.events.Event;
 
 	/**
@@ -16,7 +17,7 @@ package by.blooddy.core.events.net {
 	 * @playerversion			Flash 9
 	 * @langversion				3.0
 	 */
-	public class SerializeErrorEvent extends StackErrorEvent {
+	public class SerializeErrorEvent extends AsyncErrorEvent {
 
 		//--------------------------------------------------------------------------
 		//
@@ -35,8 +36,8 @@ package by.blooddy.core.events.net {
 		/**
  		 * Constructor
 		 */
-		public function SerializeErrorEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false, text:String=null, stack:String=null, data:*=null) {
-			super( type, bubbles, cancelable, text, stack );
+		public function SerializeErrorEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false, text:String=null, error:Error=null, data:*=null) {
+			super( type, bubbles, cancelable, text, error );
 			this.data = data;
 		}
 
@@ -55,11 +56,11 @@ package by.blooddy.core.events.net {
 		//--------------------------------------------------------------------------
 
 		public override function clone():Event {
-			return new SerializeErrorEvent( super.type, super.bubbles, super.cancelable, super.text, this.stack, this.data );
+			return new SerializeErrorEvent( super.type, super.bubbles, super.cancelable, super.text, super.error, this.data );
 		}
 
 		public override function toString():String {
-			return super.formatToString( ClassUtils.getClassName( this ), 'type', 'bubbles', 'cancelable', 'text', 'stack', 'data' );
+			return super.formatToString( ClassUtils.getClassName( this ), 'type', 'bubbles', 'cancelable', 'text', 'error', 'data' );
 		}
 
 	}

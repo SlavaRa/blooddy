@@ -11,8 +11,6 @@ package by.blooddy.core.data {
 	import by.blooddy.core.utils.ClassUtils;
 	
 	import flash.events.Event;
-	import flash.utils.getDefinitionByName;
-	import flash.utils.getQualifiedSuperclassName;
 
 	[ExcludeClass]
 	/**
@@ -44,14 +42,7 @@ package by.blooddy.core.data {
 		 */
 		public function DataBaseNativeEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super( type, bubbles, cancelable );
-			var c:Class = ( this as Object ).constructor;
-			if (
-				c === DataBaseNativeEvent ||
-				(
-					c !== DataBaseEvent &&
-					getDefinitionByName( getQualifiedSuperclassName( this ) ) === DataBaseNativeEvent
-				)
-			) {
+			if ( !( this is DataBaseEvent ) ) {
 				throw new ArgumentError( getErrorMessage( 2012, this ), 2012 );
 			}
 		}

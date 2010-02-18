@@ -15,6 +15,7 @@ package {
 	 * @keyword					text, bool, boolean
 	 */
 	public function parseBoolean(s:String):Boolean {
+		if ( !s ) return false;
 		s = s.toLowerCase();
 		return s && !(
 			s == 'false' ||

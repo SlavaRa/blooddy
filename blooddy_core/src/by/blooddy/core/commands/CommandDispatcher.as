@@ -40,8 +40,8 @@ package by.blooddy.core.commands {
 		/**
 		 * Constructor
 		 */
-		public function CommandDispatcher() {
-			super();
+		public function CommandDispatcher(target:ICommandDispatcher=null) {
+			super( target );
 		}
 
 		//--------------------------------------------------------------------------

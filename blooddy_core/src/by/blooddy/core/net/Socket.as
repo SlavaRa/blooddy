@@ -101,7 +101,7 @@ package by.blooddy.core.net {
 			super.connect( host, port );
 			this._host = host;
 			this._port = port;
-			super.dispatchEvent( new Event( Event.OPEN ) );
+			super.dispatchEvent( new Event( Event.OPEN ) ); // задержечку надо бы сделать
 		}
 
 		/**

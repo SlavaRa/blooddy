@@ -21,7 +21,7 @@ package by.blooddy.core.display {
 
 		private var _target:DisplayObject;
 
-		private	const _listeners:Array = new Array();
+		private	const _listeners:Vector.<StageObserverItem> = new Vector.<StageObserverItem>();
 
 		public function registerEventListener(target:IEventDispatcher, type:String, listener:Function, useCapture:Boolean=false, priority:int=0, useWeakReference:Boolean=false):void {
 			var item:StageObserverItem;
@@ -51,7 +51,7 @@ package by.blooddy.core.display {
 			}
 			var item:StageObserverItem;
 			for (var i:String in this._listeners) {
-				item = this._listeners[i] as StageObserverItem;
+				item = this._listeners[ i ];
 				if (
 					item.target === target &&
 					item.type == type &&

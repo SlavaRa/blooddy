@@ -19,6 +19,7 @@ package by.blooddy.core.net {
 	import flash.events.SecurityErrorEvent;
 	import flash.system.Security;
 	import flash.utils.ByteArray;
+	import flash.events.ErrorEvent;
 
 	//--------------------------------------
 	//  Implements events: IConnection
@@ -270,12 +271,15 @@ package by.blooddy.core.net {
 			this._socket.addEventListener( Event.OPEN,							super.dispatchEvent );
 			this._socket.addEventListener( Event.CONNECT,						this.handler_connect );
 			this._socket.addEventListener( ProgressEvent.SOCKET_DATA,			this.handler_socketData );
-			this._socket.addEventListener( IOErrorEvent.IO_ERROR,				super.dispatchEvent );
-			this._socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	super.dispatchEvent );
+			this._socket.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_error );
+			this._socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error );
 			this._socket.addEventListener( Event.CLOSE,							this.handler_close );
 			this._socket.connect( host, port );
 			this._host = this._socket.host;
 			this._port = this._socket.port;
+			if ( super.logging ) {
+				super.logger.addLog( new InfoLog( 'Open: ' + this._host + ':' + this._port, InfoLog.INFO ) );
+			}
 		}
 
 		/**
@@ -291,6 +295,7 @@ package by.blooddy.core.net {
 		 * @inheritDoc
 		 */
 		public override function call(commandName:String, ...parameters):* {
+			if ( !this._socket ) throw new IllegalOperationError();
 			if ( !this._filter ) throw new IllegalOperationError();
 			return super.$invokeCallOutputCommand(
 				new NetCommand( commandName, NetCommand.OUTPUT, parameters )
@@ -307,6 +312,12 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		protected override function $callOutputCommand(command:Command):* {
+
+//			var bytes:ByteArray = new ByteArray();
+//			this._filter.writeCommand( bytes, command as NetCommand );
+//			this._socket.writeBytes( bytes );
+//			trace( ByteArrayUtils.dump( bytes ) );
+
 			this._filter.writeCommand( this._socket, command as NetCommand );
 			this._socket.flush(); 
 		}
@@ -325,6 +336,18 @@ package by.blooddy.core.net {
 				super.logger.addLog( new InfoLog( 'Connect: ' + this._host + ':' + this._port, InfoLog.INFO ) );
 			}
 			super.dispatchEvent( event )
+		}
+
+		/**
+		 * @private
+		 */
+		private function handler_error(event:ErrorEvent):void {
+			if ( super.logging ) {
+				super.logger.addLog( new InfoLog( 'Error: ' + this._host + ':' + this._port, InfoLog.INFO ) );
+			}
+			this._host = null;
+			this._port = 0;
+			super.dispatchEvent( event );
 		}
 
 		/**
@@ -379,7 +402,7 @@ package by.blooddy.core.net {
 				try { // серилизуем комманду
 
 					command = this._filter.readCommand( this._inputBuffer, NetCommand.INPUT );
-					
+
 				} catch ( e:Error ) {
 
 					command = null;
@@ -390,13 +413,14 @@ package by.blooddy.core.net {
 					this._inputBuffer.length = 0;
 
 					if ( super.logging ) {
-						super.logger.addLog( new InfoLog( e.toString(), InfoLog.FATAL ) );
+						super.logger.addLog( new InfoLog( ( e.getStackTrace() || e.toString() ), InfoLog.FATAL ) );
+						trace( e.getStackTrace() || e.toString() );
+						trace( ByteArrayUtils.dump( data ) );
 					}
-					trace( e );
-					trace( ByteArrayUtils.dump( data ) );
 
-					super.dispatchEvent( new SerializeErrorEvent( SerializeErrorEvent.SERIALIZE_ERROR, false, false, e.toString(), e.getStackTrace(), data ) );
-					this.close();
+					if ( super.dispatchEvent( new SerializeErrorEvent( SerializeErrorEvent.SERIALIZE_ERROR, false, true, e.toString(), e, data ) ) ) {
+						this.close();
+					}
 
 				}
 

@@ -7,7 +7,7 @@
 package by.blooddy.core.data.xml.rss {
 
 	import by.blooddy.core.events.data.DataBaseEvent;
-	import by.blooddy.core.utils.XMLUtils;
+	import by.blooddy.core.utils.xml.XMLUtils;
 
 	/**
 	 * @author					BlooDHounD
@@ -19,55 +19,119 @@ package by.blooddy.core.data.xml.rss {
 	 */
 	public class RSSEnclosureData extends RSSPropertyData {
 
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * Contructor
+		 */
 		public function RSSEnclosureData() {
 			super();
 		}
 
+		//--------------------------------------------------------------------------
+		//
+		//  Overriden roperties
+		//
+		//--------------------------------------------------------------------------
+
+		//----------------------------------
+		//  name
+		//----------------------------------
+
 		[Deprecated( message="свойство устарело", replacement="url" )]
+		/**
+		 * @private
+		 */
 		public override function set name(value:String):void {
 			super.name = name;
 		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Properties
+		//
+		//--------------------------------------------------------------------------
+
+		//----------------------------------
+		//  url
+		//----------------------------------
 
 		public function get url():String {
 			return super.name;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set url(value:String):void {
 			super.name = value;
 		}
 
+		//----------------------------------
+		//  length
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
 		private var _length:uint;
 
 		public function get length():uint {
 			return this._length;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set length(value:uint):void {
 			if ( this._length == value ) return;
 			this._length = value;
-			if ( !this.$lock ) super.dispatchEvent( new DataBaseEvent( DataBaseEvent.CHANGE, true ) );
+			this.dispatchChange();
 		}
 
+		//----------------------------------
+		//  type
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
 		private var _type:String;
 
 		public function get type():String {
 			return this._type;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set type(value:String):void {
 			if ( this._type == value ) return;
 			this._type = value;
-			if ( !this.$lock ) super.dispatchEvent( new DataBaseEvent( DataBaseEvent.CHANGE, true ) );
+			this.dispatchChange();
 		}
 
+		//--------------------------------------------------------------------------
+		//
+		//  Overriden methods
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
 		public override function parseXML(xml:XML):void {
-			if ( xml.name().toString() != "enclosure" ) throw new ArgumentError();
+			if ( xml.name().toString() != 'enclosure' ) throw new ArgumentError();
 			this.$lock++;
-			super.name =				XMLUtils.parseStringNode( xml.@url );
-			this._length =				XMLUtils.parseUIntNode( xml.@length );
-			this._type =				XMLUtils.parseStringNode( xml.@type );
+			super.name =				XMLUtils.parseListToString( xml.@url );
+			this._length =				XMLUtils.parseListToInt( xml.@length );
+			this._type =				XMLUtils.parseListToString( xml.@type );
 			this.$lock--;
-			if ( !this.$lock ) super.dispatchEvent( new DataBaseEvent( DataBaseEvent.CHANGE, true ) );
+			this.dispatchChange();
 		}
 
 	}

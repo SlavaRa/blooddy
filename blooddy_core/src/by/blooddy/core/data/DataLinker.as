@@ -44,7 +44,7 @@ package by.blooddy.core.data {
 			this._data = data;
 			this._strict = strict;
 			if ( !dataContainer.contains( data ) ) dataContainer.addChild( data );
-			data.addEventListener( DataBaseEvent.REMOVED, this.handler_removed, false, int.MAX_VALUE, true );
+			data.addEventListener( DataBaseEvent.REMOVED, this.handler_removed, false, ( strict ? int.MAX_VALUE : int.MIN_VALUE ), true );
 		}
 
 		//--------------------------------------------------------------------------
