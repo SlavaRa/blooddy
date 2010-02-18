@@ -6,7 +6,7 @@
 
 package by.blooddy.core.display.resource {
 
-	import by.blooddy.core.errors.display.resource.ResourceError;
+	import by.blooddy.core.events.display.resource.ResourceErrorEvent;
 	import by.blooddy.core.events.display.resource.ResourceEvent;
 	import by.blooddy.core.events.net.LoaderEvent;
 	import by.blooddy.core.managers.resource.IResourceBundle;
@@ -66,6 +66,11 @@ package by.blooddy.core.display.resource {
 	 */
 	[Event( name="removedFromManager", type="by.blooddy.core.events.display.resource.ResourceEvent" )]
 
+	/**
+	 * @eventType			by.blooddy.core.events.display.resource.ResourceErrorEvent.RESOURCE_ERROR
+	 */
+	[Event( name="resourceError", type="by.blooddy.core.events.display.resource.ResourceErrorEvent" )]
+	
 	/**
 	 * Класс у когорого есть ссылка на манагер ресурсов.
 	 * 
@@ -150,11 +155,6 @@ package by.blooddy.core.display.resource {
 		 */
 		private var _addedToStage:Boolean = false;
 
-		/**
-		 * @private
-		 */
-		private var _addedToManager:Boolean = false;
-		
 		//--------------------------------------------------------------------------
 		//
 		//  Overriden peoperties: DisplayObject
@@ -187,7 +187,7 @@ package by.blooddy.core.display.resource {
 		}
 
 		protected final function loadResourceBundle(bundleName:String, priority:int=0.0):ILoadable {
-			if ( !this._addedToManager ) throw new ArgumentError();
+			if ( !this._manager ) throw new ArgumentError();
 			var loader:ILoadable = this._manager.loadResourceBundle( bundleName, priority );
 			// диспатчим событие о том что началась загрузка
 			if ( !loader.loaded ) super.dispatchEvent( new LoaderEvent( LoaderEvent.LOADER_INIT, true, true, loader ) );
@@ -195,7 +195,7 @@ package by.blooddy.core.display.resource {
 		}
 
 		protected final function unloadResourceBundle(bundleName:String):void {
-			if ( !this._addedToManager ) throw new ArgumentError();
+			if ( !this._manager ) throw new ArgumentError();
 			var bundle:IResourceBundle = this._manager.getResourceBundle( bundleName, true );
 			if ( bundle is ILoadable ) {
 				if ( !this._manager.dispatchEvent( new LoaderEvent( LoaderEvent.LOADER_UNLOAD, false, true, bundle as ILoadable ) ) ) {
@@ -219,7 +219,7 @@ package by.blooddy.core.display.resource {
 		}
 
 		protected final function hasResource(bundleName:String, resourceName:String):Boolean {
-			if ( !this._addedToManager ) throw new ArgumentError();
+			if ( !this._manager ) throw new ArgumentError();
 			if ( this._bin.has( bundleName + _SEPARATOR + resourceName ) ) return true;
 			else {
 				return this._manager.hasResource( bundleName, resourceName );
@@ -239,7 +239,7 @@ package by.blooddy.core.display.resource {
 		}
 
 		protected final function getDisplayObject(bundleName:String, resourceName:String):DisplayObject {
-			if ( !this._addedToManager ) throw new ArgumentError();
+			if ( !this._manager ) throw new ArgumentError();
 			var key:String = bundleName + _SEPARATOR + resourceName;
 			var result:DisplayObject;
 			if ( this._bin.has( key ) ) {
@@ -280,7 +280,7 @@ package by.blooddy.core.display.resource {
 		}
 
 		protected final function trashResource(resource:Object, time:uint=3*60*1E3):void {
-			if ( !this._addedToManager ) throw new ArgumentError();
+			if ( !this._manager ) throw new ArgumentError();
 			var def:ResourceLinker = this._resources[ resource ];
 			if ( !def ) throw new ArgumentError( '' );
 			def.count--;
@@ -320,7 +320,7 @@ package by.blooddy.core.display.resource {
 		 * @private
 		 */
 		private function getResource_get(bundleName:String, resourceName:String):Object {
-			if ( !this._addedToManager ) throw new ArgumentError();
+			if ( !this._manager ) throw new ArgumentError();
 
 			if ( this._manager.hasResource( bundleName, resourceName ) ) {
 
@@ -396,11 +396,10 @@ package by.blooddy.core.display.resource {
 				resources.push( def );
 			}
 			if ( resources ) {
-				throw new ResourceError( 'Некоторые ресурсы не были возвращены в мэннеджер ресурсов.', 5100, resources );
+				super.dispatchEvent( new ResourceErrorEvent( ResourceErrorEvent.RESOURCE_ERROR, false, false, 'Некоторые ресурсы не были возвращены в мэннеджер ресурсов.', resources ) );
 			}
 			// зануляем resourceManager
-			this._addedToManager = false;
-			this._manager = null; // FIXME надо со старым поработать
+			this._manager = null; // FIXME: надо со старым поработать
 			this._bin = null;
 		}
 		
@@ -424,12 +423,11 @@ package by.blooddy.core.display.resource {
 
 				var manager:ResourceManager = this.$getResourceManager();
 
-				if ( this._addedToManager && this._manager !== manager ) {
+				if ( this._manager && this._manager !== manager ) {
 					this.removeFromManager();
 				}
 				
-				if ( !this._addedToManager ) {
-					this._addedToManager = true;
+				if ( !this._manager ) {
 					this._manager = manager;
 					this._bin = _HASH[ manager ];
 					if ( !this._bin ) _HASH[ manager ] = this._bin = new RecycleBin();

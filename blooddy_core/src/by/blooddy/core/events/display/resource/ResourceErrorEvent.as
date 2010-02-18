@@ -1,44 +1,46 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  © 2007 BlooDHounD
+//  © 2010 q1
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.events.net {
-
+package by.blooddy.core.events.display.resource {
+	
+	import by.blooddy.core.display.resource.ResourceDefinition;
 	import by.blooddy.core.utils.ClassUtils;
 	
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
-
+	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
-	 * @playerversion			Flash 9
+	 * @playerversion			Flash 10
 	 * @langversion				3.0
+	 * @created					Feb 18, 2010 4:08:46 PM
 	 */
-	public class StackErrorEvent extends ErrorEvent {
-
+	public class ResourceErrorEvent extends ErrorEvent {
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Class constants
 		//
 		//--------------------------------------------------------------------------
 
-		public static const ERROR:String = ErrorEvent.ERROR;
+		public static const RESOURCE_ERROR:String = 'resourceError';
 
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-
+		
 		/**
- 		 * Constructor
+		 * Constructor.
 		 */
-		public function StackErrorEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false, text:String=null, stack:String=null) {
+		public function ResourceErrorEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false, text:String='', resources:Vector.<ResourceDefinition>=null) {
 			super( type, bubbles, cancelable, text );
-			this.stack = stack;
+			this.resources = resources;
 		}
 
 		//--------------------------------------------------------------------------
@@ -46,23 +48,23 @@ package by.blooddy.core.events.net {
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
-
-		public var stack:String;
+		
+		public var resources:Vector.<ResourceDefinition>;
 
 		//--------------------------------------------------------------------------
 		//
 		//  Overriden methods
 		//
 		//--------------------------------------------------------------------------
-
+		
 		public override function clone():Event {
-			return new StackErrorEvent( super.type, super.bubbles, super.cancelable, super.text, this.stack );
+			return new ResourceErrorEvent( super.type, super.bubbles, super.cancelable, super.text, this.resources );
 		}
 
 		public override function toString():String {
-			return super.formatToString( ClassUtils.getClassName( this ), 'type', 'bubbles', 'cancelable', 'text', 'stack' );
+			return super.formatToString( ClassUtils.getClassName( this ), 'type', 'bubbles', 'cancelable', 'text', 'resources' );
 		}
 
 	}
-
+	
 }

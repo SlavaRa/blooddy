@@ -35,12 +35,12 @@ package by.blooddy.core.display.resource {
 		 */
 		public function MainResourceSprite() {
 			super();
-			super.addEventListener( Event.ADDED_TO_STAGE,				this.handler_addedToStage,		false, int.MAX_VALUE, true );
-			super.addEventListener( Event.REMOVED_FROM_STAGE,			this.handler_removedFromStage,	false, int.MAX_VALUE, true );
-			super.addEventListener( ResourceEvent.GET_RESOURCE,			this.handler_getResource,		false, int.MIN_VALUE, true );
-			super.addEventListener( ResourceEvent.TRASH_RESOURCE,		this.handler_trashResource,		false, int.MIN_VALUE, true );
-			super.addEventListener( ResourceEvent.LOCK_BUNDLE,			this.handler_lockResource,		false, int.MIN_VALUE, true );
-			super.addEventListener( ResourceEvent.UNLOCK_BUNDLE,		this.handler_unlockResource,	false, int.MIN_VALUE, true );
+			super.addEventListener( ResourceEvent.ADDED_TO_MANAGER,		this.handler_addedToManager,		false, int.MAX_VALUE, true );
+			super.addEventListener( ResourceEvent.REMOVED_FROM_MANAGER,	this.handler_removedFromManager,	false, int.MAX_VALUE, true );
+			super.addEventListener( ResourceEvent.GET_RESOURCE,			this.handler_getResource,			false, int.MIN_VALUE, true );
+			super.addEventListener( ResourceEvent.TRASH_RESOURCE,		this.handler_trashResource,			false, int.MIN_VALUE, true );
+			super.addEventListener( ResourceEvent.LOCK_BUNDLE,			this.handler_lockResource,			false, int.MIN_VALUE, true );
+			super.addEventListener( ResourceEvent.UNLOCK_BUNDLE,		this.handler_unlockResource,		false, int.MIN_VALUE, true );
 		}
 
 		//--------------------------------------------------------------------------
@@ -113,14 +113,14 @@ package by.blooddy.core.display.resource {
 		/**
 		 * @private
 		 */
-		private function handler_addedToStage(event:Event):void {
+		private function handler_addedToManager(event:Event):void {
 			this._timer.addEventListener( TimerEvent.TIMER, this.handler_timer );
 		}
 
 		/**
 		 * @private
 		 */
-		private function handler_removedFromStage(event:Event):void {
+		private function handler_removedFromManager(event:Event):void {
 			this._timer.removeEventListener( TimerEvent.TIMER, this.handler_timer );
 		}
 
