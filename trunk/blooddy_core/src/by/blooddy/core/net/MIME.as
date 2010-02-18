@@ -1,34 +1,66 @@
+////////////////////////////////////////////////////////////////////////////////
+//
+//  (C) 2009 BlooDHounD
+//
+////////////////////////////////////////////////////////////////////////////////
+
 package by.blooddy.core.net {
 
 	import flash.utils.ByteArray;
 
+	/**
+	 * @author					BlooDHounD
+	 * @version					1.0
+	 * @playerversion			Flash 10
+	 * @langversion				3.0
+	 */
 	public final class MIME {
 
-		public static const FLASH:String =	"application/x-shockwave-flash";
+		//--------------------------------------------------------------------------
+		//
+		//  Class variables
+		//
+		//--------------------------------------------------------------------------
 
-		public static const GIF:String =	"image/gif";
+		private static const _EXTENSION:RegExp = /^[^\?]*?\.([^\.\?]+)(\?.+?)?$/;
 
-		public static const JPEG:String =	"image/jpeg";
+		//--------------------------------------------------------------------------
+		//
+		//  Class constants
+		//
+		//--------------------------------------------------------------------------
 
-		public static const PNG:String =	"image/png";
+		public static const FLASH:String =	'application/x-shockwave-flash';
 
-		public static const BINARY:String =	"application/octet-stream";
+		public static const GIF:String =	'image/gif';
 
-		public static const ZIP:String =	"application/zip"; // application/x-zip-compressed
+		public static const JPEG:String =	'image/jpeg';
 
-		public static const MP3:String =	"audio/mpeg";
+		public static const PNG:String =	'image/png';
 
-		public static const HTML:String =	"text/html";
+		public static const BINARY:String =	'application/octet-stream';
 
-		public static const TEXT:String =	"text/plain";
+		public static const ZIP:String =	'application/zip'; // application/x-zip-compressed
 
-		public static const RSS:String =	"text/xml+rss";
+		public static const MP3:String =	'audio/mpeg';
 
-		public static const XML:String =	"text/xml";
+		public static const HTML:String =	'text/html';
 
-		public static const CSS:String =	"text/css";
+		public static const TEXT:String =	'text/plain';
 
-		public static const VARS:String =	"multipart/form-data";
+		public static const RSS:String =	'text/xml+rss';
+
+		public static const XML:String =	'text/xml';
+
+		public static const CSS:String =	'text/css';
+
+		public static const VARS:String =	'multipart/form-data';
+
+		//--------------------------------------------------------------------------
+		//
+		//  Class methods
+		//
+		//--------------------------------------------------------------------------
 
 		public static function analyseBytes(bytes:ByteArray):String {
 			if			( bytes[0] == 67 ) { // C
@@ -87,25 +119,23 @@ package by.blooddy.core.net {
 			return null;
 		}
 
-		private static const _EXTENSION:RegExp = /^[^\?]*?\.([^\.\?]+)(\?.+?)?$/;
-
 		public static function analyseURL(url:String):String {
 			if ( url ) {
 				var m:Array = url.match( _EXTENSION );
 				if ( m ) {
 					switch ( m[1] ) {
-						case "swf":		return FLASH;
-						case "jpeg":
-						case "jpg":		return JPEG;
-						case "gif":		return GIF;
-						case "png":		return PNG;
-						case "mp3":		return MP3;
-						case "css":		return CSS;
-						case "rss":		return RSS;
-						case "xml":		return XML;
-						case "html":
-						case "htm":		return HTML;
-						case "txt":		return TEXT;
+						case 'swf':		return FLASH;
+						case 'jpeg':
+						case 'jpg':		return JPEG;
+						case 'gif':		return GIF;
+						case 'png':		return PNG;
+						case 'mp3':		return MP3;
+						case 'css':		return CSS;
+						case 'rss':		return RSS;
+						case 'xml':		return XML;
+						case 'html':
+						case 'htm':		return HTML;
+						case 'txt':		return TEXT;
 					}
 				}
 			}

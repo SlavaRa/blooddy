@@ -94,7 +94,7 @@ package by.blooddy.core.events.managers {
 	     * @private
 	     */
 		public override function toString():String {
-			return super.formatToString( ClassUtils.getClassName( this ), 'type', 'bubbles', 'cancelable', 'bundleName' );
+			return super.formatToString( ClassUtils.getClassName( this ), 'type', 'bubbles', 'cancelable', 'bundle' );
 		}
 
 	}

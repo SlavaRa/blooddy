@@ -30,10 +30,10 @@ package by.blooddy.core.controllers {
 		public function DisplayObjectController(controller:IBaseController, container:DisplayObjectContainer, sharedObjectKey:String=null) {
 			super( controller, sharedObjectKey );
 			this._container = container;
-			this._container.addEventListener( Event.ADDED_TO_STAGE,		this.handler_addedToStage,		false, 0, true );
-			this._container.addEventListener( Event.REMOVED_FROM_STAGE,	this.handler_removedFromStage,	false, 0, true );
+			this._container.addEventListener( Event.ADDED_TO_STAGE,			this.handler_addedToStage,		false, 0, true );
+			this._container.addEventListener( Event.REMOVED_FROM_STAGE,		this.handler_removedFromStage,	false, 0, true );
 			if ( this._container.stage ) {
-				this._container.addEventListener( Event.EXIT_FRAME,		this.handler_exitFrame,			false, 0, true );
+				this._container.addEventListener( Event.FRAME_CONSTRUCTED,	this.handler_frameConstructed,	false, 0, true );
 			}
 		}
 
@@ -88,8 +88,8 @@ package by.blooddy.core.controllers {
 		/**
 		 * @private
 		 */
-		private function handler_exitFrame(event:Event):void {
-			this._container.removeEventListener( Event.EXIT_FRAME, this.handler_exitFrame );
+		private function handler_frameConstructed(event:Event):void {
+			this._container.removeEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameConstructed );
 			if ( !this._constructed && this._container.stage ) {
 				this._constructed = true;
 				this.construct();

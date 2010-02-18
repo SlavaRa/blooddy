@@ -109,7 +109,7 @@ package by.blooddy.core.utils {
 
 		/**
 		 */
-		public function clear(pattern:*):void {
+		public function clear(pattern:*=null):void {
 			var key:String;
 			if ( pattern ) {
 				for ( key in this._hash ) {

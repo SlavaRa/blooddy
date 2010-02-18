@@ -6,7 +6,7 @@
 
 package by.blooddy.core.data.xml.rss {
 
-	import by.blooddy.core.data.xml.IXMLData;
+	import by.blooddy.core.utils.xml.IXMLable;
 
 	/**
 	 * @author					BlooDHounD
@@ -16,7 +16,11 @@ package by.blooddy.core.data.xml.rss {
 	 * 
 	 * @keyword					rss, xml, data
 	 */
-	public interface IRSSElementAsset extends IXMLData {
+	public interface IRSSElementAsset extends IXMLable {
+
+		//----------------------------------
+		//  element
+		//----------------------------------
 
 		function get element():RSSElementData
 

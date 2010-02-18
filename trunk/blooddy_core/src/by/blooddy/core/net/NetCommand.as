@@ -33,14 +33,21 @@ package by.blooddy.core.net {
 		 * 
 		 * @see						#io
 		 */
-		public static const INPUT:String =	'input';
+		public static const INPUT:String =		'input';
 
 		/**
 		 * Направление комманды. "Изходящая".
 		 * 
 		 * @see						#io
 		 */
-		public static const OUTPUT:String =	'output';
+		public static const OUTPUT:String =		'output';
+
+		/**
+		 * Направление комманды. "Изходящая".
+		 * 
+		 * @see						#io
+		 */
+		public static const UNKNOWN:String =	'';
 
 		//--------------------------------------------------------------------------
 		//
@@ -52,7 +59,7 @@ package by.blooddy.core.net {
 		 * Constructor.
 		 * @param	name		Имя комманды.
 		 */
-		public function NetCommand(name:String, io:String=OUTPUT, arguments:Array=null) {
+		public function NetCommand(name:String, io:String=UNKNOWN, arguments:Array=null) {
 			super( name, arguments );
 			this.setIO( io );
 		}
@@ -90,7 +97,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private var _io:String = OUTPUT;
+		private var _io:String;
 
 		public function get io():String {
 			return this._io;
@@ -108,12 +115,13 @@ package by.blooddy.core.net {
 		 */
 		private function setIO(value:String):void {
 			value = value.toLowerCase()
-			switch (value) {
+			switch ( value ) {
 				case INPUT:
 				case OUTPUT:
+				case UNKNOWN:
 					break;
 				default:
-					value = INPUT;
+					throw new ArgumentError();
 					break;
 			}
 			this._io = value;

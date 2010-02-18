@@ -38,9 +38,9 @@ package by.blooddy.core.utils {
 		 * @see						flash.utils.getQualifiedClassName()
 		 */
 		public static function getClassName(o:Object):String {
-			var name:String = getQualifiedClassName(o);
-			var index:int = name.lastIndexOf("::");
-			if (index>0) name = name.substr(index + 2);
+			var name:String = getQualifiedClassName( o) ;
+			var index:int = name.lastIndexOf( '::' );
+			if ( index > 0 ) name = name.substr( index + 2 );
 			return name;
 		}
 		
@@ -53,21 +53,30 @@ package by.blooddy.core.utils {
 		 *
 		 * @see						flash.utils.getQualifiedSuperclassName()
 		 */
-		public static function getSuperclassName(o:Object):String {
+		public static function getSuperClassName(o:Object):String {
 			var name:String = getQualifiedSuperclassName( o );
-			var index:int = name.lastIndexOf( "::" );
+			var index:int = name.lastIndexOf( '::' );
 			if ( index >= 0 ) name = name.substr( index + 2 );
 			return name;
 		}
 
 		public static function getClass(o:Object):Class {
-			return getDefinitionByName( getQualifiedClassName( o ) ) as Class;
+			try {
+				return getDefinitionByName( getQualifiedClassName( o ) ) as Class;
+			} catch ( e:Error ) {
+			}
+			return null;
 		}
 
-		public static function getSuperclass(o:Object):Class {
+		public static function getSuperClass(o:Object):Class {
 			var name:String = getQualifiedSuperclassName( o );
-			if ( !name ) return null;
-			return getDefinitionByName( name ) as Class;
+			if ( name ) {
+				try {
+					return getDefinitionByName( name ) as Class;
+				} catch ( e:Error ) {
+				}
+			}
+			return null;
 		}
 
 	}

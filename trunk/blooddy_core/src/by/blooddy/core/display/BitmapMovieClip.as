@@ -7,6 +7,7 @@
 package by.blooddy.core.display {
 
 	import by.blooddy.core.errors.getErrorMessage;
+	import by.blooddy.core.utils.IDisposable;
 	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
@@ -25,7 +26,7 @@ package by.blooddy.core.display {
 	 *
 	 * @keyword					bitmapmovieclip, bitmap, movieclip
 	 */
-	public class BitmapMovieClip extends MovieClipEquivalent {
+	public class BitmapMovieClip extends MovieClipEquivalent implements IDisposable {
 
 		//--------------------------------------------------------------------------
 		//
@@ -339,6 +340,7 @@ package by.blooddy.core.display {
 
 		protected override function setCurrentFrame(value:int):void {
 			this._currentFrame = value;
+			if ( this._list.length < value ) return;
 			var element:CollectionElement = this._list[ value - 1 ];
 			this._container.bitmapData = element.bmp;
 			this._container.x = element.x;

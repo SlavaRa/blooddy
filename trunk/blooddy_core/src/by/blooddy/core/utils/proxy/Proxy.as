@@ -6,9 +6,11 @@
 
 package by.blooddy.core.utils.proxy {
 
+	import by.blooddy.core.utils.ClassUtils;
+	
+	import flash.utils.Dictionary;
 	import flash.utils.Proxy;
 	import flash.utils.flash_proxy;
-	import by.blooddy.core.utils.ClassUtils;
 
 	use namespace flash_proxy;
 
@@ -24,14 +26,34 @@ package by.blooddy.core.utils.proxy {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Class variables
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private static const _HASH:Dictionary = new Dictionary( true );
+
+		//--------------------------------------------------------------------------
+		//
 		//  Private class methods
 		//
 		//--------------------------------------------------------------------------
 
-		private static function getPrototypeByProperty(cl:Class, name:*):Object {
-			if ( !cl || !cl.prototype ) return null;
-			if ( name in cl.prototype ) return cl.prototype;
-			return getPrototypeByProperty( ClassUtils.getSuperclass( cl ), name );
+		/**
+		 * @private
+		 */
+		private static function getPrototypeByProperty(c:Class, name:String):Object {
+			if ( !c || !c.prototype ) return null;
+			var hash:Object = _HASH[ c ];
+			if ( !hash ) _HASH[ c ] = hash = new Object();
+			if ( name in hash ) {
+				return hash[ name ];
+			} else {
+				if ( name in c.prototype ) return c.prototype;
+				return ( hash[ name ] = getPrototypeByProperty( ClassUtils.getSuperClass( c ), name ) ); // save
+			}
 		}
 
 		//--------------------------------------------------------------------------
@@ -40,6 +62,9 @@ package by.blooddy.core.utils.proxy {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * Constructor
+		 */
 		public function Proxy() {
 			super();
 			this._constructor = ClassUtils.getClass( this );
@@ -51,6 +76,9 @@ package by.blooddy.core.utils.proxy {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @private
+		 */
 		private var _constructor:Class;
 
 		//--------------------------------------------------------------------------
@@ -59,25 +87,42 @@ package by.blooddy.core.utils.proxy {
 		//
 		//--------------------------------------------------------------------------
 
+		flash_proxy override function hasProperty(name:*):Boolean {
+			if ( name && ( name is QName && !( name as QName ).uri ) || name is String ) {
+				switch ( name.toString() ) {
+					case 'constructor':
+					case 'toString':
+					case 'hasOwnProperty':
+					case 'valueOf':
+					case 'toLocaleString':
+					case 'propertyIsEnumerable':
+					case 'setPropertyIsEnumerable':
+					case 'isPrototypeOf':
+						return true;
+				}
+				return Boolean( getPrototypeByProperty( this._constructor, name ) );
+			}
+			return false;
+		}
+		
 		flash_proxy override function getProperty(name:*):* {
-			if ( name == "constructor" ) return this._constructor;
-			var prototype:Object = getPrototypeByProperty( this._constructor, name );
-			if ( prototype ) return prototype[name];
-			return super.flash_proxy::getProperty(name);
+			if ( name && ( name is QName && !( name as QName ).uri ) || name is String ) {
+				if ( name == 'constructor' ) return this._constructor;
+				var prototype:Object = getPrototypeByProperty( this._constructor, name );
+				if ( prototype ) return prototype[ name ];
+			}
+			return super.flash_proxy::getProperty( name );
 		}
 
 		flash_proxy override function callProperty(name:*, ...rest):* {
-			var prototype:Object = getPrototypeByProperty( this._constructor, name );
-			if ( prototype ) {
-				return prototype[name].apply( this, rest );
-			} else {
-				rest.unshift( name );
-				return super.flash_proxy::callProperty.apply( this, rest );
+			if ( name && ( name is QName && !( name as QName ).uri ) || name is String ) {
+				var prototype:Object = getPrototypeByProperty( this._constructor, name );
+				if ( prototype ) {
+					return prototype[ name ].apply( this, rest );
+				}
 			}
-		}
-
-		flash_proxy override function hasProperty(name:*):Boolean {
-			return Boolean( getPrototypeByProperty(this._constructor, name) );
+			rest.unshift( name );
+			return super.flash_proxy::callProperty.apply( this, rest );
 		}
 
 		//--------------------------------------------------------------------------
@@ -98,9 +143,9 @@ package by.blooddy.core.utils.proxy {
 			return this;
 		}
 
-		prototype.setPropertyIsEnumerable("toLocaleString", false);
-		prototype.setPropertyIsEnumerable("toString", false);
-		prototype.setPropertyIsEnumerable("valueOf", false);
+		prototype.setPropertyIsEnumerable( 'toLocaleString', false );
+		prototype.setPropertyIsEnumerable( 'toString', false );
+		prototype.setPropertyIsEnumerable( 'valueOf', false );
 
 	}
 

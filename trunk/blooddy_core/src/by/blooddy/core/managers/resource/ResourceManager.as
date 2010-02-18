@@ -27,16 +27,16 @@ package by.blooddy.core.managers.resource {
 	/**
 	 * Транслируется, при добавлении "пучка".
 	 *
-	 * @eventType			flash.events.ResourceEvent.BUNDLE_ADDED
+	 * @eventType			by.blooddy.core.events.managers.ResourceBundleEvent.BUNDLE_ADDED
 	 */
-	[Event( name="bundleAdded", type="flash.events.ResourceEvent" )]
+	[Event( name="bundleAdded", type="by.blooddy.core.events.managers.ResourceBundleEvent" )]
 
 	/**
 	 * Транслируется, при удаление "пучка".
 	 *
-	 * @eventType			flash.events.ResourceEvent.BUNDLE_REMOVED
+	 * @eventType			by.blooddy.core.events.managers.ResourceBundleEvent.BUNDLE_REMOVED
 	 */
-	[Event( name="bundleRemoved", type="flash.events.ResourceEvent" )]
+	[Event( name="bundleRemoved", type="by.blooddy.core.events.managers.ResourceBundleEvent" )]
 
 	/**
 	 * Следитель за ресурсами.
@@ -157,7 +157,7 @@ package by.blooddy.core.managers.resource {
 		 */
 		private static function loadQueue():void {
 			if ( _LOADING_QUEUE.length <= 0 ) return;
-			var loader:ResourceLoaderAsset = _LOADING_QUEUE.pop() as ResourceLoaderAsset;
+			var loader:ResourceLoaderAsset = _LOADING_QUEUE.pop();
 			if ( loader.$managers.length > 0 ) {
 				loader.$load();
 				_loading++;
@@ -247,7 +247,7 @@ package by.blooddy.core.managers.resource {
 		 * @keyword					resourcemanager.getobject, getobject
 		 */
 		public function getResource(bundleName:String, resourceName:String):* {
-			if ( !( bundleName in this._hash ) ) return undefined;
+			if ( !( bundleName in this._hash ) ) return;
 			return ( this._hash[ bundleName ] as IResourceBundle ).getResource( resourceName );
 		}
 
@@ -288,14 +288,8 @@ package by.blooddy.core.managers.resource {
 			return ( !ignoreLoaded && bundle is ILoadable && !( bundle as ILoadable ).loaded ? null : bundle );
 		}
 
-		public function isUnloadable(bundleName:String):Boolean {
-			var bundle:IResourceBundle = this._hash[ bundleName ] as IResourceBundle;
-			return ( !bundle || !( bundle is ResourceLoaderAsset ) || ( bundle as ResourceLoaderAsset ).$managers.length <= 1 );
-		}
-
-		[ArrayElementType( 'String')]
-		public function getResourceBundles():Array {
-			var result:Array = new Array();
+		public function getResourceBundles():Vector.<String> {
+			var result:Vector.<String> = new Vector.<String>();
 			for ( var name:String in this._hash ) {
 				result.push( name );
 			}
@@ -306,8 +300,6 @@ package by.blooddy.core.managers.resource {
 		 * Добавляет новый ресурс.
 		 * 
 		 * @param	bundleName		Имя "пучка".
-		 * 
-		 * @event	bundleAdded		ResourceEvent
 		 * 
 		 * @keyword					resourcemanager.removeresourcebundle, removeresourcebundle
 		 */
@@ -338,8 +330,6 @@ package by.blooddy.core.managers.resource {
 		 * Удаляет ресурс.
 		 * 
 		 * @param	bundleName		Имя "пучка".
-		 * 
-		 * @event	bundleAdded		ResourceEvent
 		 * 
 		 * @keyword					resourcemanager.removeresourcebundle, removeresourcebundle
 		 */
@@ -378,8 +368,6 @@ package by.blooddy.core.managers.resource {
 		 * 
 		 * @return					Загрузщик, в которм ресурс грузится.
 		 * 
-		 * @event	bundleAdded		ResourceEvent
-		 * 
 		 * @keyword					resourcemanager.loadresourcebundle, loadresourcebundle
 		 */
 		public function loadResourceBundle(url:String, priority:uint=0):ILoadable {
@@ -414,7 +402,7 @@ package by.blooddy.core.managers.resource {
 				}
 				this._hash[ url ] = loader = asset;
 				asset.$managers.push( this );
-				if ( !asset.loaded )	this.registerLoadable( asset );
+				if ( !asset.loaded ) this.registerLoadable( asset );
 				else if ( super.hasEventListener( ResourceBundleEvent.BUNDLE_ADDED ) ) {
 					super.dispatchEvent( new ResourceBundleEvent( ResourceBundleEvent.BUNDLE_ADDED, false, false, asset ) );
 				}
@@ -482,7 +470,9 @@ import by.blooddy.core.utils.ClassUtils;
 import flash.errors.IllegalOperationError;
 import flash.events.Event;
 import flash.net.URLRequest;
+import flash.system.ApplicationDomain;
 import flash.system.LoaderContext;
+import flash.system.SecurityDomain;
 import flash.utils.getTimer;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -513,7 +503,7 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 	/**
 	 * @private
 	 */
-	private static const _URL:RegExp = /^(https?|file|ftps?|):\/\//;
+	private static const _URL:RegExp = /^(http|file|ftp)s?:\/\//;
 
 	//--------------------------------------------------------------------------
 	//
@@ -575,6 +565,7 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 			url = this._url;
 		} else {
 			url = baseURL + '/' + this._url;
+			super.loaderContext = new LoaderContext( false, new ApplicationDomain( ApplicationDomain.currentDomain ), SecurityDomain.currentDomain );
 		}
 		super.load( new URLRequest( url ) );
 	}

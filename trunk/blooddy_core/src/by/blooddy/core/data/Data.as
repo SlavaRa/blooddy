@@ -114,6 +114,7 @@ package by.blooddy.core.data {
 				}
 				this.dispatchEventFunction( new DataBaseEvent( DataBaseEvent.REMOVED, true ) );
 			}
+			value = this.$parent;
 			this._bubble_parent = value;
 			if ( value && value != old ) { // появился НОВЫЙ папа :)
 				if ( super.hasEventListener( DataBaseEvent.ADDED_TO_BASE ) ) {
@@ -180,27 +181,26 @@ package by.blooddy.core.data {
 		 * @private
 		 */
 		private function dispatchEventFunction(event:DataBaseNativeEvent):Boolean {
-			var result:Boolean = true;
+			var canceled:Boolean = false;
 			if ( super.hasEventListener( event.type ) ) {
-				result = super.dispatchEvent( event );
+				canceled = !super.dispatchEvent( event );
 			}
-			if ( event.bubbles ) {
-				// надо бублить
-				var target:Data = this._bubble_parent;
-				var e:DataBaseNativeEvent;
-				while ( target && !event.$stopped ) {
-					if ( target.hasEventListener( event.type ) ) {
-						e = event.clone() as DataBaseNativeEvent;
-						e.$eventPhase = EventPhase.BUBBLING_PHASE;
-						e.$target = this;
-						e.$canceled = result;
-						target.$dispatchEvent( new EventContainer( e ) );
-						result = e.$canceled;
-					}
-					target = target._bubble_parent;
+			// надо бублить
+			var target:Data = this._bubble_parent;
+			var e:DataBaseNativeEvent;
+			while ( target ) {
+				if ( target.hasEventListener( event.type ) ) {
+					e = event.clone() as DataBaseNativeEvent;
+					e.$eventPhase = EventPhase.BUBBLING_PHASE;
+					e.$target = this;
+					e.$canceled = canceled;
+					target.$dispatchEvent( new EventContainer( e ) );
+					canceled = e.$canceled;
+					if ( event.$stopped ) break;
 				}
+				target = target._bubble_parent;
 			}
-			return result;
+			return !canceled;
 		}
 
 		//----------------------------------

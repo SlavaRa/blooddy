@@ -93,9 +93,9 @@ package by.blooddy.core.utils.proxy {
 		//--------------------------------------------------------------------------
 
 		flash_proxy override function getProperty(name:*):* {
-			if ( super.flash_proxy::hasProperty(name) ) {
+			if ( !name || super.flash_proxy::hasProperty(name) ) {
 				return super.flash_proxy::getProperty(name);
-			} else if ( name in this._hash ) return this._hash[ name ];
+			} else if ( name in this._hash ) return this._hash[ name ]; // FIXED: развлетление хэшей!
 			else if ( name in this._target ) {
 				var value:* = this._target[name];
 				if (

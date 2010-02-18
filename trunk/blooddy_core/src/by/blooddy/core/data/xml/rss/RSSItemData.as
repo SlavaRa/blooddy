@@ -8,7 +8,7 @@ package by.blooddy.core.data.xml.rss {
 
 	import by.blooddy.core.data.Data;
 	import by.blooddy.core.events.data.DataBaseEvent;
-	import by.blooddy.core.utils.XMLUtils;
+	import by.blooddy.core.utils.xml.XMLUtils;
 
 	/**
 	 * @author					BlooDHounD
@@ -20,145 +20,196 @@ package by.blooddy.core.data.xml.rss {
 	 */
 	public class RSSItemData extends RSSElementData {
 
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * Contructor
+		 */
 		public function RSSItemData() {
 			super();
 		}
 
+		//--------------------------------------------------------------------------
+		//
+		//  Properties
+		//
+		//--------------------------------------------------------------------------
+
+		//----------------------------------
+		//  author
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
 		private var _author:String;
 
 		public function get author():String {
 			return this._author;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set author(value:String):void {
 			if ( this._author == value ) return;
 			this._author = value;
-			if ( !this.$lock ) super.dispatchEvent( new DataBaseEvent( DataBaseEvent.CHANGE, true ) );
+			this.dispatchChange();
 		}
 
+		//----------------------------------
+		//  category
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
 		private var _category:RSSCategoryData;
 
 		public function get category():RSSCategoryData {
 			return this._category;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set category(value:RSSCategoryData):void {
 			if ( this._category === value ) return;
 			if ( value )	super.addChild( value );
 			else			super.removeChild( this._category );
 		}
 
+		//----------------------------------
+		//  comments
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
 		private var _comments:String;
 
 		public function get comments():String {
 			return this._comments;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set comments(value:String):void {
 			if ( this._comments == value ) return;
 			this._comments = value;
-			if ( !this.$lock ) super.dispatchEvent( new DataBaseEvent( DataBaseEvent.CHANGE, true ) );
+			this.dispatchChange();
 		}
 
+		//----------------------------------
+		//  enclosure
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
 		private var _enclosure:RSSEnclosureData;
 
 		public function get enclosure():RSSEnclosureData {
 			return this._enclosure;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set enclosure(value:RSSEnclosureData):void {
 			if ( this._enclosure === value ) return;
 			if ( value )	super.addChild( value );
 			else			super.removeChild( this._enclosure );
 		}
 
+		//----------------------------------
+		//  guid
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
 		private var _guid:RSSGuidData;
 
 		public function get guid():RSSGuidData {
 			return this._guid;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set guid(value:RSSGuidData):void {
 			if ( this._guid === value ) return;
 			if ( value )	super.addChild( value );
 			else			super.removeChild( this._guid );
 		}
 
+		//----------------------------------
+		//  pubDate
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
 		private var _pubDate:Date;
 
 		public function get pubDate():Date {
 			return new Date( this._pubDate.getTime() );
 		}
 
+		/**
+		 * @private
+		 */
 		public function set pubDate(value:Date):void {
 			if ( this._pubDate === value || this._pubDate.getTime() == value.getTime() ) return;
 			this._pubDate = value;
-			if ( !this.$lock ) super.dispatchEvent( new DataBaseEvent( DataBaseEvent.CHANGE, true ) );
+			this.dispatchChange();
 		}
 
+		//----------------------------------
+		//  source
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
 		private var _source:RSSSourceData;
 
 		public function get source():RSSSourceData {
 			return this._source;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set source(value:RSSSourceData):void {
 			if ( this._source === value ) return;
 			if ( value )	super.addChild( value );
 			else			super.removeChild( this._source );
 		}
 
-		protected override function addChild_before(child:Data):void {
-			var change:Boolean = false;
-			this.$lock++;
-			if ( child is RSSCategoryData ) {
-				if ( this._category ) super.removeChild( this._category );
-				this._category = child as RSSCategoryData;
-				change = true;
-			} else if ( child is RSSEnclosureData ) {
-				if ( this._enclosure ) super.removeChild( this._enclosure );
-				this._enclosure = child as RSSEnclosureData;
-				change = true;
-			} else if ( child is RSSGuidData ) {
-				if ( this._guid ) super.removeChild( this._guid );
-				this._guid = child as RSSGuidData;
-				change = true;
-			} else if ( child is RSSSourceData ) {
-				if ( this._source ) super.removeChild( this._source );
-				this._source = child as RSSSourceData;
-				change = true;
-			}
-			this.$lock--;
-			if ( change && !this.$lock ) super.dispatchEvent( new DataBaseEvent( DataBaseEvent.CHANGE, true ) );
-		}
+		//--------------------------------------------------------------------------
+		//
+		//  Overriden methods
+		//
+		//--------------------------------------------------------------------------
 
-		protected override function removeChild_before(child:Data):void {
-			super.removeChild_before( child );
-			var change:Boolean = false;
-			if ( child is RSSCategoryData ) {
-				this._category = null;
-				change = true;
-			} else if ( child is RSSEnclosureData ) {
-				this._enclosure = null;
-				change = true;
-			} else if ( child is RSSGuidData ) {
-				this._guid = null;
-				change = true;
-			} else if ( child is RSSSourceData ) {
-				this._source = null;
-				change = true;
-			}
-			if ( change && !this.$lock ) super.dispatchEvent( new DataBaseEvent( DataBaseEvent.CHANGE, true ) );
-		}
-
+		/**
+		 * @private
+		 */
 		public override function parseXML(xml:XML):void {
-			if ( xml.name().toString() != "item" ) throw new ArgumentError();
+			if ( xml.name().toString() != 'item' ) throw new ArgumentError();
 			this.$lock++;
 			super.parseXML( xml );
 
-			this._author =		XMLUtils.parseStringNode( xml.author );
-			this._comments =	XMLUtils.parseStringNode( xml.comments );
-			this._pubDate =		XMLUtils.parseDateNode( xml.pubDate );
+			this._author =		XMLUtils.parseListToString( xml.author );
+			this._comments =	XMLUtils.parseListToString( xml.comments );
+			this._pubDate =		XMLUtils.parseListToDate( xml.pubDate );
 
 			var list:XMLList;
 			var prop:IRSSElementAsset;
@@ -196,7 +247,62 @@ package by.blooddy.core.data.xml.rss {
 			}
 
 			this.$lock--;
-			if ( !this.$lock ) super.dispatchEvent( new DataBaseEvent( DataBaseEvent.CHANGE, true ) );
+			this.dispatchChange();
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Overriden protected methods
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		protected override function addChild_before(child:Data):void {
+			var change:Boolean = false;
+			this.$lock++;
+			if ( child is RSSCategoryData ) {
+				if ( this._category ) super.removeChild( this._category );
+				this._category = child as RSSCategoryData;
+				change = true;
+			} else if ( child is RSSEnclosureData ) {
+				if ( this._enclosure ) super.removeChild( this._enclosure );
+				this._enclosure = child as RSSEnclosureData;
+				change = true;
+			} else if ( child is RSSGuidData ) {
+				if ( this._guid ) super.removeChild( this._guid );
+				this._guid = child as RSSGuidData;
+				change = true;
+			} else if ( child is RSSSourceData ) {
+				if ( this._source ) super.removeChild( this._source );
+				this._source = child as RSSSourceData;
+				change = true;
+			}
+			this.$lock--;
+			if ( change ) super.dispatchChange();
+		}
+
+		/**
+		 * @private
+		 */
+		protected override function removeChild_before(child:Data):void {
+			super.removeChild_before( child );
+			var change:Boolean = false;
+			if ( child is RSSCategoryData ) {
+				this._category = null;
+				change = true;
+			} else if ( child is RSSEnclosureData ) {
+				this._enclosure = null;
+				change = true;
+			} else if ( child is RSSGuidData ) {
+				this._guid = null;
+				change = true;
+			} else if ( child is RSSSourceData ) {
+				this._source = null;
+				change = true;
+			}
+			if ( change ) super.dispatchChange();
 		}
 
 	}

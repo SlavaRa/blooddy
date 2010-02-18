@@ -148,7 +148,7 @@ package by.blooddy.core.display {
 				if ( totalFrames == this._totalFrames ) {
 					result = this._currentFrame;
 				} else {
-					result = Math.round( ( this._currentFrame - 1 ) / this._totalFrames * totalFrames + 1 );
+					result = Math.round( ( this._currentFrame - 1 ) / this._totalFrames * totalFrames ) + 1;
 				}
 				arr[ this._currentFrame ] = result;
 			}

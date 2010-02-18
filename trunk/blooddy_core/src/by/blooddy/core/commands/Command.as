@@ -78,7 +78,7 @@ package by.blooddy.core.commands {
 
 		public function call(client:Object, ns:Namespace=null):* {
 			// пытаемся выполнить что-нить
-			client[ new QName( ns || '', this._name ) ].apply( client, this );
+			return client[ new QName( ns || '', this._name ) ].apply( client, this );
 		}
 
 		/**
@@ -105,12 +105,16 @@ package by.blooddy.core.commands {
 
 		/**
 		 * Формирует из агрументов строку.
-		 * 
-		 * @return			String
 		 */
 		protected final function argumentsToString():String {
 			return arrayToString( this );
 		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Private methods
+		//
+		//--------------------------------------------------------------------------
 
 		/**
 		 * @private

@@ -8,12 +8,12 @@ package by.blooddy.core.net {
 
 	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.commands.CommandDispatcher;
-	import by.blooddy.core.events.net.StackErrorEvent;
 	import by.blooddy.core.logging.ILogging;
 	import by.blooddy.core.logging.InfoLog;
 	import by.blooddy.core.logging.Logger;
 	import by.blooddy.core.logging.commands.CommandLog;
-	import by.blooddy.core.utils.ClassUtils;
+	
+	import flash.events.AsyncErrorEvent;
 
 	//--------------------------------------
 	//  Events
@@ -22,7 +22,7 @@ package by.blooddy.core.net {
 	/**
 	 * какая-то ошибка при исполнении.
 	 */
-	[Event( name="error", type="by.blooddy.core.events.net.StackErrorEvent" )]	
+	[Event( name="asyncError", type="flash.events.AsyncErrorEvent" )]	
 
 	/**
 	 * @author					BlooDHounD
@@ -43,10 +43,22 @@ package by.blooddy.core.net {
 		/**
 		 * Constructior
 		 */
-		public function AbstractRemoter() {
+		public function AbstractRemoter(unassisted:Boolean=false) {
 			super();
 			this._client = this;
+			this._unassisted = unassisted;
 		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Variables
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private var _unassisted:Boolean;
 
 		//--------------------------------------------------------------------------
 		//
@@ -142,12 +154,30 @@ package by.blooddy.core.net {
 		//  output
 		//----------------------------------
 
-		protected function $invokeCallOutputCommand(command:Command):* {
-			if ( this._logging && !( command is NetCommand ) || !( command as NetCommand ).system ) {
+		protected function $invokeCallOutputCommand(command:Command!, async:Boolean=true):* {
+			if ( this._logging && ( !( command is NetCommand ) || !( command as NetCommand ).system ) ) {
 				this._logger.addLog( new CommandLog( command ) );
-				trace( 'OUT: ', command );
 			}
-			return this.$callOutputCommand( command );
+			if ( async ) {
+				
+				try { // отлавливаем ошибки выполнения
+					return this.$callOutputCommand( command );
+				} catch ( e:Error ) {
+					if ( this._logging ) {
+						this._logger.addLog( new InfoLog( ( e.toString() || e.getStackTrace() ), InfoLog.ERROR ) );
+						trace( e.getStackTrace() || e.toString() );
+					}
+					if ( super.hasEventListener( AsyncErrorEvent.ASYNC_ERROR ) || !this._unassisted ) {
+						super.dispatchEvent( new AsyncErrorEvent( AsyncErrorEvent.ASYNC_ERROR, false, false, e.toString(), e ) );
+					}
+				}
+				
+			} else {
+				
+				return this.$callOutputCommand( command );
+				
+			}
+			
 		}
 
 		protected function $callOutputCommand(command:Command):* {
@@ -158,33 +188,26 @@ package by.blooddy.core.net {
 		//  input
 		//----------------------------------
 
-		protected function $invokeCallInputCommand(command:Command, async:Boolean=true):* {
-			if ( !command ) throw new ArgumentError();
+		protected function $invokeCallInputCommand(command:Command!, async:Boolean=true):* {
 
-			if ( this._logging && !( command is NetCommand ) || !( command as NetCommand ).system ) {
+			if ( this._logging && ( !( command is NetCommand ) || !( command as NetCommand ).system ) ) {
 				this._logger.addLog( new CommandLog( command ) );
-				trace( 'IN: ', command );
 			}
 
 			if ( async ) {
 
 				try { // отлавливаем ошибки выполнения
-	
 					return this.$callInputCommand( command );
-	
 				} catch ( e:Error ) {
-	
-					// нету. диспатчим ошибку
-					var error:String = 'Error: ' + ClassUtils.getClassName( this._client ) + '::' + command.name + '(' + command.toString() + '): ' + e.toString() + ' ' + e.getStackTrace();
-	
 					if ( this._logging ) {
-						this._logger.addLog( new InfoLog( error, InfoLog.ERROR ) );
+						this._logger.addLog( new InfoLog( ( e.toString() || e.getStackTrace() ), InfoLog.ERROR ) );
+						trace( e.getStackTrace() || e.toString() );
 					}
-					trace( error );
-					super.dispatchEvent( new StackErrorEvent( StackErrorEvent.ERROR, false, false, e.toString(), e.getStackTrace() ) );
-	
+					if ( super.hasEventListener( AsyncErrorEvent.ASYNC_ERROR ) || !this._unassisted ) {
+						super.dispatchEvent( new AsyncErrorEvent( AsyncErrorEvent.ASYNC_ERROR, false, false, e.toString(), e ) );
+					}
 				}
-			
+
 			} else {
 
 				return this.$callInputCommand( command );
@@ -195,24 +218,19 @@ package by.blooddy.core.net {
 
 		protected function $callInputCommand(command:Command):* {
 			if ( !command ) throw new ArgumentError(); // TODO: описать ошибку
-			var hasError:Boolean = false;
-			try {
-				// пытаемся выполнить что-нить
-				if ( command.name in this._client ) {
-					return command.call( this._client );
-				}
-			} catch ( e:Error ) {
-				hasError = true;
-				throw e;
-			} finally {
-				if ( !hasError ) {
-					// проверим нету ли хендлера на нашу комманду
-					if ( !super.hasCommandListener( command.name ) ) {
-						throw new DefinitionError();
-					}
-					super.dispatchCommand( command );
-				}
+			// пытаемся выполнить что-нить
+			var result:*;
+			var has:Boolean = command.name in this._client;
+			if ( has ) {
+				result = command.call( this._client );
 			}
+			// проверим нету ли хендлера на нашу комманду
+			if ( super.hasCommandListener( command.name ) ) {
+				super.dispatchCommand( command );
+			} else if ( !has ) {
+				throw new DefinitionError( 'не найдено слушетелей команды: ' + command );
+			}
+			return result;
 		}
 
 	}

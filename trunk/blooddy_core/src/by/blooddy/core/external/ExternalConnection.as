@@ -8,13 +8,16 @@ package by.blooddy.core.external {
 
 	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.events.DynamicEvent;
+	import by.blooddy.core.logging.InfoLog;
 	import by.blooddy.core.net.AbstractRemoter;
 	import by.blooddy.core.net.IConnection;
 	import by.blooddy.core.net.NetCommand;
 	import by.blooddy.core.utils.copyObject;
 	import by.blooddy.core.utils.nexframeCall;
+	import by.blooddy.core.utils.time.setTimeout;
 	
 	import flash.errors.IllegalOperationError;
+	import flash.events.AsyncErrorEvent;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
@@ -30,6 +33,8 @@ package by.blooddy.core.external {
 
 	[Event( name="securityError", type="flash.events.SecurityErrorEvent" )]
 
+	[Event( name="close", type="flash.events.Event" )]
+	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -54,6 +59,11 @@ package by.blooddy.core.external {
 		 */
 		private static var _PROXY_METHOD:String = '__flash__call';
 
+		/**
+		 * @private
+		 */
+		private static var _objectID:String = ExternalInterface.objectID;
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -63,12 +73,21 @@ package by.blooddy.core.external {
 		/**
 		 * Constructior.
 		 */
-		public function ExternalConnection() {
+		public function ExternalConnection(objectID:String=null) {
 			super();
 			if ( _init ) throw new ArgumentError();
-			if ( !ExternalInterface.available ) throw new SecurityError();
 			_init = true;
-			ExternalInterface.addCallback( _PROXY_METHOD, this.$call );
+			if ( ExternalInterface.available ) {
+				if ( _objectID ) {
+					if ( objectID && _objectID != objectID ) {
+						throw new ArgumentError();
+					}
+				} else {
+					if ( !objectID ) throw new ArgumentError();
+					_objectID = objectID;
+				}
+				ExternalInterface.addCallback( _PROXY_METHOD, this.$call );
+			}
 			nexframeCall( this.init );
 		}
 
@@ -96,20 +115,6 @@ package by.blooddy.core.external {
 
 		//--------------------------------------------------------------------------
 		//
-		//  Properties
-		//
-		//--------------------------------------------------------------------------
-
-		//----------------------------------
-		//  initialized
-		//----------------------------------
-
-		public function get initialized():Boolean {
-			return this._connected;
-		}
-
-		//--------------------------------------------------------------------------
-		//
 		//  Implements methods: IConnection
 		//
 		//--------------------------------------------------------------------------
@@ -118,7 +123,7 @@ package by.blooddy.core.external {
 		 * @inheritDoc
 		 */
 		public override function call(commandName:String, ...parameters):* {
-			if ( !this._connected ) throw new IllegalOperationError();
+			if ( !this._connected ) throw new IllegalOperationError( );
 			return super.$invokeCallOutputCommand(
 				new NetCommand( commandName, NetCommand.OUTPUT, parameters )
 			);
@@ -146,20 +151,6 @@ package by.blooddy.core.external {
 
 		//--------------------------------------------------------------------------
 		//
-		//  Methods
-		//
-		//--------------------------------------------------------------------------
-
-		public function getProperty(name:String):* {
-			return this.call( 'getProperty', name );
-		}
-
-		public function setProperty(name:String, value:*):void {
-			this.call( 'setProperty', name, value );
-		}
-
-		//--------------------------------------------------------------------------
-		//
 		//  Overriden protected methods
 		//
 		//--------------------------------------------------------------------------
@@ -169,7 +160,7 @@ package by.blooddy.core.external {
 		 */
 		protected override function $callOutputCommand(command:Command):* {
 			var parameters:Array = command.slice();
-			parameters.unshift( _PROXY_METHOD, ExternalInterface.objectID, command.name );
+			parameters.unshift( _PROXY_METHOD, _objectID, command.name );
 			return ExternalInterface.call.apply( ExternalInterface, parameters );
 		}
 
@@ -178,10 +169,9 @@ package by.blooddy.core.external {
 		 */
 		protected override function $callInputCommand(command:Command):* {
 			switch ( command.name ) {
-				case 'dispatchEvent':	return	this.$dispatchEvent.apply( this, command );		break;
-				case 'getProperty':		return	this.$getProperty.apply( this, command );		break;
-				case 'setProperty':				this.$setProperty.apply( this, command );		break;
-				default:				return	super.$callInputCommand( command );				break;
+				case 'dispatchEvent':	return	this.$dispatchEvent.apply( this, command );
+				case 'dispose':					this.$dispose.apply( this, command );		break;
+				default:				return	super.$callInputCommand( command );
 			}
 		}
 
@@ -198,8 +188,13 @@ package by.blooddy.core.external {
 			try {
 				this._connected = true;
 				this.call( 'dispatchEvent', Event.INIT );
-				super.dispatchEvent( new Event( Event.CONNECT ) );
-			} catch ( e:Error ) { // bug fixing: ExternalInterface.available == true, but method ExternalInterface.call throws SecurityError
+				if ( true !== super.dispatchEvent( new Event( Event.CONNECT ) ) ) {
+					throw new IllegalOperationError( 'недопустимый контэйнер для флэшки' );
+				}
+			} catch ( e:SecurityError ) { // bug fixing: ExternalInterface.available == true, but method ExternalInterface.call throws SecurityError
+				this._connected = false;
+				super.dispatchEvent( new SecurityErrorEvent( SecurityErrorEvent.SECURITY_ERROR, false, false, e.message ) );
+			} catch ( e:Error ) {
 				this._connected = false;
 				super.dispatchEvent( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, e.message ) );
 			}
@@ -209,7 +204,7 @@ package by.blooddy.core.external {
 		 * @private
 		 */
 		private function $call(id:String, commandName:String, ...parameters):* {
-			if ( id != ExternalInterface.objectID ) {
+			if ( id != _objectID ) {
 				super.dispatchEvent( new SecurityErrorEvent( SecurityErrorEvent.SECURITY_ERROR, false, false, 'левое обращение' ) );
 			} else {
 				return super.$invokeCallInputCommand( new NetCommand( commandName, NetCommand.INPUT, parameters ) );
@@ -222,23 +217,38 @@ package by.blooddy.core.external {
 		private function $dispatchEvent(type:String, cancelable:Boolean=false, params:Object=null):Boolean {
 			var event:DynamicEvent = new DynamicEvent( type, false, cancelable );
 			copyObject( params, event );
-			return super.dispatchEvent( event );
+			if ( cancelable ) { // синхронный ответ
+				return super.dispatchEvent( event );
+			} else {
+				setTimeout( this._dispatchEvent, 1, event );
+				return true;
+			}
 		}
 
 		/**
 		 * @private
 		 */
-		private function $getProperty(name:String):* {
-			return this.client[ name ];
+		private function _dispatchEvent(event:Event):Boolean {
+			try { // отлавливаем ошибки выполнения
+				return super.dispatchEvent( event );
+			} catch ( e:Error ) {
+				if ( super.logging ) {
+					super.logger.addLog( new InfoLog( ( e.getStackTrace() || e.toString() ), InfoLog.ERROR ) );
+					trace( e.getStackTrace() || e.toString() );
+				}
+				super.dispatchEvent( new AsyncErrorEvent( AsyncErrorEvent.ASYNC_ERROR, false, false, e.toString(), e ) );
+			}
+			return true;
 		}
 
 		/**
 		 * @private
 		 */
-		private function $setProperty(name:String, value:*):void {
-			this.client[ name ] = value;
+		private function $dispose():void {
+			this._connected = false;
+			super.dispatchEvent( new Event( Event.CLOSE ) );
 		}
-
+		
 	}
 
 }

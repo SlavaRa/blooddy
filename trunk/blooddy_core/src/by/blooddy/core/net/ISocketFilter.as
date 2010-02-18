@@ -18,20 +18,10 @@ package by.blooddy.core.net {
 	 * @keyword					socketfilter, filter, socket
 	 */
 	public interface ISocketFilter {
-/*
-		function readInputCommand(input:IDataInput):NetCommand;
 
-		function writeInputCommand(output:IDataOutput, command:NetCommand):void;
-
-		function readOutputCommand(input:IDataInput):NetCommand;
-
-		function writeOutputCommand(output:IDataOutput, command:NetCommand):void;
-*/
-		function readCommand(input:IDataInput, io:String="input"):NetCommand;
+		function readCommand(input:IDataInput, io:String='input'):NetCommand;
 
 		function writeCommand(output:IDataOutput, command:NetCommand):void;
-
-//		function createNetCommandEvent(command:NetCommand):NetCommandEvent;
 
 	}
 

@@ -37,8 +37,7 @@ package by.blooddy.core.managers {
 				case "ActiveX": case "PlugIn": case "Desktop":	break;			// всё ок
 				default:										return false;	// не там открыли
 			}
-			if (!ExternalInterface.available) return false;
-			return true;
+			return ExternalInterface.available;
 		}
 
 		//--------------------------------------------------------------------------

@@ -91,39 +91,6 @@ package by.blooddy.core.utils {
 			return result;
 		}
 		
-		/**
-		 * 
-		 * @param 	count количество объектов(предметов, умений, etc.) от которых зависит окончание существительного
-		 * @return 	0 - окончание для 1		1 - окончание для 2, 3, 4		2 - окончание для 0, 5 - 20
-		 * 
-		 */
-		public static function getSuffix(count:uint=0):uint {
-			var rest:uint;
-		
-			if (count >= 10 && count <= 20) {
-				rest = count
-			} else {
-				rest = count % 10;
-			}
-			
-			if ( rest > 0 ) {
-				if ( rest < 2 ) {
-					return 0;
-				} else if ( rest < 5 ) {
-					return 1;
-				}
-			}
-			
-			return 2;
-		}
-		
-		public static function bytesToString(bytes:Number, fixed:uint = 0):String {
-			var m:Number = (bytes < 1024) ? 1 : Math.pow(10, fixed);
-			if (bytes >= 1024 * 1024) 		return Math.round(((bytes/1024/1024) * m))/m		+ ' МБ';
-			else if (bytes >= 1024) 		return Math.round(((bytes/1024) * m))/m			+ ' КБ';
-			else 							return bytes						 				+ ' Б';
-		}
-
 	}
 
 }

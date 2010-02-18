@@ -8,7 +8,7 @@ package by.blooddy.core.data.xml.rss {
 
 	import by.blooddy.core.data.Data;
 	import by.blooddy.core.events.data.DataBaseEvent;
-	import by.blooddy.core.utils.XMLUtils;
+	import by.blooddy.core.utils.xml.XMLUtils;
 
 	/**
 	 * @author					BlooDHounD
@@ -20,29 +20,63 @@ package by.blooddy.core.data.xml.rss {
 	 */
 	public class RSSCategoryData extends RSSPropertyData {
 
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * Contructor
+		 */
 		public function RSSCategoryData() {
 			super();
 		}
 
+		//--------------------------------------------------------------------------
+		//
+		//  Properties
+		//
+		//--------------------------------------------------------------------------
+
+		//----------------------------------
+		//  domain
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
 		private var _domain:String;
 
 		public function get domain():String {
 			return this._domain;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set domain(value:String):void {
 			if ( this._domain == value ) return;
 			this._domain = value;
-			if ( !this.$lock ) super.dispatchEvent( new DataBaseEvent( DataBaseEvent.CHANGE, true ) );
+			this.dispatchChange();
 		}
 
+		//--------------------------------------------------------------------------
+		//
+		//  Overriden methods
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
 		public override function parseXML(xml:XML):void {
-			if ( xml.name().toString() != "category" ) throw new ArgumentError();
+			if ( xml.name().toString() != 'category' ) throw new ArgumentError();
 			this.$lock++;
-			this._domain = XMLUtils.parseStringNode( xml.@domain );
-			super.name = XMLUtils.parseStringNode( xml.* );
+			this._domain = XMLUtils.parseListToString( xml.@domain );
+			super.name = XMLUtils.parseListToString( xml.* );
 			this.$lock--;
-			if ( !this.$lock ) super.dispatchEvent( new DataBaseEvent( DataBaseEvent.CHANGE, true ) );
+			this.dispatchChange();
 		}
 
 	}
