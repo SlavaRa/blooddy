@@ -95,7 +95,7 @@ package by.blooddy.core.managers.remote {
 		}
 	
 		public function unloadModule(id:String):void {
-			if (!id) return;
+			if ( !id ) return;
 			for each ( var module:ModuleLoader in this._loaders ) {
 				if ( module.id == id ) {
 					module.unload();

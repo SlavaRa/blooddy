@@ -211,14 +211,14 @@ package by.blooddy.core.media {
 			this.clearVariables();
 			this._sound = new Sound();
 			this.registerEventHandlers( this._sound );
-			this._sound.load(request, this._loaderContext);
+			this._sound.load( request, this._loaderContext );
 		}
 
 		/**
 		 * @inheritDoc
 		 */
 		public function close():void {
-			if (!this._sound) throw new ArgumentError();
+			if ( !this._sound ) throw new ArgumentError();
 			this._sound.close();
 			this.unregisterEventHandlers( this._sound );
 		}

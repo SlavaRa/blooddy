@@ -486,41 +486,50 @@ package by.blooddy.core.net {
 			_JUNK.addChild( content );
 			_JUNK.removeChild( content );
 
+			var invalidSWF:Boolean = false;
+			
 			if ( this._contentType && this._contentType != this._loader.$loaderInfo.contentType ) { // если они не равны, то протикала загрузка через loadBytes.
 				// BUGFIX: если грузить каринку черезе loadBytes, то она неправильно обрабатывается, и почему-то кладётся в MovieClip, что нас не устраивает.
 				switch ( this._loader.$loaderInfo.contentType ) {
-					case MIME.FLASH:	break;
-					default:			throw new InvalidSWFError();
+					case MIME.FLASH: break;
+					default: invalidSWF = true;
 				}
-				switch ( this._contentType ) {
-					case MIME.PNG:
-					case MIME.JPEG:
-					case MIME.GIF:		break;
-					default:			throw new InvalidSWFError();
-				}
-				if ( !( content is MovieClip ) && ( content as MovieClip ).numChildren <= 0 ) {
-					throw new InvalidSWFError();
-				}
-				content = ( content as MovieClip ).getChildAt( 0 );
-				if ( !( content is Bitmap ) ) {
-					throw new InvalidSWFError();
+				if ( !invalidSWF ) {
+					switch ( this._contentType ) {
+						case MIME.PNG: case MIME.JPEG: case MIME.GIF: break;
+						default: invalidSWF = true;
+					}
+					if ( !invalidSWF && !( content is MovieClip ) && ( content as MovieClip ).numChildren <= 0 ) {
+						invalidSWF = true;
+					}
+					if ( !invalidSWF ) {
+						content = ( content as MovieClip ).getChildAt( 0 );
+						if ( !( content is Bitmap ) ) {
+							invalidSWF = true;
+						}
+					}
 				}
 			} else {
 				this._contentType = this._loader.$loaderInfo.contentType;
 			}
 
-			switch ( this._loader.$loaderInfo.contentType ) {
-				case MIME.FLASH:
-					this._content = content;
-					break;
-				case MIME.PNG:
-				case MIME.JPEG:
-				case MIME.GIF:
-					this._content = ( content as Bitmap ).bitmapData;
-					break;
-			}
-			if ( super.hasEventListener( Event.INIT ) ) {
-				super.dispatchEvent( event );
+			if ( invalidSWF ) {
+				this._state = _STATE_ERROR;
+				super.dispatchEvent( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, 'плохой swf подсунулся' ) );
+			} else {
+				switch ( this._loader.$loaderInfo.contentType ) {
+					case MIME.FLASH:
+						this._content = content;
+						break;
+					case MIME.PNG:
+					case MIME.JPEG:
+					case MIME.GIF:
+						this._content = ( content as Bitmap ).bitmapData;
+						break;
+				}
+				if ( super.hasEventListener( Event.INIT ) ) {
+					super.dispatchEvent( event );
+				}
 			}
 		}
 

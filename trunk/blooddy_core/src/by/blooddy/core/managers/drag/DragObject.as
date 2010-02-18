@@ -112,7 +112,7 @@ package by.blooddy.core.managers.drag {
 		 */
 		public function DragObject(dragSource:DisplayObject, rescale:Boolean=false, offset:Point=null, bounds:Rectangle=null/*, snapAngle:uint=0*/) {
 			super();
-			if (!_internalCall) throw new ArgumentError();
+			if ( !_internalCall ) throw new ArgumentError();
 			this._dragSource = dragSource;
 			this._rescale = rescale;
 			this._offset = offset || (
