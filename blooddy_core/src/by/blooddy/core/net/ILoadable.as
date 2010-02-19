@@ -27,6 +27,13 @@ package by.blooddy.core.net {
 	[Event( name="ioError", type="flash.events.IOErrorEvent" )]
 
 	/**
+	 * Секъюрная ошибка.
+	 * 
+	 * @eventType			flash.events.SecurityErrorEvent.SECURITY_ERROR
+	 */
+	[Event( name="securityError", type="flash.events.SecurityErrorEvent" )]
+	
+	/**
 	 * Транслируется, когда начинается загрузка.
 	 * 
 	 * @eventType			flash.events.Event.OPEN

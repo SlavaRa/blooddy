@@ -21,13 +21,6 @@ package by.blooddy.core.net {
 	[Event( name="httpStatus", type="flash.events.HTTPStatusEvent" )]
 
 	/**
-	 * Секъюрная ошибка.
-	 * 
-	 * @eventType			flash.events.SecurityErrorEvent.SECURITY_ERROR
-	 */
-	[Event( name="securityError", type="flash.events.SecurityErrorEvent" )]
-
-	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 9

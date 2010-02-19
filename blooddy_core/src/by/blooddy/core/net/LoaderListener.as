@@ -72,12 +72,12 @@ package by.blooddy.core.net {
 		//
 		//--------------------------------------------------------------------------
 		
-		public function close():void {
+		public override function close():void {
 			if ( this._target ) {
 				this._target.removeEventListener( LoaderEvent.LOADER_INIT, this.handler_loaderInit );
 				this._target = null;
 			}
-			while ( super.loadersTotal ) super.removeLoaderListener( super.getLoaderAt( 0 ) );
+			super.close();
 		}
 
 		//--------------------------------------------------------------------------

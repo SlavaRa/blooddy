@@ -125,7 +125,7 @@ package by.blooddy.core.external {
 		 * @inheritDoc
 		 */
 		public override function call(commandName:String, ...parameters):* {
-			if ( !this._connected ) throw new IllegalOperationError( );
+			if ( !this._connected ) throw new IllegalOperationError( 'соединение не установленно' );
 			return super.$invokeCallOutputCommand(
 				new NetCommand( commandName, NetCommand.OUTPUT, parameters )
 			);
