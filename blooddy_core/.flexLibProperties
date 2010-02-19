@@ -1,11 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<flexLibProperties version="1">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties includeAllClasses="false" version="1">
   <includeClasses>
     <classEntry path="by.blooddy.core.commands.Command"/>
     <classEntry path="by.blooddy.core.commands.CommandDispatcher"/>
     <classEntry path="by.blooddy.core.commands.ICommandDispatcher"/>
     <classEntry path="by.blooddy.core.controllers.AbstractController"/>
     <classEntry path="by.blooddy.core.controllers.BaseController"/>
+    <classEntry path="by.blooddy.core.controllers.BaseControllerSprite"/>
     <classEntry path="by.blooddy.core.controllers.DisplayObjectController"/>
     <classEntry path="by.blooddy.core.controllers.IBaseController"/>
     <classEntry path="by.blooddy.core.controllers.IController"/>
@@ -37,7 +38,8 @@
     <classEntry path="by.blooddy.core.display.ProgressBar"/>
     <classEntry path="by.blooddy.core.display.SpriteAsset"/>
     <classEntry path="by.blooddy.core.display.StageObserver"/>
-    <classEntry path="by.blooddy.core.display.destruct"/>
+    <classEntry path="by.blooddy.core.display.dispose"/>
+    <classEntry path="by.blooddy.core.display.resource.LoadableResourceSprite"/>
     <classEntry path="by.blooddy.core.display.resource.MainResourceSprite"/>
     <classEntry path="by.blooddy.core.display.resource.ResourceDefinition"/>
     <classEntry path="by.blooddy.core.display.resource.ResourceSprite"/>
@@ -48,10 +50,10 @@
     <classEntry path="by.blooddy.core.events.DynamicEvent"/>
     <classEntry path="by.blooddy.core.events.EventDispatcherProxy"/>
     <classEntry path="by.blooddy.core.events.FZipEvent"/>
-    <classEntry path="by.blooddy.core.events.POP3Event"/>
     <classEntry path="by.blooddy.core.events.ParserErrorEvent"/>
     <classEntry path="by.blooddy.core.events.commands.CommandEvent"/>
     <classEntry path="by.blooddy.core.events.data.DataBaseEvent"/>
+    <classEntry path="by.blooddy.core.events.display.resource.ResourceErrorEvent"/>
     <classEntry path="by.blooddy.core.events.display.resource.ResourceEvent"/>
     <classEntry path="by.blooddy.core.events.isIntrinsicEvent"/>
     <classEntry path="by.blooddy.core.events.logging.LogEvent"/>
@@ -60,7 +62,6 @@
     <classEntry path="by.blooddy.core.events.managers.ResourceBundleEvent"/>
     <classEntry path="by.blooddy.core.events.net.LoaderEvent"/>
     <classEntry path="by.blooddy.core.events.net.SerializeErrorEvent"/>
-    <classEntry path="by.blooddy.core.events.net.StackErrorEvent"/>
     <classEntry path="by.blooddy.core.events.time.TimeEvent"/>
     <classEntry path="by.blooddy.core.external.ExternalConnection"/>
     <classEntry path="by.blooddy.core.external.HistoryExternalConnection"/>
@@ -96,8 +97,6 @@
     <classEntry path="by.blooddy.core.math.BigInt"/>
     <classEntry path="by.blooddy.core.math.RoundingMode"/>
     <classEntry path="by.blooddy.core.media.Sound3DTransform"/>
-    <classEntry path="by.blooddy.core.media.SoundContainer"/>
-    <classEntry path="by.blooddy.core.media.SoundLoader"/>
     <classEntry path="by.blooddy.core.net.AbstractClient"/>
     <classEntry path="by.blooddy.core.net.AbstractRemoter"/>
     <classEntry path="by.blooddy.core.net.HeuristicLoader"/>
@@ -111,23 +110,23 @@
     <classEntry path="by.blooddy.core.net.ISocket"/>
     <classEntry path="by.blooddy.core.net.ISocketFilter"/>
     <classEntry path="by.blooddy.core.net.IXMLSocket"/>
-    <classEntry path="by.blooddy.core.net.Loader"/>
+    <classEntry path="by.blooddy.core.net.LoaderContext"/>
     <classEntry path="by.blooddy.core.net.LoaderDispatcher"/>
     <classEntry path="by.blooddy.core.net.LoaderListener"/>
     <classEntry path="by.blooddy.core.net.LoaderPriority"/>
     <classEntry path="by.blooddy.core.net.MIME"/>
     <classEntry path="by.blooddy.core.net.NetCommand"/>
-    <classEntry path="by.blooddy.core.net.ProductInfo"/>
     <classEntry path="by.blooddy.core.net.Protocols"/>
+    <classEntry path="by.blooddy.core.net.ProxyClient"/>
+    <classEntry path="by.blooddy.core.net.ProxyRemoter"/>
     <classEntry path="by.blooddy.core.net.ProxySharedObject"/>
     <classEntry path="by.blooddy.core.net.ProxySocket"/>
+    <classEntry path="by.blooddy.core.net.RemoterProxy"/>
     <classEntry path="by.blooddy.core.net.ResourceLoader"/>
     <classEntry path="by.blooddy.core.net.Responder"/>
+    <classEntry path="by.blooddy.core.net.SincereSocketFilter"/>
     <classEntry path="by.blooddy.core.net.Socket"/>
     <classEntry path="by.blooddy.core.net.SocketConnection"/>
-    <classEntry path="by.blooddy.core.net.URLLoader"/>
-    <classEntry path="by.blooddy.core.net.URLResourceLoader"/>
-    <classEntry path="by.blooddy.core.net.URLStream"/>
     <classEntry path="by.blooddy.core.net.copyURLRequest"/>
     <classEntry path="by.blooddy.core.net.zip.FZip"/>
     <classEntry path="by.blooddy.core.net.zip.FZipBundle"/>
@@ -150,6 +149,7 @@
     <classEntry path="by.blooddy.core.utils.HashArray"/>
     <classEntry path="by.blooddy.core.utils.IAbstractRemoter"/>
     <classEntry path="by.blooddy.core.utils.IBytesExternalizable"/>
+    <classEntry path="by.blooddy.core.utils.IDisposable"/>
     <classEntry path="by.blooddy.core.utils.IEquable"/>
     <classEntry path="by.blooddy.core.utils.IHashable"/>
     <classEntry path="by.blooddy.core.utils.INumber"/>
@@ -165,7 +165,6 @@
     <classEntry path="by.blooddy.core.utils.copyObject"/>
     <classEntry path="by.blooddy.core.utils.crypto.Adler32"/>
     <classEntry path="by.blooddy.core.utils.crypto.CRC32"/>
-    <classEntry path="by.blooddy.core.utils.crypto.IP"/>
     <classEntry path="by.blooddy.core.utils.crypto.MD5"/>
     <classEntry path="by.blooddy.core.utils.crypto.SHA1"/>
     <classEntry path="by.blooddy.core.utils.crypto.createBlocksFromByteArray"/>
@@ -176,7 +175,6 @@
     <classEntry path="by.blooddy.core.utils.getCallerInfo"/>
     <classEntry path="by.blooddy.core.utils.isActive"/>
     <classEntry path="by.blooddy.core.utils.math.Calculator"/>
-    <classEntry path="by.blooddy.core.utils.math.Flatness3D"/>
     <classEntry path="by.blooddy.core.utils.math.NumberUtils"/>
     <classEntry path="by.blooddy.core.utils.nexframeCall"/>
     <classEntry path="by.blooddy.core.utils.proxy.Proxy"/>
@@ -194,6 +192,8 @@
     <classEntry path="by.blooddy.core.utils.version.IVersion"/>
     <classEntry path="by.blooddy.core.utils.version.PlayerVersion"/>
     <classEntry path="by.blooddy.core.utils.version.Version"/>
+    <classEntry path="by.blooddy.core.utils.xml.IXMLable"/>
+    <classEntry path="by.blooddy.core.utils.xml.XMLUtils"/>
     <classEntry path="parseBoolean"/>
   </includeClasses>
   <includeResources/>
