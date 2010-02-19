@@ -113,20 +113,6 @@ package by.blooddy.core.display.resource {
 		/**
 		 * @private
 		 */
-		private function handler_addedToManager(event:Event):void {
-			this._timer.addEventListener( TimerEvent.TIMER, this.handler_timer );
-		}
-
-		/**
-		 * @private
-		 */
-		private function handler_removedFromManager(event:Event):void {
-			this._timer.removeEventListener( TimerEvent.TIMER, this.handler_timer );
-		}
-
-		/**
-		 * @private
-		 */
 		private function handler_timer(event:TimerEvent):void {
 			var time:Number = getTimer() - this._resourceLiveTime;
 			var usage:ResourceUsage;
@@ -137,6 +123,20 @@ package by.blooddy.core.display.resource {
 					super.unloadResourceBundle( bundleName );
 				}
 			}
+		}
+		
+		/**
+		 * @private
+		 */
+		private function handler_addedToManager(event:ResourceEvent):void {
+			this._timer.addEventListener( TimerEvent.TIMER, this.handler_timer );
+		}
+
+		/**
+		 * @private
+		 */
+		private function handler_removedFromManager(event:ResourceEvent):void {
+			this._timer.removeEventListener( TimerEvent.TIMER, this.handler_timer );
 		}
 
 		/**

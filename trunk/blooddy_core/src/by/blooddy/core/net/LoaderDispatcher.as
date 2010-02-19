@@ -214,8 +214,16 @@ package by.blooddy.core.net {
 			return ( this._loaders.indexOf( loader ) >= 0 );
 		}
 		
-		public function getLoaderAt(index:uint):ILoadable {
-			return this._loaders[index] as ILoadable;
+		//--------------------------------------------------------------------------
+		//
+		//  Methods
+		//
+		//--------------------------------------------------------------------------
+
+		public function close():void {
+			while ( this._loaders.length > 0 ) {
+				this.$removeLoaderListener( this._loaders[ this._loaders.length - 1 ] as ILoadable, false );
+			}
 		}
 
 		//--------------------------------------------------------------------------
@@ -259,7 +267,7 @@ package by.blooddy.core.net {
 			loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error );
 			loader.removeEventListener( Event.UNLOAD,						this.handler_unload );
 
-			var index:int = this._loaders.indexOf( loader );
+			var index:int = this._loaders.lastIndexOf( loader );
 			if ( index < 0 ) return; // надо удалить, если такой присутвует...
 			this._loaders.splice( index, 1 );
 

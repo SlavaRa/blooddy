@@ -24,6 +24,7 @@ package by.blooddy.core.net {
 	import flash.events.HTTPStatusEvent;
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
+	import flash.events.SecurityErrorEvent;
 	import flash.net.LocalConnection;
 	import flash.net.URLRequest;
 	import flash.system.LoaderContext;
@@ -54,6 +55,11 @@ package by.blooddy.core.net {
 	 */
 	[Event( name="progress", type="flash.events.ProgressEvent" )]
 
+	/**
+	 * @copy					by.blooddy.core.net.ILoader#securityError
+	 */
+	[Event( name="securityError", type="flash.events.SecurityErrorEvent" )]
+	
 	//--------------------------------------
 	//  Implements events: ILoader
 	//--------------------------------------
@@ -62,11 +68,6 @@ package by.blooddy.core.net {
 	 * @copy					by.blooddy.core.net.ILoader#httpStatus
 	 */
 	[Event( name="httpStatus", type="flash.events.HTTPStatusEvent" )]
-
-	/**
-	 * @copy					by.blooddy.core.net.ILoader#securityError
-	 */
-	[Event( name="securityError", type="flash.events.SecurityErrorEvent" )]
 
 	//--------------------------------------
 	//  Events
@@ -465,7 +466,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private function clear_loader():void {
+		private function clear_loader(unload:Boolean=true):void {
 			var li:LoaderInfo = this._loader.$loaderInfo;
 			li.removeEventListener( Event.OPEN,						super.dispatchEvent );
 			li.removeEventListener( ProgressEvent.PROGRESS,			super.dispatchEvent );
@@ -475,15 +476,17 @@ package by.blooddy.core.net {
 			li.removeEventListener( Event.COMPLETE,					this.handler_complete );
 			li.removeEventListener( Event.INIT,						this.handler_security_init );
 			li.removeEventListener( Event.INIT,						this.handler_init );
-			try {
-				this._loader.$close();
-			} catch ( e:Error ) {
+			if ( unload ) {
+				try {
+					this._loader.$close();
+				} catch ( e:Error ) {
+				}
+				try {
+					this._loader.$unload();
+				} catch ( e:Error ) {
+				}
+				this._loader = null;
 			}
-			try {
-				this._loader.$unload();
-			} catch ( e:Error ) {
-			}
-			this._loader = null;
 		}
 
 		//--------------------------------------------------------------------------
@@ -503,10 +506,18 @@ package by.blooddy.core.net {
 
 			} catch ( e:SecurityError ) {
 
-				var li:LoaderInfo = this._loader.$loaderInfo;
-				this._contentType = li.contentType;
-				li.removeEventListener( Event.COMPLETE, this.handler_complete );
-				li.addEventListener( Event.COMPLETE, this.handler_security_complete );
+				if ( this._loaderContext && this._loaderContext.ignoreSecurity ) {
+
+					var li:LoaderInfo = this._loader.$loaderInfo;
+					this._contentType = li.contentType;
+					li.removeEventListener( Event.COMPLETE, this.handler_complete );
+					li.addEventListener( Event.COMPLETE, this.handler_security_complete );
+
+				} else {
+
+					this.handler_error( new SecurityErrorEvent( SecurityErrorEvent.SECURITY_ERROR, false, false, e.toString() ) );
+
+				}
 
 			}
 		}
@@ -537,7 +548,7 @@ package by.blooddy.core.net {
 						invalidSWF = true;
 					}
 					if ( !invalidSWF ) {
-						content = ( content as MovieClip ).getChildAt( 0 );
+						content = ( content as MovieClip ).removeChildAt( 0 );
 						if ( !( content is Bitmap ) ) {
 							invalidSWF = true;
 						}
@@ -548,9 +559,16 @@ package by.blooddy.core.net {
 			}
 
 			if ( invalidSWF ) {
-				this._state = _STATE_ERROR;
-				super.dispatchEvent( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, 'плохой swf подсунулся' ) );
+
+				if ( content ) {
+					_JUNK.addChild( content );
+					_JUNK.removeChild( content );
+					dispose( content );
+				}
+				this.handler_error( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, 'плохой swf подсунулся' ) );
+
 			} else {
+
 				switch ( this._loader.$loaderInfo.contentType ) {
 					case MIME.FLASH:
 						this._content = content;
@@ -564,6 +582,7 @@ package by.blooddy.core.net {
 				if ( super.hasEventListener( Event.INIT ) ) {
 					super.dispatchEvent( event );
 				}
+
 			}
 		}
 
@@ -601,6 +620,7 @@ package by.blooddy.core.net {
 		private function handler_complete(event:Event):void {
 			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
 			this._state = _STATE_COMPLETE;
+			this.clear_loader( false );
 			super.dispatchEvent( event );
 		}
 
@@ -611,7 +631,7 @@ package by.blooddy.core.net {
 		private function handler_error(event:ErrorEvent):void {
 			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
 			this._state = _STATE_ERROR;
-			// перенапрвляем, только если есть листенер
+			this.clear_loader();
 			super.dispatchEvent( event );
 		}
 
@@ -636,6 +656,7 @@ import flash.events.Event;
 import flash.net.URLRequest;
 import flash.system.LoaderContext;
 import flash.utils.ByteArray;
+import flash.utils.getTimer;
 
 /**
  * @private
@@ -659,7 +680,17 @@ internal final class LoaderAsset extends flash.display.Loader {
 	//  Class variables
 	//
 	//--------------------------------------------------------------------------
-
+	
+	/**
+	 * @private
+	 */
+	private static const _GC_CALL_TIMEOUT:uint = 1E3;
+	
+	/**
+	 * @private
+	 */
+	private static var _gcCallTime:uint = getTimer();
+	
 	//--------------------------------------------------------------------------
 	//
 	//  Constructor
@@ -755,36 +786,34 @@ internal final class LoaderAsset extends flash.display.Loader {
 	 * @private
 	 */
 	internal function $loadBytes(bytes:ByteArray, context:LoaderContext=null):void {
-		if ( context && context.securityDomain ) {
-			context = new LoaderContext( context.checkPolicyFile, context.applicationDomain );
-		}
 		super.loadBytes( bytes, context );
 	}
 
-	[Deprecated( message="метод запрещен", replacement="$unload" )]
 	/**
 	 * @private
 	 */
 	public override function unload():void {
-		throw new IllegalOperationError( getErrorMessage( 2071, this ), 2071 );
+		this._target.unload();
 	}
 
 	/**
 	 * @private
 	 */
 	internal function $unload():void {
-		try {
-			super.unloadAndStop();
-		} catch ( e:Error ) {
+		var time:uint = getTimer();
+		if ( _gcCallTime < time + _GC_CALL_TIMEOUT ) {
+			_gcCallTime = time;
+			super.unloadAndStop( true );
+		} else {
+			super.unloadAndStop( false );
 		}
 	}
 
-	[Deprecated( message="метод запрещен", replacement="$unload" )]
 	/**
 	 * @private
 	 */
 	public override function unloadAndStop(gc:Boolean=true):void {
-		throw new IllegalOperationError( getErrorMessage( 2071, this ), 2071 );
+		this._target.unload();
 	}
 
 	/**
