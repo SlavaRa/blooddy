@@ -77,7 +77,7 @@ internal function $copyObject(hash:Dictionary, source:Object, target:Object=null
 			}
 		}
 		if ( source is Error ) {
-			target.stackTrace = ( source as Error ).getStackTrace();
+			target.stack = ( source as Error ).getStackTrace();
 		}
 	}
 	return target;

@@ -15,7 +15,6 @@ package by.blooddy.core.net {
 	import flash.events.ProgressEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.net.URLRequest;
-	import flash.system.LoaderContext;
 
 	/**
 	 * Загружает свф и воспринимает его как ресурсы.

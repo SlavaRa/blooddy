@@ -430,7 +430,8 @@ package by.blooddy.core.net {
 							:	s
 						);
 					} catch ( e:Error ) {
-						// TODO
+						this._state = _STATE_ERROR;
+						super.dispatchEvent( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, e.toString() ) );
 					}
 					break;
 				default:
@@ -438,12 +439,14 @@ package by.blooddy.core.net {
 					break;
 			}
 
-			if ( super.hasEventListener( Event.INIT ) ) {
-				super.dispatchEvent( new Event( Event.INIT ) );
+			if ( this._state != _STATE_ERROR ) {
+				if ( super.hasEventListener( Event.INIT ) ) {
+					super.dispatchEvent( new Event( Event.INIT ) );
+				}
+				this._state = _STATE_COMPLETE;
+				this.updateProgress( bytesTotal, bytesTotal );
+				super.dispatchEvent( event );
 			}
-			this._state = _STATE_COMPLETE;
-			this.updateProgress( bytesTotal, bytesTotal );
-			super.dispatchEvent( event );
 		}
 
 	}

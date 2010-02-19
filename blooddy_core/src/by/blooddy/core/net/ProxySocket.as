@@ -128,9 +128,6 @@ package by.blooddy.core.net {
 				new URLRequestHeader( 'pragma', 'no-cache' ),
 				new URLRequestHeader( 'Content-Type', MIME.BINARY )
 			);
-			super.addEventListener( Event.CLOSE,						this.handler_close, false, int.MAX_VALUE, true );
-			super.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_close, false, int.MAX_VALUE, true );
-			super.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_close, false, int.MAX_VALUE, true );
 		}
 
 		//--------------------------------------------------------------------------
@@ -308,8 +305,8 @@ package by.blooddy.core.net {
 			this._request.data = NumberUtils.getRND();
 
 			this._conn1.addEventListener( Event.COMPLETE,						this.handler_connection_complete );
-			this._conn1.addEventListener( IOErrorEvent.IO_ERROR,				super.dispatchEvent );
-			this._conn1.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	super.dispatchEvent );
+			this._conn1.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_connection_error );
+			this._conn1.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_connection_error );
 
 			try {
 				this._conn1.load( this._request );
@@ -332,6 +329,7 @@ package by.blooddy.core.net {
 		 */
 		public function close():void {
 			if ( !this._sesID ) throw new IOError( getErrorMessage( 2002 ), 2002 );
+			this.clear();
 			super.dispatchEvent( new Event( Event.CLOSE ) );
 		}
 
@@ -341,7 +339,7 @@ package by.blooddy.core.net {
 		public function flush():void {
 			if ( !this._sesID ) throw new IOError( getErrorMessage( 2002 ), 2002 );
 			this._poll.writeBytes( this._output );	// перенесли в пул
-			this._output.clear();				// очистили всякую то что пытались отправить
+			this._output.length = 0;				// очистили всякую то что пытались отправить
 			if ( !this._conn1.connected || !this._conn2.connected ) {
 				this.sendPoll();
 			}
@@ -390,7 +388,43 @@ package by.blooddy.core.net {
 //			if ( this._poll ) {
 //				trace( ByteArrayUtils.dump( this._poll ) );
 //			}
-			this._poll.clear();
+			this._poll.length = 0;
+		}
+
+		/**
+		 * @private
+		 */
+		private function clear():void {
+			
+			if ( this._conn1.connected ) this._conn1.close();
+			if ( this._conn2.connected ) this._conn2.close();
+			
+			clearTimeout( this._timeoutID );
+			this._timeoutID = 0;
+			
+			this._cmdID = 0; // установим счётчик на ноль
+			this._input.length = 0;
+			this._output.length = 0;
+			this._poll.length = 0;
+			
+			this._host = null;
+			this._port = 0;
+			
+			this._conn1.removeEventListener( Event.COMPLETE,					this.handler_connection_complete );
+			this._conn1.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_connection_error );
+			this._conn1.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_connection_error );
+			
+			this._conn1.removeEventListener( Event.COMPLETE,					this.handler_complete );
+			this._conn1.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_error );
+			this._conn1.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error );
+			this._conn1.removeEventListener( ProgressEvent.PROGRESS,			this.handler_progress );
+			this._conn1.removeEventListener( HTTPStatusEvent.HTTP_STATUS,		this.handler_httpStatus );
+			
+			this._conn2.removeEventListener( Event.COMPLETE,					this.handler_complete );
+			this._conn2.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_error );
+			this._conn2.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error );
+			this._conn2.removeEventListener( ProgressEvent.PROGRESS,			this.handler_progress );
+			this._conn2.removeEventListener( HTTPStatusEvent.HTTP_STATUS,		this.handler_httpStatus );
 		}
 
 		//--------------------------------------------------------------------------
@@ -415,8 +449,8 @@ package by.blooddy.core.net {
 
 				// запрос пришёл. удаляем обработчик. он больше не понадобится.
 				this._conn1.removeEventListener( Event.COMPLETE,					this.handler_connection_complete );
-				this._conn1.removeEventListener( IOErrorEvent.IO_ERROR,				super.dispatchEvent );
-				this._conn1.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	super.dispatchEvent );
+				this._conn1.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_connection_error );
+				this._conn1.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_connection_error );
 	
 				clearTimeout( this._timeoutID );
 				this._timeoutID = 0;
@@ -442,6 +476,7 @@ package by.blooddy.core.net {
 
 			} else { // соединение почему-то не установилось :(
 
+				this.clear();
 				super.dispatchEvent( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, '' ) );
 
 			}
@@ -451,7 +486,16 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
+		private function handler_connection_error(event:ErrorEvent):void {
+			this.clear();
+			super.dispatchEvent( event );
+		}
+
+		/**
+		 * @private
+		 */
 		private function timeoutError():void {
+			this.clear();
 			super.dispatchEvent( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, '' ) );
 		}
 
@@ -472,7 +516,7 @@ package by.blooddy.core.net {
 		 */
 		private function handler_progress(event:ProgressEvent):void {
 			if ( this._input.position == this._input.length ) {
-				this._input.clear();
+				this._input.length = 0;
 			}
 			var conn:URLStreamAsset = event.target as URLStreamAsset;
 			//if ( conn === this._conn1 ) {
@@ -508,51 +552,11 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		private function handler_httpStatus(event:HTTPStatusEvent):void {
-			if ( event.status == 404 ) {
-				this.close();
-			} else if ( this._sesID && event.status == 204 ) {
-				super.dispatchEvent( new SecurityErrorEvent( SecurityErrorEvent.SECURITY_ERROR ) );
+			if ( event.status != 200 ) {
+				if ( this._sesID ) {
+					this.close();
+				}
 			}
-		}
-
-		//----------------------------------
-		//  self
-		//----------------------------------
-
-		/**
-		 * @private
-		 */
-		private function handler_close(event:Event):void {
-
-			if ( this._conn1.connected ) this._conn1.close();
-			if ( this._conn2.connected ) this._conn2.close();
-
-			clearTimeout( this._timeoutID );
-			this._timeoutID = 0;
-
-			this._cmdID = 0; // установим счётчик на ноль
-			this._input.clear();
-			this._output.clear();
-			this._poll.clear();
-
-			this._host = null;
-			this._port = 0;
-
-			this._conn1.removeEventListener( Event.COMPLETE,					this.handler_connection_complete );
-			this._conn1.removeEventListener( IOErrorEvent.IO_ERROR,				super.dispatchEvent );
-			this._conn1.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	super.dispatchEvent );
-
-			this._conn1.removeEventListener( Event.COMPLETE,					this.handler_complete );
-			this._conn1.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_error );
-			this._conn1.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error );
-			this._conn1.removeEventListener( ProgressEvent.PROGRESS,			this.handler_progress );
-			this._conn1.removeEventListener( HTTPStatusEvent.HTTP_STATUS,		this.handler_httpStatus );
-
-			this._conn2.removeEventListener( Event.COMPLETE,					this.handler_complete );
-			this._conn2.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_error );
-			this._conn2.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error );
-			this._conn2.removeEventListener( ProgressEvent.PROGRESS,			this.handler_progress );
-			this._conn2.removeEventListener( HTTPStatusEvent.HTTP_STATUS,		this.handler_httpStatus );
 		}
 
 		//--------------------------------------------------------------------------

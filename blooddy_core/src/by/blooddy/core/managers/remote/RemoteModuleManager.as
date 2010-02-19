@@ -7,6 +7,7 @@
 package by.blooddy.core.managers.remote {
 
 	import by.blooddy.core.events.managers.RemoteModuleEvent;
+	import by.blooddy.core.net.LoaderContext;
 	import by.blooddy.core.net.MIME;
 	
 	import flash.events.Event;
@@ -14,7 +15,6 @@ package by.blooddy.core.managers.remote {
 	import flash.events.IOErrorEvent;
 	import flash.net.URLRequest;
 	import flash.system.ApplicationDomain;
-	import flash.system.LoaderContext;
 	import flash.utils.ByteArray;
 
 	[Event( name="init", type="by.blooddy.core.events.managers.RemoteModuleEvent" )]
@@ -70,7 +70,7 @@ package by.blooddy.core.managers.remote {
 			loader.addEventListener( Event.COMPLETE, this.handler_complete );
 			loader.addEventListener( Event.INIT, this.handler_init );
 			loader.addEventListener( IOErrorEvent.IO_ERROR, this.handler_error );
-			loader.loaderContext = new LoaderContext( false, applicationDomain || new ApplicationDomain( this._applicationDomain ) );
+			loader.loaderContext = new LoaderContext( applicationDomain || new ApplicationDomain( this._applicationDomain ) );
 			loader.load( request );
 		}
 	
@@ -79,7 +79,7 @@ package by.blooddy.core.managers.remote {
 			loader.addEventListener( Event.COMPLETE, this.handler_complete );
 			loader.addEventListener( Event.INIT, this.handler_init );
 			loader.addEventListener( IOErrorEvent.IO_ERROR, this.handler_error );
-			loader.loaderContext = new LoaderContext( false, applicationDomain || new ApplicationDomain( this._applicationDomain ) );
+			loader.loaderContext = new LoaderContext( applicationDomain || new ApplicationDomain( this._applicationDomain ) );
 			loader.loadBytes( bytes );
 		}
 	
@@ -154,8 +154,8 @@ package by.blooddy.core.managers.remote {
 //
 //==============================================================================
 
-import by.blooddy.core.managers.remote.IRemoteModule;
 import by.blooddy.core.net.Loader;
+import by.blooddy.core.managers.remote.IRemoteModule;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
