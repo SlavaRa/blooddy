@@ -16,7 +16,6 @@ package by.blooddy.core.net {
 	import flash.display.LoaderInfo;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
-	import flash.errors.InvalidSWFError;
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -24,11 +23,13 @@ package by.blooddy.core.net {
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.events.SecurityErrorEvent;
+	import flash.media.SoundLoaderContext;
+	import flash.media.SoundMixer;
 	import flash.net.LocalConnection;
 	import flash.net.URLRequest;
-	import flash.net.URLRequestHeader;
 	import flash.net.URLStream;
 	import flash.system.LoaderContext;
+	import flash.system.SecurityDomain;
 	import flash.utils.ByteArray;
 
 	//--------------------------------------
@@ -140,7 +141,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private static const _URL:RegExp = ( _DOMAIN == 'localhost' ? null : new RegExp( '^https?://(www\.)?' + _DOMAIN.replace( /\./g, '\\.' ), 'i' ) );
+		private static const _URL:RegExp = ( _DOMAIN == 'localhost' ? null : new RegExp( '^((?!\w+://)|https?://(www\.)?' + _DOMAIN.replace( /\./g, '\\.' ) + ')', 'i' ) );
 
 		//--------------------------------------------------------------------------
 		//
@@ -154,7 +155,7 @@ package by.blooddy.core.net {
 		 * @param	request
 		 * @param	loaderContext
 		 */
-		public function HeuristicLoader(request:URLRequest=null, loaderContext:LoaderContext=null) {
+		public function HeuristicLoader(request:URLRequest=null, loaderContext:by.blooddy.core.net.LoaderContext=null) {
 			super();
 			if ( loaderContext ) this._loaderContext = loaderContext;
 			if ( request ) this.load( request );
@@ -215,7 +216,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private var _loaderContext:LoaderContext;
+		private var _loaderContext:by.blooddy.core.net.LoaderContext;
 
 		/**
 		 * A LoaderContext object to use to control loading of the content.
@@ -230,14 +231,14 @@ package by.blooddy.core.net {
 		 * @see						flash.system.ApplicationDomain
 		 * @see						flash.system.SecurityDomain
 		 */
-		public function get loaderContext():LoaderContext {
+		public function get loaderContext():by.blooddy.core.net.LoaderContext {
 			return this._loaderContext;
 		}
 
 		/**
 		 * @private
 		 */
-		public function set loaderContext(value:LoaderContext):void {
+		public function set loaderContext(value:by.blooddy.core.net.LoaderContext):void {
 			if ( this._loaderContext === value ) return;
 			if ( this._state != _STATE_IDLE ) throw new ArgumentError();
 			this._loaderContext = value;
@@ -385,8 +386,8 @@ package by.blooddy.core.net {
 				case MIME.PNG:
 				case MIME.JPEG:
 				case MIME.GIF:	// для отображаемых типов сразу же пытаемся использовать обычный Loader
-					this._loader = this.create_loader( true, true );
-					this._loader.$load( this._request, this._loaderContext );
+					this._loader = this.create_loader( true, true, true );
+					this._loader.$load( this._request, this.create_loaderContext( _URL && _URL.test( this._request.url ) ) );
 					break;
 
 				default:		// для остальных используем загрузку через stream
@@ -453,7 +454,7 @@ package by.blooddy.core.net {
 		 * @private
 		 * создаёт лоадер для загрузки
 		 */
-		private function create_loader(open:Boolean=false, security:Boolean=false):LoaderAsset {
+		private function create_loader(url:Boolean=false, open:Boolean=false, security:Boolean=false):LoaderAsset {
 			var result:LoaderAsset = new LoaderAsset( this );
 			var li:LoaderInfo = result.$loaderInfo;
 			if ( open ) {	// событие уже могло быть послано
@@ -467,7 +468,7 @@ package by.blooddy.core.net {
 				li.addEventListener( Event.INIT,				this.handler_loader_init,			false, int.MAX_VALUE );
 			}
 			li.addEventListener( Event.COMPLETE,				this.handler_loader_complete,		false, int.MAX_VALUE );
-			if ( open ) { // если загрущик инитиализатор, то загрузка идёт по урлу
+			if ( url ) { // если загрущик инитиализатор, то загрузка идёт по урлу
 				li.addEventListener( IOErrorEvent.IO_ERROR,		this.handler_loader_url_ioError,	false, int.MAX_VALUE );
 			} else {
 				li.addEventListener( IOErrorEvent.IO_ERROR,		this.handler_loader_input_ioError,	false, int.MAX_VALUE );
@@ -622,6 +623,42 @@ package by.blooddy.core.net {
 			super.dispatchEvent( new ProgressEvent( ProgressEvent.PROGRESS, false, false, this._bytesLoaded, this._bytesTotal ) );
 		}
 
+		/**
+		 * @private
+		 */
+		private function create_loaderContext(canSecurity:Boolean=false):flash.system.LoaderContext {
+			if (
+				this._loaderContext && (
+					( canSecurity && this._loaderContext.ignoreSecurity ) ||
+					this._loaderContext.checkPolicyFile ||
+					this._loaderContext.applicationDomain
+				)
+			) {
+				return new flash.system.LoaderContext(
+					this._loaderContext.checkPolicyFile,
+					this._loaderContext.applicationDomain,
+					( canSecurity && this._loaderContext.ignoreSecurity
+						?	SecurityDomain.currentDomain
+						:	null
+					)
+				);
+			}
+			return null;
+		}
+			
+		/**
+		 * @private
+		 */
+		private function create_soundLoaderContext():SoundLoaderContext {
+			if (
+				this._loaderContext &&
+				this._loaderContext.checkPolicyFile
+			) {
+				return new SoundLoaderContext( SoundMixer.bufferTime, this._loaderContext.checkPolicyFile );
+			}
+			return null;
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Event handlers
@@ -682,15 +719,15 @@ package by.blooddy.core.net {
 					case MIME.GIF:
 						this.clear_stream();	// закрываем поток
 						this.clear_input();
-						this._loader = this.create_loader(); // TODO: ioError срабатывает неправильно!!!!
-						this._loader.$load( this._request, this._loaderContext );
+						this._loader = this.create_loader( true );
+						this._loader.$load( this._request, this.create_loaderContext( _URL && _URL.test( this._request.url ) ) );
 						break;
 
 					case MIME.MP3:
 						this.clear_stream();	// закрываем поток
 						this.clear_input();
 						this._sound = this.create_sound();
-						this._sound.$load( this._request, this._loaderContext );
+						this._sound.$load( this._request, this.create_soundLoaderContext() );
 						break;
 
 					case MIME.ZIP:
@@ -730,12 +767,12 @@ package by.blooddy.core.net {
 				case MIME.JPEG:
 				case MIME.GIF:
 					this._loader = this.create_loader();
-					this._loader.$loadBytes( this._input, this._loaderContext );
+					this._loader.$loadBytes( this._input, this.create_loaderContext() );
 					break;
 
 				case MIME.MP3:
 					this._sound = this.create_sound();
-					this._sound.$load( this._request, this._loaderContext );
+					this._sound.$load( this._request, this.create_soundLoaderContext() );
 					this.clear_input();
 					break;
 
@@ -780,6 +817,7 @@ package by.blooddy.core.net {
 						this._content = this._input;
 						this._input = null;
 					}
+
 					if ( super.hasEventListener( Event.INIT ) ) {
 						super.dispatchEvent( new Event( Event.INIT ) );
 					}
@@ -807,13 +845,13 @@ package by.blooddy.core.net {
 				case MIME.PNG:
 				case MIME.JPEG:
 				case MIME.GIF:
-					this._loader = this.create_loader( true, true );
-					this._loader.$load( this._request, this._loaderContext );
+					this._loader = this.create_loader( true, true, true );
+					this._loader.$load( this._request, this.create_loaderContext( _URL && _URL.test( this._request.url ) ) );
 					break;
 
 				case MIME.MP3:
 					this._sound = this.create_sound( true );
-					this._sound.$load( this._request, this._loaderContext );
+					this._sound.$load( this._request, this.create_soundLoaderContext() );
 					break;
 
 				default:
@@ -900,7 +938,7 @@ package by.blooddy.core.net {
 		 */
 		private function handler_loader_security_complete(event:Event):void {
 			var loader:LoaderAsset = this.create_loader();
-			loader.$loadBytes( this._loader.$loaderInfo.bytes, this._loaderContext );
+			loader.$loadBytes( this._loader.$loaderInfo.bytes, this.create_loaderContext() );
 			this.clear_loader();	// очищаем старый лоадер
 			this._loader = loader;	// записываем новый
 		}
@@ -1059,12 +1097,12 @@ package by.blooddy.core.net {
 import by.blooddy.core.errors.getErrorMessage;
 import by.blooddy.core.net.HeuristicLoader;
 
-import flash.errors.IllegalOperationError;
-import flash.events.Event;
 import flash.display.DisplayObject;
 import flash.display.Loader;
 import flash.display.LoaderInfo;
 import flash.display.Sprite;
+import flash.errors.IllegalOperationError;
+import flash.events.Event;
 import flash.media.Sound;
 import flash.media.SoundLoaderContext;
 import flash.media.SoundMixer;
@@ -1332,8 +1370,8 @@ internal final class SoundAsset extends Sound {
 	/**
 	 * @private
 	 */
-	internal function $load(request:URLRequest, context:LoaderContext=null):void {
-		super.load( request, ( context ? new SoundLoaderContext( SoundMixer.bufferTime, context.checkPolicyFile ) : null ) );
+	internal function $load(request:URLRequest, context:SoundLoaderContext=null):void {
+		super.load( request, context );
 	}
 
 	[Deprecated( message="метод запрещен" )]

@@ -7,6 +7,7 @@
 package by.blooddy.core.external {
 
 	import by.blooddy.core.commands.Command;
+	import by.blooddy.core.events.DynamicErrorEvent;
 	import by.blooddy.core.events.DynamicEvent;
 	import by.blooddy.core.logging.InfoLog;
 	import by.blooddy.core.net.AbstractRemoter;
@@ -18,6 +19,7 @@ package by.blooddy.core.external {
 	
 	import flash.errors.IllegalOperationError;
 	import flash.events.AsyncErrorEvent;
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
@@ -146,7 +148,12 @@ package by.blooddy.core.external {
 			delete o.eventPhase;
 			delete o.target;
 			delete o.currentTarget;
-			return this.call( 'dispatchEvent', event.type, event.cancelable, o );
+			return this.call(
+				( event is ErrorEvent ? 'dispatchErrorEvent' : 'dispatchEvent' ),
+				event.type,
+				event.cancelable,
+				o
+			);
 		}
 
 		//--------------------------------------------------------------------------
@@ -169,9 +176,36 @@ package by.blooddy.core.external {
 		 */
 		protected override function $callInputCommand(command:Command):* {
 			switch ( command.name ) {
-				case 'dispatchEvent':	return	this.$dispatchEvent.apply( this, command );
-				case 'dispose':					this.$dispose.apply( this, command );		break;
-				default:				return	super.$callInputCommand( command );
+
+				case 'dispatchErrorEvent':
+					var event:Event = new DynamicErrorEvent( command[ 0 ], false, command[ 1 ] );
+				case 'dispatchEvent':
+					if ( !event ) {
+						event = new DynamicEvent( command[ 0 ], false, command[ 1 ] );
+					}
+					if ( command[ 2 ] ) {
+						copyObject( command[ 2 ], event );
+					}
+					if ( command[ 1 ] ) { // синхронный ответ
+						var result:*;
+						try {
+							result = super.dispatchEvent( event );
+						} finally {
+							return ( result == null || result );
+						}
+					} else {
+						setTimeout( this._dispatchEvent, 1, event );
+						return true;
+					}
+
+				case 'dispose':
+					this._connected = false;
+					super.dispatchEvent( new Event( Event.CLOSE ) );
+					break;
+
+				default:
+					return	super.$callInputCommand( command );
+
 			}
 		}
 
@@ -186,11 +220,14 @@ package by.blooddy.core.external {
 		 */
 		private function init():void {
 			try {
-				this._connected = true;
-				this.call( 'dispatchEvent', Event.INIT );
-				if ( true !== super.dispatchEvent( new Event( Event.CONNECT ) ) ) {
-					throw new IllegalOperationError( 'недопустимый контэйнер для флэшки' );
+				if ( !ExternalInterface.available ) {
+					throw new IllegalOperationError( 'ExternalInterface не поддерживается' );
 				}
+				this._connected = true;
+				if ( true !== this.call( 'dispatchEvent', Event.INIT ) ) {
+					throw new IllegalOperationError( 'ExternalConnection не поддерживается' );
+				}
+				super.dispatchEvent( new Event( Event.CONNECT ) );
 			} catch ( e:SecurityError ) { // bug fixing: ExternalInterface.available == true, but method ExternalInterface.call throws SecurityError
 				this._connected = false;
 				super.dispatchEvent( new SecurityErrorEvent( SecurityErrorEvent.SECURITY_ERROR, false, false, e.message ) );
@@ -214,20 +251,6 @@ package by.blooddy.core.external {
 		/**
 		 * @private
 		 */
-		private function $dispatchEvent(type:String, cancelable:Boolean=false, params:Object=null):Boolean {
-			var event:DynamicEvent = new DynamicEvent( type, false, cancelable );
-			copyObject( params, event );
-			if ( cancelable ) { // синхронный ответ
-				return super.dispatchEvent( event );
-			} else {
-				setTimeout( this._dispatchEvent, 1, event );
-				return true;
-			}
-		}
-
-		/**
-		 * @private
-		 */
 		private function _dispatchEvent(event:Event):Boolean {
 			try { // отлавливаем ошибки выполнения
 				return super.dispatchEvent( event );
@@ -241,14 +264,6 @@ package by.blooddy.core.external {
 			return true;
 		}
 
-		/**
-		 * @private
-		 */
-		private function $dispose():void {
-			this._connected = false;
-			super.dispatchEvent( new Event( Event.CLOSE ) );
-		}
-		
 	}
 
 }

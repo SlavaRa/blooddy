@@ -18,15 +18,16 @@ package by.blooddy.core.net {
 	import flash.display.LoaderInfo;
 	import flash.display.MovieClip;
 	import flash.errors.IllegalOperationError;
-	import flash.errors.InvalidSWFError;
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.HTTPStatusEvent;
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
+	import flash.net.LocalConnection;
 	import flash.net.URLRequest;
 	import flash.system.LoaderContext;
+	import flash.system.SecurityDomain;
 	import flash.utils.ByteArray;
 
 	//--------------------------------------
@@ -127,6 +128,16 @@ package by.blooddy.core.net {
 		 */
 		private static const _STATE_ERROR:uint =	_STATE_COMPLETE	+ 1;
 
+		/**
+		 * @private
+		 */
+		private static const _DOMAIN:String = ( new flash.net.LocalConnection() ).domain;
+		
+		/**
+		 * @private
+		 */
+		private static const _URL:RegExp = ( _DOMAIN == 'localhost' ? null : new RegExp( '^((?!\w+://)|https?://(www\.)?' + _DOMAIN.replace( /\./g, '\\.' ) + ')', 'i' ) );
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -139,7 +150,7 @@ package by.blooddy.core.net {
 		 * @param	request			Если надо, то сразу передадим и начнётся загрузка.
 		 * @param	loaderContext	Если надо грузить, то возможно пригодится.
 		 */
-		public function Loader(request:URLRequest=null, loaderContext:LoaderContext=null) {
+		public function Loader(request:URLRequest=null, loaderContext:by.blooddy.core.net.LoaderContext=null) {
 			super();
 			this._loaderContext = loaderContext;
 			if ( request ) this.load( request );
@@ -248,7 +259,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private var _loaderContext:LoaderContext;
+		private var _loaderContext:by.blooddy.core.net.LoaderContext;
 
 		/**
 		 * A LoaderContext object to use to control loading of the content.
@@ -263,14 +274,14 @@ package by.blooddy.core.net {
 		 * @see						flash.system.ApplicationDomain
 		 * @see						flash.system.SecurityDomain
 		 */
-		public function get loaderContext():LoaderContext {
+		public function get loaderContext():by.blooddy.core.net.LoaderContext {
 			return this._loaderContext;
 		}
 
 		/**
 		 * @private
 		 */
-		public function set loaderContext(value:LoaderContext):void {
+		public function set loaderContext(value:by.blooddy.core.net.LoaderContext):void {
 			if ( this._loaderContext === value ) return;
 			if ( this._state != _STATE_IDLE ) throw new IllegalOperationError();
 			this._loaderContext = value;
@@ -331,7 +342,7 @@ package by.blooddy.core.net {
 			this._state = _STATE_PROGRESS;
 			this._request = copyURLRequest( request );
 			this._loader = this.create_loader( true, true );
-			this._loader.$load( this._request, this._loaderContext );
+			this._loader.$load( this._request, this.create_loaderContext( _URL && _URL.test( this._request.url ) ) );
 			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
 		}
 
@@ -357,7 +368,7 @@ package by.blooddy.core.net {
 			//else if ( this._state > _STATE_PROGRESS ) this.clear();
 			this._state = _STATE_PROGRESS;
 			this._loader = this.create_loader( true );
-			this._loader.$loadBytes( bytes, this._loaderContext );
+			this._loader.$loadBytes( bytes, this.create_loaderContext() );
 		}
 
 		/**
@@ -403,6 +414,29 @@ package by.blooddy.core.net {
 			return result;
 		}
 
+		/**
+		 * @private
+		 */
+		private function create_loaderContext(canSecurity:Boolean=false):flash.system.LoaderContext {
+			if (
+				this._loaderContext && (
+					( canSecurity && this._loaderContext.ignoreSecurity ) ||
+					this._loaderContext.checkPolicyFile ||
+					this._loaderContext.applicationDomain
+				)
+			) {
+				return new flash.system.LoaderContext(
+					this._loaderContext.checkPolicyFile,
+					this._loaderContext.applicationDomain,
+					( canSecurity && this._loaderContext.ignoreSecurity
+						?	SecurityDomain.currentDomain
+						:	null
+					)
+				);
+			}
+			return null;
+		}
+		
 		/**
 		 * @private
 		 */
@@ -538,7 +572,7 @@ package by.blooddy.core.net {
 		 */
 		private function handler_security_complete(event:Event):void {
 			var loader:LoaderAsset = this.create_loader();
-			loader.$loadBytes( this._loader.$loaderInfo.bytes, this._loaderContext );
+			loader.$loadBytes( this._loader.$loaderInfo.bytes, this.create_loaderContext() );
 			this.clear_loader();	// очищаем старый лоадер
 			this._loader = loader;	// записываем новый
 		}

@@ -7,6 +7,7 @@
 package by.blooddy.core.net {
 
 	import by.blooddy.core.commands.Command;
+	import by.blooddy.core.utils.crypto.MD5;
 	import by.blooddy.core.utils.xml.IXMLable;
 	
 	import flash.utils.ByteArray;
@@ -87,6 +88,11 @@ package by.blooddy.core.net {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @private
+		 */
+		private var _hash:String;
+		
 		/**
 		 * @private
 		 */
@@ -268,13 +274,20 @@ package by.blooddy.core.net {
 		/**
 		 * @inheritDoc
 		 */
+		public function getHash():String {
+			return this._hash;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
 		public function parseXML(xml:XML):void {
 
-			var list:XMLList = xml.*.( localName() == 'command' );
+			var children:XMLList = xml.*.( localName() == 'command' );
 			var pattern:NetCommandPattern;
-			for each ( xml in list ) {
+			for each ( var x:XML in children ) {
 				pattern = new NetCommandPattern();
-				pattern.parseXML( xml );
+				pattern.parseXML( x );
 				if ( !pattern.id ) throw new ArgumentError( 'не укзан id для комманды' );
 				if ( !pattern.name ) throw new ArgumentError( 'не укзан name для комманды' );
 				switch ( pattern.io ) {
@@ -299,6 +312,38 @@ package by.blooddy.core.net {
 				}
 			}
 
+			// считаем хэш
+			
+			var ignoreComments:Boolean = XML.ignoreComments;
+			var ignoreProcessingInstructions:Boolean = XML.ignoreProcessingInstructions;
+			var ignoreWhitespace:Boolean = XML.ignoreWhitespace;
+			var prettyPrinting:Boolean = XML.prettyPrinting;
+			XML.ignoreComments = true;
+			XML.ignoreProcessingInstructions = true;
+			XML.ignoreWhitespace = true;
+			XML.prettyPrinting = false;
+
+			var xml:XML = xml.copy();
+			var a:Array = new Array();
+			children = xml.children();
+			for each ( x in children ) {
+				a.push( x );
+			}
+			a.sortOn( '@id', Array.NUMERIC );
+			var l:uint = a.length;
+			for ( var i:uint = 0; i<l; i++ ) {
+				children[ i ] = a[ i ];
+			}
+			
+			xml.setChildren( children );
+
+			XML.ignoreComments = ignoreComments;
+			XML.ignoreProcessingInstructions = ignoreProcessingInstructions;
+			XML.ignoreWhitespace = ignoreWhitespace;
+			XML.prettyPrinting = prettyPrinting;
+
+			this._hash = MD5.hash( xml.toXMLString() );
+			
 		}
 
 		/**
@@ -447,7 +492,6 @@ package by.blooddy.core.net {
 //==============================================================================
 
 import by.blooddy.core.net.NetCommand;
-import by.blooddy.core.net.SincereSocketFilter;
 import by.blooddy.core.utils.xml.IXMLable;
 import by.blooddy.core.utils.xml.XMLUtils;
 
@@ -478,7 +522,7 @@ internal final class Context {
 
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  Helper class: CommandPattern
+//  Helper class: NetCommandPattern
 //
 ////////////////////////////////////////////////////////////////////////////////
 

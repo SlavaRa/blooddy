@@ -36,7 +36,7 @@ package by.blooddy.core.net {
 		 */
 		public function Socket(host:String=null, port:int=0.0) {
 			super( host, port );
-			super.addEventListener( Event.CLOSE, this.handler_close, false, int.MAX_VALUE, true );
+			super.addEventListener( Event.CLOSE,						this.handler_close, false, int.MAX_VALUE, true );
 		}
 
 		//--------------------------------------------------------------------------
@@ -102,6 +102,10 @@ package by.blooddy.core.net {
 			this._host = host;
 			this._port = port;
 			super.dispatchEvent( new Event( Event.OPEN ) ); // задержечку надо бы сделать
+			super.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_empty );
+			super.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_empty );
+			super.addEventListener( IOErrorEvent.IO_ERROR,					this.handler_error, false, int.MAX_VALUE );
+			super.addEventListener( SecurityErrorEvent.SECURITY_ERROR,		this.handler_error, false, int.MAX_VALUE );
 		}
 
 		/**
@@ -115,6 +119,22 @@ package by.blooddy.core.net {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Private methods
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private function clear():void {
+			super.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_error );
+			super.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error );
+			this._host = null;
+			this._port = 0;
+		}
+
+		//--------------------------------------------------------------------------
+		//
 		//  Event handlers
 		//
 		//--------------------------------------------------------------------------
@@ -123,10 +143,29 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		private function handler_close(event:Event):void {
-			this._host = null;
-			this._port = 0;
+			this.clear();
 		}
 
+		/**
+		 * @private
+		 */
+		private function handler_error(event:Event):void {
+			this.clear();
+			if ( !super.hasEventListener( event.type ) ) {
+				event.stopImmediatePropagation();
+				super.dispatchEvent( event );
+			}
+			super.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_empty, false, int.MAX_VALUE, true );
+			super.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_empty, false, int.MAX_VALUE, true );
+		}
+
+		/**
+		 * @private
+		 */
+		private function handler_empty(event:Event):void {
+			event.stopImmediatePropagation();
+		}
+		
 	}
 
 }

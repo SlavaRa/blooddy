@@ -154,30 +154,11 @@ package by.blooddy.core.net {
 		//  output
 		//----------------------------------
 
-		protected function $invokeCallOutputCommand(command:Command!, async:Boolean=true):* {
+		protected function $invokeCallOutputCommand(command:Command!):* {
 			if ( this._logging && ( !( command is NetCommand ) || !( command as NetCommand ).system ) ) {
 				this._logger.addLog( new CommandLog( command ) );
 			}
-			if ( async ) {
-				
-				try { // отлавливаем ошибки выполнения
-					return this.$callOutputCommand( command );
-				} catch ( e:Error ) {
-					if ( this._logging ) {
-						this._logger.addLog( new InfoLog( ( e.toString() || e.getStackTrace() ), InfoLog.ERROR ) );
-						trace( e.getStackTrace() || e.toString() );
-					}
-					if ( super.hasEventListener( AsyncErrorEvent.ASYNC_ERROR ) || !this._unassisted ) {
-						super.dispatchEvent( new AsyncErrorEvent( AsyncErrorEvent.ASYNC_ERROR, false, false, e.toString(), e ) );
-					}
-				}
-				
-			} else {
-				
-				return this.$callOutputCommand( command );
-				
-			}
-			
+			return this.$callOutputCommand( command );
 		}
 
 		protected function $callOutputCommand(command:Command):* {

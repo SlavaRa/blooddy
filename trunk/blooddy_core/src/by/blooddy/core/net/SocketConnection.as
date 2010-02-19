@@ -7,19 +7,19 @@
 package by.blooddy.core.net {
 
 	import by.blooddy.core.commands.Command;
+	import by.blooddy.core.errors.getErrorMessage;
 	import by.blooddy.core.events.net.SerializeErrorEvent;
 	import by.blooddy.core.logging.InfoLog;
 	import by.blooddy.core.utils.ByteArrayUtils;
 	
 	import flash.errors.IOError;
 	import flash.errors.IllegalOperationError;
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.events.SecurityErrorEvent;
-	import flash.system.Security;
 	import flash.utils.ByteArray;
-	import flash.events.ErrorEvent;
 
 	//--------------------------------------
 	//  Implements events: IConnection
@@ -259,10 +259,12 @@ package by.blooddy.core.net {
 			if ( this.connected ) throw new IOError();//this.close();
 			switch ( this._connectionType ) {
 				case Protocols.SOCKET:
+					if ( !( this._socket is Socket ) ) this._socket = null;
 					this._socket = new Socket();
 					//Security.loadPolicyFile( 'xmlsocket://' + host + ':' + port );
 					break;
 				case Protocols.HTTP:
+					if ( !( this._socket is ProxySocket ) ) this._socket = null;
 					this._socket = new ProxySocket();
 					break;
 			}
@@ -288,6 +290,8 @@ package by.blooddy.core.net {
 		public function close():void {
 			if ( this._socket ) {
 				this._socket.close();
+			} else {
+				throw new IOError( getErrorMessage( 2002 ), 2002 );
 			}
 		}
 
@@ -295,8 +299,8 @@ package by.blooddy.core.net {
 		 * @inheritDoc
 		 */
 		public override function call(commandName:String, ...parameters):* {
-			if ( !this._socket ) throw new IllegalOperationError();
-			if ( !this._filter ) throw new IllegalOperationError();
+			if ( !this._socket || !this._socket.connected ) throw new IllegalOperationError( 'соединение не установленно' );
+			if ( !this._filter ) throw new IllegalOperationError( 'нету фильтра сообщений' );
 			return super.$invokeCallOutputCommand(
 				new NetCommand( commandName, NetCommand.OUTPUT, parameters )
 			);
@@ -324,6 +328,28 @@ package by.blooddy.core.net {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Private methods
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private function clear():void {
+			this._host = null;
+			this._port = 0;
+			this._socket.removeEventListener( Event.OPEN,							super.dispatchEvent );
+			this._socket.removeEventListener( Event.CONNECT,						this.handler_connect );
+			this._socket.removeEventListener( ProgressEvent.SOCKET_DATA,			this.handler_socketData );
+			this._socket.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_error );
+			this._socket.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error );
+			this._socket.removeEventListener( Event.CLOSE,							this.handler_close );
+			this._inputBuffer.length = 0;
+			this._inputPosition = 0;
+		}
+
+		//--------------------------------------------------------------------------
+		//
 		//  Event handlers
 		//
 		//--------------------------------------------------------------------------
@@ -335,7 +361,7 @@ package by.blooddy.core.net {
 			if ( super.logging ) {
 				super.logger.addLog( new InfoLog( 'Connect: ' + this._host + ':' + this._port, InfoLog.INFO ) );
 			}
-			super.dispatchEvent( event )
+			super.dispatchEvent( event );
 		}
 
 		/**
@@ -345,8 +371,7 @@ package by.blooddy.core.net {
 			if ( super.logging ) {
 				super.logger.addLog( new InfoLog( 'Error: ' + this._host + ':' + this._port, InfoLog.INFO ) );
 			}
-			this._host = null;
-			this._port = 0;
+			this.clear();
 			super.dispatchEvent( event );
 		}
 
@@ -358,17 +383,7 @@ package by.blooddy.core.net {
 			if ( super.logging ) {
 				super.logger.addLog( new InfoLog( 'Close: ' + this._host + ':' + this._port, InfoLog.INFO ) );
 			}
-			this._host = null;
-			this._port = 0;
-			this._socket.removeEventListener( Event.OPEN,							super.dispatchEvent );
-			this._socket.removeEventListener( Event.CONNECT,						super.dispatchEvent );
-			this._socket.removeEventListener( ProgressEvent.SOCKET_DATA,			this.handler_socketData );
-			this._socket.removeEventListener( IOErrorEvent.IO_ERROR,				super.dispatchEvent );
-			this._socket.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	super.dispatchEvent );
-			this._socket.removeEventListener( Event.CLOSE,							this.handler_close );
-			this._socket = null;
-			this._inputBuffer.length = 0;
-			this._inputPosition = 0;
+			this.clear();
 			super.dispatchEvent( event );
 		}
 
@@ -377,8 +392,6 @@ package by.blooddy.core.net {
 		 * обрабатываем пришедшие данные и запускаем.
 		 */
 		private function handler_socketData(event:ProgressEvent):void {
-
-			if ( !this._filter ) throw new IOError(); /** TODO: пипец. нету обработчика протокола. */
 
 			if ( super.hasEventListener( ProgressEvent.PROGRESS ) ) {
 				super.dispatchEvent(

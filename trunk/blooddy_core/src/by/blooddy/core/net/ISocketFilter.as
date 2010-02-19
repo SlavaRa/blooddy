@@ -19,6 +19,8 @@ package by.blooddy.core.net {
 	 */
 	public interface ISocketFilter {
 
+		function getHash():String;
+		
 		function readCommand(input:IDataInput, io:String='input'):NetCommand;
 
 		function writeCommand(output:IDataOutput, command:NetCommand):void;

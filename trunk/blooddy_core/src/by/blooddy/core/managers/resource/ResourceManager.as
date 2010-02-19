@@ -100,7 +100,7 @@ package by.blooddy.core.managers.resource {
 		/**
 		 * @private
 		 */
-		private static var _maxLoading:uint = ( Capabilities.playerType == "StandAlone" ? 240 : 3 );
+		private static var _maxLoading:uint = ( Capabilities.playerType == 'StandAlone' ? 240 : 3 );
 
 		public static function get maxLoading():uint {
 			return _maxLoading;
@@ -127,6 +127,18 @@ package by.blooddy.core.managers.resource {
 
 		public static function set baseURL(value:String):void {
 			ResourceLoaderAsset.baseURL = value;
+		}
+
+		//----------------------------------
+		//  baseURL
+		//----------------------------------
+		
+		public static function get ignoreSecurity():Boolean {
+			return ResourceLoaderAsset.ignoreSecurity;
+		}
+		
+		public static function set ignoreSecurity(value:Boolean):void {
+			ResourceLoaderAsset.ignoreSecurity = value;
 		}
 
 		//--------------------------------------------------------------------------
@@ -464,6 +476,7 @@ package by.blooddy.core.managers.resource {
 //
 //==============================================================================
 
+import by.blooddy.core.net.LoaderContext;
 import by.blooddy.core.net.ResourceLoader;
 import by.blooddy.core.utils.ClassUtils;
 
@@ -471,7 +484,6 @@ import flash.errors.IllegalOperationError;
 import flash.events.Event;
 import flash.net.URLRequest;
 import flash.system.ApplicationDomain;
-import flash.system.LoaderContext;
 import flash.system.SecurityDomain;
 import flash.utils.getTimer;
 
@@ -494,6 +506,8 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 
 	public static var baseURL:String;
 
+	public static var ignoreSecurity:Boolean = true;
+
 	//--------------------------------------------------------------------------
 	//
 	//  Class variables
@@ -503,7 +517,7 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 	/**
 	 * @private
 	 */
-	private static const _URL:RegExp = /^(http|file|ftp)s?:\/\//;
+	private static const _URL:RegExp = /^\w+:\/\//;
 
 	//--------------------------------------------------------------------------
 	//
@@ -511,8 +525,8 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 	//
 	//--------------------------------------------------------------------------
 
-	public function ResourceLoaderAsset(url:String, priority:int=0.0, loaderContext:LoaderContext=null) {
-		super( null, loaderContext );
+	public function ResourceLoaderAsset(url:String, priority:int=0.0) {
+		super();
 		this._url = url;
 		this.priority = priority;
 	}
@@ -565,8 +579,8 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 			url = this._url;
 		} else {
 			url = baseURL + '/' + this._url;
-			super.loaderContext = new LoaderContext( false, new ApplicationDomain( ApplicationDomain.currentDomain ), SecurityDomain.currentDomain );
 		}
+		super.loaderContext = new LoaderContext( new ApplicationDomain( ApplicationDomain.currentDomain ), ignoreSecurity );
 		super.load( new URLRequest( url ) );
 	}
 
