@@ -1,13 +1,16 @@
 /*!
+ * blooddy/flash/external_loader.js
  * © 2009 BlooDHounD
  * @author BlooDHounD <http://www.blooddy.by>
  */
 
-if ( !window.blooddy ) throw new Error( 'blooddy not initialized.' );
+if ( !window.blooddy ) throw new Error( '"blooddy" not initialized' );
 
 blooddy.require( 'blooddy.Flash' );
 
 if ( !blooddy.Flash.ExternalFlash ) {
+
+	blooddy.require( 'blooddy.events.dom' );
 
 	/**
 	 * @class
@@ -27,13 +30,46 @@ if ( !blooddy.Flash.ExternalFlash ) {
 		/**
 		 * @private
 		 */
-		var	Flash =			blooddy.Flash,
-			Event =			blooddy.events.Event,
+		var	$ =				blooddy,
+			Flash =			$.Flash,
+			events =		$.events,
+			utils =			$.utils,
+			EEvent =		events.Event,
 
-			OBJECT =		'object',
+			ObjectPrototype =	Object.prototype,
+			ArrayPrototype =	Array.prototype,
+
+			gecko =			$.browser.getGecko(),
+
+			OBJECT =				'object',
+			FUNCTION =				'function',
+			DISPATCH_EVENT =		'dispatchEvent',
+			DISPATCH_ERROR_EVENT =	'dispatchErrorEvent',
+			ASYNC_ERROR =			'asyncError',
+
+			_logging =		$.isLogging(),
 
 			_flashs =		new Object(),
-			_min_version =	new blooddy.utils.Version( 8 );
+			_min_version =	new utils.Version( 8 );
+
+		//--------------------------------------------------------------------------
+		//
+		//  Private class methods
+		//
+		//--------------------------------------------------------------------------
+
+		var log = function(io, id, methodName, args) {
+			if ( gecko && console.dir ) {
+				console.groupCollapsed( io + '::' + id + ' %d(%d)', methodName, ( args.length ) );
+				console.dir( args );
+				console.groupEnd();
+			} else {
+				console.log( '==============' );
+				console.log( io + '::' + id + ' ' + methodName + '(' + ( args.length ) + ')' );
+				console.log( args );
+				console.log( '--------------' );
+			}
+		};
 
 		//--------------------------------------------------------------------------
 		//
@@ -45,15 +81,93 @@ if ( !blooddy.Flash.ExternalFlash ) {
 		 * @private
 		 * @constructor
 		 * @param	{String}	id		ID флэшки
-		 * @throws	{Error}				Object already created
+		 * @throws	{Error}				object already created
 		 */
 		var ExternalFlash = function(id) {
-			if ( _flashs[ id ] ) throw new Error( 'Object already created.' );
+			if ( _flashs[ id ] ) throw new Error( 'object already created' );
 			_flashs[ id ] = this;
-			ExternalFlash.superPrototype.constructor.call( this, id );
-		}
+			ExternalFlashSuperPrototype.constructor.call( this, id );
 
-		blooddy.extend( ExternalFlash, Flash );
+			this.addEventListener( 'init', this, initHandler );
+
+			var app = this;
+			events.dom.addEventListener(
+				window,
+				'unload',
+				function() {
+					callDispose.call( app, 'dispose' );
+				}
+			);
+
+		};
+
+		$.extend( ExternalFlash, Flash );
+
+		var	ExternalFlashPrototype =		ExternalFlash.prototype,
+			ExternalFlashSuperPrototype =	ExternalFlash.superPrototype;
+
+		//--------------------------------------------------------------------------
+		//
+		//  Variables
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @property
+		 * @type	{Boolean}
+		 */
+		ExternalFlashPrototype._inited = false;
+
+		//--------------------------------------------------------------------------
+		//
+		//  Event handlers
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		var initHandler = function() {
+			this.removeEventListener( 'init', this, initHandler );
+			this._inited = true;
+		};
+
+		//--------------------------------------------------------------------------
+		//
+		//  Private methods
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		var callDispose = function() {
+			ExternalFlashPrototype.call.call( this, 'dispose' );
+		};
+
+		/**
+		 * @private
+		 */
+		var dispatchEvent = ExternalFlashSuperPrototype.dispatchEvent;
+
+		/**
+		 * @private
+		 * @param	{blooddy.events.Event}	event
+		 * @return	{Boolean}
+		 */
+		var _dispatchEvent = function(event) {
+			var result;
+			try {
+				result = dispatchEvent.call( this, event );
+			} catch ( e ) {
+				event = new EEvent( ASYNC_ERROR );
+				event.text = e.toString();
+				event.error = e;
+				dispatchEvent.call( this, event );
+			} finally {
+				return ( result == null || result );
+			}
+		};
 
 		//--------------------------------------------------------------------------
 		//
@@ -65,28 +179,30 @@ if ( !blooddy.Flash.ExternalFlash ) {
 		 * @method
 		 * @return	{Boolean}
 		 */
-		ExternalFlash.prototype.isInitialized = function() {
-			return '__flash__call' in this.getElement();
-		}
+		ExternalFlashPrototype.isInitialized = function() {
+			if ( !this._inited ) return false;
+			var e = this.getElement();
+			return ( e && typeof e.__flash__call == FUNCTION );
+		};
 
 		/**
 		 * @method
 		 * вызывает произвольный метод у флэшки
 		 * @param	{String}	methodName		имя метода
-		 * @param				...rest			параметры
-		 * @return	{Object}					результат работы метода
+		 * @return								результат работы метода
 		 */
-		ExternalFlash.prototype.call = function(methodName) {
-			var	i,
-				l =			arguments.length,
-				args =		new Array(),
-				element =	document.getElementById( this._id );
-			for ( i=0; i<l; i++ ) {
-				args[ i ] = arguments[ i ];
+		ExternalFlashPrototype.call = function(methodName) {
+			var	e =	this.getElement();
+			if ( !e || typeof e.__flash__call != FUNCTION ) return undefined;
+			var	args =	ArrayPrototype.slice.call( arguments );
+
+			if ( _logging && window.console ) {
+				log( 'output', this._id, methodName, args.slice( 1 ) );
 			}
+
 			args.unshift( this._id );
-			return element.__flash__call.apply( element, args );
-		}
+			return e.__flash__call.apply( e, args );
+		};
 
 		/**
 		 * @method
@@ -95,55 +211,37 @@ if ( !blooddy.Flash.ExternalFlash ) {
 		 * @param	{blooddy.events.Event}	event	событие
 		 * @return	{Boolean}						true - елси событие завершило работы, false - если было отменено
 		 */
-		ExternalFlash.prototype.dispatchEvent = function(event) {
+		ExternalFlashPrototype.dispatchEvent = function(event) {
 			var	o =		new Object(),
 				key;
 			for ( key in event ) {
-				if ( key in Event.prototype ) continue;
+				if ( key in EEvent.prototype ) continue;
 				o[ key ] = o[ key ];
 			}
-			return this.call( 'dispatchEvent', event.type, event.cancelable, o );
-		}
-
-		/**
-		 * @method
-		 * пытается запросить свойство у флэшки
-		 * @param	{String}	name	ключ свойства
-		 * @return	{Object}			значение  свойства
-		 */
-		ExternalFlash.prototype.getProperty = function(name) {
-			return this.call( 'getProperty', name );
-		}
-
-		/**
-		 * @method
-		 * пытается установить свойство у флэшки
-		 * @param	{String}	name	ключ свойства
-		 * @param	{Object}	value	значение  свойства
-		 */
-		ExternalFlash.prototype.setProperty = function(name, value) {
-			this.call( 'setProperty', name, value );
-		}
+			return this.call( DISPATCH_EVENT, event.type, event.cancelable, o );
+		};
 
 		/**
 		 * @method
 		 * @override
 		 * подготавливает объект к удалению
 		 */
-		ExternalFlash.prototype.dispose = function() {
+		ExternalFlashPrototype.dispose = function() {
+			callDispose.call( this );
 			if ( _flashs[ this._id ] === this ) {
 				delete _flashs[ this._id ];
 			}
-			ExternalFlash.superPrototype.dispose.call( this );
-		}
+			ExternalFlashSuperPrototype.dispose.call( this );
+		};
 
 		/**
 		 * @method
+		 * @override
 		 * @return	{String}
 		 */
-		ExternalFlash.prototype.toString = function() {
+		ExternalFlashPrototype.toString = function() {
 			return '[ExternalFlash id="' + this._id + '"]';
-		}
+		};
 
 		//--------------------------------------------------------------------------
 		//
@@ -154,12 +252,88 @@ if ( !blooddy.Flash.ExternalFlash ) {
 		/**
 		 * @static
 		 * @method
-		 * Вставляет флэшку в HTML, автоматически прописывая ей некоторые парметры. 
+		 * метод, который ловит вызовы флэшек и распределяет по контроллерам.
+		 * @param	{String}	id				ID флэшки
+		 * @param	{String}	commandName		имя метода
+		 * @return	{Object}					результат работы метода
+		 */
+		ExternalFlash.__flash__call = function(id, commandName) {
+
+			var	flash =	_flashs[ id ];
+
+			if ( !flash ) {
+				throw new Error( '' );
+			}
+
+			var	a =		arguments,
+				event;
+
+			if ( _logging && window.console ) {
+				log( ' input', id, commandName, ArrayPrototype.slice.call( a, 2 ) );
+			}
+
+			switch ( commandName ) {
+
+				case DISPATCH_EVENT:
+				case DISPATCH_ERROR_EVENT:
+					if ( a[ 4 ] ) {
+						event = a[ 4 ];
+						event.type = a[ 2 ];
+						event.cancelable = a[ 3 ];
+					} else {
+						event = new EEvent( a[ 2 ], a[ 3 ] );
+					}
+					if ( !flash.hasEventListener( a[ 2 ] ) ) {
+						if ( commandName == DISPATCH_ERROR_EVENT ) {
+							try {
+								throw new Error( 'unhandled errorEvent: ' + EEvent.IEvent( event ) );
+							} finally {
+								return true;
+							}
+						}
+						return true;
+					} else {
+						if ( a[ 3 ] ) { // синхронное событие
+							return _dispatchEvent.call( flash, event );
+						} else { // асинхронное событие
+							utils.deferredCall( flash, _dispatchEvent, event );
+							return true;
+						}
+					}
+
+				default:
+					try {
+
+						if ( typeof flash[ commandName ] != FUNCTION ) {
+							throw new Error( 'DefinitionError: method ' + commandName + ' not found' );
+						} else {
+							return flash[ commandName ].apply(
+								flash,
+								ArrayPrototype.slice.call( a, 2 )
+							);
+						}
+
+					} catch ( e ) {
+						event = new EEvent( ASYNC_ERROR );
+						event.text = e.toString();
+						event.error = e;
+						dispatchEvent.call( flash, event );
+					}
+
+			}
+
+			return undefined;
+		};
+
+		/**
+		 * @static
+		 * @method
+		 * Вставляет флэшку в HTML, автоматически прописывая ей некоторые парметры.
 		 * @param	{String}				id			ID флэшки
 		 * @param	{String}				uri			путь к флэшке
 		 * @param	{Number}				width		ширина флэшки
 		 * @param	{Number}				height		высота флэшки
-		 * @param	{blooddy.utils.Version}	version		минимальная версияплэйера 
+		 * @param	{blooddy.utils.Version}	version		минимальная версияплэйера
 		 * @param	{Object}				flashvars	переменные лэфшки
 		 * @param	{Object}				parameters	параметры флэшки
 		 * @param	{Object}				attributes	атрибуты флэшки
@@ -171,19 +345,19 @@ if ( !blooddy.Flash.ExternalFlash ) {
 				params =	new Object(),
 				fv =		new Object();
 
-			if ( _min_version.compare( Flash.getPlayerVersion() ) > 0 ) {
+			if ( _min_version.compare( Flash.getPlayerVersion() ) >= 0 ) {
 				return null;
 			}
 
 			if ( parameters && typeof parameters == OBJECT ) {
 				for ( key in parameters ) {
 					value = parameters[ key ];
-					if ( key in Object.prototype ) continue;
+					if ( key in ObjectPrototype ) continue;
 					switch ( key.toLowerCase() ) {
 						case 'flashvars':
 						case 'movie':				value = null;	break;
 					}
-					if ( !value ) continue;
+					if ( value == null ) continue;
 					params[ key ] = value;
 				}
 			}
@@ -193,7 +367,7 @@ if ( !blooddy.Flash.ExternalFlash ) {
 			if ( flashvars && typeof flashvars == OBJECT ) {
 				for ( key in flashvars ) {
 					value = flashvars[ key ];
-					if ( key in Object.prototype ) continue;
+					if ( key in ObjectPrototype ) continue;
 					if ( !value ) continue;
 					fv[ key ] = value;
 				}
@@ -201,7 +375,7 @@ if ( !blooddy.Flash.ExternalFlash ) {
 			fv.externalID = id;
 
 			return Flash.embedSWF( id, uri, width, height, version, fv, params, attributes );
-		}
+		};
 
 		/**
 		 * @static
@@ -211,7 +385,7 @@ if ( !blooddy.Flash.ExternalFlash ) {
 		 * @param	{String}				uri			путь к флэшке
 		 * @param	{Number}				width		ширина флэшки
 		 * @param	{Number}				height		высота флэшки
-		 * @param	{blooddy.utils.Version}	version		минимальная версияплэйера 
+		 * @param	{blooddy.utils.Version}	version		минимальная версияплэйера
 		 * @param	{Object}				flashvars	переменные лэфшки
 		 * @param	{Object}				parameters	параметры флэшки
 		 * @param	{Object}				attributes	атрибуты флэшки
@@ -222,17 +396,18 @@ if ( !blooddy.Flash.ExternalFlash ) {
 				return ExternalFlash.getFlash( id );
 			}
 			return null;
-		}
+		};
 
 		/**
 		 * @static
+		 * @method
 		 * проверяет существование конроллера
 		 * @param	{String}	id			ID флэшки
 		 * @return	{Boolean}
 		 */
 		ExternalFlash.hasFlash = function(id) {
 			return Boolean( _flashs[ id ] );
-		}
+		};
 
 		/**
 		 * @static
@@ -240,81 +415,39 @@ if ( !blooddy.Flash.ExternalFlash ) {
 		 * возвращает существующий конроллер, или создаёт новый
 		 * @param	{String}						id	ID флэшки
 		 * @return	{blooddy.Flash.ExternalFlash}		контроллер Flash-объекта
-		 * @throws	{Error}								Object already created as blooddy.Flash
+		 * @throws	{Error}								object already created as "blooddy.Flash"
 		 */
 		ExternalFlash.getFlash = function(id) {
 			var	flash = _flashs[ id ];
 			if ( !flash ) {
-				if ( Flash.hasFlash( id ) ) throw new Error( 'Object already created as blooddy.Flash' );
+				if ( Flash.hasFlash( id ) ) throw new Error( 'object already created as "blooddy.Flash"' );
 				flash = new ExternalFlash( id );
 			}
 			return flash;
-		}
+		};
 
 		/**
 		 * @static
 		 * @method
+		 * @override
 		 * @return	{String}
 		 */
 		ExternalFlash.toString = function() {
 			return '[class ExternalFlash]';
-		}
+		};
 
 		return ExternalFlash;
 
 	}() );
 
 	/**
-	 * @static
 	 * @method
 	 * @final
 	 * глобальный метод, который ловит вызовы флэшек и распределяет по контроллерам.
 	 * @param	{String}	id				ID флэшки
-	 * @param	{String}	methodName		имя метода
-	 * @param				...rest			параметры
+	 * @param	{String}	commandName		имя метода
 	 * @return	{Object}					результат работы метода
-	 * @throws	{Error}						ioError
-	 * @author	BlooDHounD	<http://www.blooddy.by>
 	 */
-	function __flash__call(id, commandName) {
-
-		var	ExternalFlash =	blooddy.Flash.ExternalFlash,
-			flash =			ExternalFlash.getFlash( id ),
-			a =				arguments;
-
-		if ( !flash || !( flash instanceof ExternalFlash ) ) {
-			throw new Error( 'ioError' );
-		}
-
-		switch ( commandName ) {
-
-			case 'dispatchEvent':
-				var	event = a[ 4 ] || new Object();
-				event.type = a[ 2 ];
-				event.cancelable = a[ 3 ];
-				return ExternalFlash.superPrototype.dispatchEvent.call( flash, event );
-
-			case 'getProperty':
-				return this[ arguments[ 2 ] ];
-
-			case 'setProperty':
-				this[ arguments[ 2 ] ] = arguments[ 3 ];
-				break;
-
-			default:
-				if ( !flash[ commandName ] ) {
-					throw new Error( 'ioError' );
-				}
-				var	l =		arguments.length,
-					i,
-					args =	new Array();
-				for ( i=2; i<l; i++ ) {
-					args[ i-2 ] = arguments[ i ];
-				}
-				return flash[ commandName ].apply( flash, args );
-
-		}
-		return undefined;
-	}
+	var __flash__call = blooddy.Flash.ExternalFlash.__flash__call;
 
 }

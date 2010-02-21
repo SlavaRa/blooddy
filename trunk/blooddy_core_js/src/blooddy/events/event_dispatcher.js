@@ -1,17 +1,18 @@
 /*!
+ * blooddy/events/event_dispatcher.js
  * © 2009 BlooDHounD
  * @author BlooDHounD <http://www.blooddy.by>
  */
 
-if ( !window.blooddy ) throw new Error( 'blooddy not initialized.' );
-
-blooddy.require( 'blooddy.events.Event' );
+if ( !window.blooddy ) throw new Error( '"blooddy" not initialized' );
 
 if ( !blooddy.events.EventDispatcher ) {
 
+	blooddy.require( 'blooddy.events.Event' );
+
 	/**
 	 * @class
-	 * базовый класс дляработы с событиями
+	 * базовый класс для работы с событиями
 	 * @namespace	blooddy.events
 	 * @requires	blooddy.events.Event
 	 * @author		BlooDHounD	<http://www.blooddy.by>
@@ -27,7 +28,9 @@ if ( !blooddy.events.EventDispatcher ) {
 		/**
 		 * @private
 		 */
-		var	Event = blooddy.events.Event;
+		var	EEvent = blooddy.events.Event,
+
+			FUNCTION =			'function';
 
 		//--------------------------------------------------------------------------
 		//
@@ -42,7 +45,9 @@ if ( !blooddy.events.EventDispatcher ) {
 		var EventDispatcher = function(target) {
 			this._listeners = new Object();
 			this._event_target = ( target || this );
-		}
+		};
+
+		var EventDispatcherPrototype = EventDispatcher.prototype;
 
 		//--------------------------------------------------------------------------
 		//
@@ -55,14 +60,14 @@ if ( !blooddy.events.EventDispatcher ) {
 		 * @property
 		 * @type	{Object}
 		 */
-		EventDispatcher.prototype._listeners = null;
+		EventDispatcherPrototype._listeners = null;
 
 		/**
 		 * @private
 		 * @property
 		 * @type	{Object}
 		 */
-		EventDispatcher.prototype._event_target = null;
+		EventDispatcherPrototype._event_target = null;
 
 		//--------------------------------------------------------------------------
 		//
@@ -73,13 +78,13 @@ if ( !blooddy.events.EventDispatcher ) {
 		/**
 		 * @method
 		 * добавляет новго слушателя
-		 * @param	{String}	type		тип события
-		 * @param	{Object}	scope		контекст слушателя
-		 * @param	{Object}	listener	слушатель
-		 * @param	{Number}	priority	приоритет
+		 * @param	{String}			type		тип события
+		 * @param	{Object}			scope		контекст слушателя
+		 * @param	{String|Function}	listener	слушатель
+		 * @param	{Number}			priority	приоритет
 		 */
-		EventDispatcher.prototype.addEventListener = function(type, scope, listener, priority) {
-			if ( !type || ( ( typeof listener != 'string' || !scope ) && typeof listener != 'function' ) ) return;
+		EventDispatcherPrototype.addEventListener = function(type, scope, listener, priority) {
+			if ( !type || ( ( typeof listener != 'string' || !scope ) && typeof listener != FUNCTION ) ) return;
 			if ( isNaN( priority ) ) priority = 0;
 			var	arr = this._listeners[ type ];
 			if ( arr ) {
@@ -90,25 +95,25 @@ if ( !blooddy.events.EventDispatcher ) {
 					ot,
 					index =	l;
 				for ( ; i < l; i++ ) {
-					o = arr[i];
-					if ( o.scope == scope && o.listener == listener ) {
-						if ( o.priority === priority ) return; // всё и так ништяк
+					o = arr[ i ];
+					if ( o.s == scope && o.l === listener ) {
+						if ( o.p === priority ) return; // всё и так ништяк
 						ot = o;
 						arr.splice( i, 1 );
 						l--;
 						i--;
 						break;
 					}
-					if ( o.priority < priority ) {
+					if ( o.p < priority ) {
 						index = i;
 						break;
 					}
 				}
 				if ( !ot ) {
 					for ( ; i < l; i++ ) {
-						o = arr[i];
-						if ( o.scope == scope && o.listener == listener ) {
-							if ( o.priority === priority ) return; // всё и так ништяк
+						o = arr[ i ];
+						if ( o.s == scope && o.l === listener ) {
+							if ( o.p === priority ) return; // всё и так ништяк
 							ot = o;
 							arr.splice( i, 1 );
 							break;
@@ -116,80 +121,78 @@ if ( !blooddy.events.EventDispatcher ) {
 					}
 					if ( !ot ) {
 						ot = {
-							scope: ( scope || null ),
-							listener: listener
+							s: ( scope || null ),
+							l: listener
 						}
 					}
 				} else {
 					if ( index == l ) {
 						for ( ; i < l; i++ ) {
-							if ( o.priority < priority ) {
+							if ( o.p < priority ) {
 								index = i;
 								break;
 							}
 						}
 					}
 				}
-	
-				ot.priority = priority;
-	
+
+				ot.p = priority;
+
 				arr.splice( index, 0, ot );
 			} else {
 				this._listeners[ type ] = new Array( {
-					priority: priority,
-					scope: ( scope || null ),
-					listener: listener
+					p: priority,
+					s: ( scope || null ),
+					l: listener
 				} );
 			}
-		}
+		};
 
 		/**
 		 * @method
 		 * удаляет слушателя
-		 * @param	{String}	type		тип события
-		 * @param	{Object}	scope		контекст слушателя
-		 * @param	{Object}	listener	слушатель
+		 * @param	{String}			type		тип события
+		 * @param	{Object}			scope		контекст слушателя
+		 * @param	{String|Function}	listener	слушатель
 		 */
-		EventDispatcher.prototype.removeEventListener = function(type, scope, listener) {
-			var	arr = this._listeners[ type ],
-				j,
-				o;
+		EventDispatcherPrototype.removeEventListener = function(type, scope, listener) {
+			var	arr =	this._listeners[ type ];
 			if ( !arr ) return;
+			var	l =		arr.length,
+				i =		0,
+				o;
 			if ( scope ) {
 				if ( listener ) {
-					for ( j in arr ) {
-						o = arr[j];
-						if ( o.scope == scope && o.listener == listener ) {
-							delete o.scope;
-							delete o.listener;
-							arr.splice( Number(j), 1 );
+					for ( ; i<l; i++ ) {
+						o = arr[ i ];
+						if ( o.s == scope && o.l == listener ) {
+							arr.splice( i, 1 );
 							break;
 						}
 					}
 				} else {
-					for ( j in arr ) {
-						o = arr[j];
-						if ( o.scope == scope ) {
-							delete o.scope;
-							delete o.listener;
-							arr.splice( Number(j), 1 );
+					for ( ; i<l; i++ ) {
+						o = arr[ i ];
+						if ( o.s == scope ) {
+							arr.splice( i, 1 );
+							i--;
+							l--;
 						}
 					}
 				}
 			} else {
-				if ( typeof listener == 'function' ) {
-					for ( j in arr ) {
-						o = arr[j];
-						if ( !o.scope && o.listener === listener ) {
-							delete o.scope;
-							delete o.listener;
-							arr.splice( Number(j), 1 );
+				if ( typeof listener == FUNCTION ) {
+					for ( ; i<l; i++ ) {
+						o = arr[ i ];
+						if ( !o.s && o.l === listener ) {
+							arr.splice( i, 1 );
+							break;
 						}
 					}
 				}
 			}
 			if ( arr.length <= 0 ) delete this._listeners[ type ];
-		}
+		};
 
 		/**
 		 * @method
@@ -197,37 +200,56 @@ if ( !blooddy.events.EventDispatcher ) {
 		 * @param	{blooddy.events.Event}	event	событие
 		 * @return	{Boolean}						true - елси событие завершило работы, false - если было отменено
 		 */
-		EventDispatcher.prototype.dispatchEvent = function(event) {
-			if ( !( event instanceof Event ) ) event = Event.IEvent( event );
+		EventDispatcherPrototype.dispatchEvent = function(event) {
+			if ( !( event instanceof EEvent ) ) event = EEvent.IEvent( event );
 			event.target = this._event_target;
 			var	arr = this._listeners[ event.type ];
 			if ( arr ) {
-				arr = arr.slice(); // копируем, чтобы удаление на нас не повлияло
-				var	obj,
-					e,
-					i,
+				var	o,
 					l =	arr.length;
-				for ( i=0; i<arr.length; i++ ) {
-					obj = arr[i];
-					if ( !obj.listener || ( !obj.scope && obj.scope !== null ) ) continue; // FIXME: удалить нафиг
+				if ( l > 1 ) {
+					var	arrc = arr.slice(), // копируем, чтобы удаление на нас не повлияло
+						e, i;
+					for ( i=0; i<l; i++ ) {
+						o = arrc[i];
+						e = event.clone();
+						if ( typeof o.l == FUNCTION ) {
+							o.l.call( o.s, e );
+						} else if ( o.s && typeof o.s[ o.l ] == FUNCTION ) {
+							o.s[ o.l ]( e );
+						} else {
+							arr.splice( i, 1 );
+							arrc.splice( i--, 1 );
+							l--;
+							continue;
+						}
+						// нас отменили. надо превать распостранение события
+						if ( event.cancelable && e.isDefaultPrevented() ) {
+							return false;
+						}
+						if ( e._do_stop ) {
+							return true; // выход из цикла
+						}
+					}
+					if ( arrc.length <= 0 ) delete this._listeners[ event.type ];
+				} else {
+					o = arr[ 0 ];
 					e = event.clone();
-					if ( typeof obj.listener == 'function' ) {
-						obj.listener.call( obj.scope, e );
+					if ( typeof o.l == FUNCTION ) {
+						o.l.call( o.s, event );
+					} else if ( typeof o.s[ o.l ] == FUNCTION ) {
+						o.s[ o.l ]( event );
 					} else {
-						obj.scope[ obj.listener ]( e );
+						delete this._listeners[ event.type ];
 					}
 					// нас отменили. надо превать распостранение события
 					if ( event.cancelable && e.isDefaultPrevented() ) {
 						return false;
 					}
-					if ( e._do_stop ) {
-						return true; // выход из цикла
-					}
 				}
-				if ( arr.length <= 0 ) delete this._listeners[ event._type ];
 			}
 			return true;
-		}
+		};
 
 		/**
 		 * @method
@@ -235,34 +257,35 @@ if ( !blooddy.events.EventDispatcher ) {
 		 * @param	{String}	type	тип события
 		 * @return	{Boolean}
 		 */
-		EventDispatcher.prototype.hasEventListener = function(type) {
-			return Boolean( this._listeners[ type ] );
-		}
+		EventDispatcherPrototype.hasEventListener = function(type) {
+			return ( type in this._listeners );
+		};
 
 		/**
 		 * @method
 		 * подготавливает объект к удалению
 		 */
-		EventDispatcher.prototype.dispose = function() {
+		EventDispatcherPrototype.dispose = function() {
 			this._event_target = null;
-			var i,
-				arr;
-			for ( i in this.__listeners ) {
-				arr = this.__listeners[ i ];
+			var arr,
+				i;
+			for ( i in this._listeners ) {
+				arr = this._listeners[ i ];
 				arr.splice( 0, arr.length );
-				delete this.__listeners[ i ];
+				delete this._listeners[ i ];
 			}
-		}
+		};
 
 		/**
 		 * @method
+		 * @override
 		 * @return	{String}
 		 */
-		EventDispatcher.prototype.toString = function() {
-			return '[EventDispatcher' +
-				( this._event_target !== this ? ' (' + this._event_target + ')' : '' ) +
+		EventDispatcherPrototype.toString = function() {
+			return '[EventDispatcher ' +
+				( this._event_target !== this ? '(' + this._event_target + ')' : 'object' ) +
 			']';
-		}
+		};
 
 		//--------------------------------------------------------------------------
 		//
@@ -273,11 +296,12 @@ if ( !blooddy.events.EventDispatcher ) {
 		/**
 		 * @static
 		 * @method
+		 * @override
 		 * @return	{String}
 		 */
 		EventDispatcher.toString = function() {
 			return '[class EventDispatcher]';
-		}
+		};
 
 		return EventDispatcher;
 

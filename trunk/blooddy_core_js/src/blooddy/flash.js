@@ -1,14 +1,15 @@
 /*!
+ * blooddy/flash.js
  * © 2009 BlooDHounD
  * @author BlooDHounD <http://www.blooddy.by>
  */
 
-if ( !window.blooddy ) throw new Error( 'blooddy not initialized.' );
-
-blooddy.require( 'blooddy.utils.Version' );
-blooddy.require( 'blooddy.events.EventDispatcher' );
+if ( !window.blooddy ) throw new Error( '"blooddy" not initialized' );
 
 if ( !blooddy.Flash ) {
+
+	blooddy.require( 'blooddy.utils.Version' );
+	blooddy.require( 'blooddy.events.EventDispatcher' );
 
 	/**
 	 * @class
@@ -19,6 +20,36 @@ if ( !blooddy.Flash ) {
 	 * @author		BlooDHounD	<http://www.blooddy.by>
 	 */
 	blooddy.Flash = ( function() {
+
+		//--------------------------------------------------------------------------
+		//
+		//  Class variables
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		var	$ =			blooddy,
+			Version =	$.utils.Version,
+			browser =	$.browser,
+
+			ObjectPrototype =	Object.prototype,
+
+			msie =		browser.getMSIE(),
+			webKit =	browser.getWebKit(),
+
+			OBJECT =			'object',
+			SHOCKWAVE_FLASH =	'Shockwave Flash',
+			FLASH_MIME_TYPE =	'application/x-shockwave-flash',
+
+			g_win =	$.getTop(),
+			g_doc =	g_win.document,
+			doc =	window.document,
+			nav =	navigator,
+
+			_playerVersion,
+			_flashs = new Object();
 
 		//--------------------------------------------------------------------------
 		//
@@ -43,7 +74,7 @@ if ( !blooddy.Flash ) {
 				o = doc.createElement( OBJECT ),
 				p;
 			for ( key in attributes ) {
-				if ( key in Object.prototype ) continue;
+				if ( key in ObjectPrototype ) continue;
 				o.setAttribute( key, attributes[ key ] );
 			}
 			o.setAttribute( 'type', FLASH_MIME_TYPE );
@@ -51,7 +82,7 @@ if ( !blooddy.Flash ) {
 			o.setAttribute( 'id', id );
 			o.setAttribute( 'name', id );
 			for ( key in parameters ) {
-				if ( key in Object.prototype ) continue;
+				if ( key in ObjectPrototype ) continue;
 				p = doc.createElement( 'param' );
 				p.setAttribute( 'name', key );
 				p.setAttribute( 'value', parameters[ key ] );
@@ -59,7 +90,7 @@ if ( !blooddy.Flash ) {
 			}
 			element.parentNode.replaceChild( o, element );
 			return o;
-		}
+		};
 
 		/**
 		 * @private
@@ -78,24 +109,24 @@ if ( !blooddy.Flash ) {
 				attrs =		new Array(),
 				params =	new Array();
 			for ( key in attributes ) {
-				if ( key in Object.prototype ) continue;
+				if ( key in ObjectPrototype ) continue;
 				attrs.push( key + '="' + attributes[ key ] + '"' );
 			}
 			params.push( '<param name="movie" value="' + uri + '" />' );
 			for ( key in parameters ) {
-				if ( key in Object.prototype ) continue;
+				if ( key in ObjectPrototype ) continue;
 				params.push( '<param name="' + key + '" value="' + parameters[ key ] + '" />' );
 			}
 			element.outerHTML = '<object id="' + id + '" name="' + id + '" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ' + attrs.join( ' ' ) + '>' + params.join( '' ) + '</object>';
-			return doc.getElementById( id );	
-		}
+			return doc.getElementById( id );
+		};
 
 		/**
 		 * @private
 		 * @static
 		 * @method
-		 * @param	{HTMLElement}
-		 * @return {Boolean}
+		 * @param	{HTMLElement}	e
+		 * @return	{Boolean}
 		 */
 		var isFlash = function(e) {
 			if (
@@ -107,34 +138,7 @@ if ( !blooddy.Flash ) {
 				return true;
 			}
 			return false;
-		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Class variables
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		var	Version =	blooddy.utils.Version,
-			Browser =	blooddy.Browser,
-
-			msie =		Browser.getMSIE(),
-			webKit =	Browser.getWebKit(),
-
-			OBJECT =			'object',
-			SHOCKWAVE_FLASH =	'Shockwave Flash',
-			FLASH_MIME_TYPE =	'application/x-shockwave-flash',
-
-			twin =	top || win,
-			tdoc =	twin.document,
-			doc =	document,
-			nav =	navigator,
-
-			_playerVersion,
-			_flashs = new Object();
+		};
 
 		//--------------------------------------------------------------------------
 		//
@@ -157,13 +161,13 @@ if ( !blooddy.Flash ) {
 				_playerVersion[ 2 ] = parseInt( d[ 4 ] );
 				_playerVersion[ 3 ] = parseInt( d[ 6 ] );
 			}
-		} else if ( twin.ActiveXObject ) {
+		} else if ( g_win.ActiveXObject ) {
 			try {
 				var a =	new ActiveXObject( 'ShockwaveFlash.ShockwaveFlash' );
 				if ( a ) {
 					var	v = a.GetVariable( '$version' );
 					if ( v ) {
-						v = d.match( /^\w+\s(\d+,\d+,\d+,\d+)/ );
+						v = v.match( /^\w+\s(\d+,\d+,\d+,\d+)/ );
 						_playerVersion = Version.parse( v[ 1 ] );
 					}
 				}
@@ -192,7 +196,7 @@ if ( !blooddy.Flash ) {
 				}
 			);
 		} else {
-			tdoc.addEventListener(
+			g_doc.addEventListener(
 				'DOMMouseScroll',
 				function(event) {
 					if ( isFlash( doc.activeElement ) ) {
@@ -208,21 +212,24 @@ if ( !blooddy.Flash ) {
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-	
+
 		/**
 		 * @private
 		 * @constructor
 		 * @param	{String}	id		ID флэшки
-		 * @throws	{Error}				Object already created
+		 * @throws	{Error}				object already created
 		 */
 		var Flash = function(id) {
-			if ( _flashs[ id ] ) throw new Error( 'Object already created.' );
+			if ( _flashs[ id ] ) throw new Error( 'object already created' );
 			_flashs[ id ] = this;
-			Flash.superPrototype.constructor.call( this );
+			FlashSuperPrototype.constructor.call( this );
 			this._id = id;
-		}
+		};
 
-		blooddy.extend( Flash, blooddy.events.EventDispatcher );
+		$.extend( Flash, $.events.EventDispatcher );
+
+		var	FlashPrototype =		Flash.prototype,
+			FlashSuperPrototype =	Flash.superPrototype;
 
 		//--------------------------------------------------------------------------
 		//
@@ -232,17 +239,15 @@ if ( !blooddy.Flash ) {
 
 		/**
 		 * @private
-		 * @property
-	 	 * @type 		String
+	 	 * @type 		{String}
 		 */
-		Flash.prototype._id = null;
+		FlashPrototype._id = null;
 
 		/**
 		 * @private
-		 * @property
-	 	 * @type 		String
+	 	 * @type 		{String}
 		 */
-		Flash.prototype._uri = null;
+		FlashPrototype._uri = null;
 
 		//--------------------------------------------------------------------------
 		//
@@ -251,16 +256,18 @@ if ( !blooddy.Flash ) {
 		//--------------------------------------------------------------------------
 
 		/**
+		 * @method
 		 * @return	{String}	ID флэшки
 		 */
-		Flash.prototype.getID = function() {
+		FlashPrototype.getID = function() {
 			return this._id;
-		}
+		};
 
 		/**
+		 * @method
 		 * @return	{String}	путь, по которому расположена флэшка
 		 */
-		Flash.prototype.getURI = function() {
+		FlashPrototype.getURI = function() {
 			if ( !this._uri ) {
 				var	element = doc.getElementById( this._id ) || null;
 				if ( element ) {
@@ -281,35 +288,38 @@ if ( !blooddy.Flash ) {
 				}
 			}
 			return this._uri;
-		}
+		};
 
 		/**
+		 * @method
 		 * @return	{String}	HTMLElement флэшки
 		 */
-		Flash.prototype.getElement = function() {
+		FlashPrototype.getElement = function() {
 			return doc.getElementById( this._id );
-		}
+		};
 
 		/**
 		 * @method
 		 * @override
 		 * подготавливает объект к удалению
 		 */
-		Flash.prototype.dispose = function() {
+		FlashPrototype.dispose = function() {
 			if ( _flashs[ this._id ] === this ) {
 				delete _flashs[ this._id ];
 			}
-			this._id = null
+			this._id = null;
 			this._uri = null;
-			Flash.superPrototype.dispose.call( this );
-		}
+			FlashSuperPrototype.dispose.call( this );
+		};
 
 		/**
+		 * @method
+		 * @override
 		 * @return	{String}
 		 */
-		Flash.prototype.toString = function() {
+		FlashPrototype.toString = function() {
 			return '[Flash id="' + this._id + '"]';
-		}
+		};
 
 		//--------------------------------------------------------------------------
 		//
@@ -325,7 +335,7 @@ if ( !blooddy.Flash ) {
 		 * @param	{String}				uri			путь к флэшке
 		 * @param	{Number}				width		ширина флэшки
 		 * @param	{Number}				height		высота флэшки
-		 * @param	{blooddy.utils.Version}	version		минимальная версияплэйера 
+		 * @param	{blooddy.utils.Version}	version		минимальная версияплэйера
 		 * @param	{Object}				flashvars	переменные лэфшки
 		 * @param	{Object}				parameters	параметры флэшки
 		 * @param	{Object}				attributes	атрибуты флэшки
@@ -361,16 +371,19 @@ if ( !blooddy.Flash ) {
 			if ( attributes && typeof attributes == OBJECT ) {
 				for ( key in attributes ) {
 					value = attributes[ key ];
-					if ( key in Object.prototype ) continue;
+					if ( key in ObjectPrototype ) continue;
 					switch ( key.toLowerCase() ) {
 						case 'styleclass':	key = 'class';	break;
 						case 'id':
 						case 'name':
 						case 'data':
 						case 'classid':
+						case 'codebase':
+						case 'src':
+						case 'pluginspage':
 						case 'type':		value = null;	break;
 					}
-					if ( !value ) continue;
+					if ( value == null ) continue;
 					attrs[ key ] = value;
 				}
 			}
@@ -380,22 +393,22 @@ if ( !blooddy.Flash ) {
 			if ( parameters && typeof parameters == OBJECT ) {
 				for ( key in parameters ) {
 					value = parameters[ key ];
-					if ( key in Object.prototype ) continue;
+					if ( key in ObjectPrototype ) continue;
 					switch ( key.toLowerCase() ) {
 						case 'flashvars':
 						case 'movie':		value = null;	break;
 					}
-					if ( !value ) continue;
+					if ( value == null ) continue;
 					params[ key ] = value;
 				}
 			}
 
 			if ( flashvars && typeof flashvars == OBJECT ) {
-				var	fv = new Array(); 
+				var	fv = new Array();
 				for ( key in flashvars ) {
 					value = flashvars[ key ];
-					if ( key in Object.prototype ) continue;
-					if ( !value ) continue;
+					if ( key in ObjectPrototype ) continue;
+					if ( value == null ) continue;
 					fv.push( key + '=' + flashvars[ key ] );
 				}
 				if ( fv.length > 0 ) {
@@ -408,9 +421,7 @@ if ( !blooddy.Flash ) {
 			} else {
 				return createSWF( element, id, uri, attrs, params );
 			}
-
-			return null;
-		}
+		};
 
 		/**
 		 * @static
@@ -420,7 +431,7 @@ if ( !blooddy.Flash ) {
 		 * @param	{String}				uri			путь к флэшке
 		 * @param	{Number}				width		ширина флэшки
 		 * @param	{Number}				height		высота флэшки
-		 * @param	{blooddy.utils.Version}	version		минимальная версияплэйера 
+		 * @param	{blooddy.utils.Version}	version		минимальная версияплэйера
 		 * @param	{Object}				flashvars	переменные лэфшки
 		 * @param	{Object}				parameters	параметры флэшки
 		 * @param	{Object}				attributes	атрибуты флэшки
@@ -431,17 +442,18 @@ if ( !blooddy.Flash ) {
 				return Flash.getFlash( id );
 			}
 			return null;
-		}
+		};
 
 		/**
 		 * @static
+		 * @method
 		 * проверяет существование конроллера
 		 * @param	{String}	id			ID флэшки
 		 * @return	{Boolean}
 		 */
 		Flash.hasFlash = function(id) {
 			return ( _flashs[ id ] ? true : false );
-		}
+		};
 
 		/**
 		 * @static
@@ -452,7 +464,7 @@ if ( !blooddy.Flash ) {
 		 */
 		Flash.getFlash = function(id) {
 			return _flashs[ id ] || new Flash( id );
-		}
+		};
 
 		/**
 		 * @static
@@ -462,16 +474,17 @@ if ( !blooddy.Flash ) {
 		 */
 		Flash.getPlayerVersion = function() {
 			return _playerVersion;
-		}
+		};
 
 		/**
 		 * @static
 		 * @method
+		 * @override
 		 * @return	{String}
 		 */
 		Flash.toString = function() {
 			return '[class Flash]';
-		}
+		};
 
 		return Flash;
 

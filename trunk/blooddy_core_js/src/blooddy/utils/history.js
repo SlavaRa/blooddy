@@ -1,12 +1,12 @@
 /*!
+ * blooddy/utils/history.js
  * © 2009 BlooDHounD
  * @author BlooDHounD <http://www.blooddy.by>
  */
 
-if ( !window.blooddy ) throw new Error( 'blooddy not initialized.' );
+if ( !window.blooddy ) throw new Error( '"blooddy" not initialized' );
 
 blooddy.require( 'blooddy.utils' );
-blooddy.require( 'blooddy.events.EventDispatcher' );
 
 if ( !blooddy.utils.history ) {
 
@@ -20,6 +20,11 @@ if ( !blooddy.utils.history ) {
 	 */
 	blooddy.utils.history = new ( function() {
 
+		// shortcuts
+		var $ = blooddy;
+
+		blooddy.require( 'blooddy.events.EventDispatcher' );
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class variables
@@ -29,25 +34,28 @@ if ( !blooddy.utils.history ) {
 		/**
 		 * @private
 		 */
-		var	Browser =	blooddy.Browser,
+		var	browser =	$.browser,
 
-			gecko =		Browser.getGecko(),
-			msie =		Browser.getMSIE(),
-			opera =		Browser.getOpera(),
+			gecko =		browser.getGecko(),
+			msie =		browser.getMSIE(),
+			opera =		browser.getOpera(),
 
 			_inited = false,
-			_available = ( 
-				( gecko >= 1 ) || 
+			_available = (
+				( gecko >= 1 ) ||
 				( msie >= 6 ) ||
 				( opera >= 9.5 ) ||
-				( Browser.getWebKit() >= 525 )
+				( browser.getWebKit() >= 525 )
 			),
 
-			win =		top || window,
+			win =		$.getTop(),
 			doc =		win.document,
 			loc =		win.location,
 			_history =	win.history,
-			
+
+			_rup =		/^(.+?)[\/\\]+[^\/\\]+[\/\\]*([\?#]|$)/,
+			_rpath =	/[\?#]/,
+
 			_hash = '',
 			_onChange,
 			_setHash;
@@ -60,12 +68,12 @@ if ( !blooddy.utils.history ) {
 
 		if ( _available ) {
 
+			var	iframe;
 			var getHash;
-
 			var saveHash = function(hash) {
 				_hash = hash;
 				_onChange();
-			}
+			};
 
 			if ( msie ) { // IE
 
@@ -79,7 +87,7 @@ if ( !blooddy.utils.history ) {
 
 					getHash = function() {
 						return loc.hash.substr( 1 ).replace( ptrn_input, '?' );
-					}
+					};
 
 				}
 				// у всех версий проблемы с заголовками при переходе по якорям.
@@ -104,7 +112,7 @@ if ( !blooddy.utils.history ) {
 							if ( iframe ) iframe.contentWindow.document.title = title;
 	 					}
 					}
-				}
+				};
 
 				if ( msie >= 8 ) { /** IE8+ */
 
@@ -113,7 +121,7 @@ if ( !blooddy.utils.history ) {
 						// определяем главный метод
 						_setHash = function(hash) {
 							loc.hash = hash.replace( ptrn_output, '%3F' );
-						}
+						};
 
 					}
 
@@ -150,8 +158,7 @@ if ( !blooddy.utils.history ) {
 
 					// для остальных версий IE необходим хак с IFrame,
 					// по которому и будет осуществляться переход
-					var	id = '__history_manager_frame_' + Math.round( ( new Date() ).getTime() * Math.random() ),
-						frame;
+					var	id = '__history_frame_' + Math.round( $.utils.getTime() * Math.random() );
 
 					// создём фрэйм
 					// получим его позже, так как сразу он не доступен
@@ -163,14 +170,14 @@ if ( !blooddy.utils.history ) {
 						if ( fwin.hash == hash ) return;
 						var fdoc = fwin.document;
 						fdoc.open();
-						fdoc.write( '<html><head><title>' + title + '</title><script type="text/javascript">var hash = "' + hash + '";</script></head></html>' );
+						fdoc.write( '<html><head><title>' + title + '</title><scr' + 'ipt type="text/javascript">var hash = "' + hash + '";</scr' + 'ipt></head></html>' );
 						fdoc.close();
-					}
+					};
 
 					// этот метод записывает во фрэйм текущий хэш
 					var updateHash = function() {
 						_setHash( getHash() );
-					}
+					};
 
 					// каждые 50 ms проверяем хэш на изменения
 					setInterval(
@@ -179,7 +186,7 @@ if ( !blooddy.utils.history ) {
 							if ( _hash != hash ) {
 								setTimeout( updateHash, 1 );
 								saveHash( hash );
-								
+
 							}
 							updateTitle();
 						},
@@ -210,7 +217,7 @@ if ( !blooddy.utils.history ) {
 						},
 						1
 					);
-	
+
 				}
 
 			} else {
@@ -218,7 +225,7 @@ if ( !blooddy.utils.history ) {
 				if ( opera ) {
 					_history.navigationMode = 'compatible';
 				}
-				
+
 				if ( gecko ) {
 
 					// bug fix: https://bugzilla.mozilla.org/show_bug.cgi?id=378962
@@ -226,7 +233,7 @@ if ( !blooddy.utils.history ) {
 						var	href =	loc.href,
 							i =		href.indexOf( '#' );
 						return ( i >= 0 ? href.substr( i + 1 ) : '' );
-					}
+					};
 
 				}
 
@@ -262,7 +269,7 @@ if ( !blooddy.utils.history ) {
 
 				getHash = function() {
 					return loc.hash.substr( 1 );
-				}
+				};
 
 			}
 
@@ -271,7 +278,7 @@ if ( !blooddy.utils.history ) {
 				// определяем главный метод
 				_setHash = function(hash) {
 					loc.hash = hash;
-				}
+				};
 
 			}
 
@@ -279,7 +286,7 @@ if ( !blooddy.utils.history ) {
 
 			// создаём пустой метод для совместимости
 			_setHash = function() {
-			}
+			};
 
 		}
 
@@ -292,21 +299,23 @@ if ( !blooddy.utils.history ) {
 		/**
 		 * @private
 		 * @constructor
-		 * @throws	{Error}		History - singltone
+		 * @throws	{Error}		object can not be created
 		 */
 		var History = function() {
-			if ( _inited ) throw new Error( 'History - singltone' );
+			if ( _inited ) throw new Error( 'object can not be created' );
 			_inited = true;
 			History.superPrototype.constructor.call( this );
 			if ( _available ) {
 				var	app = this;
 				_onChange = function() {
-					app.dispatchEvent( new blooddy.events.Event( 'change', true ) );
+					app.dispatchEvent( new $.events.Event( 'change', true ) );
 				}
 			}
-		}
+		};
 
-		blooddy.extend( History, blooddy.events.EventDispatcher );
+		$.extend( History, $.events.EventDispatcher );
+
+		var HistoryPrototype = History.prototype;
 
 		//--------------------------------------------------------------------------
 		//
@@ -318,15 +327,15 @@ if ( !blooddy.utils.history ) {
 		 * @method
 		 * @return	{Boolean}			доступна ли работа с историей
 		 */
-		History.prototype.isAvailable = function() {
+		HistoryPrototype.isAvailable = function() {
 			return _available;
-		}
+		};
 
 		/**
 		 * @method
 		 * возвращается по истории назад
 		 */
-		History.prototype.back = function() {
+		HistoryPrototype.back = function() {
 			_history.back();
 		};
 
@@ -334,7 +343,7 @@ if ( !blooddy.utils.history ) {
 		 * @method
 		 * переходит по истории вперёд
 		 */
-		History.prototype.forward = function() {
+		HistoryPrototype.forward = function() {
 			_history.forward();
 		};
 
@@ -343,7 +352,7 @@ if ( !blooddy.utils.history ) {
 		 * переходит на определённой количество состояний истории.
 		 * @param	{Number}	delta	числовой здвиг относительнотекущей истории
 		 */
-		History.prototype.go = function(delta) {
+		HistoryPrototype.go = function(delta) {
 			_history.go( delta );
 		};
 
@@ -352,8 +361,8 @@ if ( !blooddy.utils.history ) {
 		 * переходит вверх по пути
 		 * @example /game/room/play -> up -> /game/room
 		 */
-		History.prototype.up = function() {
-			var m = _hash.match( /^(.+?)[\/\\]+[^\/\\]+[\/\\]*([\?\#]|$)/ );
+		HistoryPrototype.up = function() {
+			var m = _hash.match( _rup );
 			_setHash( m ? m[1] : '' );
 		};
 
@@ -361,7 +370,7 @@ if ( !blooddy.utils.history ) {
 		 * @method
 		 * @return	{String}			адресс
 		 */
-		History.prototype.getHREF = function() {
+		HistoryPrototype.getHREF = function() {
 			return _hash;
 		};
 
@@ -369,7 +378,7 @@ if ( !blooddy.utils.history ) {
 		 * @method
 		 * @param	{String}	value	новый адресс
 		 */
-		History.prototype.setHREF = function(value) {
+		HistoryPrototype.setHREF = function(value) {
 			_setHash( value );
 		};
 
@@ -377,15 +386,15 @@ if ( !blooddy.utils.history ) {
 		 * @method
 		 * @return	{String}			путь
 		 */
-		History.prototype.getPath = function() {
-			return _hash.split( /[\?\#]/, 2 )[ 0 ];
+		HistoryPrototype.getPath = function() {
+			return _hash.split( _rpath, 2 )[ 0 ];
 		};
 
 		/**
 		 * @method
 		 * @return	{String}			перменные
 		 */
-		History.prototype.getSearch = function() {
+		HistoryPrototype.getSearch = function() {
 			var i = _hash.indexOf( '?' );
 			if ( i > 0 ) {
 				var j = _hash.indexOf( '#', i );
@@ -396,12 +405,12 @@ if ( !blooddy.utils.history ) {
 			}
 			return '';
 		};
-	
+
 		/**
 		 * @method
 		 * @return	{String}			хэш
 		 */
-		History.prototype.getHash = function() {
+		HistoryPrototype.getHash = function() {
 			var index = _hash.indexOf( '#' );
 			return ( index < 0 ? '' : _hash.substr( index + 1 ) );
 		};
@@ -410,26 +419,27 @@ if ( !blooddy.utils.history ) {
 		 * @method
 		 * @return	{String}			заголовок страницы
 		 */
-		History.prototype.getTitle = function() {
+		HistoryPrototype.getTitle = function() {
 			return doc.title;
 		};
-	
+
 		/**
 		 * @method
-		 * @param	{String}	title	новый заголовок страницы
+		 * @param	{String}	value	новый заголовок страницы
 		 */
-		History.prototype.setTitle = function(value) {
+		HistoryPrototype.setTitle = function(value) {
 			if ( !value ) value = '';
 			doc.title = title;
 		};
 
 		/**
 		 * @method
+		 * @override
 		 * @return	{String}
 		 */
-		History.prototype.toString = function() {
+		HistoryPrototype.toString = function() {
 			return '[History object]';
-		}
+		};
 
 		return History;
 

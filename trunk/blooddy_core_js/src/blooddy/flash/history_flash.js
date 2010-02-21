@@ -1,14 +1,17 @@
 /*!
+ * blooddy/flash/history_flash.js
  * © 2009 BlooDHounD
  * @author BlooDHounD <http://www.blooddy.by>
  */
 
-if ( !window.blooddy ) throw new Error( 'blooddy not initialized.' );
+if ( !window.blooddy ) throw new Error( '"blooddy" not initialized' );
 
-blooddy.require( 'blooddy.Flash.ExternalFlash' );
-blooddy.require( 'blooddy.utils.history' );
+blooddy.require( 'blooddy.Flash' );
 
 if ( !blooddy.Flash.HistoryFlash ) {
+
+	blooddy.require( 'blooddy.Flash.ExternalFlash' );
+	blooddy.require( 'blooddy.utils.history' );
 
 	/**
 	 * @class
@@ -29,11 +32,40 @@ if ( !blooddy.Flash.HistoryFlash ) {
 		/**
 		 * @private
 		 */
-		var	Flash =			blooddy.Flash,
+		var	$ =				blooddy,
+			Flash =			$.Flash,
 			ExternalFlash =	Flash.ExternalFlash,
-			history =		blooddy.utils.history,
+			history =		$.utils.history,
 
-			_flashs = new Object();
+			_flashs =		new Object();
+
+		//-------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 * @constructor
+		 * @param	{String}	id		ID флэшки
+		 * @throws	{Error}				object already created
+		 */
+		var HistoryFlash = function(id) {
+			if ( _flashs[ id ] ) throw new Error( 'object already created' );
+			_flashs[ id ] = this;
+			HistoryFlashSuperPrototype.constructor.call( this, id );
+			if ( this.isInitialized() ) {
+				initHandler.call( this );
+			} else {
+				this.addEventListener( 'init', this, initHandler );
+			}
+		};
+
+		$.extend( HistoryFlash, ExternalFlash );
+
+		var	HistoryFlashPrototype =			HistoryFlash.prototype,
+			HistoryFlashSuperPrototype =	HistoryFlash.superPrototype;
 
 		//--------------------------------------------------------------------------
 		//
@@ -50,39 +82,14 @@ if ( !blooddy.Flash.HistoryFlash ) {
 			if ( href ) {
 				changeHandler.call( this );
 			}
-		}
+		};
 
 		/**
 		 * @private
 		 */
 		var changeHandler = function() {
-			HistoryFlash.superPrototype.dispatchEvent.call( this, new blooddy.events.Event( 'historyChange' ) );
-		}
-
-		//-------------------------------------------------------------------------
-		//
-		//  Constructor
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 * @constructor
-		 * @param	{String}	id		ID флэшки
-		 * @throws	{Error}				Object already created
-		 */
-		var HistoryFlash = function(id) {
-			if ( _flashs[ id ] ) throw new Error( 'Object already created.' );
-			_flashs[ id ] = this;
-			HistoryFlash.superPrototype.constructor.call( this, id );
-			if ( !this.isInitialized() ) {
-				this.addEventListener( 'init', this, initHandler );
-			} else {
-				initHandler.call( this );
-			}
-		}
-
-		blooddy.extend( HistoryFlash, ExternalFlash );
+			this.dispatchEvent.call( this, new $.events.Event( 'historyChange' ) );
+		};
 
 		//--------------------------------------------------------------------------
 		//
@@ -92,79 +99,79 @@ if ( !blooddy.Flash.HistoryFlash ) {
 
 		/**
 		 * @method
-		 * @see		blooddy.utils.History#isAvailable
+		 * @see		blooddy.utils.history#isAvailable()
 		 * @return	{Boolean}
 		 */
-		HistoryFlash.prototype.isHistoryAvailable = function() {
-			history.isAvailable();
-		}
+		HistoryFlashPrototype.isHistoryAvailable = function() {
+			return history.isAvailable();
+		};
 
 		/**
 		 * @method
-		 * @see		blooddy.utils.History#back
+		 * @see		blooddy.utils.history#back()
 		 */
-		HistoryFlash.prototype.back = function() {
+		HistoryFlashPrototype.back = function() {
 			history.back();
 		};
 
 		/**
 		 * @method
-		 * @see		blooddy.utils.History#forward
+		 * @see		blooddy.utils.history#forward()
 		 */
-		HistoryFlash.prototype.forward = function() {
+		HistoryFlashPrototype.forward = function() {
 			history.forward();
 		};
 
 		/**
 		 * @method
-		 * @see		blooddy.utils.History#go
+		 * @see		blooddy.utils.history#go()
 		 * @param	{Number}
 		 */
-		HistoryFlash.prototype.go = function(delta) {
+		HistoryFlashPrototype.go = function(delta) {
 			history.go( delta );
 		};
 
 		/**
 		 * @method
-		 * @see		blooddy.utils.History#up
+		 * @see		blooddy.utils.history#up()
 		 */
-		HistoryFlash.prototype.up = function() {
+		HistoryFlashPrototype.up = function() {
 			history.up();
 		};
 
 		/**
 		 * @method
-		 * @see		blooddy.utils.History#getHREF
+		 * @see		blooddy.utils.history#getHREF()
 		 * @return	{String}
 		 */
-		HistoryFlash.prototype.getHREF = function() {
+		HistoryFlashPrototype.getHREF = function() {
 			return history.getHREF();
 		};
 
 		/**
 		 * @method
-		 * @see		blooddy.utils.History#setHREF
+		 * @see		blooddy.utils.history#setHREF()
 		 * @param	{String}	value
 		 */
-		HistoryFlash.prototype.setHREF = function(value) {
+		HistoryFlashPrototype.setHREF = function(value) {
 			history.setHREF( value );
 		};
 
 		/**
 		 * @method
-		 * @see		blooddy.utils.History#getTitle
+		 * @see		blooddy.utils.history#getTitle()
 		 * @return	{String}
 		 */
-		HistoryFlash.prototype.getTitle = function() {
+		HistoryFlashPrototype.getTitle = function() {
 			return history.getTitle();
 		};
-	
+
 		/**
 		 * @method
-		 * @see		blooddy.utils.History#setTitle
+		 * @see		blooddy.utils.history#setTitle()
 		 * @param	{String}
 		 */
-		HistoryFlash.prototype.setTitle = function(value) {
+		HistoryFlashPrototype.setTitle = function(value) {
 			history.setTitle( value );
 		};
 
@@ -173,21 +180,22 @@ if ( !blooddy.Flash.HistoryFlash ) {
 		 * @override
 		 * подготавливает объект к удалению
 		 */
-		HistoryFlash.prototype.dispose = function() {
+		HistoryFlashPrototype.dispose = function() {
 			history.removeEventListener( 'change', this );
 			if ( _flashs[ this._id ] === this ) {
 				delete _flashs[ this._id ];
 			}
-			HistoryFlash.superPrototype.dispose.call( this );
-		}
+			HistoryFlashSuperPrototype.dispose.call( this );
+		};
 
 		/**
 		 * @method
+		 * @override
 		 * @return	{String}
 		 */
-		HistoryFlash.prototype.toString = function() {
+		HistoryFlashPrototype.toString = function() {
 			return '[HistoryFlash id="' + this._id + '"]';
-		}
+		};
 
 		//--------------------------------------------------------------------------
 		//
@@ -203,7 +211,7 @@ if ( !blooddy.Flash.HistoryFlash ) {
 		 * @param	{String}						uri			путь к флэшке
 		 * @param	{Number}						width		ширина флэшки
 		 * @param	{Number}						height		высота флэшки
-		 * @param	{blooddy.utils.Version}			version		минимальная версияплэйера 
+		 * @param	{blooddy.utils.Version}			version		минимальная версияплэйера
 		 * @param	{Object}						flashvars	переменные лэфшки
 		 * @param	{Object}						parameters	параметры флэшки
 		 * @param	{Object}						attributes	атрибуты флэшки
@@ -214,17 +222,18 @@ if ( !blooddy.Flash.HistoryFlash ) {
 				return HistoryFlash.getFlash( id );
 			}
 			return null;
-		}
+		};
 
 		/**
 		 * @static
+		 * @method
 		 * проверяет существование конроллера
 		 * @param	{String}	id			ID флэшки
 		 * @return	{Boolean}
 		 */
 		HistoryFlash.hasFlash = function(id) {
 			return Boolean( _flashs[ id ] );
-		}
+		};
 
 		/**
 		 * @static
@@ -232,25 +241,26 @@ if ( !blooddy.Flash.HistoryFlash ) {
 		 * возвращает существующий конроллер, или создаёт новый
 		 * @param	{String}						id	ID флэшки
 		 * @return	{blooddy.Flash.HistoryFlash}		контроллер Flash-объекта
-		 * @throws	{Error}								Object already created as bloddy.Flash
+		 * @throws	{Error}								object already created as "blooddy.Flash"
 		 */
 		HistoryFlash.getFlash = function(id) {
 			var flash = _flashs[ id ];
 			if ( !flash ) {
-				if ( Flash.hasFlash( id ) ) throw new Error( 'Object already created as blooddy.Flash' );
+				if ( Flash.hasFlash( id ) ) throw new Error( 'object already created as "blooddy.Flash"' );
 				flash = new HistoryFlash( id );
 			}
 			return flash;
-		}
+		};
 
 		/**
 		 * @static
 		 * @method
+		 * @override
 		 * @return	{String}
 		 */
 		HistoryFlash.toString = function() {
 			return '[class HistoryFlash]';
-		}
+		};
 
 		return HistoryFlash;
 
