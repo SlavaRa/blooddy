@@ -29,11 +29,11 @@ package by.blooddy.factory {
 	import flash.net.URLRequest;
 	import flash.system.ApplicationDomain;
 	import flash.system.LoaderContext;
+	import flash.system.SecurityDomain;
 	import flash.text.TextSnapshot;
 	import flash.utils.clearTimeout;
 	import flash.utils.getQualifiedClassName;
 	import flash.utils.setTimeout;
-	import flash.system.SecurityDomain;
 
 	//--------------------------------------
 	//  Excluded APIs
@@ -359,7 +359,7 @@ package by.blooddy.factory {
 		 */
 		public final function set color(value:uint):void {
 			this._color = value;
-			this._info.color = this._color;
+			if ( this._info ) this._info.color = this._color;
 		}
 		
 		//----------------------------------
@@ -549,9 +549,8 @@ package by.blooddy.factory {
 					// сделаем рут
 					stage.addChild( new Root() as DisplayObject );
 					// удалим себя
-					super.removedEventListener( Event.REMOVED_FROM_STAGE, this.handler_removedFromStage );
-					if ( super.parent is Loader )	( new Sprite() ).addChild( this ); // стараемся для FactoryLoader
-					else							super.parent.removeChild( this );
+					super.removeEventListener( Event.REMOVED_FROM_STAGE, this.handler_removedFromStage );
+					if ( super.parent is Loader ) ( new Sprite() ).addChild( this ); // стараемся для FactoryLoader
 					// диспатчим увент
 					if ( super.hasEventListener( Event.INIT ) ) {
 						try {
@@ -559,6 +558,9 @@ package by.blooddy.factory {
 						} catch ( skip:Error ) { // ошибка уже не важна
 						}
 					}
+					super.parent.removeChild( this );
+					if ( super.contains( this._info ) )super.removeChild( this._info );
+					this._info = null;
 				} catch ( e:Error ) {
 					this.throwError( e );
 				}
@@ -571,6 +573,7 @@ package by.blooddy.factory {
 		 * @private
 		 */
 		private function throwError(e:Error):void {
+			trace( e.getStackTrace() || e.toString() );
 			for each ( var loaderInfo:LoaderInfo in this._loaders ) {
 				this.removeLoader( loaderInfo );
 			}
@@ -591,7 +594,7 @@ package by.blooddy.factory {
 			if ( this._info && super.contains( this._info ) ) {
 				super.removeChild( this._info );
 			}
-			this._info = new ErrorSprite( e.message, this._color );
+			this._info = new ErrorSprite( e.getStackTrace() || e.toString(), this._color );
 			this.updatePosition();
 			super.addChildAt( this._info, 0 );
 		}
@@ -978,7 +981,7 @@ package by.blooddy.factory {
 		 */
 		public override final function getObjectsUnderPoint(point:Point):Array {
 			var result:Array = super.getObjectsUnderPoint( point );
-			if ( this._showPreloader) {
+			if ( this._showPreloader && this._info ) {
 				var index:int = result.indexOf( this._info );
 				if ( index >= 0 ) result.splice( index, 1 );
 			}
@@ -1325,7 +1328,7 @@ internal final class ErrorSprite extends TextSprite {
 	 */
 	public function ErrorSprite(text:String=null, color:uint=0xFFFFFF):void {
 		super( color );
-		this.label.wordWrap = true;
+		this.label.selectable = true;
 		this.label.multiline = true;
 		this.label.width = 200;
 		this.label.x = - this.label.width / 2;
