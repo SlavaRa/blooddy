@@ -17,6 +17,7 @@ package by.blooddy.core.display {
 	import flash.errors.IllegalOperationError;
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
+	import flash.system.Capabilities;
 
 	/**
 	 * @author					BlooDHounD
@@ -191,57 +192,65 @@ package by.blooddy.core.display {
 
 		[Deprecated( message="метод запрещён", replacement="addBitmap" )]
 		public override function addChild(child:DisplayObject):DisplayObject {
-			throw new IllegalOperationError( getErrorMessage( 2071, this, 'addChild' ), 2071 );
+			if ( !Capabilities.isDebugger ) throw new IllegalOperationError( getErrorMessage( 2071, this, 'addChild' ), 2071 );
+			return null;
 		}
 
 		[Deprecated( message="метод запрещён", replacement="addBitmapAt" )]
 		public override function addChildAt(child:DisplayObject, index:int):DisplayObject {
-			throw new IllegalOperationError( getErrorMessage( 2071, this, 'addChildAt' ), 2071 );
+			if ( !Capabilities.isDebugger ) throw new IllegalOperationError( getErrorMessage( 2071, this, 'addChildAt' ), 2071 );
+			return null;
 		}
 
 		[Deprecated( message="метод запрещён", replacement="removeBitmap" )]
 		public override function removeChild(child:DisplayObject):DisplayObject {
-			throw new IllegalOperationError( getErrorMessage( 2071, this, 'removeChild' ), 2071 );
+			if ( !Capabilities.isDebugger ) throw new IllegalOperationError( getErrorMessage( 2071, this, 'removeChild' ), 2071 );
+			return null;
 		}
 
 		[Deprecated( message="метод запрещён", replacement="removeBitmapAt" )]
 		public override function removeChildAt(index:int):DisplayObject {
-			throw new IllegalOperationError( getErrorMessage( 2071, this, 'removeChildAt' ), 2071 );
+			if ( !Capabilities.isDebugger ) throw new IllegalOperationError( getErrorMessage( 2071, this, 'removeChildAt' ), 2071 );
+			return null;
 		}
 
 		[Deprecated( message="метод запрещён", replacement="getBitmapAt" )]
 		public override function getChildAt(index:int):DisplayObject {
-			throw new IllegalOperationError( getErrorMessage( 2071, this, 'getChildAt' ), 2071 );
+			if ( !Capabilities.isDebugger ) throw new IllegalOperationError( getErrorMessage( 2071, this, 'getChildAt' ), 2071 );
+			return null;
 		}
 
 		[Deprecated( message="метод запрещён", replacement="getBitmapIndex" )]
 		public override function getChildIndex(child:DisplayObject):int {
-			throw new IllegalOperationError( getErrorMessage( 2071, this, 'getChildIndex' ), 2071 );
+			if ( !Capabilities.isDebugger ) throw new IllegalOperationError( getErrorMessage( 2071, this, 'getChildIndex' ), 2071 );
+			return -1;
 		}
 
 		[Deprecated( message="метод запрещён" )]
 		public override function getChildByName(name:String):DisplayObject {
-			throw new IllegalOperationError( getErrorMessage( 2071, this, 'getChildByName' ), 2071 );
+			if ( !Capabilities.isDebugger ) throw new IllegalOperationError( getErrorMessage( 2071, this, 'getChildByName' ), 2071 );
+			return null;
 		}
 
 		[Deprecated( message="метод запрещён", replacement="setBitmapIndex" )]
 		public override function setChildIndex(child:DisplayObject, index:int):void {
-			throw new IllegalOperationError( getErrorMessage( 2071, this, 'setChildIndex' ), 2071 );
+			if ( !Capabilities.isDebugger ) throw new IllegalOperationError( getErrorMessage( 2071, this, 'setChildIndex' ), 2071 );
 		}
 
 		[Deprecated( message="метод запрещён", replacement="swapBitmaps" )]
 		public override function swapChildren(child1:DisplayObject, child2:DisplayObject):void {
-			throw new IllegalOperationError( getErrorMessage( 2071, this, 'swapChildren' ), 2071 );
+			if ( !Capabilities.isDebugger ) throw new IllegalOperationError( getErrorMessage( 2071, this, 'swapChildren' ), 2071 );
 		}
 
 		[Deprecated( message="метод запрещён", replacement="swapBitmapsAt" )]
 		public override function swapChildrenAt(index1:int, index2:int):void {
-			throw new IllegalOperationError( getErrorMessage( 2071, this, 'swapChildrenAt' ), 2071 );
+			if ( !Capabilities.isDebugger ) throw new IllegalOperationError( getErrorMessage( 2071, this, 'swapChildrenAt' ), 2071 );
 		}
 
 		[Deprecated( message="метод запрещён", replacement="containsBitmap" )]
 		public override function contains(child:DisplayObject):Boolean {
-			throw new IllegalOperationError( getErrorMessage( 2071, this, 'contains' ), 2071 );
+			if ( !Capabilities.isDebugger ) throw new IllegalOperationError( getErrorMessage( 2071, this, 'contains' ), 2071 );
+			return false;
 		}
 
 		//--------------------------------------------------------------------------

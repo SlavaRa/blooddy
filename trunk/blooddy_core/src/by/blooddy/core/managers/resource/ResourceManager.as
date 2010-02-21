@@ -8,9 +8,7 @@ package by.blooddy.core.managers.resource {
 
 	import by.blooddy.core.events.managers.ResourceBundleEvent;
 	import by.blooddy.core.net.ILoadable;
-	import by.blooddy.core.net.ILoader;
 	import by.blooddy.core.net.LoaderPriority;
-	import by.blooddy.core.net.ResourceLoader;
 	import by.blooddy.core.utils.enterFrameBroadcaster;
 	
 	import flash.events.Event;
@@ -48,7 +46,7 @@ package by.blooddy.core.managers.resource {
 	 * 
 	 * @keyword					resourcemanager, resource, manager
 	 */
-	public class ResourceManager extends EventDispatcher {
+	public final class ResourceManager extends EventDispatcher {
 
 		//--------------------------------------------------------------------------
 		//
@@ -74,7 +72,7 @@ package by.blooddy.core.managers.resource {
 		/**
 		 * @private
 		 */
-		private static const _SORT_FIELDS:Array = new Array( "priority", "time" );
+		private static const _SORT_FIELDS:Array = new Array( 'priority', 'time' );
 
 		/**
 		 * @private
@@ -150,15 +148,16 @@ package by.blooddy.core.managers.resource {
 		/**
 		 * @private
 		 */
-		private static function addLoaderQueue(loader:ResourceLoaderAsset):void {
-			registerQueue( loader );
-			if ( loader.priority >= LoaderPriority.HIGHEST ) {
-				loader.$load();
+		private static function addLoaderQueue(asset:ResourceLoaderAsset, priority:int=0.0):void {
+			if ( priority >= LoaderPriority.HIGHEST ) {
+				registerQueue( asset );
+				asset.$load();
 				_loading++;
 			} else {
-				_LOADING_QUEUE.push( loader );
+				asset.queue = new QueueItem( asset, priority );
+				_LOADING_QUEUE.push( asset.queue );
 				_LOADING_QUEUE.sortOn( _SORT_FIELDS, _SORT_OPTIONS );
-			 	if ( _loading < _maxLoading || _LOADING_QUEUE.length > 0 ) {
+			 	if ( _loading < _maxLoading ) {
 			 		enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, updateQueue );
 				}
 			}
@@ -167,21 +166,16 @@ package by.blooddy.core.managers.resource {
 		/**
 		 * @private
 		 */
-		private static function loadQueue():void {
-			if ( _LOADING_QUEUE.length <= 0 ) return;
-			var loader:ResourceLoaderAsset = _LOADING_QUEUE.pop();
-			if ( loader.$managers.length > 0 ) {
-				loader.$load();
-				_loading++;
-			}
-		}
-
-		/**
-		 * @private
-		 */
 		private static function updateQueue(event:Event=null):void {
-			if ( _loading < _maxLoading ) {
-				loadQueue();
+			if (
+				_loading < _maxLoading ||
+				( _LOADING_QUEUE[ 0 ] as QueueItem ).priority >= LoaderPriority.HIGHEST
+			) {
+				var asset:ResourceLoaderAsset = _LOADING_QUEUE.pop().asset;
+				asset.queue = null;
+				registerQueue( asset );
+				asset.$load();
+				_loading++;
 			}
 		 	if ( _loading >= _maxLoading || _LOADING_QUEUE.length <= 0 ) {
 		 		enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, updateQueue );
@@ -191,26 +185,26 @@ package by.blooddy.core.managers.resource {
 		/**
 		 * @private
 		 */
-		private static function registerQueue(loader:ILoadable):void {
-			loader.addEventListener( Event.COMPLETE, queue_complete );
-			loader.addEventListener( IOErrorEvent.IO_ERROR, queue_complete );
-			loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, queue_complete );
+		private static function registerQueue(asset:ResourceLoaderAsset):void {
+			asset.addEventListener( Event.COMPLETE, queue_complete );
+			asset.addEventListener( IOErrorEvent.IO_ERROR, queue_complete );
+			asset.addEventListener( SecurityErrorEvent.SECURITY_ERROR, queue_complete );
 		}
 
 		/**
 		 * @private
 		 */
-		private static function unregisterQueue(loader:ILoadable):void {
-			loader.removeEventListener( Event.COMPLETE, queue_complete );
-			loader.removeEventListener( IOErrorEvent.IO_ERROR, queue_complete );
-			loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR, queue_complete );
+		private static function unregisterQueue(asset:ResourceLoaderAsset):void {
+			asset.removeEventListener( Event.COMPLETE, queue_complete );
+			asset.removeEventListener( IOErrorEvent.IO_ERROR, queue_complete );
+			asset.removeEventListener( SecurityErrorEvent.SECURITY_ERROR, queue_complete );
 		}
 
 		/**
 		 * @private
 		 */
 		private static function queue_complete(event:Event=null):void {
-			unregisterQueue( event.target as ILoadable );
+			unregisterQueue( event.target as ResourceLoaderAsset );
 			_loading--;
 		 	if ( _loading < _maxLoading || _LOADING_QUEUE.length > 0 ) {
 		 		enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, updateQueue );
@@ -259,7 +253,7 @@ package by.blooddy.core.managers.resource {
 		 * @keyword					resourcemanager.getobject, getobject
 		 */
 		public function getResource(bundleName:String, resourceName:String):* {
-			if ( !( bundleName in this._hash ) ) return;
+			if ( !( bundleName in this._hash ) ) return null;
 			return ( this._hash[ bundleName ] as IResourceBundle ).getResource( resourceName );
 		}
 
@@ -316,25 +310,27 @@ package by.blooddy.core.managers.resource {
 		 * @keyword					resourcemanager.removeresourcebundle, removeresourcebundle
 		 */
 		public function addResourceBundle(bundle:IResourceBundle):void {
-			var name:String = bundle.name
+			var name:String = bundle.name;
 			if ( !name ) throw new ArgumentError();
 			if ( name in this._hash ) {
 				if ( this._hash[ name ] !== bundle ) {
-					this.removeResourceBundle( name );
-				} else return;
-			}
-			this._hash[ name ] = bundle;
-			var loader:ILoadable = bundle as ILoadable;
-			if ( loader ) {
-				if ( loader is ResourceLoaderAsset ) {
-					( loader as ResourceLoaderAsset ).$managers.push( this );
+					throw new ArgumentError();
 				}
-				if ( !loader.loaded ) {
-					this.registerLoadable( loader );
+			} else {
+				this._hash[ name ] = bundle;
+				if ( bundle is ILoadable ) {
+					var loader:ILoadable = bundle as ILoadable;
+					if ( loader is ResourceLoaderAsset ) {
+						( loader as ResourceLoaderAsset ).managers[ this ] = true;
+					}
+					if ( loader.loaded ) {
+						if ( super.hasEventListener( ResourceBundleEvent.BUNDLE_ADDED ) ) {
+							super.dispatchEvent( new ResourceBundleEvent( ResourceBundleEvent.BUNDLE_ADDED, false, false, bundle ) );
+						}
+					} else {
+						this.registerLoadable( loader );
+					}
 				}
-			}
-			if ( ( !loader || loader.loaded ) && super.hasEventListener( ResourceBundleEvent.BUNDLE_ADDED ) ) {
-				super.dispatchEvent( new ResourceBundleEvent( ResourceBundleEvent.BUNDLE_ADDED, false, false, bundle ) );
 			}
 		}
 
@@ -354,14 +350,17 @@ package by.blooddy.core.managers.resource {
 					var asset:ResourceLoaderAsset = loader as ResourceLoaderAsset;
 					var loaded:Boolean = loader.loaded;
 					if ( asset ) { // если ассет, то помучаемся
-						var i:int = asset.$managers.indexOf( this );
-						if ( i>=0 ) { // надо удлить себя из списков
-							asset.$managers.splice( i, 1 );
-							if ( asset.$managers.length <= 0 ) { // вдруг мы последние?
-								// удаляемся, и выгружаемся
-								delete ResourceManager._HASH[ asset.name ];
-								if ( !asset.loaded ) asset.$close();
-								asset.$unload();
+						delete asset.managers[ this ];
+						for each ( var has:Boolean in asset.managers ) break;
+						if ( !has ) {
+							delete _HASH[ bundleName ];
+							if ( loaded ) asset.$unload();
+							else {
+								if ( asset.queue ) {
+									var i:int = _LOADING_QUEUE.indexOf( asset.queue );
+									_LOADING_QUEUE.splice( i, 1 );
+									asset.queue = null;
+								} else asset.$close();
 							}
 						}
 					}
@@ -383,43 +382,45 @@ package by.blooddy.core.managers.resource {
 		 * @keyword					resourcemanager.loadresourcebundle, loadresourcebundle
 		 */
 		public function loadResourceBundle(url:String, priority:uint=0):ILoadable {
-			var loader:ILoader;
+
 			var asset:ResourceLoaderAsset;
-			
 			if ( url in this._hash ) { // такой уже есть
-				loader = this._hash[ url ] as ILoader;
-				if ( !loader ) this.removeResourceBundle( url );
-				
-				if ( loader is ResourceLoaderAsset && !loader.loaded ){
-					asset = loader as ResourceLoaderAsset;
-					
-					if ( asset.priority < priority ) {
-						asset.priority = priority;
-						ResourceManager._LOADING_QUEUE.sortOn( _SORT_FIELDS, _SORT_OPTIONS );
-					}
-				} 
-			}
-			
-			if ( !loader ) { // нету
-				if ( url in ResourceManager._HASH ) { // ищем в глобальной зоне
-					asset = ResourceManager._HASH[ url ] as ResourceLoaderAsset;
-					if ( !asset.loaded && asset.priority < priority ) { // изменился приоритет загрузки
-						asset.priority = priority;
-						ResourceManager._LOADING_QUEUE.sortOn( _SORT_FIELDS, _SORT_OPTIONS );
+
+				asset = this._hash[ url ] as ResourceLoaderAsset;
+				if ( !asset ) throw new ArgumentError();
+
+			} else {
+
+				if ( url in _HASH ) {
+					asset = _HASH[ url ];
+				} else {
+					_HASH[ url ] = asset = new ResourceLoaderAsset( url );
+					addLoaderQueue( asset, priority );
+				}
+				asset.managers[ this ] = true;
+				this._hash[ url ] = asset;
+
+				if ( asset.loaded ) {
+					if ( super.hasEventListener( ResourceBundleEvent.BUNDLE_ADDED ) ) {
+						super.dispatchEvent( new ResourceBundleEvent( ResourceBundleEvent.BUNDLE_ADDED, false, false, asset ) );
 					}
 				} else {
-					ResourceManager._HASH[ url ] =
-					asset = new ResourceLoaderAsset( url, priority );
-					ResourceManager.addLoaderQueue( asset );
+					this.registerLoadable( asset );
 				}
-				this._hash[ url ] = loader = asset;
-				asset.$managers.push( this );
-				if ( !asset.loaded ) this.registerLoadable( asset );
-				else if ( super.hasEventListener( ResourceBundleEvent.BUNDLE_ADDED ) ) {
-					super.dispatchEvent( new ResourceBundleEvent( ResourceBundleEvent.BUNDLE_ADDED, false, false, asset ) );
+
+			}
+
+			// изменился приоритет загрузки
+			if ( !asset.loaded ) {
+				if ( asset.queue && asset.queue.priority < priority ) {
+					asset.queue.priority = priority;
+					_LOADING_QUEUE.sortOn( _SORT_FIELDS, _SORT_OPTIONS );
+					updateQueue();
 				}
 			}
-			return loader;
+
+			return asset;
+
 		}
 
 		//--------------------------------------------------------------------------
@@ -476,15 +477,15 @@ package by.blooddy.core.managers.resource {
 //
 //==============================================================================
 
+import by.blooddy.core.managers.resource.ResourceLoader;
 import by.blooddy.core.net.LoaderContext;
-import by.blooddy.core.net.ResourceLoader;
-import by.blooddy.core.utils.ClassUtils;
 
 import flash.errors.IllegalOperationError;
 import flash.events.Event;
 import flash.net.URLRequest;
 import flash.system.ApplicationDomain;
-import flash.system.SecurityDomain;
+import flash.utils.ByteArray;
+import flash.utils.Dictionary;
 import flash.utils.getTimer;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -525,10 +526,9 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 	//
 	//--------------------------------------------------------------------------
 
-	public function ResourceLoaderAsset(url:String, priority:int=0.0) {
+	public function ResourceLoaderAsset(url:String) {
 		super();
 		this._url = url;
-		this.priority = priority;
 	}
 
 	//--------------------------------------------------------------------------
@@ -537,11 +537,9 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 	//
 	//--------------------------------------------------------------------------
 
-	public var priority:int;
-
-	public const time:Number = getTimer();
-
-	internal const $managers:Array = new Array();
+	internal var queue:QueueItem;
+	
+	internal const managers:Dictionary = new Dictionary( true );
 
 	//--------------------------------------------------------------------------
 	//
@@ -584,16 +582,18 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 		super.load( new URLRequest( url ) );
 	}
 
+	[Deprecated( message="метод запрещен", replacement="$load" )]
+	public override function loadBytes(request:ByteArray):void {
+		throw new IllegalOperationError();
+	}
+	
 	[Deprecated( message="метод запрещен", replacement="$close" )]
 	public override function close():void {
 		throw new IllegalOperationError();
 	}
 
 	internal function $close():void {
-		try {
-			super.close();
-		} catch ( e:Error) {
-		}
+		super.close();
 	}
 
 	[Deprecated( message="метод запрещен", replacement="$unload" )]
@@ -602,15 +602,32 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 	}
 
 	internal function $unload():void {
-		try {
-			super.unload();
-		} catch ( e:Error ) {
-			super.dispatchEvent( new Event( Event.UNLOAD ) );
-		}
+		super.unload();
 	}
 
-	public override function toString():String {
-		return '[' + ClassUtils.getClassName( this ) + ' priority=' + this.priority + ' time=' + this.time + ' url="' + ( this._url || '' ) + '" bytesLoaded='+ this.bytesLoaded +' bytesTotal=' + this.bytesTotal + ']';
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Helper class: QueueItem
+//
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ */
+internal final class QueueItem {
+
+	public function QueueItem(asset:ResourceLoaderAsset, priority:int=0.0) {
+		super();
+		this.asset = asset;
+		this.priority = priority;
 	}
+
+	public var asset:ResourceLoaderAsset;
+	
+	public var priority:int;
+	
+	public const time:Number = getTimer();
 
 }

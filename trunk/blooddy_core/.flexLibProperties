@@ -15,6 +15,7 @@
     <classEntry path="by.blooddy.core.data.DataBaseNativeEvent"/>
     <classEntry path="by.blooddy.core.data.DataContainer"/>
     <classEntry path="by.blooddy.core.data.DataLinker"/>
+    <classEntry path="by.blooddy.core.data.xml.IXMLData"/>
     <classEntry path="by.blooddy.core.data.xml.rss.IRSSElementAsset"/>
     <classEntry path="by.blooddy.core.data.xml.rss.RSSCategoryData"/>
     <classEntry path="by.blooddy.core.data.xml.rss.RSSChannelData"/>
@@ -45,6 +46,7 @@
     <classEntry path="by.blooddy.core.errors.SerializeError"/>
     <classEntry path="by.blooddy.core.errors.getErrorMessage"/>
     <classEntry path="by.blooddy.core.events.AccumulativeEventDispatcher"/>
+    <classEntry path="by.blooddy.core.events.DynamicErrorEvent"/>
     <classEntry path="by.blooddy.core.events.DynamicEvent"/>
     <classEntry path="by.blooddy.core.events.EventDispatcherProxy"/>
     <classEntry path="by.blooddy.core.events.FZipEvent"/>
@@ -121,9 +123,10 @@
     <classEntry path="by.blooddy.core.net.ProxySharedObject"/>
     <classEntry path="by.blooddy.core.net.ProxySocket"/>
     <classEntry path="by.blooddy.core.net.RemoterProxy"/>
-    <classEntry path="by.blooddy.core.net.ResourceLoader"/>
+    <classEntry path="by.blooddy.core.managers.resource.ResourceLoader"/>
     <classEntry path="by.blooddy.core.net.SincereSocketFilter"/>
     <classEntry path="by.blooddy.core.net.Socket"/>
+    <classEntry path="by.blooddy.core.net.SocketConnection"/>
     <classEntry path="by.blooddy.core.net.URLLoader"/>
     <classEntry path="by.blooddy.core.net.URLStream"/>
     <classEntry path="by.blooddy.core.net.copyURLRequest"/>
@@ -188,8 +191,9 @@
     <classEntry path="by.blooddy.core.utils.version.Version"/>
     <classEntry path="by.blooddy.core.utils.xml.IXMLable"/>
     <classEntry path="by.blooddy.core.utils.xml.XMLUtils"/>
-    <classEntry path="by.blooddy.core.display.resource.LoadableResourceSprite"/>
-    <classEntry path="by.blooddy.core.events.display.resource.ResourceErrorEvent"/>
+    <classEntry path="by.blooddy.core.managers.resource.ResourceManagerProxy"/>
+    <classEntry path="by.blooddy.core.errors.display.resource.ResourceError"/>
+    <classEntry path="by.blooddy.core.utils.dispose"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

@@ -244,7 +244,7 @@ package by.blooddy.core.net {
 				loader.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_error );
 				loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error );
 			}
-			loader.addEventListener( Event.UNLOAD,							this.handler_unload );
+			loader.addEventListener( Event.UNLOAD,							this.handler_error );
 
 			this._loaders.push( loader );
 
@@ -265,7 +265,7 @@ package by.blooddy.core.net {
 			loader.removeEventListener( ProgressEvent.PROGRESS,				this.toProgress );
 			loader.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_error );
 			loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error );
-			loader.removeEventListener( Event.UNLOAD,						this.handler_unload );
+			loader.removeEventListener( Event.UNLOAD,						this.handler_error );
 
 			var index:int = this._loaders.lastIndexOf( loader );
 			if ( index < 0 ) return; // надо удалить, если такой присутвует...
@@ -386,183 +386,9 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		private function handler_error(event:ErrorEvent):void {
-			if ( super.hasEventListener( event.type ) ) {
-				if ( event is IOErrorEvent ) {
-					super.dispatchEvent( new EventContainer( new IOErrorEventAsset( event.target, event.type, event.bubbles, event.cancelable, event.text ) ) );
-				}
-			}
-			this.handler_unload( event );
-		}
-
-		/**
-		 * @private
-		 */
-		private function handler_unload(event:Event):void {
 			this.$removeLoaderListener( event.target as ILoadable );
 		}
 
-	}
-
-}
-
-//==============================================================================
-//
-//  Inner definitions
-//
-//==============================================================================
-
-import flash.events.Event;
-import flash.events.IOErrorEvent;
-
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Helper class: EventContainer
-//
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * Вспомогательный класс.
- * 
- * Является контэйнером, для евента.
- * Хук, для того, что бы передать нормальный таргет средствами стандартного EventDispatcher'а.
- */
-internal final class EventContainer extends Event {
-
-	//--------------------------------------------------------------------------
-	//
-	//  Private class constants
-	//
-	//--------------------------------------------------------------------------
-
-	/**
-	 * @private
-	 */
-	private static const TARGET:Object = new Object();
-
-	//--------------------------------------------------------------------------
-	//
-	//  Constructor
-	//
-	//--------------------------------------------------------------------------
-
-	/**
-	 * @private
-		 * Constructor
-	 */
-	public function EventContainer(event:Event) {
-		super( event.type, event.bubbles, event.cancelable );
-		this._event = event;
-	}
-
-	//--------------------------------------------------------------------------
-	//
-	//  Variables
-	//
-	//--------------------------------------------------------------------------
-
-	/**
-	 * @private
-	 */
-	private var _event:Event;
-
-	//--------------------------------------------------------------------------
-	//
-	//  Overridden properties: Event
-	//
-	//--------------------------------------------------------------------------
-
-	/**
-	 * @private
-	 * Возвращает левый таргет, для того что бы обмануть EventDispatcher.
-	 */
-	public override function get target():Object {
-		return TARGET;
-	}
-
-	//--------------------------------------------------------------------------
-	//
-	//  Overridden methods: Event
-	//
-	//--------------------------------------------------------------------------
-
-	/**
-	 * @private
-	 * Возвращаем наш евент.
-	 */
-	public override function clone():Event {
-		return this._event;
-	}
-
-}
-
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Helper class: IOErrorEventAsset
-//
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * Класс прослойка для создания события бублинга.
- * Происходит переопределения target.
- * 
- * @author					BlooDHounD
- * @version					1.0
- * @playerversion			Flash 9
- * @langversion				3.0
- */
-internal final class IOErrorEventAsset extends IOErrorEvent {
-
-	//--------------------------------------------------------------------------
-	//
-	//  Constructor
-	//
-	//--------------------------------------------------------------------------
-
-	/**
-	 * @private
-		 * Constructor
-	 */
-	public function IOErrorEventAsset(target:Object, type:String, bubbles:Boolean=false, cancelable:Boolean=false, text:String="") {
-		super( type, bubbles, cancelable, text );
-		this._target = target;
-	}
-
-	//--------------------------------------------------------------------------
-	//
-	//  Overriden properties: Event
-	//
-	//--------------------------------------------------------------------------
-
-	//----------------------------------
-	//  target
-	//----------------------------------
-
-	/**
-	 * @private
-	 */
-	private var _target:Object;
-
-	/**
-	 * @private
-	 * Сцылка на таргет.
-	 */
-	public override function get target():Object {
-		return this._target || super.target;
-	}
-
-	//--------------------------------------------------------------------------
-	//
-	//  Overriden methods: Event
-	//
-	//--------------------------------------------------------------------------
-
-	/**
-	 * @private
-	 */
-	public override function clone():Event {
-		return new IOErrorEventAsset( this._target, super.type, super.bubbles, super.cancelable );
 	}
 
 }
