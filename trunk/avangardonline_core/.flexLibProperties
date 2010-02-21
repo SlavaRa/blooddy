@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<flexLibProperties version="1">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties includeAllClasses="false" version="1">
   <includeClasses>
     <classEntry path="ru.avangardonline.controllers.GameController"/>
     <classEntry path="ru.avangardonline.controllers.battle.BattleController"/>
@@ -54,6 +54,17 @@
     <classEntry path="ru.avangardonline.serializers.txt.data.character.CharacterDataSerializer"/>
     <classEntry path="ru.avangardonline.serializers.txt.data.character.HeroCharacterDataSerializer"/>
     <classEntry path="ru.avangardonline.serializers.txt.data.character.MinionCharacterDataSerializer"/>
+    <classEntry path="ru.avangardonline.events.data.battle.world.BattleWorldTempElementEvent"/>
+    <classEntry path="ru.avangardonline.data.battle.world.BattleWorldArrowData"/>
+    <classEntry path="ru.avangardonline.data.battle.world.BattleWorldAbstractElementData"/>
+    <classEntry path="ru.avangardonline.display.gfx.battle.world.BattleWorldArrowView"/>
+    <classEntry path="ru.avangardonline.serializers.txt.data.battle.world.BattleWorldFieldDataSerializer"/>
+    <classEntry path="ru.avangardonline.data.battle.result.BattleResultData"/>
+    <classEntry path="ru.avangardonline.data.battle.result.BattleResultElementData"/>
+    <classEntry path="ru.avangardonline.serializers.txt.data.battle.result.BattleResultDataSerializer"/>
+    <classEntry path="ru.avangardonline.serializers.txt.data.battle.result.BattleResultElementDataSerializer"/>
+    <classEntry path="ru.avangardonline.data.IClonableData"/>
+    <classEntry path="ru.avangardonline.display.gui.battle.BattleResultView"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

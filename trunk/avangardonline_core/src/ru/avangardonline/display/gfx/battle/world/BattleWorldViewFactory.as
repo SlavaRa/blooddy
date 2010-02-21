@@ -6,13 +6,13 @@
 
 package ru.avangardonline.display.gfx.battle.world {
 
-	import ru.avangardonline.data.battle.world.BattleWorldElementData;
+	import ru.avangardonline.data.battle.world.BattleWorldAbstractElementData;
+	import ru.avangardonline.data.battle.world.BattleWorldArrowData;
 	import ru.avangardonline.data.character.CharacterData;
 	import ru.avangardonline.data.character.HeroCharacterData;
 	import ru.avangardonline.data.character.MinionCharacterData;
-	import ru.avangardonline.display.gfx.character.CharacterView;
-	import ru.avangardonline.display.gfx.character.MinionCharacterView;
 	import ru.avangardonline.display.gfx.character.HeroCharacterView;
+	import ru.avangardonline.display.gfx.character.MinionCharacterView;
 
 	/**
 	 * @author					BlooDHounD
@@ -42,8 +42,9 @@ package ru.avangardonline.display.gfx.battle.world {
 		//
 		//--------------------------------------------------------------------------
 
-		public function getElementView(data:BattleWorldElementData):BattleWorldElementView {
-			if ( data is CharacterData ) {
+		public function getElementView(data:BattleWorldAbstractElementData):BattleWorldElementView {
+			if ( data is BattleWorldArrowData )			return new BattleWorldArrowView( data as BattleWorldArrowData );
+			else if ( data is CharacterData ) {
 				if ( data is MinionCharacterData )		return new MinionCharacterView( data as MinionCharacterData );
 				else if ( data is HeroCharacterData )	return new HeroCharacterView( data as HeroCharacterData );
 			}

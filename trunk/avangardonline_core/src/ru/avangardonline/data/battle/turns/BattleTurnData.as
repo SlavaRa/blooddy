@@ -6,6 +6,7 @@
 
 package ru.avangardonline.data.battle.turns {
 
+	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.data.Data;
 	import by.blooddy.core.data.DataContainer;
 	
@@ -105,8 +106,7 @@ package ru.avangardonline.data.battle.turns {
 		 */
 		protected override function addChild_before(child:Data):void {
 			if ( child is BattleActionData ) {
-				var data:BattleActionData = child as BattleActionData;
-				this._actions.push( data );
+				this._actions.push( child );
 			}
 		}
 

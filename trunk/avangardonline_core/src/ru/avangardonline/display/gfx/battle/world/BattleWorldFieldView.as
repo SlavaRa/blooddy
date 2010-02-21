@@ -7,8 +7,9 @@
 package ru.avangardonline.display.gfx.battle.world {
 
 	import by.blooddy.core.display.StageObserver;
-	import by.blooddy.core.display.resource.MainResourceSprite;
+	import by.blooddy.core.display.resource.ResourceSprite;
 	import by.blooddy.core.events.display.resource.ResourceEvent;
+	import by.blooddy.core.utils.IDisposable;
 	
 	import flash.events.Event;
 	
@@ -22,7 +23,7 @@ package ru.avangardonline.display.gfx.battle.world {
 	 * @langversion				3.0
 	 * @created					05.08.2009 21:32:04
 	 */
-	public class BattleWorldFieldView extends MainResourceSprite {
+	public class BattleWorldFieldView extends ResourceSprite implements IDisposable {
 
 		//--------------------------------------------------------------------------
 		//
@@ -36,15 +37,15 @@ package ru.avangardonline.display.gfx.battle.world {
 		public function BattleWorldFieldView(data:BattleWorldFieldData) {
 			super();
 			this._data = data;
-			super.addEventListener( ResourceEvent.ADDED_TO_RESOURCE_MANAGER,			this.render,	false, int.MAX_VALUE, true );
-			super.addEventListener( ResourceEvent.REMOVED_FROM_RESOURCE_MANAGER,		this.clear,		false, int.MAX_VALUE, true );
+			super.addEventListener( ResourceEvent.ADDED_TO_MANAGER,		this.render,	false, int.MAX_VALUE, true );
+			super.addEventListener( ResourceEvent.REMOVED_FROM_MANAGER,	this.clear,		false, int.MAX_VALUE, true );
 			var observer:StageObserver = new StageObserver( this );
 			observer.registerEventListener( data, BattleWorldFieldDataEvent.WIDTH_CHANGE,	this.render );
 			observer.registerEventListener( data, BattleWorldFieldDataEvent.HEIGHT_CHANGE,	this.render );
 		}
 
-		public function destruct():void {
-			by.blooddy.core.display.destruct( this );
+		public function dispose():void {
+			by.blooddy.core.display.dispose( this );
 			this._data = null;
 		}
 
@@ -78,7 +79,8 @@ package ru.avangardonline.display.gfx.battle.world {
 		 */
 		protected function render(event:Event=null):Boolean {
 			if ( !super.stage ) return false;
-			
+
+			/*
 			var width:uint = this._data.width;
 			var height:uint = this._data.height;
 
@@ -111,7 +113,7 @@ package ru.avangardonline.display.gfx.battle.world {
 			cell.x = ( xMax + 1.5 )				* BattleWorldView.CELL_WIDTH;
 			cell.y = int( yMin + height / 2 )	* BattleWorldView.CELL_HEIGHT;
 			super.addChild( cell );
-
+*/
 			return true;
 		}
 
@@ -132,16 +134,9 @@ package ru.avangardonline.display.gfx.battle.world {
 //
 //==============================================================================
 
-import flash.display.Shape;
-import flash.display.PixelSnapping;
 import flash.display.LineScaleMode;
+import flash.display.Shape;
 import ru.avangardonline.display.gfx.battle.world.BattleWorldView;
-
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Helper class: BattleFieldCellView
-//
-////////////////////////////////////////////////////////////////////////////////
 
 /**
  * @private

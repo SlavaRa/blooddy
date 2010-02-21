@@ -8,19 +8,16 @@ package ru.avangardonline.display.gfx.battle.world.animation {
 
 	import by.blooddy.core.display.resource.ResourceDefinition;
 	import by.blooddy.core.events.time.TimeEvent;
-	import by.blooddy.core.net.ILoadable;
 	import by.blooddy.core.utils.time.FrameTimer;
 	
 	import flash.display.DisplayObject;
 	import flash.display.MovieClip;
 	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
-	import flash.events.IOErrorEvent;
-	import flash.events.SecurityErrorEvent;
 	import flash.events.TimerEvent;
 	
 	import ru.avangardonline.data.battle.turns.BattleTurnData;
-	import ru.avangardonline.data.battle.world.BattleWorldElementData;
+	import ru.avangardonline.data.battle.world.BattleWorldAbstractElementData;
 	import ru.avangardonline.display.gfx.battle.world.BattleWorldElementView;
 	
 	/**
@@ -41,10 +38,10 @@ package ru.avangardonline.display.gfx.battle.world.animation {
 		/**
 		 * Constructor
 		 */
-		public function BattleWorldAnimatedElementView(data:BattleWorldElementData!) {
+		public function BattleWorldAnimatedElementView(data:BattleWorldAbstractElementData!) {
 			super( data );
 			this._data = data;
-			this._timer.addEventListener( TimerEvent.TIMER,	this.renderFrame,	false, int.MAX_VALUE, true );
+			this._timer.addEventListener( TimerEvent.TIMER,	this.renderFrame, false, int.MAX_VALUE, true );
 		}
 
 		//--------------------------------------------------------------------------
@@ -56,7 +53,7 @@ package ru.avangardonline.display.gfx.battle.world.animation {
 		/**
 		 * @private
 		 */
-		private var _data:BattleWorldElementData;
+		private var _data:BattleWorldAbstractElementData;
 
 		/**
 		 * @private
@@ -93,10 +90,15 @@ package ru.avangardonline.display.gfx.battle.world.animation {
 			return this._currentAnim;
 		}
 
-		protected function get animationSpeed():Number {
+		/**
+		 * @private
+		 */
+		private var _animationSpeed:Number = 1;
+		
+		protected function getAnimationSpeed():Number {
 			return ( this._data.moving ? this._data.speed : 1 );
 		}
-
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
@@ -106,82 +108,53 @@ package ru.avangardonline.display.gfx.battle.world.animation {
 		/**
 		 * @private
 		 */
-		protected override function render(event:Event=null):Boolean {
-			this.clear( event );
-			this._timer.stop();
-			if ( !super.stage ) return false;
+		protected override function getResourceBundles():Array {
 			var definition:ResourceDefinition = this.getAnimationDefinition();
-			if ( !definition ) return false;
-			var loader:ILoadable = super.loadResourceBundle( definition.bundleName );
-			if ( loader.loaded ) {
-				return this.renderAnimation();
-			} else {
-				loader.addEventListener( Event.COMPLETE,					this.handler_complete );
-				loader.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_complete );
-				loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_complete );
+			if ( definition ) {
+				return new Array( definition.bundleName );
 			}
-			return false;
+			return null;
 		}
 
-		protected function renderAnimation(event:Event=null):Boolean {
+		/**
+		 * @private
+		 */
+		protected override function render():Boolean {
 			if ( !super.stage || !this._currentAnim ) return false;
-
+			super.lockResourceBundle( this.getAnimationDefinition().bundleName );
 			this.$element = this.getAnimation();
-			super.addChild( this.$element );
-			if ( this.$element is MovieClip && ( this.$element as MovieClip ).totalFrames > 1 ) {
-				this._data.world.time.addEventListener( TimeEvent.TIME_RELATIVITY_CHANGE, this.updateDelay );
-				this._animation = this.$element as MovieClip;
-				this.updateDelay( event );
-				this._timer.start();
-				this.renderFrame( event );
+			this._data.world.time.removeEventListener( TimeEvent.TIME_RELATIVITY_CHANGE, this.updateDelay );
+			if ( this.$element ) {
+				super.addChild( this.$element );
+				if ( this.$element is MovieClip && ( this.$element as MovieClip ).totalFrames > 1 ) {
+					this._data.world.time.addEventListener( TimeEvent.TIME_RELATIVITY_CHANGE, this.updateDelay );
+					this._animation = this.$element as MovieClip;
+					this._animationSpeed = this.getAnimationSpeed();
+					if ( this._animationSpeed > 0 ) {
+						this.updateDelay();
+						this._timer.start();
+					}
+					this.renderFrame();
+				}
+				super.updateRotation();
 			}
-			this.updateRotation( event );
-
 			return true;
 		}
 
 		/**
 		 * @private
 		 */
-		protected override function clear(event:Event=null):Boolean {
+		protected override function clear():Boolean {
+			super.unlockResourceBundle( this.getAnimationDefinition().bundleName );
+			this._data.world.time.removeEventListener( TimeEvent.TIME_RELATIVITY_CHANGE, this.updateDelay );
 			if ( this.$element ) {
 				this.trashResource( this.$element );
 				this.$element = null;
 			}
 			this._timer.stop();
-			this._data.world.time.addEventListener( TimeEvent.TIME_RELATIVITY_CHANGE, this.updateDelay );
 			return true;
 		}
-
-		protected function renderFrame(event:Event=null):Boolean {
-
-			if ( !this._animation ) throw new IllegalOperationError();
-
-			var totalFrames:int = this._animation.totalFrames;
-			var time:Number = BattleTurnData.TURN_LENGTH / this.animationSpeed;
-			
-			var currentTime:Number = this._data.world.time.currentTime;
-			if ( currentTime < this._startTime ) this._startTime = currentTime;
-			
-			var timesCount:Number = ( currentTime - this._startTime ) / time;
-			var currentFrame:uint = Math.round( timesCount * ( totalFrames - 1 ) ) % totalFrames + 1;
-
-			this._currentAnim_count = timesCount;
-
-			this._animation.gotoAndStop( currentFrame );
-
-			//если текущая анимация закончилась
-			if ( this._currentAnim.repeatCount>0 && this._currentAnim_count >= this._currentAnim.repeatCount ) {
-				this._currentAnim = null;
-				this._currentAnim_count = 0;
-				this._timer.stop();
-				this._animation.gotoAndStop( this._animation.totalFrames );
-				this.onAnimationComplete( event );
-			}			
-
-			return true;
-		}
-
+		
 		protected virtual function getAnimationDefinition():ResourceDefinition {
 			throw new IllegalOperationError();
 		}
@@ -195,10 +168,7 @@ package ru.avangardonline.display.gfx.battle.world.animation {
 			if ( this._currentAnim && anim && this._currentAnim.priority > anim.priority ) return;
 			this._currentAnim = anim;
 			this._startTime = this._data.world.time.currentTime;
-			this.render();
-		}
-
-		protected function onAnimationComplete(event:Event=null):void {
+			if ( super.hasManager() ) super.invalidate();
 		}
 
 		//--------------------------------------------------------------------------
@@ -210,21 +180,42 @@ package ru.avangardonline.display.gfx.battle.world.animation {
 		/**
 		 * @private
 		 */
-		private function updateDelay(event:Event=null):void {
-			if ( this.$element is MovieClip && ( this.$element as MovieClip ).totalFrames > 1 ) {
-				this._timer.delay = BattleTurnData.TURN_LENGTH / this.animationSpeed / ( this.$element as MovieClip ).totalFrames * 0.7;
-			}
+		private function renderFrame(event:Event=null):Boolean {
+			
+			if ( !this._animation ) throw new IllegalOperationError();
+			
+			var totalFrames:int = this._animation.totalFrames;
+			var time:Number = BattleTurnData.TURN_LENGTH / ( this._animationSpeed || 1 );
+			
+			var currentTime:Number = this._data.world.time.currentTime;
+			if ( currentTime < this._startTime ) this._startTime = currentTime;
+			
+			var timesCount:Number = ( currentTime - this._startTime ) / time;
+			var currentFrame:uint = Math.round( timesCount * ( totalFrames - 1 ) ) % totalFrames + 1;
+			
+			this._currentAnim_count = timesCount;
+			
+			this._animation.gotoAndStop( currentFrame );
+			
+			//если текущая анимация закончилась
+			if ( this._currentAnim.repeatCount > 0 && this._currentAnim_count >= this._currentAnim.repeatCount ) {
+				this._data.world.time.removeEventListener( TimeEvent.TIME_RELATIVITY_CHANGE, this.updateDelay );
+				this._currentAnim = null;
+				this._currentAnim_count = 0;
+				this._timer.stop();
+				this._animation.gotoAndStop( this._animation.totalFrames );
+			}			
+			
+			return true;
 		}
-
+		
 		/**
 		 * @private
 		 */
-		private function handler_complete(event:Event):void {
-			var loader:ILoadable = event.target as ILoadable;
-			loader.removeEventListener( Event.COMPLETE,						this.handler_complete );
-			loader.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_complete );
-			loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_complete );
-			this.render( event );
+		private function updateDelay(event:Event=null):void {
+			if ( this._animationSpeed > 0 && this.$element is MovieClip && ( this.$element as MovieClip ).totalFrames > 1 ) {
+				this._timer.delay = BattleTurnData.TURN_LENGTH / this._animationSpeed / ( this.$element as MovieClip ).totalFrames * 0.7;
+			}
 		}
 
 	}

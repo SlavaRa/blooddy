@@ -6,6 +6,8 @@
 
 package ru.avangardonline.serializers.txt.data.character {
 
+	import flash.errors.IllegalOperationError;
+	
 	import ru.avangardonline.data.character.HeroCharacterData;
 
 	/**
@@ -49,6 +51,7 @@ package ru.avangardonline.serializers.txt.data.character {
 		 */
 		public function HeroCharacterDataSerializer() {
 			super();
+			if ( _serializer ) throw new IllegalOperationError();
 		}
 
 		//--------------------------------------------------------------------------
@@ -60,16 +63,16 @@ package ru.avangardonline.serializers.txt.data.character {
 		public override function deserialize(source:String, target:*=null):* {
 			if ( source.charAt( 0 ) != 'h' ) throw new ArgumentError();
 			var data:HeroCharacterData = target as HeroCharacterData;
-			var arr:Array = source.substr( 2 ).split( '|', 1 );
-			var arr2:Array = arr[ 0 ].split( ',', 2 );
-			var id:uint = parseInt( arr2[ 0 ] );
+			var arr:Array = source.substr( 2 ).split( ',', 4 );
+			var id:uint = parseInt( arr[ 0 ] );
 			if ( !data ) {
-				data = new HeroCharacterData( id );
-			} else if ( data.id != id ) {
+				data = new HeroCharacterData( id, arr[ 1 ] );
+			} else if ( data.id != id || data.name != arr[ 1 ] ) {
 				throw new ArgumentError();
 			}
 			super.deserialize( source, data );
-			data.nick = arr2[ 1 ];
+			data.race = parseInt( arr[ 2 ] );
+			data.sex = parseBoolean( arr[ 3 ] );
 			return data;
 		}
 

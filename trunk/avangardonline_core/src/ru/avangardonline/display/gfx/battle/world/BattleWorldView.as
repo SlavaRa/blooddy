@@ -7,18 +7,23 @@
 package ru.avangardonline.display.gfx.battle.world {
 
 	import by.blooddy.core.display.StageObserver;
-	import by.blooddy.core.display.destruct;
+	import by.blooddy.core.display.dispose;
 	import by.blooddy.core.display.resource.MainResourceSprite;
 	import by.blooddy.core.events.data.DataBaseEvent;
 	import by.blooddy.core.events.display.resource.ResourceEvent;
+	import by.blooddy.core.net.ILoadable;
+	import by.blooddy.core.utils.IDisposable;
 	import by.blooddy.core.utils.enterFrameBroadcaster;
 	
+	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.events.IOErrorEvent;
+	import flash.events.SecurityErrorEvent;
 	import flash.utils.Dictionary;
 	
+	import ru.avangardonline.data.battle.world.BattleWorldAbstractElementData;
 	import ru.avangardonline.data.battle.world.BattleWorldData;
-	import ru.avangardonline.data.battle.world.BattleWorldElementData;
 	import ru.avangardonline.data.character.HeroCharacterData;
 	import ru.avangardonline.events.data.battle.world.BattleWorldCoordinateDataEvent;
 	
@@ -29,7 +34,7 @@ package ru.avangardonline.display.gfx.battle.world {
 	 * @langversion				3.0
 	 * @created					04.08.2009 19:58:31
 	 */
-	public class BattleWorldView extends MainResourceSprite {
+	public class BattleWorldView extends MainResourceSprite implements IDisposable {
 
 		//--------------------------------------------------------------------------
 		//
@@ -56,8 +61,8 @@ package ru.avangardonline.display.gfx.battle.world {
 			this._factory = factory;
 			this._field = new BattleWorldFieldView( data.field );
 			this._field.rotationX = 90;
-			super.addEventListener( ResourceEvent.ADDED_TO_RESOURCE_MANAGER,		this.render,	false, int.MAX_VALUE, true );
-			super.addEventListener( ResourceEvent.REMOVED_FROM_RESOURCE_MANAGER,	this.clear,		false, int.MAX_VALUE, true );
+			super.addEventListener( ResourceEvent.ADDED_TO_MANAGER,		this.render,	false, int.MAX_VALUE, true );
+			super.addEventListener( ResourceEvent.REMOVED_FROM_MANAGER,	this.clear,		false, int.MAX_VALUE, true );
 			var observer:StageObserver = new StageObserver( this );
 			observer.registerEventListener( data.elements, DataBaseEvent.ADDED,		this.handler_added );
 			observer.registerEventListener( data.elements, DataBaseEvent.REMOVED,	this.handler_removed );
@@ -66,9 +71,12 @@ package ru.avangardonline.display.gfx.battle.world {
 			observer.registerEventListener( data.elements, BattleWorldCoordinateDataEvent.MOVING_STOP,			this.handler_movingStop );
 		}
 
-		public function destruct():void {
+		public function dispose():void {
 			this._data = null;
-			by.blooddy.core.display.destruct( this );
+			this._factory = null;
+			this._field.dispose();
+			this._field = null;
+			by.blooddy.core.display.dispose( this );
 		}
 
 		//--------------------------------------------------------------------------
@@ -76,7 +84,7 @@ package ru.avangardonline.display.gfx.battle.world {
 		//  Variables
 		//
 		//--------------------------------------------------------------------------
-
+		
 		/**
 		 * @private
 		 */
@@ -97,6 +105,11 @@ package ru.avangardonline.display.gfx.battle.world {
 		 */
 		private var _elements_moved_count:uint = 0;
 
+		/**
+		 * @private
+		 */
+		private var _bg:DisplayObject;
+		
 		/**
 		 * @private
 		 */
@@ -143,19 +156,36 @@ package ru.avangardonline.display.gfx.battle.world {
 		protected function render(event:Event=null):Boolean {
 			if ( !super.stage ) return false;
 
+			var loader:ILoadable = super.loadResourceBundle( 'lib/display/world/bg' + this._data.field.type + '.jpg' );
+			if ( !loader.loaded ) {
+				loader.addEventListener( Event.COMPLETE, this.handler_complete );
+				loader.addEventListener( IOErrorEvent.IO_ERROR, this.handler_complete );
+				loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, this.handler_complete );
+				return false;
+			}
+			
+			this._bg = super.getDisplayObject( 'lib/display/world/bg' + this._data.field.type + '.jpg', '' );
+			if ( this._bg ) {
+				this._bg.x = - this._bg.width / 2;
+				this._bg.y = - 320;
+				super.addChild( this._bg );
+			}
+			
 			super.addChild( this._field );
 			super.addChild( this._content );
 
 			var hash:Dictionary = new Dictionary();
 
-			var elements:Vector.<BattleWorldElementData> = this._data.elements.getElements();
-			for each ( var data:BattleWorldElementData in elements ) {
-				this.addWorldElement( data );
+			var elements:Vector.<BattleWorldAbstractElementData> = this._data.elements.getElements();
+			for each ( var data:BattleWorldAbstractElementData in elements ) {
+				if ( !( data in this._elements ) ) {
+					this.addWorldElement( data );
+				}
 				hash[ data ] = true;
 			}
 
 			for ( var o:Object in this._elements ) {
-				if ( !( o in hash ) ) this.removeWorldElement( o as BattleWorldElementData );
+				if ( !( o in hash ) ) this.removeWorldElement( o as BattleWorldAbstractElementData );
 			}
 
 			return true;
@@ -165,8 +195,11 @@ package ru.avangardonline.display.gfx.battle.world {
 		 * @private
 		 */
 		protected function clear(event:Event=null):Boolean {
+			if ( this._bg ) {
+				super.trashResource( super.removeChild( this._bg ) );
+			}
 			for ( var o:Object in this._elements ) {
-				this.removeWorldElement( o as BattleWorldElementData );
+				this.removeWorldElement( o as BattleWorldAbstractElementData );
 			}
 			super.removeChild( this._content );
 			super.removeChild( this._field );
@@ -182,7 +215,7 @@ package ru.avangardonline.display.gfx.battle.world {
 		/**
 		 * @private
 		 */
-		private function addWorldElement(data:BattleWorldElementData):void {
+		private function addWorldElement(data:BattleWorldAbstractElementData):void {
 			if ( data in this._elements ) throw new ArgumentError();
 			var view:BattleWorldElementView = this._factory.getElementView( data );
 			if ( !view ) return;
@@ -198,7 +231,7 @@ package ru.avangardonline.display.gfx.battle.world {
 		/**
 		 * @private
 		 */
-		private function removeWorldElement(data:BattleWorldElementData):void {
+		private function removeWorldElement(data:BattleWorldAbstractElementData):void {
 			if ( !( data in this._elements) ) throw new ArgumentError();
 			if ( data.coord.moving ) {
 				this.moveStopElement( data );
@@ -208,12 +241,13 @@ package ru.avangardonline.display.gfx.battle.world {
 			delete this._elements[ data ];
 			this._elements_sorted.splice( this._content.getChildIndex( view ), 1 );
 			this._content.removeChild( view );
+			//view.dispose();
 		}
 
 		/**
 		 * @private
 		 */
-		private function moveStartElement(data:BattleWorldElementData):void {
+		private function moveStartElement(data:BattleWorldAbstractElementData):void {
 			this._elements_moved[ data ] = true;
 			if ( this._elements_moved_count <= 0 ) {
 				enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
@@ -224,7 +258,7 @@ package ru.avangardonline.display.gfx.battle.world {
 		/**
 		 * @private
 		 */
-		private function moveStopElement(data:BattleWorldElementData):void {
+		private function moveStopElement(data:BattleWorldAbstractElementData):void {
 			delete this._elements_moved[ data ];
 			this._elements_moved_count--;
 			if ( this._elements_moved_count <=0 ) {
@@ -235,8 +269,9 @@ package ru.avangardonline.display.gfx.battle.world {
 		/**
 		 * @private
 		 */
-		private function updatePosition(data:BattleWorldElementData):void {
+		private function updatePosition(data:BattleWorldAbstractElementData):void {
 			var view:BattleWorldElementView = this._elements[ data ];
+			if ( !view ) return;
 			var x:Number, y:Number;
 			if ( data is HeroCharacterData ) {
 				y = 2;
@@ -258,7 +293,7 @@ package ru.avangardonline.display.gfx.battle.world {
 				// найдём куда ставить и поставим
 				i = this._elements_sorted.length;
 				while ( i-- ) {
-					if ( -this._elements_sorted[i].element.coord.y <= sortRating ) break;
+					if ( -this._elements_sorted[ i ].element.coord.y <= sortRating ) break;
 				}
 				i++;
 				this._elements_sorted.splice( i, 0, asset );
@@ -272,13 +307,24 @@ package ru.avangardonline.display.gfx.battle.world {
 		//  Event handlers
 		//
 		//--------------------------------------------------------------------------
-
+		
+		/**
+		 * @private
+		 */
+		private function handler_complete(event:Event):void {
+			var loader:ILoadable = event.target as ILoadable;
+			loader.removeEventListener( Event.COMPLETE, this.handler_complete );
+			loader.removeEventListener( IOErrorEvent.IO_ERROR, this.handler_complete );
+			loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR, this.handler_complete );
+			this.render( event );
+		}
+		
 		/**
 		 * @private
 		 */
 		private function handler_added(event:DataBaseEvent):void {
-			if ( event.target is BattleWorldElementData ) {
-				this.addWorldElement( event.target as BattleWorldElementData );
+			if ( event.target is BattleWorldAbstractElementData ) {
+				this.addWorldElement( event.target as BattleWorldAbstractElementData );
 			}
 		}
 
@@ -286,8 +332,8 @@ package ru.avangardonline.display.gfx.battle.world {
 		 * @private
 		 */
 		private function handler_removed(event:DataBaseEvent):void {
-			if ( event.target is BattleWorldElementData ) {
-				this.removeWorldElement( event.target as BattleWorldElementData );
+			if ( event.target is BattleWorldAbstractElementData ) {
+				this.removeWorldElement( event.target as BattleWorldAbstractElementData );
 			}
 		}
 
@@ -295,14 +341,14 @@ package ru.avangardonline.display.gfx.battle.world {
 		 * @private
 		 */
 		private function handler_coordinateChange(event:BattleWorldCoordinateDataEvent):void {
-			this.updatePosition( event.target as BattleWorldElementData );
+			this.updatePosition( event.target as BattleWorldAbstractElementData );
 		}
 
 		/**
 		 * @private
 		 */
 		private function handler_movingStart(event:BattleWorldCoordinateDataEvent):void {
-			var data:BattleWorldElementData = event.target as BattleWorldElementData;
+			var data:BattleWorldAbstractElementData = event.target as BattleWorldAbstractElementData;
 			this.moveStartElement( data );
 			this.updatePosition( data );
 		}
@@ -311,7 +357,7 @@ package ru.avangardonline.display.gfx.battle.world {
 		 * @private
 		 */
 		private function handler_movingStop(event:BattleWorldCoordinateDataEvent):void {
-			var data:BattleWorldElementData = event.target as BattleWorldElementData;
+			var data:BattleWorldAbstractElementData = event.target as BattleWorldAbstractElementData;
 			this.moveStopElement( data );
 			this.updatePosition( data );
 		}
@@ -320,9 +366,9 @@ package ru.avangardonline.display.gfx.battle.world {
 		 * @private
 		 */
 		private function handler_enterFrame(event:Event):void {
-			var data:BattleWorldElementData;
+			var data:BattleWorldAbstractElementData;
 			for ( var d:Object in this._elements_moved ) {
-				this.updatePosition( d as BattleWorldElementData );
+				this.updatePosition( d as BattleWorldAbstractElementData );
 			}
 		}
 
@@ -336,7 +382,7 @@ package ru.avangardonline.display.gfx.battle.world {
 //
 //==============================================================================
 
-import ru.avangardonline.data.battle.world.BattleWorldElementData;
+import ru.avangardonline.data.battle.world.BattleWorldAbstractElementData;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -359,7 +405,7 @@ internal final class SortAsset {
 	 * @private
 	 * Constructor.
 	 */
-	public function SortAsset(element:BattleWorldElementData, sortRating:Number=NaN) {
+	public function SortAsset(element:BattleWorldAbstractElementData, sortRating:Number=NaN) {
 		super();
 		this.element = element;
 		this.sortRating = sortRating;
@@ -371,7 +417,7 @@ internal final class SortAsset {
 	//
 	//--------------------------------------------------------------------------
 
-	public var element:BattleWorldElementData;
+	public var element:BattleWorldAbstractElementData;
 
 	public var sortRating:Number;
 

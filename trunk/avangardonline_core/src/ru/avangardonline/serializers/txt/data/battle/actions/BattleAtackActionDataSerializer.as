@@ -6,6 +6,8 @@
 
 package ru.avangardonline.serializers.txt.data.battle.actions {
 
+	import flash.errors.IllegalOperationError;
+	
 	import ru.avangardonline.data.battle.actions.BattleAtackActionData;
 
 	/**
@@ -49,6 +51,7 @@ package ru.avangardonline.serializers.txt.data.battle.actions {
 		 */
 		public function BattleAtackActionDataSerializer() {
 			super();
+			if ( _serializer ) throw new IllegalOperationError();
 		}
 
 		//--------------------------------------------------------------------------
@@ -65,7 +68,7 @@ package ru.avangardonline.serializers.txt.data.battle.actions {
 			data = super.deserialize( source, data );
 			var arr:Array = source.split( '|', 3 );
 			data.targetID = parseInt( arr[ 1 ] );
-			data.targetHealth = parseInt( arr[ 2 ] );
+			data.targetHealthIncrement = parseInt( arr[ 2 ] );
 			return data;
 		}
 

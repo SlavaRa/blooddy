@@ -9,6 +9,9 @@ package ru.avangardonline.controllers.battle {
 	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.controllers.DisplayObjectController;
 	import by.blooddy.core.controllers.IBaseController;
+	import by.blooddy.core.filters.AdjustColor;
+	import by.blooddy.core.logging.ILogging;
+	import by.blooddy.core.logging.Logger;
 	import by.blooddy.core.utils.time.RelativeTime;
 	
 	import flash.display.DisplayObjectContainer;
@@ -16,12 +19,15 @@ package ru.avangardonline.controllers.battle {
 	import flash.geom.PerspectiveProjection;
 	import flash.geom.Point;
 	
+	import ru.avangardonline.data.battle.result.BattleResultData;
 	import ru.avangardonline.data.battle.world.BattleWorldData;
 	import ru.avangardonline.data.battle.world.BattleWorldElementCollectionData;
 	import ru.avangardonline.data.battle.world.BattleWorldFieldData;
 	import ru.avangardonline.data.character.CharacterData;
+	import ru.avangardonline.data.character.HeroCharacterData;
 	import ru.avangardonline.display.gfx.battle.world.BattleWorldView;
 	import ru.avangardonline.display.gfx.battle.world.BattleWorldViewFactory;
+	import ru.avangardonline.display.gui.battle.BattleResultView;
 
 	/**
 	 * @author					BlooDHounD
@@ -29,8 +35,19 @@ package ru.avangardonline.controllers.battle {
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
 	 */
-	public class BattleController extends DisplayObjectController {
+	public class BattleController extends DisplayObjectController implements ILogging {
 
+		//--------------------------------------------------------------------------
+		//
+		//  Class viariables
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		 * @private
+		 */
+		private static const _FILTERS:Array = new Array( AdjustColor.getFilter( 0, -1 ) );
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -66,6 +83,11 @@ package ru.avangardonline.controllers.battle {
 		 */
 		private var _view:BattleWorldView;
 
+		/**
+		 * @private
+		 */
+		private var _resultView:BattleResultView;
+
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
@@ -85,6 +107,46 @@ package ru.avangardonline.controllers.battle {
 			return this._time;
 		}
 
+		//----------------------------------
+		//  logger
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
+		private const _logger:Logger = new Logger();
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get logger():Logger {
+			return this._logger;
+		}
+ 
+		//----------------------------------
+		//  logging
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
+		private var _logging:Boolean = true;
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get logging():Boolean {
+			return this._logging;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set logging(value:Boolean):void {
+			if ( this._logging == value ) return;
+			this._logging = value;
+		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
@@ -102,6 +164,8 @@ package ru.avangardonline.controllers.battle {
 			controller.addCommandListener( 'removeCharacter',	this.removeCharacter );
 			controller.addCommandListener( 'forWorldElement',	this.forWorldElement );
 			controller.addCommandListener( 'syncElements',		this.syncElements );
+			controller.addCommandListener( 'openBattleResult',	this.openBattleResult );
+			controller.addCommandListener( 'closeBattleResult',	this.closeBattleResult );
 			controller.call( 'enterBattle' );
 		}
 
@@ -116,6 +180,8 @@ package ru.avangardonline.controllers.battle {
 			controller.removeCommandListener( 'removeCharacter',	this.removeCharacter );
 			controller.removeCommandListener( 'forWorldElement',	this.forWorldElement );
 			controller.removeCommandListener( 'syncElements',		this.syncElements );
+			controller.removeCommandListener( 'openBattleResult',	this.openBattleResult );
+			controller.removeCommandListener( 'closeBattleResult',	this.closeBattleResult );
 			if ( this._data ) {
 				this.exitBattle();
 				controller.call( 'exitBattle' );
@@ -127,7 +193,7 @@ package ru.avangardonline.controllers.battle {
 		 */
 		private function update3D(event:Event=null):void {
 			var x:int = - this._view.mouseX;
-			var y:int = ( this._view.mouseY > 0 ? - this._view.mouseY * 2 : 0 );
+			var y:int = ( this._view.mouseY < 0 ? this._view.mouseY * 2 : 0 );
 			var projection:PerspectiveProjection = new PerspectiveProjection();
 			projection.fieldOfView = 80;
 			projection.projectionCenter = new Point( x, y );
@@ -161,6 +227,7 @@ package ru.avangardonline.controllers.battle {
 			this._view.transform.perspectiveProjection = projection;
 
 			super.container.addChild( this._view );
+			//super.container.addEventListener( MouseEvent.MOUSE_MOVE, this.update3D );
 
 		}
 
@@ -168,6 +235,8 @@ package ru.avangardonline.controllers.battle {
 		 * @private
 		 */
 		private function exitBattle():void {
+			//super.container.removeEventListener( MouseEvent.MOUSE_MOVE, this.update3D );
+			if ( this._resultView ) this.closeBattleResult();
 			super.container.removeChild( this._view );
 			this._view = null;
 			super.dataBase.removeChild( this._data );
@@ -210,6 +279,55 @@ package ru.avangardonline.controllers.battle {
 			command.call( this._data.elements.getElement( id ) );
 		}
 
+		/**
+		 * @private
+		 */
+		private function openBattleResult(data:BattleResultData):void {
+			var params:Object = super.container.loaderInfo.parameters;
+			var heroName:String = params.characterName;
+			var type:uint = parseInt( params.type );
+			var hero:HeroCharacterData = this._data.elements.getChildByName( heroName ) as HeroCharacterData;
+			this._view.filters = _FILTERS;
+			this._resultView = new BattleResultView( data, hero, type );
+			this._resultView.addEventListener( 'replay',	this.handler_replay );
+			this._resultView.addEventListener( 'continue',	this.handler_continue );
+			super.container.addChild( this._resultView );
+		}
+
+		/**
+		 * @private
+		 */
+		private function closeBattleResult():void {
+			this._view.filters = null;
+			if ( this._resultView ) {
+				super.container.removeChild( this._resultView );
+				this._resultView.removeEventListener( 'replay',		this.handler_replay );
+				this._resultView.removeEventListener( 'continue',	this.handler_continue );
+				//this._resultView.dispose();
+				this._resultView = null;
+			}
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Event handlers
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private function handler_replay(event:Event):void {
+			super.baseController.call( 'resetBattle' );
+		}
+
+		/**
+		 * @private
+		 */
+		private function handler_continue(event:Event):void {
+			super.baseController.call( 'closeBattle' );
+		}
+		
 	}
 
 }

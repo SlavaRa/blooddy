@@ -7,6 +7,8 @@
 package ru.avangardonline.data.character {
 
 	import by.blooddy.core.data.Data;
+	
+	import flash.errors.IllegalOperationError;
 
 	/**
 	 * @author					BlooDHounD
@@ -26,8 +28,9 @@ package ru.avangardonline.data.character {
 		/**
 		 * Constructor
 		 */
-		public function HeroCharacterData(id:uint) {
+		public function HeroCharacterData(id:uint, name:String) {
 			super( id );
+			super.name = name;
 		}
 
 		//--------------------------------------------------------------------------
@@ -37,26 +40,37 @@ package ru.avangardonline.data.character {
 		//--------------------------------------------------------------------------
 
 		//----------------------------------
-		//  group
+		//  name
 		//----------------------------------
 
 		/**
 		 * @private
 		 */
-		private var _nick:String;
-
-		public function get nick():String {
-			return this._nick;
+		public override function set name(value:String):void {
+			throw new IllegalOperationError();
 		}
 
+		//----------------------------------
+		//  sex
+		//----------------------------------
+		
 		/**
 		 * @private
 		 */
-		public function set nick(value:String):void {
-			if ( this._nick == value ) return;
-			this._nick = value;
+		private var _sex:Boolean;
+		
+		public function get sex():Boolean {
+			return this._sex;
 		}
-
+		
+		/**
+		 * @private
+		 */
+		public function set sex(value:Boolean):void {
+			if ( this._sex == value ) return;
+			this._sex = value;
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Overriden methods
@@ -64,11 +78,11 @@ package ru.avangardonline.data.character {
 		//--------------------------------------------------------------------------
 
 		public override function toLocaleString():String {
-			return super.formatToString( 'id', 'nick', 'group' );
+			return super.formatToString( 'id', 'name', 'group', 'sex' );
 		}
 
 		public override function clone():Data {
-			var result:HeroCharacterData = new HeroCharacterData( super.id );
+			var result:HeroCharacterData = new HeroCharacterData( super.id, super.name );
 			result.copyFrom( this );
 			return result;
 		}
@@ -77,7 +91,7 @@ package ru.avangardonline.data.character {
 			var target:HeroCharacterData = data as HeroCharacterData;
 			if ( !target ) throw new ArgumentError();
 			super.copyFrom( target );
-			this.nick = target._nick;
+			this.sex = target._sex;
 		}
 
 	}

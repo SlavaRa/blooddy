@@ -9,14 +9,18 @@ package ru.avangardonline.controllers {
 	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.controllers.BaseController;
 	import by.blooddy.core.data.DataBase;
+	import by.blooddy.core.external.ExternalConnection;
 	import by.blooddy.core.managers.resource.ResourceManager;
 	import by.blooddy.core.net.ILoadable;
+	import by.blooddy.core.net.LoaderListener;
 	import by.blooddy.core.net.ProxySharedObject;
-	import by.blooddy.core.utils.DataBaseUtils;
 	import by.blooddy.core.utils.time.RelativeTime;
 	
 	import flash.display.DisplayObjectContainer;
+	import flash.display.Sprite;
 	import flash.errors.IllegalOperationError;
+	import flash.events.AsyncErrorEvent;
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
@@ -45,10 +49,29 @@ package ru.avangardonline.controllers {
 		 */
 		public function GameController(container:DisplayObjectContainer) {
 			super( container, new DataBase(), ProxySharedObject.getLocal( 'avangard' ) );
+
 			this._relativeTime.speed = 0;
+
+			this._battleContainer = new Sprite();
+			super.container.addChild( this._battleContainer );
+
 			this._battleLogicalController =	new BattleLogicalController	( this );
-			this._battleController =		new BattleController		( this, this._relativeTime, container );
-			this.updateBattle();
+			this._battleController =		new BattleController		( this, this._relativeTime, this._battleContainer );
+
+			this._battleLogicalController.logging = false;
+			this._battleController.logging = false;
+
+			var params:Object = container.loaderInfo.parameters;
+			if ( params.battleURI ) {
+				this.setBattle( params.battleURI );
+			} else {
+				this.setBattle( '1.txt' );
+			}
+			this._externalConnection = new ExternalConnection( container.loaderInfo.parameters.externalID );
+			this._externalConnection.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_external_error, false, int.MAX_VALUE, true );
+			this._externalConnection.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_external_error, false, int.MAX_VALUE, true );
+			this._externalConnection.addEventListener( AsyncErrorEvent.ASYNC_ERROR,			this.handler_external_error, false, int.MAX_VALUE, true );
+			this._externalConnection.addCommandListener( 'setBattle', this.setBattle );
 		}
 
 		//--------------------------------------------------------------------------
@@ -57,10 +80,22 @@ package ru.avangardonline.controllers {
 		//
 		//--------------------------------------------------------------------------
 
+		private var _loader:LoaderListener;
+
 		/**
 		 * @private
 		 */
-		private var _loader:ILoadable;
+		private var _battleContainer:Sprite;
+
+		/**
+		 * @private
+		 */
+		private var _currentBattle:String;
+
+		/**
+		 * @private
+		 */
+		private var _loadedBattle:String;
 
 		/**
 		 * @private
@@ -75,6 +110,11 @@ package ru.avangardonline.controllers {
 		/**
 		 * @private
 		 */
+		private var _externalConnection:ExternalConnection;
+
+		/**
+		 * @private
+		 */
 		private const _relativeTime:RelativeTime = new RelativeTime( 0 );
 
 		//--------------------------------------------------------------------------
@@ -85,7 +125,18 @@ package ru.avangardonline.controllers {
 
 		public override function call(commandName:String, ...parameters):* {
 			parameters.unshift( commandName );
-			return this._battleLogicalController.call.apply( null, parameters );
+			if ( commandName != 'closeBattle' ) {
+				return this._battleLogicalController.call.apply( null, parameters );
+			} else {
+				super.container.removeChild( this._battleContainer );
+				this._battleContainer = null;
+				this._battleController = null;
+				this._battleLogicalController.battle = null
+				this._battleLogicalController = null;
+				if ( this._externalConnection.connected ) {
+					return this._externalConnection.call.apply( null, parameters );
+				}
+			}
 		}
 
 		public override function dispatchCommand(command:Command):void {
@@ -133,32 +184,56 @@ package ru.avangardonline.controllers {
 		/**
 		 * @private
 		 */
+		private function setBattle(id:String):void {
+			if ( this._currentBattle == id ) return;
+			this._currentBattle = id;
+			this.updateBattle();
+		}
+
+		/**
+		 * @private
+		 */
 		private function updateBattle(event:Event=null):void {
-			if ( this._loader ) {
-				this._loader.removeEventListener( Event.COMPLETE,						this.updateBattle );
-				this._loader.removeEventListener( IOErrorEvent.IO_ERROR,				this.updateBattle );
-				this._loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.updateBattle );
+			var loader:ILoadable;
+
+			if ( this._loadedBattle ) {
+				loader = ResourceManager.manager.loadResourceBundle( this._loadedBattle );
+				if ( loader ) {
+					loader.removeEventListener( Event.COMPLETE,						this.updateBattle );
+					loader.removeEventListener( IOErrorEvent.IO_ERROR,				this.updateBattle );
+					loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.updateBattle );
+				}
 			}
+
 			this._battleLogicalController.battle = null;
-			this._loader = ResourceManager.manager.loadResourceBundle( 'test.txt' );
-			if ( this._loader.loaded ) {
-				var txt:String = ResourceManager.manager.getResource( 'test.txt', '' );
+
+			this._loadedBattle = this._currentBattle;
+
+			loader = ResourceManager.manager.loadResourceBundle( this._loadedBattle );
+			if ( loader.loaded ) {
+				var txt:String = ResourceManager.manager.getResource( this._loadedBattle, null );
 				if ( !txt ) {
 					this.error( 'Произошла ошибка загрзуки боя.' );
 				} else {
 					var battle:BattleData = new BattleData( this._relativeTime )
-//					try {
+					try {
+
 						BattleDataSerializer.deserialize( txt, battle );
-						trace( DataBaseUtils.toTreeString( battle ) );
+
+						this._loader = new LoaderListener( container );
+						this._loader.addEventListener( Event.COMPLETE, this.handler_loader_complete );
+
+						this._relativeTime.speed = 0;
 						this._battleLogicalController.battle = battle;
-//					} catch ( e:Error ) {
-//						this.error( 'Произошла ошибка обработки боя:\n' + ( e.getStackTrace() || e.toString() ) );
-//					}
+
+					} catch ( e:Error ) {
+						this.error( 'Произошла ошибка обработки боя:\n' + ( e.getStackTrace() || e.toString() ) );
+					}
 				}
 			} else {
-				this._loader.addEventListener( Event.COMPLETE,						this.updateBattle );
-				this._loader.addEventListener( IOErrorEvent.IO_ERROR,				this.updateBattle );
-				this._loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.updateBattle );
+				loader.addEventListener( Event.COMPLETE,					this.updateBattle );
+				loader.addEventListener( IOErrorEvent.IO_ERROR,				this.updateBattle );
+				loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.updateBattle );
 			}
 		}
 
@@ -167,6 +242,25 @@ package ru.avangardonline.controllers {
 		 */
 		private function error(txt:String):void {
 			trace( txt );
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Event handlers
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private function handler_external_error(event:ErrorEvent):void {
+			trace( event );
+		}
+
+		private function handler_loader_complete(event:Event):void {
+			this._loader.removeEventListener( Event.COMPLETE, this.handler_loader_complete );
+			this._loader = null;
+			this._relativeTime.speed = 1;
 		}
 
 	}

@@ -8,6 +8,7 @@ package ru.avangardonline.data.battle.world {
 
 	import by.blooddy.core.data.Data;
 	
+	import ru.avangardonline.data.IClonableData;
 	import ru.avangardonline.events.data.battle.world.BattleWorldFieldDataEvent;
 
 	/**
@@ -27,7 +28,7 @@ package ru.avangardonline.data.battle.world {
 	 * @langversion				3.0
 	 * @created					09.08.2009 11:22:18
 	 */
-	public class BattleWorldFieldData extends Data {
+	public class BattleWorldFieldData extends Data implements IClonableData {
 
 		//--------------------------------------------------------------------------
 		//
@@ -96,6 +97,30 @@ package ru.avangardonline.data.battle.world {
 			}
 		}
 
+		//----------------------------------
+		//  type
+		//----------------------------------
+		
+		/**
+		 * @private
+		 */
+		private var _type:uint
+		
+		public function get type():uint {
+			return this._type;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set type(value:uint):void {
+			if ( this._type == value ) return;
+			this._type = value;
+			if ( super.hasEventListener( BattleWorldFieldDataEvent.TYPE_CHANGE ) ) {
+				super.dispatchEvent( new BattleWorldFieldDataEvent( BattleWorldFieldDataEvent.TYPE_CHANGE ) );
+			}
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Overriden methods
@@ -103,7 +128,7 @@ package ru.avangardonline.data.battle.world {
 		//--------------------------------------------------------------------------
 
 		public override function toLocaleString():String {
-			return super.formatToString( 'width', 'height' );
+			return super.formatToString( 'width', 'height', 'type' );
 		}
 
 		//--------------------------------------------------------------------------
@@ -123,6 +148,7 @@ package ru.avangardonline.data.battle.world {
 			if ( !target ) throw new ArgumentError();
 			this.width = target._width;
 			this.height = target._height;
+			this.type = target._type;
 		}
 
 	}

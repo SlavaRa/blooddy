@@ -8,10 +8,14 @@ package ru.avangardonline.serializers.txt.data.battle {
 
 	import by.blooddy.game.serializers.txt.ISerializer;
 	
+	import flash.errors.IllegalOperationError;
+	
 	import ru.avangardonline.data.battle.BattleData;
 	import ru.avangardonline.data.battle.actions.BattleActionData;
 	import ru.avangardonline.data.battle.turns.BattleTurnData;
+	import ru.avangardonline.serializers.txt.data.battle.result.BattleResultDataSerializer;
 	import ru.avangardonline.serializers.txt.data.battle.world.BattleWorldElementCollectionDataSerializer;
+	import ru.avangardonline.serializers.txt.data.battle.world.BattleWorldFieldDataSerializer;
 	
 	/**
 	 * @author					BlooDHounD
@@ -54,6 +58,7 @@ package ru.avangardonline.serializers.txt.data.battle {
 		 */
 		public function BattleDataSerializer() {
 			super();
+			if ( _serializer ) throw new IllegalOperationError();
 		}
 
 		//--------------------------------------------------------------------------
@@ -62,22 +67,22 @@ package ru.avangardonline.serializers.txt.data.battle {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @inheritDoc
+		 */
 		public function deserialize(source:String, target:*=null):* {
 			var data:BattleData = target as BattleData;
 			if ( !data ) throw new ArgumentError();
 
 			var tmp:Array = source.split( /\n?#/ );
 
-			if ( tmp.length < 3 ) throw new ArgumentError();
+			if ( tmp.length < 4 ) throw new ArgumentError();
 
 			// первчиноя валидация
 			if ( tmp[ 0 ].length != 0 ) throw new ArgumentError();
-
 			// мир
 			if ( tmp[ 1 ].charAt( 0 ) != 'O' ) throw new ArgumentError();
-			data.world.field.width = 11;
-			data.world.field.height = 5;
-			//BattleWorldDataSerializer.deserialize( tmp[ 1 ].substr( 1 ), data.world );
+			BattleWorldFieldDataSerializer.deserialize( tmp[ 1 ].substr( 1 ), data.world.field );
 
 			// персонажи
 			if ( tmp[ 2 ].charAt( 0 ) != 'I' ) throw new ArgumentError();
@@ -91,7 +96,7 @@ package ru.avangardonline.serializers.txt.data.battle {
 			var turn:BattleTurnData;
 			var action:BattleActionData;
 			for ( i=0; i<l; i++ ) {
-				if ( tmp[ i ].charAt( 0 ) != 'A' ) throw new ArgumentError();
+				if ( tmp[ i ].charAt( 0 ) != 'A' ) break;
 				turn = data.getTurn( i );
 				if ( !turn ) {
 					turn = new BattleTurnData( i );
@@ -106,8 +111,13 @@ package ru.avangardonline.serializers.txt.data.battle {
 					}
 				}
 			}
+			// посмотри что там есть
+			if ( i < l && tmp[ i ].charAt( 0 ) == 'R' ) {
+				BattleResultDataSerializer.deserialize( tmp[ i ].substr( 1 ), data.result );
+			}
+			l = i;
 			// удаляем лишние ходы
-			for ( i = data.numTurns; i>l; i-- ) {
+			for ( i = data.numTurns; i > l; i-- ) {
 				data.removeChild( data.getTurn( i ) );
 			}
 			return data;
