@@ -1,4 +1,5 @@
 /*!
+ * blooddy/blooddy.js
  * © 2009 BlooDHounD
  * @author BlooDHounD <http://www.blooddy.by>
  */
@@ -8,7 +9,7 @@ if ( !window.blooddy ) {
 	/**
 	 * @package
 	 * @final
-	 * @author	BlooDHounD	<http://www.blooddy.by>
+	 * @author		BlooDHounD	<http://www.blooddy.by>
 	 */
 	var blooddy = new ( function() {
 
@@ -22,29 +23,29 @@ if ( !window.blooddy ) {
 		 * @private
 		 * @class
 		 * @final
-		 * Класс содержащий характеристики браузера 
+		 * Класс содержащий характеристики браузера
 		 * @memberOf	blooddy
 		 */
-		var Browser = ( function() {
+		var browser = new ( function() {
 
 			//--------------------------------------------------------------------------
 			//
 			//  Class variables
 			//
 			//--------------------------------------------------------------------------
-	
+
 			/**
 			 * @private
 			 */
 			var	_u = navigator.userAgent,
-	
+
 				_msie =		0,
 				_opera =	0,
 				_gecko =	0,
 				_webkit =	0,
-				
+
 				m;
-	
+
 			m = _u.match( /AppleWebKit\/([\.\d]*)/ );
 			if ( m ) {
 				if ( m[1] )	_webkit = parseFloat( m[1] );
@@ -71,83 +72,79 @@ if ( !window.blooddy ) {
 					}
 				}
 			}
-	
+
 			//--------------------------------------------------------------------------
 			//
 			//  Constructor
 			//
 			//--------------------------------------------------------------------------
-	
+
 			/**
 			 * @private
 			 * @constructor
 			 */
-			var Browser = new Function();
-	
+			var	Browser = new Function(),
+				BrowserPrototype = Browser.prototype;
+
 			//--------------------------------------------------------------------------
 			//
-			//  Class methods
+			//  Methods
 			//
 			//--------------------------------------------------------------------------
-	
+
 			/**
-			 * @static
 			 * @method
 			 * получает версию Gecko ( 0 - если не используется )
 			 * @return	{Number}	версия
 			 */
-			Browser.getGecko = function() {
+			BrowserPrototype.getGecko = function() {
 				return _gecko;
-			}
-	
+			};
+
 			/**
-			 * @static
 			 * @method
 			 * получает версию AppleWebKit ( 0 - если не используется )
 			 * @return	{Number}	версия
 			 */
-			Browser.getWebKit = function() {
+			BrowserPrototype.getWebKit = function() {
 				return _webkit;
-			}
-	
+			};
+
 			/**
-			 * @static
 			 * @method
 			 * получает версию Internet Explorer ( 0 - если не используется )
 			 * @return	{Number}	версия
 			 */
-			Browser.getMSIE = function() {
+			BrowserPrototype.getMSIE = function() {
 				return _msie;
-			}
-		
+			};
+
 			/**
-			 * @static
 			 * @method
 			 * получает версию Opera ( 0 - если не используется )
 			 * @return	{Number}	версия
 			 */
-			Browser.getOpera = function() {
+			BrowserPrototype.getOpera = function() {
 				return _opera;
-			}
-		
+			};
+
 			/**
-			 * @static
 			 * @method
 			 * @return	{String}
 			 */
-			Browser.toString = Browser.prototype.toString = function() {
-				return '[class Browser ' +
+			BrowserPrototype.toString = function() {
+				return '[Browser ' +
 					' gecko=' +		_gecko +
 					' webkit=' +	_webkit +
 					' opera=' +		_opera +
 					' msie=' +		_msie +
-					']';
-			}
-	
+				']';
+			};
+
 			return Browser;
-	
+
 		}() );
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class variables
@@ -157,17 +154,22 @@ if ( !window.blooddy ) {
 		/**
 		 * @private
 		 */
-		var	win = window,
+		var	win =			window,
+			g_win =			win,
+			t_win,
+			doc =			win.document,
+			loc =			win.location,
 
-			_FILENAME = 'blooddy.js',
-			_NOTATION = /([^^\/])([A-Z])/g,
+			_FILENAME =		'blooddy.js',
+			_NOTATION =		/([^^\/])([A-Z])/g,
 
 			_incluedes =	new Object(),
 			_files =		new Object(),
 			_requires =		new Object(),
 
-			_request,
-			_root;
+			_xhr,
+			_root,
+			_logging =		/(;|^)\s*\$bl=1\s*(;|$)/.test( doc.cookie );
 
 		//--------------------------------------------------------------------------
 		//
@@ -175,33 +177,43 @@ if ( !window.blooddy ) {
 		//
 		//--------------------------------------------------------------------------
 
+		// выдёргиваем максимально глобальное окно
+		try {
+			while ( ( t_win = g_win.parent ) && t_win !== g_win ) {
+				if ( t_win.document.domain == g_win.document.domain ) {
+					g_win = t_win;
+				} else {
+					break;
+				}
+			}
+		} catch ( e ) {
+		}
+
 		// инитиализируем request
-		if ( Browser.getMSIE() && win.ActiveXObject ) {
+		if ( browser.getMSIE() && win.ActiveXObject ) {
 			try {
-				_request = new ActiveXObject( 'Microsoft.XMLHTTP' )
+				_xhr = new ActiveXObject( 'Microsoft.XMLHTTP' )
 			} catch ( e ) {
 			}
 		}
-		if ( !_request && win.XMLHttpRequest ) {
-			try {
-				_request = new XMLHttpRequest();
-				if ( _request.overrideMimeType ) {
-					_request.overrideMimeType( 'text/javascript' ); // fix gecko error
-				}
-			} catch ( e ) {
+		if ( !_xhr && win.XMLHttpRequest ) {
+			_xhr = new XMLHttpRequest();
+			if ( _xhr.overrideMimeType ) {
+				_xhr.overrideMimeType( 'text/javascript' ); // fix gecko error
 			}
 		}
 
 		_incluedes[ _FILENAME ] = true;
 
-		if ( Browser.getGecko() ) {
+		// инитиализируем root
+		if ( browser.getGecko() ) {
 			try {
 				_root = ( new Error() ).stack.split( '\n', 2 )[1].match( new RegExp( '^[\\w\\.]*\\(\\)@(.+?)' + _FILENAME + ':\\d+$' ) )[1];
 			} catch ( e ) {
 			}
 		}
 		if ( !_root ) {
-			var	scripts = win.document.getElementsByTagName( 'script' ),
+			var	scripts = doc.getElementsByTagName( 'script' ),
 				i,
 				l = scripts.length,
 				s,
@@ -224,12 +236,13 @@ if ( !window.blooddy ) {
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-	
+
 		/**
 		 * @private
 		 * @constructor
 		 */
-		var Blooddy = new Function();
+		var Blooddy = new Function(),
+			BlooddyPrototype = Blooddy.prototype;
 
 		//--------------------------------------------------------------------------
 		//
@@ -238,11 +251,11 @@ if ( !window.blooddy ) {
 		//--------------------------------------------------------------------------
 
 		/**
-		 * @class
-		 * @final
-		 * Класс содержащий характеристики браузера 
+		 * @property
+		 * Класс содержащий характеристики браузера
+		 * @type	{Object}
 		 */
-		Blooddy.prototype.Browser = Browser;
+		BlooddyPrototype.browser = browser;
 
 		//--------------------------------------------------------------------------
 		//
@@ -252,17 +265,42 @@ if ( !window.blooddy ) {
 
 		/**
 		 * @method
+		 * @return	{Boolean}
+		 */
+		BlooddyPrototype.isLogging = function() {
+			return _logging;
+		};
+
+		/**
+		 * @method
+		 * @param	{Boolean}	value
+		 */
+		BlooddyPrototype.setLogging = function(value) {
+			doc.cookie = '$bl=' + ( value ? '1; path=/' : '; expires=' + ( new Date( 0 ) ) );
+			return _logging = Boolean( value );
+		};
+
+		/**
+		 * @method
+		 * @return	{window}
+		 */
+		BlooddyPrototype.getTop = function() {
+			return g_win;
+		};
+
+		/**
+		 * @method
 		 * наследует один класс от другого
 		 * @param	{Function}	Child	класс-ребёнок
 		 * @param	{Function}	Parent	класс-родитель
 		 */
-		Blooddy.prototype.extend = function(Child, Parent) {
+		BlooddyPrototype.extend = function(Child, Parent) {
 			var Proxy = new Function();
 			Proxy.prototype = Parent.prototype;
 			Child.prototype = new Proxy();
 			Child.prototype.constructor = Child;
 			Child.superPrototype = Parent.prototype;
-		}
+		};
 
 		/**
 		 * @method
@@ -270,8 +308,9 @@ if ( !window.blooddy ) {
 		 * @param	{String}	source	код
 		 * @return	{Object}
 		 */
-		Blooddy.prototype.eval = function(source) {
-			if ( Browser.getMSIE() ) {
+		BlooddyPrototype.eval = function(source) {
+			//return ( new Function( source ) ).call( win );
+			if ( browser.getMSIE() ) {
 				return win.execScript( source );
 			} else {
 				return win.eval( source ); // FIXME: выдаёт ошибки в gecko
@@ -283,28 +322,33 @@ if ( !window.blooddy ) {
 			script.innerHTML = source;
 			document.getElementsByTagName( 'head' )[ 0 ].appendChild( script );
 			*/
-		}
+		};
 
 		/**
 		 * @method
 		 * синхронно получает содержание файла
 		 * @param	{String}	uri		путь к файлу
-		 * @return	{String}			содержание файла, или null 
+		 * @return	{String}			содержание файла, или null
 		 */
-		Blooddy.prototype.getFileContent = function(uri) {
+		BlooddyPrototype.getFileContent = function(uri) {
 			var	result = _files[ uri ];
 			if ( result === undefined ) {
-				if ( !_request ) return null;
-				try {
-					_request.open( 'GET', uri, false );
-					_request.send( null );
-					_files[ uri ] = result = _request.responseText || null;
-				} catch ( e ) {
-					_files[ uri ] = result = null;
+				if ( g_win !== win && g_win.blooddy && g_win.blooddy !== this ) {
+					result = g_win.blooddy.getFileContent( uri );
+				} else {
+					if ( _xhr ) {
+						try {
+							_xhr.open( 'GET', uri, false );
+							_xhr.send( null );
+							result = _xhr.responseText || null;
+						} catch ( e ) {
+						}
+					}
 				}
+				_files[ uri ] = result || null;
 			}
 			return result;
-		}
+		};
 
 		/**
 		 * @method
@@ -312,7 +356,7 @@ if ( !window.blooddy ) {
 		 * @param	{String}	uri		путь к файлу
 		 * @throws	{Error}				uri not found
 		 */
-		Blooddy.prototype.include = function(uri) {
+		BlooddyPrototype.include = function(uri) {
 			if ( _incluedes[ uri ] ) return; // рание был добавлен
 			_incluedes[ uri ] = true;
 			var	content = this.getFileContent( uri );
@@ -320,81 +364,88 @@ if ( !window.blooddy ) {
 				throw new Error( uri + ' not fount.' );
 			}
 			this.eval( content );
-		}
+		};
 
 		/**
 		 * @method
 		 * проверяет наличие объекта.
 		 * при его отсутвии пытается его загрузить.
 		 * @param	{String}	name	имя класса
-		 * @throws	{Error}				name not initialized
+		 * @throws	{Error}				object not initialized
 		 */
-		Blooddy.prototype.require = function(name) {
+		BlooddyPrototype.require = function(name) {
 			var asset = _requires[ name ];
 			if ( asset === undefined ) {
 				var	arr =	name.split( '.' ),
 					o =		win,
 					n,
+					nn =	'',
 					s,
 					i,
 					l = arr.length;
 				asset = true;
 				for ( i=0; i<l; i++ ) {
 					n = arr[ i ];
-					if ( !o[ n ] ) {
-						s = arr.slice( 0, i + 1 ).join( '/' ).replace( _NOTATION, '$1_$2' ).toLowerCase() + '.js';
-						this.include( _root + s );
-						if ( !o[ n ] ) {
-							asset = false;
-							break;
+					nn = arr.slice( 0, i + 1 ).join( '.' );
+					if ( nn in _requires ) {
+						asset = _requires[ nn ];
+					} else {
+						if ( asset ) {
+							if ( !( n in o ) ) {
+								s = arr.slice( 0, i + 1 ).join( '/' ).replace( _NOTATION, '$1_$2' ).toLowerCase() + '.js';
+								this.include( _root + s );
+								if ( !( n in o ) ) {
+									asset = false;
+								}
+							}
 						}
+						_requires[ nn ] = asset;
 					}
-					o = o[ n ];
+					if ( asset ) {
+						o = o[ n ];
+					}
 				}
-				_requires[ name ] = asset;
 			}
 			if ( !asset ) throw new Error( name + ' non initialized.' );
-		}
+		};
 
 		/**
 		 * @method
 		 * @param	{String}	name
 		 * @return	{Object}
 		 */
-		Blooddy.prototype.createAbstractInstance = function(name) {
-
-			return new ( function() {
-
-				/**
-				 * @private
-				 * @constructor
-				 */
-				var InstanceClass = new Function();
-
-				/**
-				 * @private
-				 * @static
-				 * @method
-				 * @return	{String}
-				 */
-				InstanceClass.prototype.toString = function() {
-					return '[package ' + name + ']';
-				}
-
-				return InstanceClass;
-
-			}() );
-		}
+		BlooddyPrototype.createAbstractInstance = function(name) {
+			var InstanceClass = new Function();
+			InstanceClass.prototype.toString = function() {
+				return '[package ' + name + ']';
+			};
+			return new InstanceClass();
+		};
 
 		/**
+		 * @method
 		 * @return	{String}
 		 */
-		Blooddy.prototype.toString = function() {
+		BlooddyPrototype.getRoot = function() {
+			return _root;
+		};
+
+		/**
+		 * @method
+		 * @return	{String}
+		 */
+		BlooddyPrototype.toString = function() {
 			return '[package blooddy]';
-		}
+		};
 
 		return Blooddy;
-	
+
 	}() );
 
+}
+
+function trace() {
+	if ( window.console ) {
+		console.log( Array.prototype.join.call( arguments, ', ' ) );
+	}
 }

@@ -1,9 +1,10 @@
 /*!
+ * blooddy/events/event.js
  * © 2009 BlooDHounD
  * @author BlooDHounD <http://www.blooddy.by>
  */
 
-if ( !window.blooddy ) throw new Error( 'blooddy not initialized.' );
+if ( !window.blooddy ) throw new Error( '"blooddy" not initialized' );
 
 blooddy.require( 'blooddy.events' );
 
@@ -22,16 +23,18 @@ if ( !blooddy.events.Event ) {
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-	
+
 		/**
 		 * @constructor
 		 * @param	{String}	type			тип события
 		 * @param	{Boolean}	cancelable		отменяемо ли соыбтие?
 		 */
-		var Event = function(type, cancelable) {
+		var EEvent = function(type, cancelable) {
 			this.type = type;
 			this.cancelable = cancelable;
-		}
+		};
+
+		var EEventPrototype = EEvent.prototype;
 
 		//--------------------------------------------------------------------------
 		//
@@ -41,19 +44,17 @@ if ( !blooddy.events.Event ) {
 
 		/**
 		 * @private
-		 * @property
 		 * @type	{Boolean}
 		 */
-		Event.prototype._do_cancel = false;
-	
+		EEventPrototype._do_cancel = false;
+
 
 		/**
 		 * @private
-		 * @property
 		 * @type	{Boolean}
 		 */
-		Event.prototype._do_stop = false;
-	
+		EEventPrototype._do_stop = false;
+
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
@@ -65,121 +66,126 @@ if ( !blooddy.events.Event ) {
 		 * тип события
 		 * @type	{String}
 		 */
-		Event.prototype.type = null;
-	
+		EEventPrototype.type = null;
+
 		/**
 		 * @property
 		 * вызыватель события :)
-		 * @type	{Object}
+		 * @type	{blooddy.events.EventDispatcher}
 		 */
-		Event.prototype.target = null;
-	
+		EEventPrototype.target = null;
+
 		/**
 		 * @property
 		 * отменяемо ли?
 		 * @type	{Boolean}
 		 */
-		Event.prototype.cancelable = false;
+		EEventPrototype.cancelable = false;
 
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
 		//
 		//--------------------------------------------------------------------------
-	
+
 		/**
 		 * @method
 		 * клонирует событие.
 		 * @return	{blooddy.events.Event}	новое событие
 		 */
-		Event.prototype.clone = function() {
-			var	c = this.constructor || Event,
+		EEventPrototype.clone = function() {
+			var	c = this.constructor || EEvent,
 				event = new c(),
 				key;
 			for ( key in this ) {
-				if ( key in c.prototype ) continue;
 				event[ key ] = this[ key ];
 			}
 			return event;
-		}
+		};
 
 		/**
 		 * @method
 		 * останавливает распостранение.
 		 */
-		Event.prototype.stopPropagation = function() {
+		EEventPrototype.stopPropagation = function() {
 			this._do_stop = true;
-		}
+		};
 
 		/**
 		 * @method
 		 * отменяет событие
 		 */
-		Event.prototype.preventDefault = function() {
+		EEventPrototype.preventDefault = function() {
 			if ( this.cancelable ) {
 				this._do_cancel = true;
 			}
-		}
+		};
 
 		/**
 		 * @method
 		 * событие было отменено
 		 * @return	{Boolean}
 		 */
-		Event.prototype.isDefaultPrevented = function() {
+		EEventPrototype.isDefaultPrevented = function() {
 			return this._do_cancel;
-		}
-	
+		};
+
 		/**
 		 * @method
+		 * @override
 		 * приводит к строковому виду
+		 * @return	{String}
 		 */
-		Event.prototype.toString = function() {
+		EEventPrototype.toString = function() {
 			var	arr = new Array(),
 				i,
-				s;
+				s,
+				arr2 = new Array();
 			for ( i in this ) arr.push( i );
 			for ( i in arr ) {
+				if ( typeof this[ arr[ i ] ] == 'function' ) continue;
 				s = ( typeof this[ arr[ i ] ] == 'string' );
-				arr[ i ] += '=' + ( s ? '"' : '' ) + this[ arr[ i ] ] + ( s ? '"' : '' );
+				arr2.push( arr[ i ] + '=' + ( s ? '"' : '' ) + this[ arr[ i ] ] + ( s ? '"' : '' ) );
 			}
-			return '[Event ' + arr.join( ' ' ) + ']';
-		}
+			return '[Event ' + arr2.join( ' ' ) + ']';
+		};
 
 		//--------------------------------------------------------------------------
 		//
 		//  Class methods
 		//
 		//--------------------------------------------------------------------------
-	
+
 		/**
 		 * @static
 		 * @method
 		 * конвертирует объект в Event.
 		 * @param		object		объект, который надо сконвертировать
+		 * @param		{blooddy.events.Event}
 		 */
-		Event.IEvent = function(object) {
+		EEvent.IEvent = function(object) {
 			if ( !object || !object.type ) return null;
-			else if ( object instanceof Event ) return object;
-			var	result = new Event( object.type, object.cancelable ),
+			else if ( object instanceof EEvent ) return object;
+			var	result = new EEvent( object.type, object.cancelable ),
 				key;
 			for ( key in object ) {
-				if ( key in Event.prototype ) continue;
-				result[ i ] = object[ i ];
+				if ( key in EEventPrototype ) continue;
+				result[ key ] = object[ key ];
 			}
 			return result;
-		}
+		};
 
 		/**
 		 * @static
 		 * @method
+		 * @override
 		 * @return	{String}
 		 */
-		Event.toString = function() {
+		EEvent.toString = function() {
 			return '[class Event]';
-		}
-	
-		return Event;
+		};
+
+		return EEvent;
 
 	}() );
 

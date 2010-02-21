@@ -1,9 +1,10 @@
 /*!
+ * blooddy/utils/version.js
  * © 2009 BlooDHounD
  * @author BlooDHounD <http://www.blooddy.by>
  */
 
-if ( !window.blooddy ) throw new Error( 'blooddy not initialized.' );
+if ( !window.blooddy ) throw new Error( '"blooddy" not initialized' );
 
 blooddy.require( 'blooddy.utils' );
 
@@ -24,7 +25,7 @@ if ( !blooddy.utils.Version ) {
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-	
+
 		/**
 		 * @constructor
 		 * @param	{Number}	major
@@ -33,57 +34,58 @@ if ( !blooddy.utils.Version ) {
 		 * @param	{Number}	internalBuildNumber
 		 */
 		var Version = function(major, minor, buildNumber, internalBuildNumber) {
-			var	arr =	arguments,
+			var	a =	arguments,
 				i,
-				l =	arr.length;
+				l =	a.length;
 			if ( l > 0 ) {
 				if ( l > 4 ) l = 4;
-				var	args = new Array();
-				for ( i=0; i<l && !isNaN( arr[ i ] ); i++ ) {
-					this[ i ] = arr[ i ];
+				for ( i=0; i<l; i++ ) {
+					this[ i ] = a[ i ] || 0;
 				}
 			}
-		}
+		};
 
 		blooddy.extend( Version, Array );
+
+		var VersionPrototype = Version.prototype;
 
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
 		//
 		//--------------------------------------------------------------------------
-	
+
 		/**
 		 * @method
 		 * @return	{Number}
 		 */
-		Version.prototype.getMajorVersion = function() {
+		VersionPrototype.getMajorVersion = function() {
 			return this[ 0 ] || 0;
-		}
+		};
 
 		/**
 		 * @method
 		 * @return	{Number}
 		 */
-		Version.prototype.getMinorVersion = function() {
+		VersionPrototype.getMinorVersion = function() {
 			return this[ 1 ] || 0;
-		}
+		};
 
 		/**
 		 * @method
 		 * @return	{Number}
 		 */
-		Version.prototype.getBuildNumber = function() {
+		VersionPrototype.getBuildNumber = function() {
 			return this[ 2 ] || 0;
-		}
+		};
 
 		/**
 		 * @method
 		 * @return	{Number}
 		 */
-		Version.prototype.getInternalBuildNumber = function() {
+		VersionPrototype.getInternalBuildNumber = function() {
 			return this[ 3 ] || 0;
-		}
+		};
 
 		/**
 		 * @method
@@ -91,24 +93,25 @@ if ( !blooddy.utils.Version ) {
 		 * @param	{blooddy.utils.Version}		v			версия для сравнения
 		 * @return	{Number}					-1,0,1
 		 */
-		Version.prototype.compare = function(v) {
+		VersionPrototype.compare = function(v) {
 			return Version.compare( this, v );
-		}
+		};
 
 		/**
 		 * @method
+		 * @override
 		 * @return	{String}
 		 */
-		Version.prototype.toString = function() {
-			var	arr =	new Array();
+		VersionPrototype.toString = function() {
+			var	arr =	new Array(),
 				i,
 				l =		this.length;
 			if ( l > 4 ) l = 4;
 			for ( i=0; i<l && this[i]; i++ ) {
-				arr.push( this[ i ] ); 
+				arr.push( this[ i ] );
 			}
 			return arr.join( '.' );
-		}
+		};
 
 		//--------------------------------------------------------------------------
 		//
@@ -147,7 +150,7 @@ if ( !blooddy.utils.Version ) {
 			}
 			// eaual
 			return 0;
-		}
+		};
 
 		/**
 		 * @static
@@ -168,17 +171,18 @@ if ( !blooddy.utils.Version ) {
 				result[ i ] = v;
 			}
 			return result;
-		}
+		};
 
 		/**
 		 * @static
 		 * @method
+		 * @override
 		 * @return	{String}
 		 */
 		Version.toString = function() {
 			return '[class Version]';
-		}
-	
+		};
+
 		return Version;
 
 	}() );
