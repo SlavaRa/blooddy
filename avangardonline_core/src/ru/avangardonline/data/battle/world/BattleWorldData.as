@@ -10,6 +10,8 @@ package ru.avangardonline.data.battle.world {
 	import by.blooddy.core.data.DataLinker;
 	import by.blooddy.core.utils.time.RelativeTime;
 	
+	import ru.avangardonline.data.IClonableData;
+	import ru.avangardonline.events.data.battle.world.BattleWorldTempElementEvent;
 
 	/**
 	 * @author					BlooDHounD
@@ -18,7 +20,7 @@ package ru.avangardonline.data.battle.world {
 	 * @langversion				3.0
 	 * @created					05.08.2009 21:39:10
 	 */
-	public class BattleWorldData extends BattleWorldAssetDataContainer {
+	public class BattleWorldData extends BattleWorldAssetDataContainer implements IClonableData {
 
 		//--------------------------------------------------------------------------
 		//
@@ -35,6 +37,8 @@ package ru.avangardonline.data.battle.world {
 			super.set$world( this );
 			DataLinker.link( this, this.field, true );
 			DataLinker.link( this, this.elements, true );
+			super.addEventListener( BattleWorldTempElementEvent.ADD_ELEMENT,	this.handler_addElement, false, int.MAX_VALUE, true );
+			super.addEventListener( BattleWorldTempElementEvent.REMOVE_ELEMENT,	this.handler_removeElement, false, int.MAX_VALUE, true );
 		}
 
 		//--------------------------------------------------------------------------
@@ -86,6 +90,28 @@ package ru.avangardonline.data.battle.world {
 			this._time = target._time;
 			this.field.copyFrom( target.field );
 			this.elements.copyFrom( target.elements );
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Event handlers
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private function handler_addElement(event:BattleWorldTempElementEvent):void {
+			event.stopImmediatePropagation();
+			this.elements.addChild( event.element );
+		}
+
+		/**
+		 * @private
+		 */
+		private function handler_removeElement(event:BattleWorldTempElementEvent):void {
+			event.stopImmediatePropagation();
+			this.elements.removeChild( event.element );
 		}
 
 	}

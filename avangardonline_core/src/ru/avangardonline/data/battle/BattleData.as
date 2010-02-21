@@ -11,6 +11,7 @@ package ru.avangardonline.data.battle {
 	import by.blooddy.core.data.DataLinker;
 	import by.blooddy.core.utils.time.RelativeTime;
 	
+	import ru.avangardonline.data.battle.result.BattleResultData;
 	import ru.avangardonline.data.battle.turns.BattleTurnData;
 	import ru.avangardonline.data.battle.world.BattleWorldData;
 
@@ -36,6 +37,7 @@ package ru.avangardonline.data.battle {
 			super();
 			this._world = new BattleWorldData( time )
 			DataLinker.link( this, this._world, true );
+			DataLinker.link( this, this.result, true );
 		}
 
 		//--------------------------------------------------------------------------
@@ -84,6 +86,12 @@ package ru.avangardonline.data.battle {
 			return this._turns.length;
 		}
 
+		//----------------------------------
+		//  numTurns
+		//----------------------------------
+		
+		public const result:BattleResultData = new BattleResultData();
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Overriden methods

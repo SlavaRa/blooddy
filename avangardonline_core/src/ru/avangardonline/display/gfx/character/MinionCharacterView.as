@@ -6,15 +6,13 @@
 
 package ru.avangardonline.display.gfx.character {
 
+	import by.blooddy.core.display.ProgressBar;
 	import by.blooddy.core.display.StageObserver;
 	import by.blooddy.core.display.resource.ResourceDefinition;
-	
-	import flash.events.Event;
 	
 	import ru.avangardonline.data.character.MinionCharacterData;
 	import ru.avangardonline.display.gfx.battle.world.animation.Animation;
 	import ru.avangardonline.events.data.character.MinionCharacterDataEvent;
-	import by.blooddy.core.display.ProgressBar;
 	
 	/**
 	 * @author					BlooDHounD
@@ -34,7 +32,7 @@ package ru.avangardonline.display.gfx.character {
 		/**
 		 * @private
 		 */
-		private static const _ANIM_DEAD:Animation =		new Animation( 2, 1, 3 );
+		protected static const _ANIM_DEAD:Animation = new Animation( 2, 1, 3 );
 
 		//--------------------------------------------------------------------------
 		//
@@ -63,7 +61,10 @@ package ru.avangardonline.display.gfx.character {
 		 */
 		private var _data:MinionCharacterData;
 
-		private var _health:ProgressBar = new ProgressBar();
+		/**
+		 * @private
+		 */
+		private var _health:ProgressBar;
 
 		//--------------------------------------------------------------------------
 		//
@@ -71,14 +72,32 @@ package ru.avangardonline.display.gfx.character {
 		//
 		//--------------------------------------------------------------------------
 
-		protected override function render(event:Event=null):Boolean {
-			if ( !super.render( event ) ) return false;
+		protected override function render():Boolean {
+			if ( !super.render() ) return false;
 			
+			this._health = new ProgressBar();
+			this._health.indicatorColor32 = new Array( 0xFFFF0000, 0xFFFF0000, 0xFFFFFF00 );
+			this._health.width = 30;
+			this._health.height = 3;
+			this._health.bgColor32 = 0x55000000;
+			this._health.x = -Math.round( this._health.width / 2 );
+			this._health.y = -90;//15;
+			this._health.progressDispatcher = this._data.health;
+			this._health.visible = this._data.live;
+			super.addChild( this._health );
+
 			return true;
 		}
 
-		protected override function clear(event:Event=null):Boolean {
-			if ( !super.clear( event ) ) return false;
+		protected override function clear():Boolean {
+			if ( !super.clear() ) return false;
+
+			if ( this._health ) {
+				super.removeChild( this._health );
+				this._health.progressDispatcher = null;
+				this._health = null;
+			}
+
 			return true;
 		}
 
@@ -86,11 +105,15 @@ package ru.avangardonline.display.gfx.character {
 		 * @private
 		 */
 		protected override function getAnimationDefinition():ResourceDefinition {
-			return new ResourceDefinition( 'lib/display/character/c' + '1' + '.swf', 'x' );
+			var race:String = this._data.race.toString();
+			while ( race.length < 2 ) race = '0' + race;
+			var type:String = this._data.type.toString();
+			while ( type.length < 2 ) type = '0' + type;
+			return new ResourceDefinition( 'lib/display/character/c' + race + type + '.swf', 'x' );
 		}
 
 		protected override function getAnimationKey():String {
-			return this.currentAnim.id.toString();
+			return String.fromCharCode( this._data.race, this._data.type, this.currentAnim.id );
 		}
 
 		//--------------------------------------------------------------------------
@@ -103,7 +126,10 @@ package ru.avangardonline.display.gfx.character {
 		 * @private
 		 */
 		private function handler_liveChange(event:MinionCharacterDataEvent):void {
-			this.setAnimation( _ANIM_DEAD );
+			this.setAnimation( this._data.live ? _ANIM_IDLE : _ANIM_DEAD );
+			if ( this._health ) {
+				this._health.visible = this._data.live;
+			}
 		}
 
 	}

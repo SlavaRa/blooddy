@@ -8,11 +8,13 @@ package ru.avangardonline.data.battle.world {
 
 	import by.blooddy.core.data.Data;
 	import by.blooddy.core.events.time.TimeEvent;
+	import by.blooddy.core.managers.IProgressable;
 	import by.blooddy.core.utils.enterFrameBroadcaster;
 	import by.blooddy.core.utils.time.Time;
 	
 	import flash.events.Event;
 	
+	import ru.avangardonline.data.IClonableData;
 	import ru.avangardonline.events.data.battle.world.BattleWorldCoordinateDataEvent;
 	import ru.avangardonline.events.data.battle.world.BattleWorldDataEvent;
 
@@ -31,7 +33,7 @@ package ru.avangardonline.data.battle.world {
 	 * @langversion				3.0
 	 * @created					06.08.2009 21:19:36
 	 */
-	public class BattleWorldCoordinateData extends BattleWorldAssetData {
+	public class BattleWorldCoordinateData extends BattleWorldAssetData implements IProgressable, IClonableData {
 
 		//--------------------------------------------------------------------------
 		//
@@ -177,6 +179,32 @@ package ru.avangardonline.data.battle.world {
 			super.dispatchEvent( new BattleWorldCoordinateDataEvent( BattleWorldCoordinateDataEvent.COORDINATE_CHANGE ) );
 		}
 
+		//----------------------------------
+		//  distance
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
+		private var _distance:Number;
+		
+		public function get distance():Number {
+			return this._distance;
+		}
+		
+		//----------------------------------
+		//  progress
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
+		private var _progress:Number = 1;
+		
+		public function get progress():Number {
+			return this._progress;
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
@@ -220,9 +248,11 @@ package ru.avangardonline.data.battle.world {
 		public function moveTo(x:Number, y:Number, time:Number):void {
 			this._time_start =	this._time.currentTime;
 			if ( this._time_start < time ) {
-				this._x_start =		this._x;
-				this._y_start =		this._y;
-				this.$moveTo( x, y, time );
+				if ( this._x != x || this._y != y ) {
+					this._x_start =		this._x;
+					this._y_start =		this._y;
+					this.$moveTo( x, y, time );
+				}
 			} else {
 				this.setValues( x, y );
 			}
@@ -243,10 +273,13 @@ package ru.avangardonline.data.battle.world {
 			this._y_range =		y -		this._y_start;
 			this._time_range =	time -	this._time_start;
 
-			this._direction =	Math.atan2( this._y_range, this._x_range ) * 180 / Math.PI % 360;
-			if ( this._direction < 0 ) this._direction += 360;
+			this._distance =	Math.sqrt( this._x_range * this._x_range + this._y_range * this._y_range );
+			this._speed =		this._distance / ( this._time_range / 1E3 );
 
-			this._speed =		Math.sqrt( this._x_range * this._x_range + this._y_range * this._y_range ) / ( this._time_range / 1E3 ) / 4;
+			if ( this._speed > 0 ) {
+				this._direction =	Math.atan2( this._y_range, this._x_range ) * 180 / Math.PI % 360;
+				if ( this._direction < 0 ) this._direction += 360;
+			}
 
 			if ( !this._moving ) {
 				this._moving = true;
@@ -268,6 +301,7 @@ package ru.avangardonline.data.battle.world {
 		 */
 		private function stop():void {
 			if ( this._moving ) {
+				this._distance = 0;
 				this._speed = 0;
 				this._moving = false;
 				enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.update );
@@ -280,10 +314,10 @@ package ru.avangardonline.data.battle.world {
 		 * @private
 		 */
 		private function update(event:Event=null):void {
-			var dt:Number = Math.min( Math.max( 0, ( this._time.currentTime - this._time_start ) / this._time_range ), 1 );
-			this._x = this._x_start + this._x_range * dt;
-			this._y = this._y_start + this._y_range * dt;
-			if ( dt == 1 ) this.stop();
+			this._progress = Math.min( Math.max( 0, ( this._time.currentTime - this._time_start ) / this._time_range ), 1 );
+			this._x = this._x_start + this._x_range * this._progress;
+			this._y = this._y_start + this._y_range * this._progress;
+			if ( this._progress == 1 ) this.stop();
 		}
 
 		//--------------------------------------------------------------------------

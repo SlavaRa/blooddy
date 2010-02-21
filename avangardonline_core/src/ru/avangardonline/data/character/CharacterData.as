@@ -92,6 +92,27 @@ package ru.avangardonline.data.character {
 			}
 		}
 
+		//----------------------------------
+		//  race
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
+		private var _race:uint = 0;
+
+		public function get race():uint {
+			return this._race;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set race(value:uint):void {
+			if ( this._race == value ) return;
+			this._race = value;
+		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Overriden methods
@@ -113,6 +134,7 @@ package ru.avangardonline.data.character {
 			if ( !target ) throw new ArgumentError();
 			super.copyFrom( target );
 			this.group = target._group;
+			this.race = target._race;
 		}
 
 		//--------------------------------------------------------------------------
@@ -122,11 +144,11 @@ package ru.avangardonline.data.character {
 		//--------------------------------------------------------------------------
 
 		public function defence(targetID:uint):void {
-			super.dispatchEvent( new CharacterInteractionDataEvent( CharacterInteractionDataEvent.DEFENCE, false, true, targetID ) );
+			super.dispatchEvent( new CharacterInteractionDataEvent( CharacterInteractionDataEvent.DEFENCE, false, false, targetID ) );
 		}
 
 		public function atack(targetID:uint):void {
-			super.dispatchEvent( new CharacterInteractionDataEvent( CharacterInteractionDataEvent.ATACK, false, true, targetID ) );
+			super.dispatchEvent( new CharacterInteractionDataEvent( CharacterInteractionDataEvent.ATACK, false, false, targetID ) );
 		}
 
 		public function victory():void {

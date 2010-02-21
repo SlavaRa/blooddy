@@ -11,16 +11,14 @@ package ru.avangardonline.display.gfx.character {
 	
 	import flash.display.DisplayObject;
 	import flash.display.MovieClip;
-	import flash.events.Event;
 	
 	import ru.avangardonline.data.character.CharacterData;
 	import ru.avangardonline.display.gfx.battle.world.animation.Animation;
 	import ru.avangardonline.display.gfx.battle.world.animation.BattleWorldAnimatedElementView;
+	import ru.avangardonline.events.data.battle.world.BattleWorldCoordinateDataEvent;
 	import ru.avangardonline.events.data.character.CharacterDataEvent;
 	import ru.avangardonline.events.data.character.CharacterInteractionDataEvent;
-	import ru.avangardonline.data.battle.world.BattleWorldCoordinateData;
-	import ru.avangardonline.events.data.battle.world.BattleWorldCoordinateDataEvent;
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -39,27 +37,32 @@ package ru.avangardonline.display.gfx.character {
 		/**
 		 * @private
 		 */
-		private static const _HASH:Object = new Object();
+		private static const _HASH_ANIM:Object = new Object();
 
 		/**
 		 * @private
 		 */
-		private static const _ANIM_IDLE:Animation =		new Animation();
+		private static const _HASH_USAGE:Object = new Object();
+		
+		/**
+		 * @private
+		 */
+		protected static const _ANIM_IDLE:Animation =		new Animation();
 
 		/**
 		 * @private
 		 */
-		private static const _ANIM_MOVE:Animation =		new Animation( 1, 0 );
+		protected static const _ANIM_MOVE:Animation =		new Animation( 1, 0 );
 
 		/**
 		 * @private
 		 */
-		private static const _ANIM_ATACK:Animation =	new Animation( 3, 1, 2 );
+		protected static const _ANIM_ATACK:Animation =		new Animation( 3, 1, 2 );
 
 		/**
 		 * @private
 		 */
-		private static const _ANIM_DEFENCE:Animation =	new Animation( 4, 1, 1 );
+		protected static const _ANIM_DEFENCE:Animation =	new Animation( 4, 1, 1 );
 
 		//--------------------------------------------------------------------------
 		//
@@ -83,11 +86,6 @@ package ru.avangardonline.display.gfx.character {
 			this.setAnimation( _ANIM_IDLE );
 		}
 
-		public override function destruct():void {
-			this._data = null;
-			super.destruct();
-		}
-
 		//--------------------------------------------------------------------------
 		//
 		//  Variables
@@ -99,69 +97,34 @@ package ru.avangardonline.display.gfx.character {
 		 */
 		private var _data:CharacterData;
 
+		/**
+		 * @private
+		 */
+		private var _key:String;
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Overriden protected methods
 		//
 		//--------------------------------------------------------------------------
 
-		/**
-		 * @private
-		 */
-/*		protected override function render(event:Event=null):Boolean {
-			if ( !super.render( event ) ) return false;
-
-			var bundleName:String =		'lib/display/character/knight.swf';
-			var resourceName:String =	'knight';
-
-			var loader:ILoadable = super.loadResourceBundle( bundleName );
-			if ( !loader.loaded ) {
-				loader.addEventListener( Event.COMPLETE,						this.render );
-				loader.addEventListener( IOErrorEvent.IO_ERROR,					this.render );
-				loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR,		this.render );
-				return false;
-			} else {
-				loader.removeEventListener( Event.COMPLETE,						this.render );
-				loader.removeEventListener( IOErrorEvent.IO_ERROR,				this.render );
-				loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.render );
-			}
-
-			if ( super.hasResource( bundleName, resourceName ) ) {
-				this.$element = super.getDisplayObject( bundleName, resourceName );
-				super.addChild( this.$element );
-				this.updateRotation( event );
-			}
-
-			return true;
-		}*/
-
-		protected override function renderAnimation(event:Event=null):Boolean {
-			if ( !super.renderAnimation( event ) ) return false;
-			if ( this.$element ) {
-				//this.$element.scaleX = this.$element.scaleY = this.$element.scaleZ = .75;
-			}
-			return true;
-		}
-
 		protected override function getAnimation():DisplayObject {
-			var key:String = this.getAnimationKey();
+			this._key = this.getAnimationKey();
 			var result:BitmapMovieClip;
-			if ( key in _HASH ) {
-				result = ( _HASH[ key ] as BitmapMovieClip ).clone();
+			if ( this._key in _HASH_ANIM ) {
+				result = _HASH_ANIM[ this._key ] as BitmapMovieClip;
+				if ( result ) {
+					result = result.clone();
+					_HASH_USAGE[ this._key ]++;
+				}
 			} else {
 				var resource:DisplayObject = super.getAnimation();
-				result = new BitmapMovieClip();
-				if ( resource is MovieClip ) {
-					var totalFrames:uint = ( resource as MovieClip ).totalFrames;
-					for ( var i:uint = 1; i<totalFrames; i++ ) {
-						( resource as MovieClip ).gotoAndStop( i+1 );
-						result.addBitmap( resource );
-					}
-				} else {
-					result.addBitmap( resource );
+				if ( resource ) {
+					result = BitmapMovieClip.getAsMovieClip( resource );
+					super.trashResource( resource );
 				}
-				super.trashResource( resource );
-				_HASH[ key ] = result;
+				_HASH_ANIM[ this._key ] = result;
+				_HASH_USAGE[ this._key ] = 1;
 			}
 			return result;
 		}
@@ -173,13 +136,18 @@ package ru.avangardonline.display.gfx.character {
 		/**
 		 * @private
 		 */
-		protected override function clear(event:Event=null):Boolean {
+		protected override function clear():Boolean {
 			if ( this.$element ) {
 				super.removeChild( this.$element );
-				//( this.$element as BitmapMovieClip ).dispose();
+				_HASH_USAGE[ this._key ]--;
+				if ( !_HASH_USAGE[ this._key ] ) {
+					//delete _HASH_USAGE[ this._key ];
+					//delete _HASH_ANIM[ this._key ];
+					//( this.$element as BitmapMovieClip ).dispose();
+				}
 				this.$element = null;
 			}
-			if ( !super.clear( event ) ) return false;
+			if ( !super.clear() ) return false;
 			return true;
 		}
 

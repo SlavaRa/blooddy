@@ -8,6 +8,8 @@ package ru.avangardonline.serializers.txt.data.battle {
 
 	import by.blooddy.game.serializers.txt.ISerializer;
 	
+	import flash.errors.IllegalOperationError;
+	
 	import ru.avangardonline.data.battle.actions.BattleActionData;
 	import ru.avangardonline.data.battle.turns.BattleTurnData;
 	import ru.avangardonline.serializers.txt.data.battle.actions.BattleActionDataSerializer;
@@ -53,6 +55,7 @@ package ru.avangardonline.serializers.txt.data.battle {
 		 */
 		public function BattleTurnDataSerializer() {
 			super();
+			if ( _serializer ) throw new IllegalOperationError();
 		}
 
 		//--------------------------------------------------------------------------
@@ -61,13 +64,14 @@ package ru.avangardonline.serializers.txt.data.battle {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @inheritDoc
+		 */
 		public function deserialize(source:String, target:*=null):* {
 			var data:BattleTurnData = target as BattleTurnData;
 			if ( !data ) throw new ArgumentError();
 
-			var action:BattleActionData;
-			var actions:Vector.<BattleActionData> = data.getActions();
-			for each ( action in actions ) {
+			for each ( var action:BattleActionData in data.getActions() ) {
 				data.removeChild( action );
 			}
 

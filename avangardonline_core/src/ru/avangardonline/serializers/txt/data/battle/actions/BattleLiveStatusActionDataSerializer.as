@@ -6,6 +6,8 @@
 
 package ru.avangardonline.serializers.txt.data.battle.actions {
 
+	import flash.errors.IllegalOperationError;
+	
 	import ru.avangardonline.data.battle.actions.BattleLiveStatusActionData;
 
 	/**
@@ -49,6 +51,7 @@ package ru.avangardonline.serializers.txt.data.battle.actions {
 		 */
 		public function BattleLiveStatusActionDataSerializer() {
 			super();
+			if ( _serializer ) throw new IllegalOperationError();
 		}
 
 		//--------------------------------------------------------------------------

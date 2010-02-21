@@ -27,6 +27,8 @@ package ru.avangardonline.events.data.battle.world {
 
 		public static const HEIGHT_CHANGE:String =		'heightChange';
 
+		public static const TYPE_CHANGE:String =		'typeChange';
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor

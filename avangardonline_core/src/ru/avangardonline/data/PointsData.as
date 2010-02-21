@@ -6,8 +6,8 @@
 
 package ru.avangardonline.data {
 
-	import by.blooddy.game.data.PointsData;
 	import by.blooddy.core.data.Data;
+	import by.blooddy.game.data.PointsData;
 	
 	/**
 	 * @author					BlooDHounD
@@ -16,7 +16,7 @@ package ru.avangardonline.data {
 	 * @langversion				3.0
 	 * @created					06.09.2009 17:05:45
 	 */
-	public class PointsData extends by.blooddy.game.data.PointsData {
+	public class PointsData extends by.blooddy.game.data.PointsData implements IClonableData {
 
 		//--------------------------------------------------------------------------
 		//

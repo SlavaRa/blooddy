@@ -67,18 +67,18 @@ package ru.avangardonline.data.battle.actions {
 		/**
 		 * @private
 		 */
-		private var _targetHealth:int;
+		private var _targetHealthIncrement:int;
 
-		public function get targetHealth():int {
-			return this._targetHealth;
+		public function get targetHealthIncrement():int {
+			return this._targetHealthIncrement;
 		}
 
 		/**
 		 * @private
 		 */
-		public function set targetHealth(value:int):void {
-			if ( this._targetHealth === value ) return;
-			this._targetHealth = value;
+		public function set targetHealthIncrement(value:int):void {
+			if ( this._targetHealthIncrement === value ) return;
+			this._targetHealthIncrement = value;
 		}
 
 		//--------------------------------------------------------------------------
@@ -88,7 +88,7 @@ package ru.avangardonline.data.battle.actions {
 		//--------------------------------------------------------------------------
 
 		public override function toLocaleString():String {
-			return super.formatToString( 'startTime', 'elementID', 'targetID', 'targetHealth' );
+			return super.formatToString( 'startTime', 'elementID', 'targetID', 'targetHealthIncrement' );
 		}
 
 		public override function getCommands():Vector.<Command> {
@@ -109,8 +109,8 @@ package ru.avangardonline.data.battle.actions {
 				),
 				this.getCommand(
 					new Command(
-						'setHealth',
-						[ this._targetHealth ]
+						'incHealth',
+						[ -this._targetHealthIncrement ]
 					),
 					this._targetID
 				)
@@ -121,7 +121,7 @@ package ru.avangardonline.data.battle.actions {
 		public override function apply(collection:BattleWorldElementCollectionData):void {
 			var element:MinionCharacterData = collection.getElement( this._targetID ) as MinionCharacterData;
 			if ( !element ) throw new ArgumentError();
-			element.health.current = this._targetHealth;
+			element.health.current -= this._targetHealthIncrement;
 		}
 
 	}

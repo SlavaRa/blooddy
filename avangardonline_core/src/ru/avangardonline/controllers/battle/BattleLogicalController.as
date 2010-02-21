@@ -48,7 +48,7 @@ package ru.avangardonline.controllers.battle {
 		 * Constructor
 		 */
 		public function BattleLogicalController(controller:IBaseController!) {
-			super();
+			super( true );
 			this._baseController = controller;
 			this._timer.addEventListener( TimerEvent.TIMER, this.updateBattle );
 		}
@@ -68,6 +68,11 @@ package ru.avangardonline.controllers.battle {
 		 * @private
 		 */
 		private var _inBattle:Boolean = false;
+
+		/**
+		 * @private
+		 */
+		private var _inResult:Boolean = false;
 
 		/**
 		 * @private
@@ -128,14 +133,15 @@ package ru.avangardonline.controllers.battle {
 		//----------------------------------
 
 		public function get progress():Number {
-			return 0;//this._time.currentTime / ( this.totalTicks * TICK_TIME );
+			return this._time.currentTime / ( this._battle.numTurns * BattleTurnData.TURN_DELAY + BattleTurnData.TURN_LENGTH );
 		}
 
 		/**
 		 * @private
 		 */
 		public function set progress(value:Number):void {
-			//this._time.currentTime = this.totalTicks * ( value || 0 ) * TICK_TIME;
+			this._time.currentTime = value * ( this._battle.numTurns * BattleTurnData.TURN_DELAY + BattleTurnData.TURN_LENGTH );
+			this.updateBattle();
 		}
 
 		//--------------------------------------------------------------------------
@@ -176,7 +182,7 @@ package ru.avangardonline.controllers.battle {
 		public function set currentTurn(value:uint):void {
 			if ( this._currentTurn == value ) return;
 			if ( this._currentTurn > this._battle.numTurns ) throw new RangeError();
-			//this.currentTick = value * BattleTurnData.TURN_DELAY;
+			this._time.currentTime = value * BattleTurnData.TURN_DELAY;
 		}
 
 		//----------------------------------
@@ -215,7 +221,7 @@ package ru.avangardonline.controllers.battle {
 				this._time.removeEventListener( TimeEvent.TIME_RELATIVITY_CHANGE, this.handler_timeRelativityChange );
 				this._time = null;
 
-				this._collections.removeChild( this._collections );
+				this._baseController.dataBase.removeChild( this._collections );
 				this._collections = null;
 
 				this._baseController.dataBase.removeChild( this._battle );
@@ -265,7 +271,7 @@ package ru.avangardonline.controllers.battle {
 		 * @private
 		 */
 		private function $call(commandName:String, ...parameters):* {
-			return this.$invokeCallInputCommand( new Command( commandName, parameters ), false );
+			return this.$invokeCallInputCommand( new Command( commandName, parameters ) );
 		}
 
 		/**
@@ -275,21 +281,34 @@ package ru.avangardonline.controllers.battle {
 
 			var prevUpdate:Number = this._lastUpdate;
 			var nextUpdate:Number = this._time.currentTime;
+			if ( prevUpdate == nextUpdate ) return;
 			this._lastUpdate = nextUpdate;
 
 			var prevTurn:int = this._currentTurn;
 			var nextTurn:int = nextUpdate / BattleTurnData.TURN_DELAY;
+			// поверим закончился ли бой
 			if ( nextTurn >= this._battle.numTurns ) {
 				nextTurn = this._battle.numTurns;
 				if ( prevTurn == nextTurn && this._lastUpdate >= ( nextTurn * BattleTurnData.TURN_DELAY ) ) { 
 					if ( this._time.currentTime >= ( ( nextTurn - 1 ) * BattleTurnData.TURN_DELAY ) + BattleTurnData.TURN_LENGTH ) {
 						this._time.speed = 0;
+						if ( !this._inResult ) {
+							this.$call( 'openBattleResult', this._battle.result );
+						}
 					}
+					this._inResult = true;
 					return;
 				}
 			}
+			if ( this._inResult ) {
+				this.$call( 'closeBattleResult' );
+				this._inResult = false;
+			}
 			this._currentTurn = nextTurn;
 			// поизошёл сильный скачёк. надо сбросить всё нафиг
+			if ( nextTurn != prevTurn ) {
+				this.$call( 'setTurn', nextTurn );
+			}
 			var dt:int = nextTurn - prevTurn;
 			if ( dt != 0 && dt != 1 ) { // поизошёл тотальный пиздец :(
 				this._lastUpdate = nextTurn * BattleTurnData.TURN_DELAY;
@@ -303,12 +322,14 @@ package ru.avangardonline.controllers.battle {
 			if ( turn ) {
 				actions = turn.getActions();
 			}
-			turn = this._battle.getTurn( nextTurn );
-			if ( turn ) {
-				if ( actions ) {
-					actions = actions.concat( turn.getActions() );
-				} else {
-					actions = turn.getActions();
+			if ( nextTurn != prevTurn ) {
+				turn = this._battle.getTurn( nextTurn );
+				if ( turn ) {
+					if ( actions ) {
+						actions = actions.concat( turn.getActions() );
+					} else {
+						actions = turn.getActions();
+					}
 				}
 			}
 			var command:Command;
@@ -337,8 +358,8 @@ package ru.avangardonline.controllers.battle {
 		 */
 		private function syncTurns():void {
 
-			var i:uint = this._collections.numTurns;
-			var l:uint = this._currentTurn;
+			var i:int = this._collections.numTurns;
+			var l:int = this._currentTurn;
 
 			if ( i > l ) return;
 			// состояние этого хода ещё не рассчитывалось
@@ -348,7 +369,7 @@ package ru.avangardonline.controllers.battle {
 
 			for ( i; i<=l; i++ ) {
 				collection = collection.clone() as BattleWorldElementCollectionData;
-				for each ( action in this._battle.getTurn( i ).getActions() ) {
+				for each ( action in this._battle.getTurn( i-1 ).getActions() ) {
 					if ( action is BattleWorldElementActionData ) {
 						( action as BattleWorldElementActionData ).apply( collection );
 					}
@@ -365,7 +386,6 @@ package ru.avangardonline.controllers.battle {
 			this.$call( 'enterBattle', this._battle.world.field );
 			this.syncElements();
 			this._time.currentTime = 0;
-			this._time.speed = 1;
 		}
 
 		//--------------------------------------------------------------------------
@@ -393,6 +413,14 @@ package ru.avangardonline.controllers.battle {
 			this.$call( 'exitBattle' );
 		}
 
+		/**
+		 * @private
+		 */
+		private function resetBattle():void {
+			this._time.currentTime = 0;
+			this._time.speed = 1;
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Event handlers

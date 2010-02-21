@@ -8,8 +8,12 @@ package ru.avangardonline.data.character {
 
 	import by.blooddy.core.data.Data;
 	import by.blooddy.core.data.DataLinker;
+	import by.blooddy.core.utils.time.setTimeout;
 	
 	import ru.avangardonline.data.PointsData;
+	import ru.avangardonline.data.battle.world.BattleWorldArrowData;
+	import ru.avangardonline.events.data.battle.world.BattleWorldTempElementEvent;
+	import ru.avangardonline.events.data.character.CharacterInteractionDataEvent;
 	import ru.avangardonline.events.data.character.MinionCharacterDataEvent;
 
 	//--------------------------------------
@@ -17,6 +21,8 @@ package ru.avangardonline.data.character {
 	//--------------------------------------
 
 	[Event( name="liveChange", type="ru.avangardonline.events.data.character.MinionCharacterDataEvent" )]
+	[Event( name="bowAtack", type="ru.avangardonline.events.data.character.CharacterInteractionDataEvent" )]
+	[Event( name="addElement", type="ru.avangardonline.events.data.battle.world.BattleWorldTempElementEvent" )]
 
 	/**
 	 * @author					BlooDHounD
@@ -26,6 +32,20 @@ package ru.avangardonline.data.character {
 	 * @created					19.08.2009 22:13:38
 	 */
 	public class MinionCharacterData extends CharacterData {
+
+		//--------------------------------------------------------------------------
+		//
+		//  Class constants
+		//
+		//--------------------------------------------------------------------------
+
+		public const TYPE_LANCER:uint =		1;
+		
+		public const TYPE_ARCHER:uint =		2;
+
+		public const TYPE_SWORDSMAN:uint =	3;
+
+		public const TYPE_CAVALRY:uint =	4;
 
 		//--------------------------------------------------------------------------
 		//
@@ -103,7 +123,7 @@ package ru.avangardonline.data.character {
 		//--------------------------------------------------------------------------
 
 		public override function toLocaleString():String {
-			return super.formatToString( 'id', 'group', 'type' );
+			return super.formatToString( 'id', 'group', 'type', 'live' );
 		}
 
 		public override function clone():Data {
@@ -118,6 +138,23 @@ package ru.avangardonline.data.character {
 			super.copyFrom( target );
 			this.type = target._type;
 			this.health.copyFrom( target.health );
+			this.live = target._live;
+		}
+
+		public override function atack(targetID:uint):void {
+			super.atack( targetID );
+			if ( this._type == TYPE_ARCHER ) {
+				setTimeout(
+					super.dispatchEvent,
+					300,
+					new BattleWorldTempElementEvent(
+						BattleWorldTempElementEvent.ADD_ELEMENT,
+						true,
+						false,
+						new BattleWorldArrowData( super.id, targetID )
+					)
+				);
+			}
 		}
 
 		//--------------------------------------------------------------------------
@@ -130,8 +167,8 @@ package ru.avangardonline.data.character {
 			this.live = live;
 		}
 
-		public function setHealth(health:uint):void {
-			this.health.current = health;
+		public function incHealth(health:int):void {
+			this.health.current += health;
 		}
 
 	}

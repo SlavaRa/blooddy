@@ -6,6 +6,8 @@
 
 package ru.avangardonline.serializers.txt.data.character {
 
+	import flash.errors.IllegalOperationError;
+	
 	import ru.avangardonline.data.character.MinionCharacterData;
 
 	/**
@@ -49,6 +51,7 @@ package ru.avangardonline.serializers.txt.data.character {
 		 */
 		public function MinionCharacterDataSerializer() {
 			super();
+			if ( _serializer ) throw new IllegalOperationError();
 		}
 
 		//--------------------------------------------------------------------------
