@@ -15,7 +15,7 @@ package ru.avangardonline.application.factory {
 	 * @langversion				3.0
 	 * @created					04.08.2009 22:26:06
 	 */
-	public class AvangardFactory extends ApplicationFactory {
+	public final class AvangardFactory extends ApplicationFactory {
 
 		//--------------------------------------------------------------------------
 		//
@@ -27,7 +27,8 @@ package ru.avangardonline.application.factory {
 		 * Constructor
 		 */
 		public function AvangardFactory() {
-			super( 'ru.avangardonline.application.Avangard' );
+			super( 'ru.avangardonline.application.AvangardBattle' );
+			super.color = 0x6C4130;
 		}
 
 	}
