@@ -56,29 +56,26 @@ package by.blooddy.core.display.resource {
 		//--------------------------------------------------------------------------
 
 		protected final function invalidate():void {
-			this.clear();
+			if ( this._loader ) {
+				this.clearLoader();
+			} else {
+				this.clear();
+			}
+
+			if ( !super.hasManager() ) return;
+
 			var resources:Array = this.getResourceBundles();
 			var loader:ILoadable;
-			if ( this._loader ) {
-
-				this._loader.removeEventListener( Event.COMPLETE, this.handler_complete );
-				this._loader.removeEventListener( IOErrorEvent.IO_ERROR, this.handler_complete );
-				this._loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR, this.handler_complete );
-
-			}
 			if ( resources.length == 1 ) {
 				
 				loader = super.loadResourceBundle( resources[ 0 ] );
-				this._loader = ( loader.loaded ? null : loader );
+				if ( !loader.loaded ) {
+					this._loader = loader;
+				}
 				
 			} else {
 
-				var loaderDispatcher:LoaderDispatcher = this._loader as LoaderDispatcher;
-				if ( loaderDispatcher ) {
-					loaderDispatcher.close();
-					loaderDispatcher = null;
-				}
-				this._loader = null;
+				var loaderDispatcher:LoaderDispatcher;
 
 				for each ( var bundleName:String in resources ) {
 					loader = super.loadResourceBundle( bundleName );
@@ -141,6 +138,26 @@ package by.blooddy.core.display.resource {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Private methods
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private function clearLoader():void {
+			if ( this._loader is LoaderDispatcher ) {
+				( this._loader as LoaderDispatcher ).close();
+			} else {
+				this._loader.removeEventListener( IOErrorEvent.IO_ERROR, this.handler_complete );
+				this._loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR, this.handler_complete );
+			}
+			this._loader.removeEventListener( Event.COMPLETE, this.handler_complete );
+			this._loader = null;
+		}
+
+		//--------------------------------------------------------------------------
+		//
 		//  Event handlers
 		//
 		//--------------------------------------------------------------------------
@@ -156,16 +173,19 @@ package by.blooddy.core.display.resource {
 		 * @private
 		 */
 		private function handler_removedFromManager(event:ResourceEvent):void {
-			this.clear();
+			if ( this._loader ) {
+				this.clearLoader();
+			} else {
+				this.clear();
+			}
 		}
 
 		/**
 		 * @private
 		 */
 		private function handler_complete(event:Event):void {
-			if ( event.target === this._loader ) {
-				this.invalidate();
-			}
+			this.clearLoader();
+			this.render();
 		}
 
 	}

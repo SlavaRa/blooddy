@@ -2,9 +2,9 @@ package by.blooddy.core.display {
 
 	import flash.display.DisplayObject;
 
-	public function dispose(child:DisplayObject):void {
+	public function dispose(child:DisplayObject, force:Boolean=false):void {
 		if ( child.stage ) throw new ArgumentError();
-		$dispose( child );
+		$dispose( child, force );
 	}
 
 }
@@ -18,11 +18,11 @@ import flash.display.Bitmap;
 import flash.text.TextField;
 import flash.geom.Transform;
 
-internal function $dispose(child:DisplayObject):void {
+internal function $dispose(child:DisplayObject, force:Boolean):void {
 	if ( child is DisplayObjectContainer ) {
 		var container:DisplayObjectContainer = child as DisplayObjectContainer;
 		while ( container.numChildren ) {
-			$dispose( container.removeChildAt( 0 ) );
+			$dispose( container.removeChildAt( 0 ), force );
 		}
 	}
 	if ( child is Sprite ) {
@@ -33,7 +33,12 @@ internal function $dispose(child:DisplayObject):void {
 	} else if ( child is Shape ) {
 		( child as Shape ).graphics.clear();
 	} else if ( child is Bitmap ) {
-		( child as Bitmap ).bitmapData = null;
+		if ( ( child as Bitmap ).bitmapData ) {
+			if ( force ) {
+				( child as Bitmap ).bitmapData.dispose();
+			}
+			( child as Bitmap ).bitmapData = null;
+		}
 	} else if ( child is TextField ) {
 		( child as TextField ).text = '';
 		( child as TextField ).styleSheet = null;

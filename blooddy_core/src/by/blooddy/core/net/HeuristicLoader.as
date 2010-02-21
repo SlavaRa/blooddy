@@ -27,6 +27,7 @@ package by.blooddy.core.net {
 	import flash.net.URLRequest;
 	import flash.net.URLStream;
 	import flash.utils.ByteArray;
+	import flash.errors.IllegalOperationError;
 
 	//--------------------------------------
 	//  Implements events: ILoadable
@@ -401,6 +402,10 @@ package by.blooddy.core.net {
 			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
 		}
 
+		public function loadBytes(bytes:ByteArray):void {
+			throw new IllegalOperationError();
+		}
+
 		/**
 		 * выгружает загруженный контент
 		 */
@@ -561,7 +566,7 @@ package by.blooddy.core.net {
 				this._loader.removeEventListener( IOErrorEvent.IO_ERROR,		this.handler_loader_input_ioError );
 				if ( unload ) {
 					this._loaderInfo = null;
-					if ( this._loader.loaded ) {
+					if ( !this._loader.loaded ) {
 						this._loader.$close();
 					} else {
 						this._loader.$unload();

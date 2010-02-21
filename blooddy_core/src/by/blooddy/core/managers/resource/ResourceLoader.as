@@ -4,17 +4,18 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.net {
+package by.blooddy.core.managers.resource {
 
-	import by.blooddy.core.managers.resource.IResourceBundle;
-	import by.blooddy.core.managers.resource.ResourceManager;
+	import by.blooddy.core.net.HeuristicLoader;
+	import by.blooddy.core.net.LoaderContext;
+	import by.blooddy.core.net.MIME;
 	import by.blooddy.core.utils.DefinitionFinder;
 	
-	import flash.events.Event;
-	import flash.events.IOErrorEvent;
-	import flash.events.ProgressEvent;
-	import flash.events.SecurityErrorEvent;
+	import flash.display.BitmapData;
+	import flash.media.Sound;
 	import flash.net.URLRequest;
+	import flash.system.ApplicationDomain;
+	import flash.utils.getQualifiedClassName;
 
 	/**
 	 * Загружает свф и воспринимает его как ресурсы.
@@ -29,6 +30,22 @@ package by.blooddy.core.net {
 	 */
 	public class ResourceLoader extends HeuristicLoader implements IResourceBundle {
 
+		//--------------------------------------------------------------------------
+		//
+		//  Class variables
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		 * @private
+		 */
+		private static const _NAME_BITMAP_DATA:String = getQualifiedClassName( BitmapData );
+		
+		/**
+		 * @private
+		 */
+		private static const _NAME_SOUND:String = getQualifiedClassName( Sound );
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -51,7 +68,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private const _resourceHash:Object = new Object();
+		private const _hash:Object = new Object();
 
 		/**
 		 * @private
@@ -89,16 +106,56 @@ package by.blooddy.core.net {
 		 */
 		public function getResource(name:String):* {
 			if ( !name ) {
+
 				return super.content;
-			} else if ( name in this._resourceHash ) { // пытаемся найти в кэше
-				return this._resourceHash[ name ];
-			} else if ( super.loaderInfo && super.loaderInfo.applicationDomain && super.loaderInfo.applicationDomain.hasDefinition( name ) ) { // пытаемся найти в домене
-				return this._resourceHash[ name ] = super.loaderInfo.applicationDomain.getDefinition( name );
-			} else if ( super.content && name in super.content ) { // пытаемся найти в контэнте
-				return super.content[ name ];
-			} else { // закэшируем пустоту :(
-				this._resourceHash[ name ] = null;
+
+			} else if ( name in this._hash ) { // пытаемся найти в кэше
+
+				return this._hash[ name ];
+
+			} else {
+
+				var resource:*;
+				var domain:ApplicationDomain = ( super.loaderInfo ? super.loaderInfo.applicationDomain : null );
+
+				if ( domain && domain.hasDefinition( name ) ) { // пытаемся найти в домене
+
+					resource = domain.getDefinition( name );
+
+					if ( resource is Class ) {
+						
+						var resourceClass:Class = resource as Class;
+						
+						if (
+							BitmapData.prototype.isPrototypeOf( resourceClass.prototype ) ||
+							domain.getDefinition( _NAME_BITMAP_DATA ).prototype.isPrototypeOf( resourceClass.prototype )
+						) {
+
+							resource = new resourceClass( 0, 0 );
+							
+						} else if ( 
+							Sound.prototype.isPrototypeOf( resourceClass.prototype ) ||
+							domain.getDefinition( _NAME_SOUND ).prototype.isPrototypeOf( resourceClass.prototype )
+						) {
+							
+							resource = new resourceClass();
+							
+						}
+						
+					}				
+
+				} else if ( super.content && name in super.content ) { // пытаемся найти в контэнте
+
+					resource = super.content[ name ];
+
+				}
+
+				this._hash[ name ] = resource;
+
+				return resource;
+				
 			}
+
 		}
 
 		/**
@@ -106,12 +163,10 @@ package by.blooddy.core.net {
 		 */
 		public function hasResource(name:String):Boolean {
 			return (
-				super.loaded && (
-					( name in this._resourceHash ) || // пытаемся найти в кэше
-					( !name && super.content ) ||
-					( super.loaderInfo && super.loaderInfo.applicationDomain && super.loaderInfo.applicationDomain.hasDefinition( name ) ) || // пытаемся найти в домене
-					( super.content && name in super.content ) // пытаемся найти в контэнте
-				)
+				( name in this._hash ) || // пытаемся найти в кэше
+				( !name && super.content ) ||
+				( super.loaderInfo && super.loaderInfo.applicationDomain && super.loaderInfo.applicationDomain.hasDefinition( name ) ) || // пытаемся найти в домене
+				( super.content && name in super.content ) // пытаемся найти в контэнте
 			);
 		}
 
@@ -138,16 +193,16 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		public override function unload():void {
+			this.clear();
 			super.unload();
-			this.$unload();
 		}
 
 		/**
 		 * @private
 		 */
 		public override function close():void {
+			this.clear();
 			super.close();
-			this.$unload();
 		}
 
 		//--------------------------------------------------------------------------
@@ -159,9 +214,14 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private function $unload():void {
-			for ( var name:String in this._resourceHash ) {
-				delete this._resourceHash[ name ];
+		private function clear():void {
+			var resource:*;
+			for ( var name:String in this._hash ) {
+				resource = this._hash[ name ];
+				if ( resource is BitmapData ) {
+					( resource as BitmapData ).dispose();
+				}
+				delete this._hash[ name ];
 			}
 		}
 

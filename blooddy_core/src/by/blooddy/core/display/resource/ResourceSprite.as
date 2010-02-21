@@ -9,19 +9,14 @@ package by.blooddy.core.display.resource {
 	import by.blooddy.core.events.display.resource.ResourceErrorEvent;
 	import by.blooddy.core.events.display.resource.ResourceEvent;
 	import by.blooddy.core.events.net.LoaderEvent;
-	import by.blooddy.core.managers.resource.IResourceBundle;
-	import by.blooddy.core.managers.resource.ResourceBundle;
-	import by.blooddy.core.managers.resource.ResourceManager;
+	import by.blooddy.core.managers.resource.ResourceManagerProxy;
 	import by.blooddy.core.net.ILoadable;
-	import by.blooddy.core.utils.DisplayObjectUtils;
-	import by.blooddy.core.utils.RecycleBin;
+	import by.blooddy.core.utils.enterFrameBroadcaster;
 	
-	import flash.display.Bitmap;
-	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
-	import flash.display.MovieClip;
 	import flash.display.Sprite;
+	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.media.Sound;
 	import flash.utils.Dictionary;
@@ -35,26 +30,6 @@ package by.blooddy.core.display.resource {
 	 * @eventType			by.blooddy.core.events.net.LoaderEvent.LOADER_INIT
 	 */
 	[Event( name="loaderInit", type="by.blooddy.core.events.net.LoaderEvent" )]
-
-	/**
-	 * @eventType			by.blooddy.core.events.display.resource.ResourceEvent.GET_RESOURCE
-	 */
-	[Event( name="getResource", type="by.blooddy.core.events.display.resource.ResourceEvent" )]
-
-	/**
-	 * @eventType			by.blooddy.core.events.display.resource.ResourceEvent.TRASH_RESOURCE
-	 */
-	[Event( name="trashResource", type="by.blooddy.core.events.display.resource.ResourceEvent" )]
-
-	/**
-	 * @eventType			by.blooddy.core.events.display.resource.ResourceEvent.LOCK_BUNDLE
-	 */
-	[Event( name="lockBundle", type="by.blooddy.core.events.display.resource.ResourceEvent" )]
-
-	/**
-	 * @eventType			by.blooddy.core.events.display.resource.ResourceEvent.UNLOCK_BUNDLE
-	 */
-	[Event( name="unlockBundle", type="by.blooddy.core.events.display.resource.ResourceEvent" )]
 
 	/**
 	 * @eventType			by.blooddy.core.events.display.resource.ResourceEvent.ADDED_TO_MANAGER
@@ -92,7 +67,12 @@ package by.blooddy.core.display.resource {
 		/**
 		 * @private
 		 */
-		private static const _HASH:Dictionary = new Dictionary( true );
+		private static const _MANAGER:ResourceManagerProxy = new ResourceManagerProxy();
+
+		/**
+		 * @private
+		 */
+		private static const _LOCK_HASH:Dictionary = new Dictionary( true );
 
 		/**
 		 * @private
@@ -103,16 +83,6 @@ package by.blooddy.core.display.resource {
 		 * @private
 		 */
 		private static const _NAME_DISPLAY_OBJECT:String = getQualifiedClassName( DisplayObject );
-		
-		/**
-		 * @private
-		 */
-		private static const _NAME_BITMAP_DATA:String = getQualifiedClassName( BitmapData );
-		
-		/**
-		 * @private
-		 */
-		private static const _NAME_SOUND:String = getQualifiedClassName( Sound );
 		
 		//--------------------------------------------------------------------------
 		//
@@ -143,12 +113,12 @@ package by.blooddy.core.display.resource {
 		/**
 		 * @private
 		 */
-		private var _manager:ResourceManager;
+		private var _manager:ResourceManagerProxy;
 
 		/**
 		 * @private
 		 */
-		private var _bin:RecycleBin;
+		private var _lockers:Object;
 		
 		/**
 		 * @private
@@ -175,7 +145,11 @@ package by.blooddy.core.display.resource {
 		//
 		//--------------------------------------------------------------------------
 
-		protected function $getResourceManager():ResourceManager {
+		protected final function hasManager():Boolean {
+			return Boolean( this._manager );
+		}
+		
+		protected function $getResourceManager():ResourceManagerProxy {
 			var parent:DisplayObjectContainer = super.parent;
 			while ( parent ) {
 				if ( parent is ResourceSprite ) {
@@ -183,98 +157,47 @@ package by.blooddy.core.display.resource {
 				}
 				parent = parent.parent;
 			}
-			return ( super.stage ? ResourceManager.manager : null );
+			return ( super.stage ? _MANAGER : null );
 		}
 
 		protected final function loadResourceBundle(bundleName:String, priority:int=0.0):ILoadable {
 			if ( !this._manager ) throw new ArgumentError();
 			var loader:ILoadable = this._manager.loadResourceBundle( bundleName, priority );
 			// диспатчим событие о том что началась загрузка
-			if ( !loader.loaded ) super.dispatchEvent( new LoaderEvent( LoaderEvent.LOADER_INIT, true, true, loader ) );
+			if ( !loader.loaded ) super.dispatchEvent( new LoaderEvent( LoaderEvent.LOADER_INIT, true, false, loader ) );
 			return loader;
-		}
-
-		protected final function unloadResourceBundle(bundleName:String):void {
-			if ( !this._manager ) throw new ArgumentError();
-			var bundle:IResourceBundle = this._manager.getResourceBundle( bundleName, true );
-			if ( bundle is ILoadable ) {
-				if ( !this._manager.dispatchEvent( new LoaderEvent( LoaderEvent.LOADER_UNLOAD, false, true, bundle as ILoadable ) ) ) {
-					return; // кто- то послал нафиг
-				}
-			}
-			this._bin.clear( bundleName + _SEPARATOR );
-			this._manager.removeResourceBundle( bundleName );
-			bundle = this._manager.getResourceBundle( '$' + bundleName );
-			if ( bundle is ResourceBundle ) {
-				var resources:Array = bundle.getResources();
-				var resource:*;
-				for each ( var resourceName:String in resources ) {
-					resource = bundle.getResource( resourceName );
-					if ( resource is BitmapData ) {
-						( resource as BitmapData ).dispose();
-					}
-				}
-				this._manager.removeResourceBundle( '$' + bundleName );
-			}
 		}
 
 		protected final function hasResource(bundleName:String, resourceName:String):Boolean {
 			if ( !this._manager ) throw new ArgumentError();
-			if ( this._bin.has( bundleName + _SEPARATOR + resourceName ) ) return true;
-			else {
-				return this._manager.hasResource( bundleName, resourceName );
-			}
-			return false;
+			return this._manager.hasResource( bundleName, resourceName );
 		}
 
 		protected final function getResource(bundleName:String, resourceName:String):Object {
-			var result:Object = this.getResource_get( bundleName, resourceName );
+			if ( !this._manager ) throw new ArgumentError();
+			var result:Object = this._manager.getResource( bundleName, resourceName );
 			switch ( typeof result ) {
 				case 'object':
 				case 'function':
-				case 'xml':
-					this.getResource_set( bundleName, resourceName, result );
+					this.saveResource( bundleName, resourceName, result );
 			}
 			return result;
 		}
 
 		protected final function getDisplayObject(bundleName:String, resourceName:String):DisplayObject {
 			if ( !this._manager ) throw new ArgumentError();
-			var key:String = bundleName + _SEPARATOR + resourceName;
-			var result:DisplayObject;
-			if ( this._bin.has( key ) ) {
-				result = this._bin.takeOut( key ) as DisplayObject;
-				DisplayObjectUtils.reset( result );
-			} else {
-				var resource:Object = this.getResource_get( bundleName, resourceName );
-				if ( resource is Class ) {
-					var resourceClass:Class = resource as Class;
-					if (
-						DisplayObject.prototype.isPrototypeOf( resourceClass.prototype ) ||
-						this._manager.getResource( bundleName, _NAME_DISPLAY_OBJECT ).prototype.isPrototypeOf( resourceClass.prototype ) // проверяем на поддоменность
-					) {
-						result = new resourceClass() as DisplayObject;
-					}
-				} else if ( resource is DisplayObject ) {
-					result = resource as DisplayObject;
-				} else if ( resource is BitmapData ) {
-					result = new Bitmap( resource as BitmapData );
-				}
-			}
+			var result:DisplayObject = this._manager.getDisplayObject( bundleName, resourceName );
 			if ( result ) {
-				this.getResource_set( bundleName, resourceName, result );
+				this.saveResource( bundleName, resourceName, result );
 			}
 			return result;
 		}
 
 		protected final function getSound(bundleName:String, resourceName:String):Sound {
-			var resource:Object = this.getResource_get( bundleName, resourceName );
-			var result:Sound;
-			if ( resource is Sound ) {
-				result = resource as Sound;
-			}
-			if ( resource ) {
-				this.getResource_set( bundleName, resourceName, result );
+			if ( !this._manager ) throw new ArgumentError();
+			var result:Sound = this._manager.getSound( bundleName, resourceName );
+			if ( result ) {
+				this.saveResource( bundleName, resourceName, result );
 			}
 			return result;
 		}
@@ -287,27 +210,30 @@ package by.blooddy.core.display.resource {
 			if ( !def.count ) {
 				delete this._resources[ resource ];
 			}
-			if ( resource is DisplayObject ) {
-				var mc:DisplayObject = resource as DisplayObject;
-				if ( mc is MovieClip ) {
-					( mc as MovieClip ).stop();
-				}
-				if ( mc.parent ) {
-					mc.parent.removeChild( mc );
-				}
-				if ( time > 0 ) {
-					this._bin.takeIn( def.bundleName + _SEPARATOR + def.resourceName, resource, time );
-				}
-			}
-			super.dispatchEvent( new ResourceEvent( ResourceEvent.TRASH_RESOURCE, true, false, def.bundleName, def.resourceName ) );
+			this._manager.trashResource( resource );
 		}
 
 		protected final function lockResourceBundle(bundleName:String):void {
-			super.dispatchEvent( new ResourceEvent( ResourceEvent.LOCK_BUNDLE, true, false, bundleName ) );
+			if ( !this._manager ) throw new ArgumentError();
+			var lockers:Dictionary = this._lockers[ bundleName ];
+			if ( !lockers ) {
+				this._lockers[ bundleName ] = lockers = new Dictionary( true );
+				this._manager.lockResourceBundle( bundleName );
+			}
+			lockers[ this ] = true;
 		}
 
 		protected final function unlockResourceBundle(bundleName:String):void {
-			super.dispatchEvent( new ResourceEvent( ResourceEvent.UNLOCK_BUNDLE, true, false, bundleName ) );
+			if ( !this._manager ) throw new ArgumentError();
+			var lockers:Dictionary = this._lockers[ bundleName ];
+			if ( lockers ) {
+				delete lockers[ this ];
+				for each ( var lock:Boolean in lockers ) break;
+				if ( !lock ) {
+					delete this._lockers[ bundleName ];
+					this._manager.unlockResourceBundle( bundleName );
+				}
+			}
 		}
 
 		//--------------------------------------------------------------------------
@@ -319,67 +245,12 @@ package by.blooddy.core.display.resource {
 		/**
 		 * @private
 		 */
-		private function getResource_get(bundleName:String, resourceName:String):Object {
-			if ( !this._manager ) throw new ArgumentError();
-
-			if ( this._manager.hasResource( bundleName, resourceName ) ) {
-
-				var resource:Object = this._manager.getResource( bundleName, resourceName );
-				if ( resource is Class ) {
-
-					var bundle:ResourceBundle;
-					var resourceClass:Class = resource as Class;
-
-					if (
-						BitmapData.prototype.isPrototypeOf( resourceClass.prototype ) ||
-						Sound.prototype.isPrototypeOf( resourceClass.prototype ) ||
-						this._manager.getResource( bundleName, _NAME_BITMAP_DATA ).prototype.isPrototypeOf( resourceClass.prototype ) ||
-						this._manager.getResource( bundleName, _NAME_SOUND ).prototype.isPrototypeOf( resourceClass.prototype )
-					) {
-
-						var name:String = '$' + bundleName;
-						if ( this._manager.hasResource( name, resourceName ) ) {
-
-							resource = this._manager.getResource( name, resourceName );
-
-						} else {
-
-							if (
-								BitmapData.prototype.isPrototypeOf( resourceClass.prototype ) ||
-								this._manager.getResource( bundleName, _NAME_BITMAP_DATA ).prototype.isPrototypeOf( resourceClass.prototype )
-							) {
-								resource = new resourceClass( 0, 0 );
-							} else {
-								resource = new resourceClass();
-							}
-
-							bundle = this._manager.getResourceBundle( name ) as ResourceBundle;
-							if ( !bundle ) {
-								bundle = new ResourceBundle( name );
-								this._manager.addResourceBundle( bundle );
-							}
-							bundle.addResource( resourceName, resource );
-
-						}
-
-					}
-
-				}
-				return resource; 
-			}
-			return null;
-		}
-
-		/**
-		 * @private
-		 */
-		private function getResource_set(bundleName:String, resourceName:String, resource:Object):void {
+		private function saveResource(bundleName:String, resourceName:String, resource:Object):void {
 			var def:ResourceLinker = this._resources[ resource ];
 			if ( !def ) {
 				this._resources[ resource ] = def = new ResourceLinker( bundleName, resourceName );
 			}
 			def.count++;
-			super.dispatchEvent( new ResourceEvent( ResourceEvent.GET_RESOURCE, true, false, bundleName, resourceName ) );
 		}
 
 		/**
@@ -399,8 +270,8 @@ package by.blooddy.core.display.resource {
 				super.dispatchEvent( new ResourceErrorEvent( ResourceErrorEvent.RESOURCE_ERROR, false, false, 'Некоторые ресурсы не были возвращены в мэннеджер ресурсов.', resources ) );
 			}
 			// зануляем resourceManager
-			this._manager = null; // FIXME: надо со старым поработать
-			this._bin = null;
+			this._manager = null;
+			this._lockers = null;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -417,11 +288,11 @@ package by.blooddy.core.display.resource {
 				event.stopImmediatePropagation();
 			} else {
 
-				super.removeEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameContructed );
+				enterFrameBroadcaster.removeEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameContructed );
 
 				this._addedToStage = true;
 
-				var manager:ResourceManager = this.$getResourceManager();
+				var manager:ResourceManagerProxy = this.$getResourceManager();
 
 				if ( this._manager && this._manager !== manager ) {
 					this.removeFromManager();
@@ -429,8 +300,10 @@ package by.blooddy.core.display.resource {
 				
 				if ( !this._manager ) {
 					this._manager = manager;
-					this._bin = _HASH[ manager ];
-					if ( !this._bin ) _HASH[ manager ] = this._bin = new RecycleBin();
+					this._lockers = _LOCK_HASH[ manager ];
+					if ( !this._lockers ) {
+						_LOCK_HASH[ manager ] = this._lockers = new Object();
+					}
 					if ( super.hasEventListener( ResourceEvent.ADDED_TO_MANAGER ) ) {
 						super.dispatchEvent( new ResourceEvent( ResourceEvent.ADDED_TO_MANAGER ) );
 					}
@@ -444,14 +317,18 @@ package by.blooddy.core.display.resource {
 		 */
 		private function handler_removedFromStage(event:Event):void {
 			this._addedToStage = false;
-			super.addEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameContructed, false, int.MAX_VALUE );
+			var parent:DisplayObjectContainer = this;
+			var stage:Stage = super.stage;
+			var priority:int = int.MIN_VALUE;
+			while ( ( parent = parent.parent ) && parent !== stage ) priority++;
+			enterFrameBroadcaster.addEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameContructed, false, priority );
 		}
 
 		/**
 		 * @private
 		 */
 		private function handler_frameContructed(event:Event):void {
-			super.removeEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameContructed );
+			enterFrameBroadcaster.removeEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameContructed );
 			this.removeFromManager();
 		}
 
