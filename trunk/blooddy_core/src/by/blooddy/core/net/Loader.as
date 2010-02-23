@@ -335,7 +335,7 @@ package by.blooddy.core.net {
 		//--------------------------------------------------------------------------
 
 		/**
-		 * @copy					com.timezero.platform.net.ILoader#load()
+		 * @inheritDoc
 		 */
 		public function load(request:URLRequest):void {
 			if ( this._state != _STATE_IDLE ) throw new ArgumentError();
@@ -348,7 +348,7 @@ package by.blooddy.core.net {
 		}
 
 		/**
-		 * @copy					com.timezero.platform.net.ILoader#close()
+		 * @inheritDoc
 		 */
 		public function close():void {
 			if ( this._state != _STATE_PROGRESS ) throw new ArgumentError();
@@ -362,7 +362,7 @@ package by.blooddy.core.net {
 		//--------------------------------------------------------------------------
 
 		/**
-		 * @copy					flash.display.Loader#loadBytes()
+		 * @inheritDoc
 		 */
 		public function loadBytes(bytes:ByteArray):void {
 			if ( this._state != _STATE_IDLE ) throw new ArgumentError();
@@ -373,7 +373,7 @@ package by.blooddy.core.net {
 		}
 
 		/**
-		 * @copy					flash.display.Loader#unload()
+		 * @inheritDoc
 		 */
 		public function unload():void {
 			if ( this._state <= _STATE_PROGRESS ) throw new ArgumentError();
