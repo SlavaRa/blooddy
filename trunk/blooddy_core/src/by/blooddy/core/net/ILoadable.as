@@ -68,6 +68,7 @@ package by.blooddy.core.net {
 		//----------------------------------
 
 		/**
+		 * загрузился ли уже файл?
 		 * @copy			flash.net.URLLoader#loaded
 		 */
 		function get loaded():Boolean;
@@ -77,6 +78,7 @@ package by.blooddy.core.net {
 		//----------------------------------
 
 		/**
+		 * сколько байт загружено?
 		 * @copy			flash.net.URLLoader#bytesLoaded
 		 */
 		function get bytesLoaded():uint;
@@ -86,6 +88,7 @@ package by.blooddy.core.net {
 		//----------------------------------
 
 		/**
+		 * сколько байт всего?
 		 * @copy			flash.net.URLLoader#bytesTotal
 		 */
 		function get bytesTotal():uint;
