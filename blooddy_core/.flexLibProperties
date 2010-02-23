@@ -44,6 +44,7 @@
     <classEntry path="by.blooddy.core.display.resource.ResourceSprite"/>
     <classEntry path="by.blooddy.core.errors.ParserError"/>
     <classEntry path="by.blooddy.core.errors.SerializeError"/>
+    <classEntry path="by.blooddy.core.errors.display.resource.ResourceError"/>
     <classEntry path="by.blooddy.core.errors.getErrorMessage"/>
     <classEntry path="by.blooddy.core.events.AccumulativeEventDispatcher"/>
     <classEntry path="by.blooddy.core.events.DynamicErrorEvent"/>
@@ -93,10 +94,13 @@
     <classEntry path="by.blooddy.core.managers.remote.RemoteModuleManager"/>
     <classEntry path="by.blooddy.core.managers.resource.IResourceBundle"/>
     <classEntry path="by.blooddy.core.managers.resource.ResourceBundle"/>
+    <classEntry path="by.blooddy.core.managers.resource.ResourceLoader"/>
     <classEntry path="by.blooddy.core.managers.resource.ResourceManager"/>
+    <classEntry path="by.blooddy.core.managers.resource.ResourceManagerProxy"/>
     <classEntry path="by.blooddy.core.math.BigInt"/>
     <classEntry path="by.blooddy.core.math.RoundingMode"/>
     <classEntry path="by.blooddy.core.media.Sound3DTransform"/>
+    <classEntry path="by.blooddy.core.media.SoundLoader"/>
     <classEntry path="by.blooddy.core.net.AbstractClient"/>
     <classEntry path="by.blooddy.core.net.AbstractRemoter"/>
     <classEntry path="by.blooddy.core.net.HeuristicLoader"/>
@@ -123,7 +127,6 @@
     <classEntry path="by.blooddy.core.net.ProxySharedObject"/>
     <classEntry path="by.blooddy.core.net.ProxySocket"/>
     <classEntry path="by.blooddy.core.net.RemoterProxy"/>
-    <classEntry path="by.blooddy.core.managers.resource.ResourceLoader"/>
     <classEntry path="by.blooddy.core.net.SincereSocketFilter"/>
     <classEntry path="by.blooddy.core.net.Socket"/>
     <classEntry path="by.blooddy.core.net.SocketConnection"/>
@@ -168,6 +171,7 @@
     <classEntry path="by.blooddy.core.utils.crypto.createBlocksFromString"/>
     <classEntry path="by.blooddy.core.utils.css.ColorUtils"/>
     <classEntry path="by.blooddy.core.utils.deferredCall"/>
+    <classEntry path="by.blooddy.core.utils.dispose"/>
     <classEntry path="by.blooddy.core.utils.enterFrameBroadcaster"/>
     <classEntry path="by.blooddy.core.utils.getCallerInfo"/>
     <classEntry path="by.blooddy.core.utils.isActive"/>
@@ -191,9 +195,6 @@
     <classEntry path="by.blooddy.core.utils.version.Version"/>
     <classEntry path="by.blooddy.core.utils.xml.IXMLable"/>
     <classEntry path="by.blooddy.core.utils.xml.XMLUtils"/>
-    <classEntry path="by.blooddy.core.managers.resource.ResourceManagerProxy"/>
-    <classEntry path="by.blooddy.core.errors.display.resource.ResourceError"/>
-    <classEntry path="by.blooddy.core.utils.dispose"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
