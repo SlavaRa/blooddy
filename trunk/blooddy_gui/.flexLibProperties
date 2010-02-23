@@ -1,25 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<flexLibProperties version="1">
-<includeClasses>
-<classEntry path="by.blooddy.gui.display.IUIControl"/>
-<classEntry path="by.blooddy.gui.managers.IFocusManager"/>
-<classEntry path="by.blooddy.gui.display.controls.Label"/>
-<classEntry path="by.blooddy.gui.errors.PositionError"/>
-<classEntry path="by.blooddy.gui.styles.UIStyleSheet"/>
-<classEntry path="by.blooddy.gui.display.UIControl"/>
-<classEntry path="by.blooddy.gui.display.controls.Button"/>
-<classEntry path="by.blooddy.gui.display.UIFocusManager"/>
-<classEntry path="by.blooddy.gui.errors.SizeError"/>
-<classEntry path="by.blooddy.gui.events.UIControlEvent"/>
-<classEntry path="by.blooddy.gui.display.ILivePreview"/>
-<classEntry path="by.blooddy.gui.display.UIFocusElement"/>
-<classEntry path="by.blooddy.gui.managers.FocusManager"/>
-<classEntry path="by.blooddy.gui.utils.UIControlInfo"/>
-<classEntry path="by.blooddy.gui.errors.UIControlError"/>
-<classEntry path="by.blooddy.gui.managers.IFocusElement"/>
-</includeClasses>
-<includeResources/>
-<namespaceManifests>
-<namespaceManifestEntry manifest="manifest.xml" namespace="http://www.blooddy.by/gui"/>
-</namespaceManifests>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties includeAllClasses="true" version="3">
+  <includeClasses>
+    <classEntry path="by.blooddy.gui.core.Skin"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
 </flexLibProperties>
