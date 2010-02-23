@@ -25,41 +25,56 @@ package by.blooddy.core.net {
 	//--------------------------------------
 	//  Implements events: ILoadable
 	//--------------------------------------
-
+	
 	/**
-	 * @copy					by.blooddy.core.net.ILoadable#complete
+	 * @inheritDoc
 	 */
 	[Event( name="complete", type="flash.events.Event" )]
-
+	
 	/**
-	 * @copy					by.blooddy.core.net.ILoadable#ioError
+	 * @inheritDoc
 	 */
 	[Event( name="ioError", type="flash.events.IOErrorEvent" )]
-
+	
 	/**
-	 * @copy					by.blooddy.core.net.ILoadable#open
+	 * @inheritDoc
+	 */
+	[Event( name="securityError", type="flash.events.SecurityErrorEvent" )]
+	
+	/**
+	 * @inheritDoc
 	 */
 	[Event( name="open", type="flash.events.Event" )]
-
+	
 	/**
-	 * @copy					by.blooddy.core.net.ILoadable#progress
+	 * @inheritDoc
 	 */
 	[Event( name="progress", type="flash.events.ProgressEvent" )]
-
+	
+	/**
+	 * @inheritDoc
+	 */
+	[Event( name="unload", type="flash.events.Event" )]
+	
 	//--------------------------------------
 	//  Implements events: ILoader
 	//--------------------------------------
-
+	
 	/**
-	 * @copy					by.blooddy.core.net.ILoader#httpStatus
+	 * @inheritDoc
 	 */
 	[Event( name="httpStatus", type="flash.events.HTTPStatusEvent" )]
-
+	
 	/**
-	 * @copy					by.blooddy.core.net.ILoader#securityError
+	 * @inheritDoc
 	 */
-	[Event( name="securityError", type="flash.events.SecurityErrorEvent" )]
-
+	[Event( name="init", type="flash.events.Event" )]
+	
+	/**
+	 * @inheritDoc
+	 */
+	[Event( name="unload", type="flash.events.Event" )]
+	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -134,7 +149,12 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		private var _stream:flash.net.URLStream;
-		
+
+		/**
+		 * @private
+		 */
+		private var _input:ByteArray;
+
 		/**
 		 * @private
 		 * состояние загрзщика
@@ -178,7 +198,7 @@ package by.blooddy.core.net {
 		private var _bytesLoaded:uint = 0;
 		
 		/**
-		 * сколько байт загружено
+		 * @inheritDoc
 		 */
 		public function get bytesLoaded():uint {
 			return this._bytesLoaded;
@@ -194,7 +214,7 @@ package by.blooddy.core.net {
 		private var _bytesTotal:uint = 0;
 		
 		/**
-		 * сколько байт всего
+		 * @inheritDoc
 		 */
 		public function get bytesTotal():uint {
 			return this._bytesTotal;
@@ -205,7 +225,7 @@ package by.blooddy.core.net {
 		//----------------------------------
 		
 		/**
-		 * загрузился ли уже файл?
+		 * @inheritDoc
 		 */
 		public function get loaded():Boolean {
 			return this._state >= _STATE_COMPLETE;
@@ -265,7 +285,7 @@ package by.blooddy.core.net {
 		//--------------------------------------------------------------------------
 
 		/**
-		 * @copy					by.blooddy.core.net.ILoader#load
+		 * @inheritDoc
 		 */
 		public function load(request:URLRequest):void {
 			if ( this._state != _STATE_IDLE ) throw new ArgumentError();
@@ -277,18 +297,33 @@ package by.blooddy.core.net {
 		}
 
 		/**
-		 * выгружает загруженный контент
+		 * @inheritDoc
 		 */
-		public function unload():void {
-			if ( this._state <= _STATE_PROGRESS ) throw new ArgumentError();
+		public function loadBytes(bytes:ByteArray):void {
+			if ( this._state != _STATE_IDLE ) throw new ArgumentError();
+			//else if ( this._state > _STATE_PROGRESS ) this.clear();
+			this._state = _STATE_PROGRESS;
+
+			this._input = new ByteArray();
+			this._input.writeBytes( bytes );
+			this._input.position = 0;
+			
+			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame2 );
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function close():void {
+			if ( this._state != _STATE_PROGRESS ) throw new ArgumentError();
 			this.clear();
 		}
 		
 		/**
-		 * останавливает загрузку, и выгружает данные
+		 * @inheritDoc
 		 */
-		public function close():void {
-			if ( this._state != _STATE_PROGRESS ) throw new ArgumentError();
+		public function unload():void {
+			if ( this._state <= _STATE_PROGRESS ) throw new ArgumentError();
 			this.clear();
 		}
 		
@@ -325,8 +360,11 @@ package by.blooddy.core.net {
 		 * очисщает данные
 		 */
 		private function clear():void {
+			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
+			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame2 );
 			var unload:Boolean = Boolean( this._content || this._stream );
 			this.clear_stream();
+			this.clear_input();
 			this._bytesLoaded = 0;
 			this._bytesTotal = 0;
 			if ( this._content ) {
@@ -362,12 +400,64 @@ package by.blooddy.core.net {
 		
 		/**
 		 * @private
+		 * очищает буфер
+		 */
+		private function clear_input():void {
+			if ( this._input ) {
+				this._input.clear();
+				this._input = null;
+			}
+		}
+		
+		/**
+		 * @private
 		 * обвновление прогресса
 		 */
 		private function updateProgress(bytesLoaded:uint, bytesTotal:uint):void {
 			this._bytesLoaded = bytesLoaded;
 			this._bytesTotal = bytesTotal;
 			super.dispatchEvent( new ProgressEvent( ProgressEvent.PROGRESS, false, false, this._bytesLoaded, this._bytesTotal ) );
+		}
+		
+		/**
+		 * @private
+		 */
+		private function parseInput():void {
+			this.updateProgress( this._input.length, this._input.length );
+			switch ( this._dataFormat ) {
+
+				case URLLoaderDataFormat.TEXT:
+				case URLLoaderDataFormat.VARIABLES:
+					try {
+						var s:String = ( this._input.length > 0
+							?	this._input.readUTFBytes( this._input.length )
+							:	''
+						);
+						this._content = ( this._dataFormat == URLLoaderDataFormat.VARIABLES
+							?	new URLVariables( s )
+							:	s
+						);
+					} catch ( e:Error ) {
+						this._state = _STATE_ERROR;
+						super.dispatchEvent( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, e.toString() ) );
+					} finally {
+						this.clear_input();
+					}
+					break;
+
+				default:
+					this._content = this._input;
+					this._input = null;
+					break;
+			}
+			
+			if ( this._state != _STATE_ERROR ) {
+				if ( super.hasEventListener( Event.INIT ) ) {
+					super.dispatchEvent( new Event( Event.INIT ) );
+				}
+				this._state = _STATE_COMPLETE;
+				super.dispatchEvent( new Event( Event.COMPLETE ) );
+			}
 		}
 		
 		//--------------------------------------------------------------------------
@@ -396,6 +486,17 @@ package by.blooddy.core.net {
 		
 		/**
 		 * @private
+		 */
+		private function handler_enterFrame2(event:Event):void {
+			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame2 );
+			if ( super.hasEventListener( Event.OPEN ) ) {
+				super.dispatchEvent( new Event( Event.OPEN ) );
+			}
+			this.parseInput();
+		}
+		
+		/**
+		 * @private
 		 * слушает ошибки
 		 */
 		private function handler_error(event:ErrorEvent):void {
@@ -408,45 +509,11 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		private function handler_complete(event:Event):void {
-
-			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
-			this.updateProgress( this._bytesLoaded, this._bytesTotal );
-
-			var input:ByteArray = new ByteArray();
-			this._stream.readBytes( input, input.length );
+			this._input = new ByteArray();
+			this._stream.readBytes( this._input );
 			this.clear_stream();
-			input.position = 0;
-
-			switch ( this._dataFormat ) {
-				case URLLoaderDataFormat.TEXT:
-				case URLLoaderDataFormat.VARIABLES:
-					try {
-						var s:String = ( input.length > 0
-							?	input.readUTFBytes( input.length )
-							:	''
-						);
-						this._content = ( this._dataFormat == URLLoaderDataFormat.VARIABLES
-							?	new URLVariables( s )
-							:	s
-						);
-					} catch ( e:Error ) {
-						this._state = _STATE_ERROR;
-						super.dispatchEvent( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, e.toString() ) );
-					}
-					break;
-				default:
-					this._content = input;
-					break;
-			}
-
-			if ( this._state != _STATE_ERROR ) {
-				if ( super.hasEventListener( Event.INIT ) ) {
-					super.dispatchEvent( new Event( Event.INIT ) );
-				}
-				this._state = _STATE_COMPLETE;
-				this.updateProgress( bytesTotal, bytesTotal );
-				super.dispatchEvent( event );
-			}
+			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
+			this.parseInput();
 		}
 
 	}

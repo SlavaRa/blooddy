@@ -278,10 +278,24 @@ package by.blooddy.core.net {
 		/**
 		 * @inheritDoc
 		 */
+		public function loadBytes(bytes:ByteArray):void {
+			// TODO: переписать весь класс нафиг
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
 		public function close():void {
 			this._loader.close();
 		}
 
+		/**
+		 * @inheritDoc
+		 */
+		public function unload():void {
+			// TODO: преписать весь класс нафиг
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Implements methods: IDataInput

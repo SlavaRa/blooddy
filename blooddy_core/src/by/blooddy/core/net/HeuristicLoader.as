@@ -14,6 +14,7 @@ package by.blooddy.core.net {
 	import flash.display.DisplayObject;
 	import flash.display.LoaderInfo;
 	import flash.display.Sprite;
+	import flash.errors.IllegalOperationError;
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -27,34 +28,38 @@ package by.blooddy.core.net {
 	import flash.net.URLRequest;
 	import flash.net.URLStream;
 	import flash.utils.ByteArray;
-	import flash.errors.IllegalOperationError;
 
 	//--------------------------------------
 	//  Implements events: ILoadable
 	//--------------------------------------
 
 	/**
-	 * @copy					by.blooddy.core.net.ILoadable#complete
+	 * @inheritDoc
 	 */
 	[Event( name="complete", type="flash.events.Event" )]
 
 	/**
-	 * @copy					by.blooddy.core.net.ILoadable#ioError
+	 * @inheritDoc
 	 */
 	[Event( name="ioError", type="flash.events.IOErrorEvent" )]
 
 	/**
-	 * @copy					by.blooddy.core.net.ILoadable#open
+	 * @inheritDoc
+	 */
+	[Event( name="securityError", type="flash.events.SecurityErrorEvent" )]
+	
+	/**
+	 * @inheritDoc
 	 */
 	[Event( name="open", type="flash.events.Event" )]
 
 	/**
-	 * @copy					by.blooddy.core.net.ILoadable#progress
+	 * @inheritDoc
 	 */
 	[Event( name="progress", type="flash.events.ProgressEvent" )]
 
 	/**
-	 * @copy					by.blooddy.core.net.ILoadable#progress
+	 * @inheritDoc
 	 */
 	[Event( name="unload", type="flash.events.Event" )]
 
@@ -63,26 +68,20 @@ package by.blooddy.core.net {
 	//--------------------------------------
 
 	/**
-	 * @copy					by.blooddy.core.net.ILoader#httpStatus
+	 * @inheritDoc
 	 */
 	[Event( name="httpStatus", type="flash.events.HTTPStatusEvent" )]
 
 	/**
-	 * @copy					by.blooddy.core.net.ILoader#securityError
-	 */
-	[Event( name="securityError", type="flash.events.SecurityErrorEvent" )]
-
-	//--------------------------------------
-	//  Events
-	//--------------------------------------
-
-	/**
-	 * Флаха инициализировалась.
-	 * 
-	 * @eventType			flash.events.Event.INIT
+	 * @inheritDoc
 	 */
 	[Event( name="init", type="flash.events.Event" )]
 
+	/**
+	 * @inheritDoc
+	 */
+	[Event( name="unload", type="flash.events.Event" )]
+	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -288,7 +287,7 @@ package by.blooddy.core.net {
 		private var _request:URLRequest;
 
 		/**
-		 * урыл на файл
+		 * @inheritDoc
 		 */
 		public function get url():String {
 			return ( this._request ? this._request.url : null );
@@ -304,7 +303,7 @@ package by.blooddy.core.net {
 		private var _bytesLoaded:uint = 0;
 
 		/**
-		 * сколько байт загружено
+		 * @inheritDoc
 		 */
 		public function get bytesLoaded():uint {
 			return this._bytesLoaded;
@@ -320,7 +319,7 @@ package by.blooddy.core.net {
 		private var _bytesTotal:uint = 0;
 
 		/**
-		 * сколько байт всего
+		 * @inheritDoc
 		 */
 		public function get bytesTotal():uint {
 			return this._bytesTotal;
@@ -331,7 +330,7 @@ package by.blooddy.core.net {
 		//----------------------------------
 		
 		/**
-		 * загрузился ли уже файл?
+		 * @inheritDoc
 		 */
 		public function get loaded():Boolean {
 			return this._state >= _STATE_COMPLETE;
@@ -360,18 +359,7 @@ package by.blooddy.core.net {
 		//--------------------------------------------------------------------------
 
 		/**
-		 * начинает загрузку файла
-		 * 
-		 * @param	request		запрос
-		 * 
-		 * @event	open
-		 * @event	httpStatus
-		 * @event	progress
-		 * @event	complete
-		 * @event	ioError
-		 * @event	securityError
-		 * 
-		 * @throw	ArgumentError	если мы не в состоянии idle
+		 * @inheritDoc
 		 */
 		public function load(request:URLRequest):void {
 			if ( this._state != _STATE_IDLE ) throw new ArgumentError();
@@ -402,23 +390,26 @@ package by.blooddy.core.net {
 			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function loadBytes(bytes:ByteArray):void {
-			throw new IllegalOperationError();
+			throw new IllegalOperationError(); // TODO: дописать
 		}
 
 		/**
-		 * выгружает загруженный контент
+		 * @inheritDoc
 		 */
-		public function unload():void {
-			if ( this._state <= _STATE_PROGRESS ) throw new ArgumentError();
+		public function close():void {
+			if ( this._state != _STATE_PROGRESS ) throw new ArgumentError();
 			this.clear();
 		}
 
 		/**
-		 * останавливает загрузку, и выгружает данные
+		 * @inheritDoc
 		 */
-		public function close():void {
-			if ( this._state != _STATE_PROGRESS ) throw new ArgumentError();
+		public function unload():void {
+			if ( this._state <= _STATE_PROGRESS ) throw new ArgumentError();
 			this.clear();
 		}
 
@@ -485,21 +476,23 @@ package by.blooddy.core.net {
 		 */
 		private function create_sound(open:Boolean=false):SoundAsset {
 			var result:SoundAsset = new SoundAsset( this );
+			result.loaderContext = this._loaderContext;
 			if ( open ) {
-				result.addEventListener( Event.OPEN,			super.dispatchEvent );
+				result.addEventListener( Event.OPEN,					super.dispatchEvent );
 			}
-			result.addEventListener( ProgressEvent.PROGRESS,	this.handler_progress );
-			result.addEventListener( Event.COMPLETE,			this.handler_sound_complete );
-			result.addEventListener( IOErrorEvent.IO_ERROR,		this.handler_error );
+			result.addEventListener( ProgressEvent.PROGRESS,			this.handler_progress );
+			result.addEventListener( Event.COMPLETE,					this.handler_sound_complete );
+			result.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_error );
+			result.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error );
 			return result;
 		}
-
 
 		/**
 		 * @private
 		 * очисщает данные
 		 */
 		private function clear():void {
+			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
 			var unload:Boolean = Boolean( this._content || this._stream || this._loader || this._sound );
 			this.clear_stream();
 			this.clear_loader();
@@ -566,11 +559,12 @@ package by.blooddy.core.net {
 				this._loader.removeEventListener( IOErrorEvent.IO_ERROR,		this.handler_loader_input_ioError );
 				if ( unload ) {
 					this._loaderInfo = null;
-					if ( !this._loader.loaded ) {
-						this._loader.$close();
-					} else {
+					if ( this._loader.loaded ) {
 						this._loader.$unload();
+					} else {
+						this._loader.$close();
 					}
+					this._loader.loaderContext = null;
 					this._loader = null;
 				}
 			}
@@ -584,16 +578,18 @@ package by.blooddy.core.net {
 		 */
 		private function clear_sound(unload:Boolean=true):void {
 			if ( this._sound ) {
-				this._sound.removeEventListener( Event.OPEN,				super.dispatchEvent );
-				this._sound.removeEventListener( ProgressEvent.PROGRESS,	this.handler_progress );
-				this._sound.removeEventListener( Event.COMPLETE,			this.handler_sound_complete );
-				this._sound.removeEventListener( IOErrorEvent.IO_ERROR,		this.handler_error );
-				
+				this._sound.removeEventListener( Event.OPEN,						super.dispatchEvent );
+				this._sound.removeEventListener( ProgressEvent.PROGRESS,			this.handler_progress );
+				this._sound.removeEventListener( Event.COMPLETE,					this.handler_sound_complete );
+				this._sound.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_error );
+				this._sound.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error );
 				if ( unload ) {
-					try {
+					if ( this._sound.loaded ) {
+						this._sound.unload();
+					} else {
 						this._sound.$close();
-					} catch ( e:Error ) {
 					}
+					this._sound.loaderContext = null;
 					this._sound = null;
 				}
 			}
@@ -620,19 +616,6 @@ package by.blooddy.core.net {
 			super.dispatchEvent( new ProgressEvent( ProgressEvent.PROGRESS, false, false, this._bytesLoaded, this._bytesTotal ) );
 		}
 
-		/**
-		 * @private
-		 */
-		private function create_soundLoaderContext():SoundLoaderContext {
-			if (
-				this._loaderContext &&
-				this._loaderContext.checkPolicyFile
-			) {
-				return new SoundLoaderContext( SoundMixer.bufferTime, this._loaderContext.checkPolicyFile );
-			}
-			return null;
-		}
-		
 		//--------------------------------------------------------------------------
 		//
 		//  Event handlers
@@ -701,7 +684,7 @@ package by.blooddy.core.net {
 						this.clear_stream();	// закрываем поток
 						this.clear_input();
 						this._sound = this.create_sound();
-						this._sound.$load( this._request, this.create_soundLoaderContext() );
+						this._sound.load( this._request );
 						break;
 
 					case MIME.ZIP:
@@ -746,7 +729,8 @@ package by.blooddy.core.net {
 
 				case MIME.MP3:
 					this._sound = this.create_sound();
-					this._sound.$load( this._request, this.create_soundLoaderContext() );
+					//this._sound.loadBytes( this._input ); // TODO: не забыть включить
+					this._sound.load( this._request );
 					this.clear_input();
 					break;
 
@@ -825,7 +809,7 @@ package by.blooddy.core.net {
 
 				case MIME.MP3:
 					this._sound = this.create_sound( true );
-					this._sound.$load( this._request, this.create_soundLoaderContext() );
+					this._sound.load( this._request );
 					break;
 
 				default:
@@ -973,7 +957,7 @@ package by.blooddy.core.net {
 		private function handler_sound_complete(event:Event):void {
 			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
 			this.updateProgress( this._sound.bytesLoaded, this._sound.bytesTotal );
-			this._content = this._sound;
+			this._content = this._sound.content;
 			this.clear_sound( false );
 			if ( super.hasEventListener( Event.INIT ) ) {
 				super.dispatchEvent( new Event( Event.INIT ) );
@@ -992,22 +976,9 @@ package by.blooddy.core.net {
 //
 //==============================================================================
 
-import by.blooddy.core.errors.getErrorMessage;
+import by.blooddy.core.media.SoundLoader;
 import by.blooddy.core.net.HeuristicLoader;
 import by.blooddy.core.net.Loader;
-
-import flash.display.DisplayObject;
-import flash.display.LoaderInfo;
-import flash.display.Sprite;
-import flash.errors.IllegalOperationError;
-import flash.events.Event;
-import flash.media.Sound;
-import flash.media.SoundLoaderContext;
-import flash.media.SoundMixer;
-import flash.net.URLRequest;
-import flash.system.LoaderContext;
-import flash.utils.ByteArray;
-import flash.utils.getTimer;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -1099,7 +1070,7 @@ internal final class LoaderAsset extends Loader {
  * необходим, что бы при попытки обратится через различные ссылки
  * свойства были перекрыты
  */
-internal final class SoundAsset extends Sound {
+internal final class SoundAsset extends SoundLoader {
 
 	//--------------------------------------------------------------------------
 	//
@@ -1112,9 +1083,7 @@ internal final class SoundAsset extends Sound {
 	 * Constructor
 	 */
 	public function SoundAsset(target:HeuristicLoader) {
-		if ( !true ) { // суки из адобы, вызывают load в любом случаи. идиоты.
-			super();
-		}
+		super();
 		this._target = target;
 	}
 
@@ -1134,30 +1103,6 @@ internal final class SoundAsset extends Sound {
 	//  Methods
 	//
 	//--------------------------------------------------------------------------
-
-	[Deprecated( message="метод запрещен", replacement="$load" )]
-	/**
-	 * @private
-	 */
-	public override function load(request:URLRequest, context:SoundLoaderContext=null):void {
-		throw new IllegalOperationError( getErrorMessage( 2071, this ), 2071 );
-	}
-
-	/**
-	 * @private
-	 */
-	internal function $load(request:URLRequest, context:SoundLoaderContext=null):void {
-		super.load( request, context );
-	}
-
-	[Deprecated( message="метод запрещен" )]
-	/**
-	 * @private
-	 */
-	public override function extract(target:ByteArray, length:Number, startPosition:Number=-1):Number {
-		throw new IllegalOperationError( getErrorMessage( 2071, this ), 2071 );
-	}
-
 
 	/**
 	 * @private

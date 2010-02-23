@@ -467,6 +467,13 @@ package by.blooddy.core.managers.resource {
 			}
 		}
 
+		/**
+		 * @private
+		 */
+		private function handler_unload(event:Event):void {
+			// TODO: подписать и удалить ресурс
+		}
+		
 	}
 
 }
