@@ -31,6 +31,14 @@ package by.blooddy.core.display {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Namespaces
+		//
+		//--------------------------------------------------------------------------
+		
+		use namespace mce_protected;
+		
+		//--------------------------------------------------------------------------
+		//
 		//  Class variables
 		//
 		//--------------------------------------------------------------------------
@@ -347,7 +355,7 @@ package by.blooddy.core.display {
 		//
 		//--------------------------------------------------------------------------
 
-		protected override function setCurrentFrame(value:int):void {
+		mce_protected override function setCurrentFrame(value:int):void {
 			this._currentFrame = value;
 			if ( this._list.length < value ) return;
 			var element:CollectionElement = this._list[ value - 1 ];
@@ -376,7 +384,7 @@ package by.blooddy.core.display {
 		private function $getBitmapIndex(bitmap:BitmapData):int {
 			var l:uint = this._list.length;
 			for ( var i:uint=0; i<l; i++ ) {
-				if ( this._list[i].bmp === bitmap ) return i;
+				if ( this._list[ i ].bmp === bitmap ) return i;
 			}
 			return -1;
 		}
