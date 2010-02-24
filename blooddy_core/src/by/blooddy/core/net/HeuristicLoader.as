@@ -394,7 +394,15 @@ package by.blooddy.core.net {
 		 * @inheritDoc
 		 */
 		public function loadBytes(bytes:ByteArray):void {
-			throw new IllegalOperationError(); // TODO: дописать
+			if ( this._state != _STATE_IDLE ) throw new ArgumentError();
+			//else if ( this._state > _STATE_PROGRESS ) this.clear();
+			this._state = _STATE_PROGRESS;
+			
+			this._input = new ByteArray();
+			this._input.writeBytes( bytes );
+			this._input.position = 0;
+
+			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame2 );
 		}
 
 		/**
@@ -493,7 +501,8 @@ package by.blooddy.core.net {
 		 */
 		private function clear():void {
 			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
-			var unload:Boolean = Boolean( this._content || this._stream || this._loader || this._sound );
+			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame2 );
+			var unload:Boolean = Boolean( this._content || this._stream || this._loader || this._sound || this._input );
 			this.clear_stream();
 			this.clear_loader();
 			this.clear_sound();
@@ -616,6 +625,79 @@ package by.blooddy.core.net {
 			super.dispatchEvent( new ProgressEvent( ProgressEvent.PROGRESS, false, false, this._bytesLoaded, this._bytesTotal ) );
 		}
 
+		/**
+		 * @private
+		 */
+		private function parseInput():void {
+			var bytesTotal:uint = this._input.length;
+			switch ( this._contentType ) {
+				
+				case MIME.FLASH:
+				case MIME.PNG:
+				case MIME.JPEG:
+				case MIME.GIF:
+					this._loader = this.create_loader();
+					this._loader.loadBytes( this._input );
+					break;
+				
+				case MIME.MP3:
+					this._sound = this.create_sound();
+					this._sound.loadBytes( this._input );
+					break;
+				
+				case MIME.ZIP:
+					// TODO: ZIP
+					break;
+				
+				case MIME.BINARY:
+					enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
+					this._input.position = 0;
+					this._content = this._input;
+					this._input = null;
+					if ( super.hasEventListener( Event.INIT ) ) {
+						super.dispatchEvent( new Event( Event.INIT ) );
+					}
+					this.updateProgress( bytesTotal, bytesTotal );
+					this._state = _STATE_COMPLETE;
+					super.dispatchEvent( new Event( Event.COMPLETE ) );
+					break;
+				
+				case MIME.VARS:
+				case MIME.CSS:
+				case MIME.TEXT:
+				case MIME.HTML:
+				case MIME.RSS:
+				case MIME.XML:
+					var isText:Boolean = true;
+					
+				default:
+					// а вот хз, что это
+					enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
+					this._input.position = 0;
+					try { // попытаемся узреть в нём текст
+						this._content = ( this._input.length > 0
+							?	this._input.readUTFBytes( this._input.length )
+							:	''
+						);
+						this._contentType = MIME.TEXT;
+						this.clear_input();
+					} catch ( e:Error ) { // не вышло :(
+						this._contentType = MIME.BINARY;
+						this._content = this._input;
+						this._input = null;
+					}
+					
+					if ( super.hasEventListener( Event.INIT ) ) {
+						super.dispatchEvent( new Event( Event.INIT ) );
+					}
+					this.updateProgress( bytesTotal, bytesTotal );
+					this._state = _STATE_COMPLETE;
+					super.dispatchEvent( new Event( Event.COMPLETE ) );
+					break;
+				
+			}
+		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Event handlers
@@ -644,6 +726,18 @@ package by.blooddy.core.net {
 			this._frameReady = true;
 		}
 
+		/**
+		 * @private
+		 */
+		private function handler_enterFrame2(event:Event):void {
+			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame2 );
+			this._contentType = MIME.analyseBytes( this._input );
+			if ( super.hasEventListener( Event.OPEN ) ) {
+				super.dispatchEvent( new Event( Event.OPEN ) );
+			}
+			this.parseInput();
+		}
+		
 		/**
 		 * @private
 		 * слушает ошибки
@@ -713,78 +807,10 @@ package by.blooddy.core.net {
 		 */
 		private function handler_stream_init_complete(event:Event):void {
 			this._stream.readBytes( this._input, this._input.length );
-			var bytesTotal:uint = this._input.length;
 			this.clear_stream();	// закрываем поток
 			// данные закончились, а мы так и не знали, что у нас тут за дерьмо
 			this._contentType = MIME.analyseBytes( this._input ) || MIME.analyseURL( this._request.url ); // пытаемся узнать что за говно мы грузим
-			switch ( this._contentType ) {
-
-				case MIME.FLASH:
-				case MIME.PNG:
-				case MIME.JPEG:
-				case MIME.GIF:
-					this._loader = this.create_loader();
-					this._loader.loadBytes( this._input );
-					break;
-
-				case MIME.MP3:
-					this._sound = this.create_sound();
-					//this._sound.loadBytes( this._input ); // TODO: не забыть включить
-					this._sound.load( this._request );
-					this.clear_input();
-					break;
-
-				case MIME.ZIP:
-					// TODO: ZIP
-					break;
-
-				case MIME.BINARY:
-					enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
-					this._input.position = 0;
-					this._content = this._input;
-					this._input = null;
-					if ( super.hasEventListener( Event.INIT ) ) {
-						super.dispatchEvent( new Event( Event.INIT ) );
-					}
-					this.updateProgress( bytesTotal, bytesTotal );
-					this._state = _STATE_COMPLETE;
-					super.dispatchEvent( event );
-					break;
-
-				case MIME.VARS:
-				case MIME.CSS:
-				case MIME.TEXT:
-				case MIME.HTML:
-				case MIME.RSS:
-				case MIME.XML:
-					var isText:Boolean = true;
-
-				default:
-					// а вот хз, что это
-					enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
-					this._input.position = 0;
-					try { // попытаемся узреть в нём текст
-						this._content = ( this._input.length > 0
-							?	this._input.readUTFBytes( this._input.length )
-							:	''
-						);
-						this._contentType = MIME.TEXT;
-						this.clear_input();
-					} catch ( e:Error ) { // не вышло :(
-						this._contentType = MIME.BINARY;
-						this._content = this._input;
-						this._input = null;
-					}
-
-					if ( super.hasEventListener( Event.INIT ) ) {
-						super.dispatchEvent( new Event( Event.INIT ) );
-					}
-					this.updateProgress( bytesTotal, bytesTotal );
-					this._state = _STATE_COMPLETE;
-					super.dispatchEvent( event );
-					break;
-
-			}
+			this.parseInput();
 		}
 
 		/**

@@ -168,8 +168,10 @@ package by.blooddy.core.managers.resource {
 		 */
 		private static function updateQueue(event:Event=null):void {
 			if (
-				_loading < _maxLoading ||
-				( _LOADING_QUEUE[ 0 ] as QueueItem ).priority >= LoaderPriority.HIGHEST
+				_LOADING_QUEUE.length > 0 && (
+					_loading < _maxLoading ||
+					( _LOADING_QUEUE[ 0 ] as QueueItem ).priority >= LoaderPriority.HIGHEST
+				)
 			) {
 				var asset:ResourceLoaderAsset = _LOADING_QUEUE.pop().asset;
 				asset.queue = null;
@@ -467,13 +469,6 @@ package by.blooddy.core.managers.resource {
 			}
 		}
 
-		/**
-		 * @private
-		 */
-		private function handler_unload(event:Event):void {
-			// TODO: подписать и удалить ресурс
-		}
-		
 	}
 
 }
