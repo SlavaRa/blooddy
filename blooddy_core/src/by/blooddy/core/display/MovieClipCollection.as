@@ -23,10 +23,21 @@ package by.blooddy.core.display {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Namespaces
+		//
+		//--------------------------------------------------------------------------
+		
+		use namespace mce_protected;
+		
+		//--------------------------------------------------------------------------
+		//
 		//  Class variables
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @private
+		 */
 		private static const _HASH:Array = new Array(
 			null,
 			new Array()
@@ -51,6 +62,9 @@ package by.blooddy.core.display {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @private
+		 */
 		private var _hash:Array = _HASH[1];
 
 		//--------------------------------------------------------------------------
@@ -104,7 +118,7 @@ package by.blooddy.core.display {
 		/**
 		 * @private
 		 */
-		protected override function setCurrentFrame(value:int):void {
+		mce_protected override function setCurrentFrame(value:int):void {
 			var oldFrame:int = this._currentFrame;
 			this._currentFrame = value;
 			// поменяем кадры
@@ -123,7 +137,7 @@ package by.blooddy.core.display {
 		/**
 		 * @private
 		 */
-		protected function setTotalFrame(value:int):void {
+		private function setTotalFrame(value:int):void {
 			this._totalFrames = value;
 			this._hash = _HASH[ value ];
 			if ( !this._hash ) {
@@ -166,7 +180,7 @@ package by.blooddy.core.display {
 					this.setTotalFrame( mc.totalFrames );
 				} 
 			} else if ( child is Sprite ) {
-				if (this._totalFrames == 0) this.setTotalFrame(1);
+				if ( this._totalFrames == 0 ) this.setTotalFrame( 1 );
 			}
 		}
 
@@ -179,8 +193,8 @@ package by.blooddy.core.display {
 				if ( mc.totalFrames == this._totalFrames ) {
 					var num:int = super.numChildren;
 					
-					if (num <= 0) {
-						this.setTotalFrame(0);
+					if ( num <= 0 ) {
+						this.setTotalFrame( 0 );
 						return;
 					}
 					
@@ -201,21 +215,8 @@ package by.blooddy.core.display {
 					}
 				}
 			} else if ( child is Sprite ) {
-				if (super.numChildren <= 0) this.setTotalFrame(0);
+				if ( super.numChildren <= 0 ) this.setTotalFrame( 0 );
 			}
-		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Event handlers
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		private function handler_enterFrame(event:Event):void {
-			this.setCurrentFrame( this._currentFrame == this._totalFrames ? 1 : this._currentFrame + 1 );
 		}
 
 	}

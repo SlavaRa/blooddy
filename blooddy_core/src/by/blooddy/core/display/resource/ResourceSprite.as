@@ -60,6 +60,16 @@ package by.blooddy.core.display.resource {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Namepsaces
+		//
+		//--------------------------------------------------------------------------
+
+		protected namespace rs_protected;
+
+		use namespace rs_protected;
+		
+		//--------------------------------------------------------------------------
+		//
 		//  Class variables
 		//
 		//--------------------------------------------------------------------------
@@ -125,6 +135,11 @@ package by.blooddy.core.display.resource {
 		 */
 		private var _addedToStage:Boolean = false;
 
+		/**
+		 * @private
+		 */
+		private var _depth:int = 0;
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Overriden peoperties: DisplayObject
@@ -145,11 +160,7 @@ package by.blooddy.core.display.resource {
 		//
 		//--------------------------------------------------------------------------
 
-		protected final function hasManager():Boolean {
-			return Boolean( this._manager );
-		}
-		
-		protected function $getResourceManager():ResourceManagerProxy {
+		rs_protected function getResourceManager():ResourceManagerProxy {
 			var parent:DisplayObjectContainer = super.parent;
 			while ( parent ) {
 				if ( parent is ResourceSprite ) {
@@ -159,7 +170,22 @@ package by.blooddy.core.display.resource {
 			}
 			return ( super.stage ? _MANAGER : null );
 		}
-
+		
+		rs_protected function getDepth():int {
+			var parent:DisplayObjectContainer = super.parent;
+			while ( parent ) {
+				if ( parent is ResourceSprite ) {
+					return ( parent as ResourceSprite )._depth + 1;
+				}
+				parent = parent.parent;
+			}
+			return int.MIN_VALUE;
+		}
+		
+		protected final function hasManager():Boolean {
+			return Boolean( this._manager );
+		}
+		
 		protected final function loadResourceBundle(bundleName:String, priority:int=0.0):ILoadable {
 			if ( !this._manager ) throw new ArgumentError();
 			var loader:ILoadable = this._manager.loadResourceBundle( bundleName, priority );
@@ -292,8 +318,9 @@ package by.blooddy.core.display.resource {
 
 				this._addedToStage = true;
 
-				var manager:ResourceManagerProxy = this.$getResourceManager();
-
+				this._depth = this.getDepth();
+				var manager:ResourceManagerProxy = this.getResourceManager();
+				
 				if ( this._manager && this._manager !== manager ) {
 					this.removeFromManager();
 				}
@@ -317,11 +344,7 @@ package by.blooddy.core.display.resource {
 		 */
 		private function handler_removedFromStage(event:Event):void {
 			this._addedToStage = false;
-			var parent:DisplayObjectContainer = this;
-			var stage:Stage = super.stage;
-			var priority:int = int.MIN_VALUE;
-			while ( ( parent = parent.parent ) && parent !== stage ) priority++;
-			enterFrameBroadcaster.addEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameContructed, false, priority );
+			enterFrameBroadcaster.addEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameContructed, false, this._depth );
 		}
 
 		/**

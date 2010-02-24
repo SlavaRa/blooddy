@@ -24,6 +24,16 @@ package by.blooddy.core.display {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Namespaces
+		//
+		//--------------------------------------------------------------------------
+
+		protected namespace mce_protected;
+
+		use namespace mce_protected;
+		
+		//--------------------------------------------------------------------------
+		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
@@ -33,7 +43,7 @@ package by.blooddy.core.display {
 		 */
 		public function MovieClipEquivalent() {
 			super();
-			super.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame, false, int.MAX_VALUE );
+			this.play();
 		}
 
 		//--------------------------------------------------------------------------
@@ -45,7 +55,7 @@ package by.blooddy.core.display {
 		/**
 		 * @private
 		 */
-		private var _running:Boolean = true;
+		private var _running:Boolean = false;
 
 		/**
 		 * @private
@@ -61,7 +71,7 @@ package by.blooddy.core.display {
 		/**
 		 * @private
 		 */
-		protected var _totalFrames:int = 0;
+		mce_protected var _totalFrames:int = 0;
 
 		/**
 		 * @private
@@ -73,19 +83,19 @@ package by.blooddy.core.display {
 		/**
 		 * @private
 		 */
-		protected var _currentFrame:int = 0;
+		mce_protected var _currentFrame:int = 0;
 
 		/**
 		 * @private
 		 */
 		public override function get currentFrame():int {
-			return this._currentFrame;
+			return this.mce_protected::_currentFrame;
 		}
 
 		/**
 		 * @private
 		 */
-		protected function setCurrentFrame(value:int):void {
+		mce_protected function setCurrentFrame(value:int):void {
 			this._currentFrame = value;
 		}
 
@@ -107,7 +117,7 @@ package by.blooddy.core.display {
 		 */
 		public override function play():void {
 			this._running = true;
-			super.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame, false, int.MAX_VALUE );
+			super.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame, false, int.MAX_VALUE, true );
 		}
 
 		/**

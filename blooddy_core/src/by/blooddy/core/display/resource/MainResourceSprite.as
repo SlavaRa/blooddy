@@ -70,13 +70,17 @@ package by.blooddy.core.display.resource {
 		/**
 		 * @private
 		 */
-		protected override function $getResourceManager():ResourceManagerProxy {
+		rs_protected override function getResourceManager():ResourceManagerProxy {
 			if ( super.stage ) {
 				return this._manager;
 			}
 			return null;
 		}
 
+		rs_protected override function getDepth():int {
+			return int.MAX_VALUE;
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Event handlers
