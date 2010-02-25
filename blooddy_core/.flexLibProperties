@@ -196,6 +196,7 @@
     <classEntry path="by.blooddy.core.utils.xml.IXMLable"/>
     <classEntry path="by.blooddy.core.utils.xml.XMLUtils"/>
     <classEntry path="by.blooddy.core.net.LoaderBase"/>
+    <classEntry path="by.blooddy.core.net.NetworkMonitor"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

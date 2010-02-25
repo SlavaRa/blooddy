@@ -7,9 +7,9 @@
 package by.blooddy.core.net {
 
 	import flash.events.Event;
-	import flash.net.Socket;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
+	import flash.net.Socket;
 
 	[Event( name="open", type="flash.events.Event" )]
 
@@ -37,7 +37,20 @@ package by.blooddy.core.net {
 		public function Socket(host:String=null, port:int=0.0) {
 			super( host, port );
 			super.addEventListener( Event.CLOSE,						this.handler_close, false, int.MAX_VALUE, true );
+			super.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_error, false, int.MAX_VALUE, true );
+			super.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error, false, int.MAX_VALUE, true );
 		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Variables
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private var _hasError:Boolean = false;
 
 		//--------------------------------------------------------------------------
 		//
@@ -102,10 +115,7 @@ package by.blooddy.core.net {
 			this._host = host;
 			this._port = port;
 			super.dispatchEvent( new Event( Event.OPEN ) ); // задержечку надо бы сделать
-			super.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_empty );
-			super.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_empty );
-			super.addEventListener( IOErrorEvent.IO_ERROR,					this.handler_error, false, int.MAX_VALUE );
-			super.addEventListener( SecurityErrorEvent.SECURITY_ERROR,		this.handler_error, false, int.MAX_VALUE );
+			this._hasError = false;
 		}
 
 		/**
@@ -127,8 +137,6 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		private function clear():void {
-			super.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_error );
-			super.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error );
 			this._host = null;
 			this._port = 0;
 		}
@@ -150,22 +158,19 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		private function handler_error(event:Event):void {
-			this.clear();
-			if ( !super.hasEventListener( event.type ) ) {
+			if ( this._hasError ) {
 				event.stopImmediatePropagation();
-				super.dispatchEvent( event );
+			} else {
+				this._hasError = true;
+				this.clear();
+				super.removeEventListener( event.type, this.handler_error );
+				if ( !super.hasEventListener( event.type ) ) {
+					super.dispatchEvent( event );
+				}
+				super.addEventListener( event.type, this.handler_error, false, int.MAX_VALUE, true );
 			}
-			super.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_empty, false, int.MAX_VALUE, true );
-			super.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_empty, false, int.MAX_VALUE, true );
 		}
 
-		/**
-		 * @private
-		 */
-		private function handler_empty(event:Event):void {
-			event.stopImmediatePropagation();
-		}
-		
 	}
 
 }

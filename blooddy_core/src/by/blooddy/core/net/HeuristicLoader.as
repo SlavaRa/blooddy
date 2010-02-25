@@ -313,10 +313,7 @@ package by.blooddy.core.net {
 		 */
 		lb_protected override function $unload():Boolean {
 			var unload:Boolean = Boolean( this._content || this._stream || this._loader || this._sound || this._input );
-			this.clear_stream();
-			this.clear_loader();
-			this.clear_sound();
-			this.clear_input();
+			this.clear_asset();
 			this._request = null;
 			if ( this._content ) {
 				dispose( this._content );
@@ -351,7 +348,7 @@ package by.blooddy.core.net {
 				result.addEventListener( ProgressEvent.PROGRESS,		super.handler_progress );
 			}
 			result.addEventListener( Event.COMPLETE,					this.handler_stream_init_complete );
-			result.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_stream_error );
+			result.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_common_error );
 			result.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_stream_init_securityError );
 			return result;
 		}
@@ -369,16 +366,26 @@ package by.blooddy.core.net {
 			result.addEventListener( HTTPStatusEvent.HTTP_STATUS,		super.dispatchEvent );
 			result.addEventListener( ProgressEvent.PROGRESS,			super.handler_progress );
 			result.addEventListener( Event.INIT,						this.handler_loader_init );
-			result.addEventListener( Event.COMPLETE,					this.handler_loader_complete );
+			result.addEventListener( Event.COMPLETE,					this.handler_common_complete );
 			if ( url ) { // если загрущик инитиализатор, то загрузка идёт по урлу
 				result.addEventListener( IOErrorEvent.IO_ERROR,			this.handler_loader_url_ioError );
 			} else {
 				result.addEventListener( IOErrorEvent.IO_ERROR,			this.handler_loader_input_ioError );
 			}
-			result.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_loader_error );
+			result.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_common_error );
 			return result;
 		}
 
+		/**
+		 * @private
+		 */
+		private function clear_asset():void {
+			this.clear_stream();
+			this.clear_loader();
+			this.clear_sound();
+			this.clear_input();
+		}
+		
 		/**
 		 * @private
 		 * создаём звук для загрузки
@@ -392,9 +399,9 @@ package by.blooddy.core.net {
 			result.addEventListener( HTTPStatusEvent.HTTP_STATUS,		super.dispatchEvent );
 			result.addEventListener( ProgressEvent.PROGRESS,			super.handler_progress );
 			result.addEventListener( Event.INIT,						this.handler_sound_init );
-			result.addEventListener( Event.COMPLETE,					this.handler_sound_complete );
-			result.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_sound_error );
-			result.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_sound_error );
+			result.addEventListener( Event.COMPLETE,					this.handler_common_complete );
+			result.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_common_error );
+			result.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_common_error );
 			return result;
 		}
 
@@ -413,7 +420,7 @@ package by.blooddy.core.net {
 				this._stream.removeEventListener( ProgressEvent.PROGRESS,				super.handler_progress );
 				this._stream.removeEventListener( Event.COMPLETE,						this.handler_stream_init_complete );
 				this._stream.removeEventListener( Event.COMPLETE,						this.handler_stream_complete );
-				this._stream.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_stream_error );
+				this._stream.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_common_error );
 				this._stream.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_stream_init_securityError );
 				try {
 					this._stream.close();
@@ -435,10 +442,10 @@ package by.blooddy.core.net {
 				this._loader.removeEventListener( HTTPStatusEvent.HTTP_STATUS,			super.dispatchEvent );
 				this._loader.removeEventListener( ProgressEvent.PROGRESS,				super.handler_progress );
 				this._loader.removeEventListener( Event.INIT,							this.handler_loader_init );
-				this._loader.removeEventListener( Event.COMPLETE,						this.handler_loader_complete );
+				this._loader.removeEventListener( Event.COMPLETE,						this.handler_common_complete );
 				this._loader.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_loader_url_ioError );
 				this._loader.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_loader_input_ioError );
-				this._loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_loader_error );
+				this._loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_common_error );
 				this._loaderInfo = null;
 				if ( this._loader.loaded ) {
 					this._loader._unload();
@@ -462,9 +469,9 @@ package by.blooddy.core.net {
 				this._sound.removeEventListener( HTTPStatusEvent.HTTP_STATUS,		super.dispatchEvent );
 				this._sound.removeEventListener( ProgressEvent.PROGRESS,			super.handler_progress );
 				this._sound.removeEventListener( Event.INIT,						this.handler_sound_init );
-				this._sound.removeEventListener( Event.COMPLETE,					this.handler_sound_complete );
-				this._sound.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_sound_error );
-				this._sound.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_sound_error );
+				this._sound.removeEventListener( Event.COMPLETE,					this.handler_common_complete );
+				this._sound.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_common_error );
+				this._sound.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_common_error );
 				if ( this._sound.loaded ) {
 					this._sound.unload();
 				} else {
@@ -492,6 +499,27 @@ package by.blooddy.core.net {
 		//
 		//--------------------------------------------------------------------------
 
+		//----------------------------------
+		//  common
+		//----------------------------------
+		
+		/**
+		 * @private
+		 */
+		private function handler_common_complete(event:Event):void {
+			var bytesTotal:uint = ( event.target as LoaderBase ).bytesTotal;
+			super.updateProgress( bytesTotal, bytesTotal );
+			super.handler_complete( event );
+		}
+		
+		/**
+		 * @private
+		 */
+		private function handler_common_error(event:ErrorEvent):void {
+			this.clear_asset();
+			super.handler_complete( event );
+		}
+		
 		//----------------------------------
 		//  stream init
 		//----------------------------------
@@ -635,15 +663,6 @@ package by.blooddy.core.net {
 			super.handler_complete( event );
 		}
 
-		/**
-		 * @private
-		 */
-		private function handler_stream_error(event:ErrorEvent):void {
-			this.clear_stream();
-			this.clear_input();
-			super.handler_complete( event );
-		}
-
 		//----------------------------------
 		//  loader
 		//----------------------------------
@@ -709,23 +728,6 @@ package by.blooddy.core.net {
 			}
 		}
 
-		/**
-		 * @private
-		 */
-		private function handler_loader_complete(event:Event):void {
-			var bytesTotal:uint = this._loader.bytesTotal;
-			super.updateProgress( bytesTotal, bytesTotal );
-			super.handler_complete( event );
-		}
-		
-		/**
-		 * @private
-		 */
-		private function handler_loader_error(event:ErrorEvent):void {
-			this.clear_loader();
-			super.handler_complete( event );
-		}
-		
 		//----------------------------------
 		//  sound
 		//----------------------------------
@@ -738,23 +740,6 @@ package by.blooddy.core.net {
 			if ( super.hasEventListener( Event.INIT ) ) {
 				super.dispatchEvent( event );
 			}
-		}
-
-		/**
-		 * @private
-		 */
-		private function handler_sound_complete(event:Event):void {
-			var bytesTotal:uint = this._sound.bytesTotal;
-			super.updateProgress( bytesTotal, bytesTotal );
-			super.handler_complete( event );
-		}
-		
-		/**
-		 * @private
-		 */
-		private function handler_sound_error(event:ErrorEvent):void {
-			this.clear_sound();
-			super.handler_complete( event );
 		}
 
 	}
