@@ -78,7 +78,7 @@ package by.blooddy.core.display.resource {
 		}
 
 		rs_protected override function getDepth():int {
-			return int.MAX_VALUE;
+			return int.MIN_VALUE;
 		}
 		
 		//--------------------------------------------------------------------------

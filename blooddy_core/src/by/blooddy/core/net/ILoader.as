@@ -14,13 +14,19 @@ package by.blooddy.core.net {
 	//--------------------------------------
 
 	/**
-	 * Транслируется, когда Flash Player может определить
-	 * HTTP статус.
+	 * Транслируется, когда Flash Player может определить HTTP статус.
 	 * 
 	 * @eventType			flash.events.HTTPStatusEvent.HTTP_STATUS
 	 */
 	[Event( name="httpStatus", type="flash.events.HTTPStatusEvent" )]
 
+	/**
+	 * Транслируется, когда Flash Player может определить получиться HTTP-заголовки
+	 * 
+	 * @eventType			flash.events.HTTPStatusEvent.HTTP_RESPONSE_STATUS
+	 */
+	[Event( name="httpResponseStatus", type="flash.events.HTTPStatusEvent" )]
+	
 	[Event( name="init", type="flash.events.Event" )]
 	
 	[Event( name="unload", type="flash.events.Event" )]

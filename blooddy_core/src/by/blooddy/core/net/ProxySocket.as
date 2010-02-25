@@ -876,7 +876,10 @@ internal final class URLStreamAsset extends URLStream {
 
 	public override function close():void {
 		this._connected = false;
-		super.close();
+		try {
+			super.close();
+		} catch ( e:Error ) {
+		}
 	}
 
 }
