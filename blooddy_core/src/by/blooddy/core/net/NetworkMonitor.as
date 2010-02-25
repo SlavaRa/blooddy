@@ -6,9 +6,13 @@
 
 package by.blooddy.core.net {
 
+	import flash.events.ErrorEvent;
+	import flash.events.Event;
+	import flash.events.IOErrorEvent;
+	import flash.events.ProgressEvent;
+	import flash.events.SecurityErrorEvent;
 	import flash.net.URLRequest;
 	import flash.system.ApplicationDomain;
-	import flash.system.Capabilities;
 	
 	/**
 	 * @author					BlooDHounD
@@ -21,19 +25,95 @@ package by.blooddy.core.net {
 
 		//--------------------------------------------------------------------------
 		//
-		//  Class variables
+		//  Class constants
+		//
+		//--------------------------------------------------------------------------
+
+		public static const monitor:NetworkMonitor = new NetworkMonitor();
+
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * Constructor
+		 */
+		public function NetworkMonitor() {
+			super();
+
+			var LoaderConfig:Class = ApplicationDomain.currentDomain.getDefinition( 'mx.messaging.config::LoaderConfig' ) as Class;
+			var parameters:Object = ( LoaderConfig ? LoaderConfig['parameters'] : null );
+
+			if ( parameters && parameters['netmonRTMPPort'] != null ) {
+				this._port = int( parameters['netmonRTMPPort'] );
+			}
+
+			this._socket = new Socket();
+			this._socket.addEventListener( Event.CONNECT,						this.handler_connect );
+			this._socket.addEventListener( Event.CLOSE,							this.handler_close );
+			this._socket.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_error );
+			this._socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error );
+			this._socket.addEventListener( ProgressEvent.SOCKET_DATA,			this.handler_socketData );
+			this._socket.connect( this._host, this._port );
+
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Variables
 		//
 		//--------------------------------------------------------------------------
 
 		/**
 		 * @private
 		 */
-		private static const _CLASS_NAME:String = 'mx.netmon::NetworkMonitor';
+		private var _socket:Socket = new Socket();
 
 		/**
 		 * @private
 		 */
-		private static var _CLASS:Class;
+		private var _host:String = 'localhost';
+		
+		/**
+		 * @private
+		 */
+		private var _port:int = 27813;
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Event handlers
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private function handler_connect(event:Event):void {
+			trace( event );
+		}
+
+		/**
+		 * @private
+		 */
+		private function handler_close(event:Event):void {
+			trace( event );
+		}
+		
+		/**
+		 * @private
+		 */
+		private function handler_error(event:ErrorEvent):void {
+			trace( event );
+		}
+		
+		/**
+		 * @private
+		 */
+		private function handler_socketData(event:ProgressEvent):void {
+			trace( event );
+		}
 		
 		//--------------------------------------------------------------------------
 		//
@@ -42,31 +122,21 @@ package by.blooddy.core.net {
 		//--------------------------------------------------------------------------
 
 		public static function isMonitoring():Boolean {
-			if ( !Capabilities.isDebugger ) return false;
-			var c:Class = getClass();
-			return ( c && c.isMonitoring() );
 			return false;
 		}
 
 		public static function adjustURLRequest(urlRequest:URLRequest, rootURL:String, correlationID:String):void {
-			if ( !_CLASS ) return;
-			_CLASS.adjustURLRequest( urlRequest, rootURL, correlationID );
 		}
 
-		//--------------------------------------------------------------------------
-		//
-		//  Private class methods
-		//
-		//--------------------------------------------------------------------------
-
-		private static function getClass():Class {
-			var domain:ApplicationDomain = ApplicationDomain.currentDomain;
-			if ( !_CLASS && domain.hasDefinition( _CLASS_NAME ) ) {
-				_CLASS = domain.getDefinition( _CLASS_NAME ) as Class;
-			}
-			return _CLASS;
+		public static function monitorResult(resultMessage:Object, actualResult:Object):void {
 		}
 
+		public static function monitorEvent(event:Event, correlationID:String):void {
+		}
+
+		public static function monitorInvocation(id:String, invocationMessage:Object, messageAgent:Object):void {
+		}
+		
 	}
 	
 }

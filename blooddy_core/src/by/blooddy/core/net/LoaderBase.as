@@ -161,6 +161,12 @@ package by.blooddy.core.net {
 		 * @private
 		 * состояние загрзщика
 		 */
+		private var _id:String;
+		
+		/**
+		 * @private
+		 * состояние загрзщика
+		 */
 		private var _state:uint = _STATE_IDLE;
 		
 		/**
@@ -251,6 +257,10 @@ package by.blooddy.core.net {
 			if ( this._state != _STATE_IDLE ) throw new ArgumentError();
 			//else if ( this._state > _STATE_PROGRESS ) this.clear();
 			this.$load( request );
+			if ( NetworkMonitor.isMonitoring() ) {
+				this._id = StringUtils.random();
+				NetworkMonitor.adjustURLRequest( request, 'хуй знает', this._id );
+			}
 			this._url = request.url;
 			this._state = _STATE_PROGRESS;
 			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
@@ -409,6 +419,9 @@ package by.blooddy.core.net {
 		lb_protected function handler_complete(event:Event):void {
 			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
 			this._state = ( event is ErrorEvent ? _STATE_ERROR : _STATE_COMPLETE );
+			if ( NetworkMonitor.isMonitoring() ) {
+				NetworkMonitor.monitorResult( '1231231231', 'asdasdasdasdas' );
+			}
 			super.dispatchEvent( event );
 		}
 		

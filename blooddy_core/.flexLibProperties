@@ -115,12 +115,14 @@
     <classEntry path="by.blooddy.core.net.ISocketFilter"/>
     <classEntry path="by.blooddy.core.net.IXMLSocket"/>
     <classEntry path="by.blooddy.core.net.Loader"/>
+    <classEntry path="by.blooddy.core.net.LoaderBase"/>
     <classEntry path="by.blooddy.core.net.LoaderContext"/>
     <classEntry path="by.blooddy.core.net.LoaderDispatcher"/>
     <classEntry path="by.blooddy.core.net.LoaderListener"/>
     <classEntry path="by.blooddy.core.net.LoaderPriority"/>
     <classEntry path="by.blooddy.core.net.MIME"/>
     <classEntry path="by.blooddy.core.net.NetCommand"/>
+    <classEntry path="by.blooddy.core.net.NetworkMonitor"/>
     <classEntry path="by.blooddy.core.net.Protocols"/>
     <classEntry path="by.blooddy.core.net.ProxyClient"/>
     <classEntry path="by.blooddy.core.net.ProxyRemoter"/>
@@ -195,8 +197,9 @@
     <classEntry path="by.blooddy.core.utils.version.Version"/>
     <classEntry path="by.blooddy.core.utils.xml.IXMLable"/>
     <classEntry path="by.blooddy.core.utils.xml.XMLUtils"/>
-    <classEntry path="by.blooddy.core.net.LoaderBase"/>
-    <classEntry path="by.blooddy.core.net.NetworkMonitor"/>
+    <classEntry path="mx.netmon.NetworkMonitorImpl"/>
+    <classEntry path="parseBoolean"/>
+    <classEntry path="mx.netmon.origin.NetworkMonitorImpl"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
