@@ -349,6 +349,7 @@ package by.blooddy.core.managers.resource {
 				delete this._hash[ bundleName ];
 				var loader:ILoadable = bundle as ILoadable;
 				if ( loader ) {
+					this.unregisterLoadable( loader );
 					var asset:ResourceLoaderAsset = loader as ResourceLoaderAsset;
 					var loaded:Boolean = loader.loaded;
 					if ( asset ) { // если ассет, то помучаемся
@@ -366,7 +367,6 @@ package by.blooddy.core.managers.resource {
 							}
 						}
 					}
-					this.unregisterLoadable( loader );
 					if ( loaded && super.hasEventListener( ResourceBundleEvent.BUNDLE_REMOVED ) ) {
 						super.dispatchEvent( new ResourceBundleEvent( ResourceBundleEvent.BUNDLE_REMOVED, false, false, bundle ) );
 					}
@@ -439,6 +439,7 @@ package by.blooddy.core.managers.resource {
 			loader.addEventListener( Event.COMPLETE, this.handler_complete );
 			loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, this.handler_complete );
 			loader.addEventListener( IOErrorEvent.IO_ERROR, this.handler_complete );
+			loader.addEventListener( Event.UNLOAD, this.handler_unload );
 		}
 
 		/**
@@ -449,6 +450,7 @@ package by.blooddy.core.managers.resource {
 			loader.removeEventListener( Event.COMPLETE, this.handler_complete );
 			loader.removeEventListener( IOErrorEvent.IO_ERROR, this.handler_complete );
 			loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR, this.handler_complete );
+			loader.removeEventListener( Event.UNLOAD, this.handler_unload );
 		}
 
 		//--------------------------------------------------------------------------
@@ -463,12 +465,19 @@ package by.blooddy.core.managers.resource {
 		 */
 		private function handler_complete(event:Event):void {
 			var loader:ILoadable = event.target as ILoadable;
-			if ( loader ) this.unregisterLoadable( loader );
 			if ( super.hasEventListener( ResourceBundleEvent.BUNDLE_ADDED ) ) {
 				super.dispatchEvent( new ResourceBundleEvent( ResourceBundleEvent.BUNDLE_ADDED, false, false, loader as IResourceBundle ) );
 			}
 		}
 
+		/**
+		 * @private
+		 * Обрабатываем выгрузку.
+		 */
+		private function handler_unload(event:Event):void {
+			this.removeResourceBundle( ( event.target as IResourceBundle ).name );
+		}
+		
 	}
 
 }

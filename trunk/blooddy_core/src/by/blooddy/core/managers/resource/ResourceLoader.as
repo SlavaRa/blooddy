@@ -10,11 +10,13 @@ package by.blooddy.core.managers.resource {
 	import by.blooddy.core.net.LoaderContext;
 	import by.blooddy.core.net.MIME;
 	import by.blooddy.core.utils.DefinitionFinder;
+	import by.blooddy.core.utils.crypto.MD5;
 	
 	import flash.display.BitmapData;
 	import flash.media.Sound;
 	import flash.net.URLRequest;
 	import flash.system.ApplicationDomain;
+	import flash.utils.ByteArray;
 	import flash.utils.getQualifiedClassName;
 
 	/**
@@ -82,10 +84,15 @@ package by.blooddy.core.managers.resource {
 		//--------------------------------------------------------------------------
 
 		/**
+		 * @private
+		 */
+		private var _name:String;
+		
+		/**
 		 * @inheritDoc
 		 */
 		public function get name():String {
-			return super.url;
+			return this._name || super.url;
 		}
 
 		/**
@@ -190,7 +197,15 @@ package by.blooddy.core.managers.resource {
 		//--------------------------------------------------------------------------
 
 		/**
-		 * @private
+		 * @inheritDoc
+		 */
+		public override function loadBytes(bytes:ByteArray):void {
+			super.loadBytes( bytes );
+			this._name = MD5.hashBytes( bytes );
+		}
+		
+		/**
+		 * @inheritDoc
 		 */
 		public override function unload():void {
 			this.clear();
@@ -198,7 +213,7 @@ package by.blooddy.core.managers.resource {
 		}
 
 		/**
-		 * @private
+		 * @inheritDoc
 		 */
 		public override function close():void {
 			this.clear();
@@ -215,6 +230,7 @@ package by.blooddy.core.managers.resource {
 		 * @private
 		 */
 		private function clear():void {
+			this._name = null;
 			var resource:*;
 			for ( var name:String in this._hash ) {
 				resource = this._hash[ name ];

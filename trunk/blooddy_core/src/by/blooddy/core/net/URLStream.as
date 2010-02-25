@@ -9,7 +9,6 @@ package by.blooddy.core.net {
 	import by.blooddy.core.utils.ClassUtils;
 	
 	import flash.events.Event;
-	import flash.events.EventDispatcher;
 	import flash.events.HTTPStatusEvent;
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
@@ -19,52 +18,6 @@ package by.blooddy.core.net {
 	import flash.utils.ByteArray;
 	import flash.utils.IDataInput;
 
-	//--------------------------------------
-	//  Implements events: ILoader
-	//--------------------------------------
-
-	/**
-	 * @inheritDoc
-	 */
-	[Event( name="complete", type="flash.events.Event" )]
-
-	/**
-	 * @inheritDoc
-	 */
-	[Event( name="httpStatus", type="flash.events.HTTPStatusEvent" )]
-
-	/**
-	 * @inheritDoc
-	 */
-	[Event( name="ioError", type="flash.events.IOErrorEvent" )]
-
-	/**
-	 * @inheritDoc
-	 */
-	[Event( name="open", type="flash.events.Event" )]
-
-	/**
-	 * @inheritDoc
-	 */
-	[Event( name="progress", type="flash.events.ProgressEvent" )]
-
-	/**
-	 * @inheritDoc
-	 */
-	[Event( name="securityError", type="flash.events.SecurityErrorEvent" )]
-
-	//--------------------------------------
-	//  Events
-	//--------------------------------------
-
-	/**
-	 * Транслируется, когда Flash Player может определить
-	 * HTTP статус.
-	 * 
-	 * @eventType			flash.events.HTTPStatusEvent.HTTP_RESPONSE_STATUS
-	 */
-	[Event( name="httpResponseStatus", type="flash.events.HTTPStatusEvent" )]
-
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -73,16 +26,16 @@ package by.blooddy.core.net {
 	 * 
 	 * @keyword					urlstream
 	 */
-	public class URLStream extends EventDispatcher implements ILoader, IDataInput {
-
+	public class URLStream extends LoaderBase implements IDataInput {
+		
 		//--------------------------------------------------------------------------
 		//
-		//  Class variables
+		//  Namespaces
 		//
 		//--------------------------------------------------------------------------
-
-		private static const HTTP_RESPONSE_STATUS:String = ( 'HTTP_RESPONSE_STATUS' in HTTPStatusEvent ? HTTPStatusEvent['HTTP_RESPONSE_STATUS'] : null );
-
+		
+		use namespace lb_protected;
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -95,18 +48,7 @@ package by.blooddy.core.net {
 		 * @param	request			Если надо, то сразу передадим и начнётся загрузка.
 		 */
 		public function URLStream(request:URLRequest=null) {
-			super();
-			this._loader = new flash.net.URLStream();
-			this._loader.addEventListener( Event.OPEN,							super.dispatchEvent );
-			this._loader.addEventListener( ProgressEvent.PROGRESS,				this.handler_progress );
-			this._loader.addEventListener( HTTPStatusEvent.HTTP_STATUS,			super.dispatchEvent );
-			if ( HTTP_RESPONSE_STATUS ) {
-				this._loader.addEventListener( HTTP_RESPONSE_STATUS,			super.dispatchEvent );
-			}
-			this._loader.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_error );
-			this._loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error );
-			this._loader.addEventListener( Event.COMPLETE,						this.handler_complete );
-			if ( request ) this.load( request );
+			super( request );
 		}
 
 		//--------------------------------------------------------------------------
@@ -118,131 +60,14 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private var _loader:flash.net.URLStream;
-
-		//--------------------------------------------------------------------------
-		//
-		//  Implements properties: ILoader
-		//
-		//--------------------------------------------------------------------------
-
-		//----------------------------------
-		//  url
-		//----------------------------------
+		private var _stream:flash.net.URLStream;
 
 		/**
 		 * @private
+		 * буфер загруженных данных
 		 */
-		private var _url:String = null;
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get url():String {
-			return this._url;
-		}
-
-		//----------------------------------
-		//  bytesLoaded
-		//----------------------------------
-
-		/**
-		 * @private
-		 */
-		private var _bytesLoaded:uint = 0;
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get bytesLoaded():uint {
-			return this._bytesLoaded;
-		}
-
-		//----------------------------------
-		//  bytesTotal
-		//----------------------------------
-
-		/**
-		 * @private
-		 */
-		private var _bytesTotal:uint = 0;
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get bytesTotal():uint {
-			return this._bytesTotal;
-		}
-
-		//----------------------------------
-		//  loaded
-		//----------------------------------
-
-		/**
-		 * @private
-		 */
-		private var _loaded:Boolean = false;
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get loaded():Boolean {
-			return this._loaded;
-		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Implements properties: IDataInput
-		//
-		//--------------------------------------------------------------------------
-
-		//----------------------------------
-		//  bytesAvailable
-		//----------------------------------
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get bytesAvailable():uint {
-			return this._loader.bytesAvailable;
-		}
-
-		//----------------------------------
-		//  endian
-		//----------------------------------
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get endian():String {
-			return this._loader.endian;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set endian(value:String):void {
-			this._loader.endian = value;
-		}
-
-		//----------------------------------
-		//  objectEncoding
-		//----------------------------------
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get objectEncoding():uint {
-			return this._loader.objectEncoding;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set objectEncoding(value:uint):void {
-			this._loader.objectEncoding = value;
-		}
-
+		private var _input:IDataInput;
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
@@ -254,46 +79,207 @@ package by.blooddy.core.net {
 		//----------------------------------
 
 		/**
+		 * @private
+		 */
+		private var _connected:Boolean = false;
+		
+		/**
 		 * @copy				flash.net.URLStream#connected
 		 */
 		public function get connected():Boolean {
-			return this._loader.connected;
+			return ( this._stream ? this._stream.connected : this._connected );
 		}
 
 		//--------------------------------------------------------------------------
 		//
-		//  Implements methods: ILoader
+		//  Overriden methods
 		//
 		//--------------------------------------------------------------------------
 
 		/**
 		 * @inheritDoc
 		 */
-		public function load(request:URLRequest):void {
-			this.clearVariables();
-			this._url = request.url;
-			this._loader.load(request);
+		public override function loadBytes(bytes:ByteArray):void {
+			super.loadBytes( bytes );
+			this._connected = true;
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		lb_protected override function $load(request:URLRequest):void {
+			this._stream = this.create_stream();
+			this._stream.load( request );
+			this._input = this._stream;
 		}
 
 		/**
-		 * @inheritDoc
+		 * @private
 		 */
-		public function loadBytes(bytes:ByteArray):void {
-			// TODO: переписать весь класс нафиг
+		lb_protected override function $loadBytes(bytes:ByteArray):void {
+			this._input = bytes;
+			if ( super.hasEventListener( Event.INIT ) ) {
+				super.dispatchEvent( new Event( Event.INIT ) );
+			}
+			super.updateProgress( bytes.length, bytes.length );
+			this.handler_complete( new Event( Event.COMPLETE ) );
 		}
+		
+		/**
+		 * @private
+		 */
+		lb_protected override function $unload():Boolean {
+			var unload:Boolean = ( this._stream || this._input );
+			this._connected = false;
+			this.clear_stream();
+			this.clear_input();
+			return unload;
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Private methods
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		 * @private
+		 * создаёт URLStream для загрузки
+		 */
+		private function create_stream():flash.net.URLStream {
+			var result:flash.net.URLStream = new flash.net.URLStream();
+			result.addEventListener( Event.OPEN,						super.dispatchEvent );
+			result.addEventListener( HTTPStatusEvent.HTTP_STATUS,		super.dispatchEvent );
+			if ( HTTP_RESPONSE_STATUS ) {
+				result.addEventListener( HTTP_RESPONSE_STATUS,			super.dispatchEvent );
+			}
+			result.addEventListener( ProgressEvent.PROGRESS,			this.handler_progress );
+			result.addEventListener( Event.COMPLETE,					this.handler_complete );
+			result.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_complete );
+			result.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_complete );
+			return result;
+		}
+
+		/**
+		 * @private
+		 * очищает stream
+		 */
+		private function clear_stream():void {
+			if ( this._stream ) {
+				this._stream.removeEventListener( Event.OPEN,							super.dispatchEvent );
+				this._stream.removeEventListener( HTTPStatusEvent.HTTP_STATUS,			super.dispatchEvent );
+				if ( HTTP_RESPONSE_STATUS ) {
+					this._stream.removeEventListener( HTTP_RESPONSE_STATUS,				super.dispatchEvent );
+				}
+				this._stream.removeEventListener( ProgressEvent.PROGRESS,				this.handler_progress );
+				this._stream.removeEventListener( ProgressEvent.PROGRESS,				super.handler_progress );
+				this._stream.removeEventListener( Event.COMPLETE,						this.handler_complete );
+				this._stream.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_complete );
+				this._stream.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_complete );
+				try {
+					this._stream.close();
+				} catch ( e:Error ) {
+				}
+				this._stream = null;
+			}
+		}
+		
+		/**
+		 * @private
+		 * очищает буфер
+		 */
+		private function clear_input():void {
+			if ( this._input ) {
+				if ( this._input is ByteArray ) {
+					( this._input as ByteArray ).clear();
+				}
+				this._input = null;
+			}
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Event handlers
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		lb_protected override function handler_progress(event:ProgressEvent):void {
+			super.handler_progress( event );
+			if ( super.hasEventListener( Event.INIT ) ) {
+				super.dispatchEvent( new Event( Event.INIT ) );
+			}
+			this._stream.removeEventListener( ProgressEvent.PROGRESS,	this.handler_progress );
+			this._stream.addEventListener( ProgressEvent.PROGRESS,		super.handler_progress );
+		}
+		
+		/**
+		 * @private
+		 */
+		lb_protected override function handler_complete(event:Event):void {
+			this._connected = false;
+			super.handler_complete( event );
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Implements properties: IDataInput
+		//
+		//--------------------------------------------------------------------------
+		
+		//----------------------------------
+		//  bytesAvailable
+		//----------------------------------
 		
 		/**
 		 * @inheritDoc
 		 */
-		public function close():void {
-			this._loader.close();
+		public function get bytesAvailable():uint {
+			return this._input.bytesAvailable;
 		}
-
+		
+		//----------------------------------
+		//  endian
+		//----------------------------------
+		
 		/**
 		 * @inheritDoc
 		 */
-		public function unload():void {
-			// TODO: преписать весь класс нафиг
+		public function get endian():String {
+			return this._input.endian;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set endian(value:String):void {
+			this._input.endian = value;
+		}
+		
+		//----------------------------------
+		//  objectEncoding
+		//----------------------------------
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get objectEncoding():uint {
+			return this._input.objectEncoding;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set objectEncoding(value:uint):void {
+			this._input.objectEncoding = value;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -306,165 +292,98 @@ package by.blooddy.core.net {
 		 * @inheritDoc
 		 */
 		public function readBoolean():Boolean {
-			return this._loader.readBoolean();
+			return this._input.readBoolean();
 		}
 
 		/**
 		 * @inheritDoc
 		 */
 		public function readByte():int {
-			return this._loader.readByte();
+			return this._input.readByte();
 		}
 
 		/**
 		 * @inheritDoc
 		 */
 		public function readBytes(bytes:ByteArray, offset:uint = 0, length:uint = 0):void {
-			this._loader.readBytes(bytes, offset, length);
+			this._input.readBytes(bytes, offset, length);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
 		public function readDouble():Number {
-			return this._loader.readDouble();
+			return this._input.readDouble();
 		}
 
 		/**
 		 * @inheritDoc
 		 */
 		public function readFloat():Number {
-			return this._loader.readFloat();
+			return this._input.readFloat();
 		}
 
 		/**
 		 * @inheritDoc
 		 */
 		public function readInt():int {
-			return this._loader.readInt();
+			return this._input.readInt();
 		}
 
 		/**
 		 * @inheritDoc
 		 */
 		public function readMultiByte(length:uint, charSet:String):String {
-			return this._loader.readMultiByte(length, charSet);
+			return this._input.readMultiByte(length, charSet);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
 		public function readObject():* {
-			return this._loader.readObject();
+			return this._input.readObject();
 		}
 
 		/**
 		 * @inheritDoc
 		 */
 		public function readShort():int {
-			return this._loader.readShort();
+			return this._input.readShort();
 		}
 
 		/**
 		 * @inheritDoc
 		 */
 		public function readUnsignedByte():uint {
-			return this._loader.readUnsignedByte();
+			return this._input.readUnsignedByte();
 		}
 
 		/**
 		 * @inheritDoc
 		 */
 		public function readUnsignedInt():uint {
-			return this._loader.readUnsignedInt();
+			return this._input.readUnsignedInt();
 		}
 
 		/**
 		 * @inheritDoc
 		 */
 		public function readUnsignedShort():uint {
-			return this._loader.readUnsignedShort();
+			return this._input.readUnsignedShort();
 		}
 
 		/**
 		 * @inheritDoc
 		 */
 		public function readUTF():String {
-			return this._loader.readUTF();
+			return this._input.readUTF();
 		}
 
 		/**
 		 * @inheritDoc
 		 */
 		public function readUTFBytes(length:uint):String {
-			return this._loader.readUTFBytes(length);
-		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Methods
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		public override function toString():String {
-			return "[" + ClassUtils.getClassName(this) + " url="+this.url + "]";
-		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Private methods
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 * Чистим переменные.
-		 */
-		private function clearVariables():void {
-			try {
-				this.close();
-			} catch (e:Error) {
-			}
-			this._url = null;
-			this._loaded = false;
-			this._bytesLoaded = 0;
-			this._bytesTotal = 0;
-		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Event handlers
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		private function handler_complete(event:Event):void {
-			this._loaded = true;
-			super.dispatchEvent( event );
-		}
-
-		/**
-		 * @private
-		 */
-		private function handler_error(event:Event):void {
-			// Перенапрвляем, только если есть листенер
-			// иначе возникает ошибка.
-			if ( super.hasEventListener( event.type ) ) super.dispatchEvent( event );
-			this.clearVariables(); // очищаем переменные
-		}
-
-		/**
-		 * @private
-		 */
-		private function handler_progress(event:ProgressEvent):void {
-			this._bytesTotal = event.bytesTotal;
-			this._bytesLoaded = event.bytesLoaded;
-			super.dispatchEvent( event );
+			return this._input.readUTFBytes(length);
 		}
 
 	}

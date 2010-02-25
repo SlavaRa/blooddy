@@ -6,13 +6,6 @@
 
 package by.blooddy.core.net {
 
-	import by.blooddy.core.utils.ClassUtils;
-	import by.blooddy.core.utils.enterFrameBroadcaster;
-	
-	import flash.errors.IllegalOperationError;
-	import flash.events.ErrorEvent;
-	import flash.events.Event;
-	import flash.events.EventDispatcher;
 	import flash.events.HTTPStatusEvent;
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
@@ -22,59 +15,6 @@ package by.blooddy.core.net {
 	import flash.net.URLVariables;
 	import flash.utils.ByteArray;
 
-	//--------------------------------------
-	//  Implements events: ILoadable
-	//--------------------------------------
-	
-	/**
-	 * @inheritDoc
-	 */
-	[Event( name="complete", type="flash.events.Event" )]
-	
-	/**
-	 * @inheritDoc
-	 */
-	[Event( name="ioError", type="flash.events.IOErrorEvent" )]
-	
-	/**
-	 * @inheritDoc
-	 */
-	[Event( name="securityError", type="flash.events.SecurityErrorEvent" )]
-	
-	/**
-	 * @inheritDoc
-	 */
-	[Event( name="open", type="flash.events.Event" )]
-	
-	/**
-	 * @inheritDoc
-	 */
-	[Event( name="progress", type="flash.events.ProgressEvent" )]
-	
-	/**
-	 * @inheritDoc
-	 */
-	[Event( name="unload", type="flash.events.Event" )]
-	
-	//--------------------------------------
-	//  Implements events: ILoader
-	//--------------------------------------
-	
-	/**
-	 * @inheritDoc
-	 */
-	[Event( name="httpStatus", type="flash.events.HTTPStatusEvent" )]
-	
-	/**
-	 * @inheritDoc
-	 */
-	[Event( name="init", type="flash.events.Event" )]
-	
-	/**
-	 * @inheritDoc
-	 */
-	[Event( name="unload", type="flash.events.Event" )]
-	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -82,38 +22,18 @@ package by.blooddy.core.net {
 	 * @langversion				3.0
 	 * 
 	 * @keyword					urlloader
+	 * 
+	 * @see						flash.net.URLLoader
 	 */
-	public class URLLoader extends EventDispatcher implements ILoader {
+	public class URLLoader extends LoaderBase {
 
 		//--------------------------------------------------------------------------
 		//
-		//  Class variables
+		//  Namespaces
 		//
 		//--------------------------------------------------------------------------
-		
-		/**
-		 * @private
-		 * статус загрузки. ожидание
-		 */
-		private static const _STATE_IDLE:uint =		0;
-		
-		/**
-		 * @private
-		 * статус загрузки. прогресс
-		 */
-		private static const _STATE_PROGRESS:uint =	_STATE_IDLE		+ 1;
-		
-		/**
-		 * @private
-		 * статус загрузки. всё зашибись
-		 */
-		private static const _STATE_COMPLETE:uint =	_STATE_PROGRESS	+ 1;
-		
-		/**
-		 * @private
-		 * статус загрузки. ошибка
-		 */
-		private static const _STATE_ERROR:uint =	_STATE_COMPLETE	+ 1;
+
+		use namespace lb_protected;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -127,8 +47,7 @@ package by.blooddy.core.net {
 		 * @param	request			Если надо, то сразу передадим и начнётся загрузка.
 		 */
 		public function URLLoader(request:URLRequest=null) {
-			super();
-			if ( request ) this.load( request );
+			super( request );
 		}
 
 		//--------------------------------------------------------------------------
@@ -150,87 +69,12 @@ package by.blooddy.core.net {
 		 */
 		private var _stream:flash.net.URLStream;
 
-		/**
-		 * @private
-		 */
-		private var _input:ByteArray;
-
-		/**
-		 * @private
-		 * состояние загрзщика
-		 */
-		private var _state:uint = _STATE_IDLE;
-
-		/**
-		 * @private
-		 */
-		private var _frameReady:Boolean = false;
-		
 		//--------------------------------------------------------------------------
 		//
-		//  Implements properties
+		//  Properties
 		//
 		//--------------------------------------------------------------------------
 
-		//----------------------------------
-		//  url
-		//----------------------------------
-		
-		/**
-		 * @private
-		 */
-		private var _url:String = null;
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get url():String {
-			return this._url;
-		}
-		
-		//----------------------------------
-		//  bytesLoaded
-		//----------------------------------
-		
-		/**
-		 * @private
-		 */
-		private var _bytesLoaded:uint = 0;
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get bytesLoaded():uint {
-			return this._bytesLoaded;
-		}
-		
-		//----------------------------------
-		//  bytesTotal
-		//----------------------------------
-		
-		/**
-		 * @private
-		 */
-		private var _bytesTotal:uint = 0;
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get bytesTotal():uint {
-			return this._bytesTotal;
-		}
-		
-		//----------------------------------
-		//  loaded
-		//----------------------------------
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get loaded():Boolean {
-			return this._state >= _STATE_COMPLETE;
-		}
-		
 		//----------------------------------
 		//  content
 		//----------------------------------
@@ -241,18 +85,12 @@ package by.blooddy.core.net {
 		private var _content:*;
 		
 		/**
-		 * @inheritDoc
+		 * @copy			flash.net.URLLoader#data
 		 */
 		public function get content():* {
 			return this._content;
 		}
 		
-		//--------------------------------------------------------------------------
-		//
-		//  Properties
-		//
-		//--------------------------------------------------------------------------
-
 		//----------------------------------
 		//  dataFormat
 		//----------------------------------
@@ -274,64 +112,69 @@ package by.blooddy.core.net {
 		 */
 		public function set dataFormat(value:String):void {
 			if ( this._dataFormat == value ) return;
-			if ( this._state != _STATE_IDLE ) throw new IllegalOperationError();
+			if ( !super.isIdle() ) throw new ArgumentError();
 			this._dataFormat = value;
 		}
 
 		//--------------------------------------------------------------------------
 		//
-		//  Implements methods: ILoader
+		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
 
-		/**
-		 * @inheritDoc
-		 */
-		public function load(request:URLRequest):void {
-			if ( this._state != _STATE_IDLE ) throw new ArgumentError();
-			//else if ( this._state > _STATE_PROGRESS ) this.clear();
-			this._state = _STATE_PROGRESS;
+		lb_protected override function $load(request:URLRequest):void {
 			this._stream = this.create_stream();
 			this._stream.load( request );
-			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
 		}
 
-		/**
-		 * @inheritDoc
-		 */
-		public function loadBytes(bytes:ByteArray):void {
-			if ( this._state != _STATE_IDLE ) throw new ArgumentError();
-			//else if ( this._state > _STATE_PROGRESS ) this.clear();
-			this._state = _STATE_PROGRESS;
-
-			this._input = new ByteArray();
-			this._input.writeBytes( bytes );
-			this._input.position = 0;
+		lb_protected override function $loadBytes(bytes:ByteArray):void {
+			switch ( this._dataFormat ) {
+				
+				case URLLoaderDataFormat.TEXT:
+				case URLLoaderDataFormat.VARIABLES:
+					try {
+						var s:String = ( bytes.length > 0
+							?	bytes.readUTFBytes( bytes.length )
+							:	''
+						);
+						this._content = ( this._dataFormat == URLLoaderDataFormat.VARIABLES
+							?	new URLVariables( s )
+							:	s
+						);
+					} catch ( e:Error ) {
+						super.handler_complete( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, e.toString() ) );
+						return; // выходим :(
+					} finally {
+						bytes.clear();
+					}
+					break;
+				
+				default:
+					this._content = bytes;
+					break;
+			}
 			
-			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame2 );
+			if ( super.hasEventListener( Event.INIT ) ) {
+				super.dispatchEvent( new Event( Event.INIT ) );
+			}
+			super.updateProgress( bytes.length, bytes.length );
+			super.handler_complete( new Event( Event.COMPLETE ) );
 		}
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function close():void {
-			if ( this._state != _STATE_PROGRESS ) throw new ArgumentError();
-			this.clear();
-		}
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function unload():void {
-			if ( this._state <= _STATE_PROGRESS ) throw new ArgumentError();
-			this.clear();
-		}
-		
+
 		/**
 		 * @private
+		 * очисщает данные
 		 */
-		public override function toString():String {
-			return '[' + ClassUtils.getClassName( this ) + ' url="' + ( this.url || "" ) + '"]';
+		lb_protected override function $unload():Boolean {
+			var unload:Boolean = Boolean( this._content || this._stream );
+			this.clear_stream();
+			if ( this._content ) {
+				if ( this._content is ByteArray ) {
+					( this._content as ByteArray ).clear();
+				}
+				this._content = undefined;
+			}
+			return unload;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -348,35 +191,14 @@ package by.blooddy.core.net {
 			var result:flash.net.URLStream = new flash.net.URLStream();
 			result.addEventListener( Event.OPEN,						super.dispatchEvent );
 			result.addEventListener( HTTPStatusEvent.HTTP_STATUS,		super.dispatchEvent );
-			result.addEventListener( ProgressEvent.PROGRESS,			this.handler_progress );
-			result.addEventListener( Event.COMPLETE,					this.handler_complete );
-			result.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_error );
-			result.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error );
+			if ( HTTP_RESPONSE_STATUS ) {
+				result.addEventListener( HTTP_RESPONSE_STATUS,			super.dispatchEvent );
+			}
+			result.addEventListener( ProgressEvent.PROGRESS,			super.handler_progress );
+			result.addEventListener( Event.COMPLETE,					this.handler_stream_complete );
+			result.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_stream_error );
+			result.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_stream_error );
 			return result;
-		}
-		
-		/**
-		 * @private
-		 * очисщает данные
-		 */
-		private function clear():void {
-			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
-			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame2 );
-			var unload:Boolean = Boolean( this._content || this._stream );
-			this.clear_stream();
-			this.clear_input();
-			this._bytesLoaded = 0;
-			this._bytesTotal = 0;
-			if ( this._content ) {
-				if ( this._content is ByteArray ) {
-					( this._content as ByteArray ).clear();
-				}
-				this._content = undefined;
-			}
-			this._state = _STATE_IDLE;
-			if ( unload && super.hasEventListener( Event.UNLOAD ) ) {
-				super.dispatchEvent( new Event( Event.UNLOAD ) );
-			}
 		}
 		
 		/**
@@ -390,73 +212,14 @@ package by.blooddy.core.net {
 				}
 				this._stream.removeEventListener( Event.OPEN,							super.dispatchEvent );
 				this._stream.removeEventListener( HTTPStatusEvent.HTTP_STATUS,			super.dispatchEvent );
-				this._stream.removeEventListener( ProgressEvent.PROGRESS,				this.handler_progress );
-				this._stream.removeEventListener( Event.COMPLETE,						this.handler_complete );
-				this._stream.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_error );
-				this._stream.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error );
-				this._stream = null;
-			}
-		}
-		
-		/**
-		 * @private
-		 * очищает буфер
-		 */
-		private function clear_input():void {
-			if ( this._input ) {
-				this._input.clear();
-				this._input = null;
-			}
-		}
-		
-		/**
-		 * @private
-		 * обвновление прогресса
-		 */
-		private function updateProgress(bytesLoaded:uint, bytesTotal:uint):void {
-			this._bytesLoaded = bytesLoaded;
-			this._bytesTotal = bytesTotal;
-			super.dispatchEvent( new ProgressEvent( ProgressEvent.PROGRESS, false, false, this._bytesLoaded, this._bytesTotal ) );
-		}
-		
-		/**
-		 * @private
-		 */
-		private function parseInput():void {
-			this.updateProgress( this._input.length, this._input.length );
-			switch ( this._dataFormat ) {
-
-				case URLLoaderDataFormat.TEXT:
-				case URLLoaderDataFormat.VARIABLES:
-					try {
-						var s:String = ( this._input.length > 0
-							?	this._input.readUTFBytes( this._input.length )
-							:	''
-						);
-						this._content = ( this._dataFormat == URLLoaderDataFormat.VARIABLES
-							?	new URLVariables( s )
-							:	s
-						);
-					} catch ( e:Error ) {
-						this._state = _STATE_ERROR;
-						super.dispatchEvent( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, e.toString() ) );
-					} finally {
-						this.clear_input();
-					}
-					break;
-
-				default:
-					this._content = this._input;
-					this._input = null;
-					break;
-			}
-			
-			if ( this._state != _STATE_ERROR ) {
-				if ( super.hasEventListener( Event.INIT ) ) {
-					super.dispatchEvent( new Event( Event.INIT ) );
+				if ( HTTP_RESPONSE_STATUS ) {
+					this._stream.removeEventListener( HTTP_RESPONSE_STATUS,				super.dispatchEvent );
 				}
-				this._state = _STATE_COMPLETE;
-				super.dispatchEvent( new Event( Event.COMPLETE ) );
+				this._stream.removeEventListener( ProgressEvent.PROGRESS,				super.handler_progress );
+				this._stream.removeEventListener( Event.COMPLETE,						this.handler_stream_complete );
+				this._stream.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_stream_error );
+				this._stream.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_stream_error );
+				this._stream = null;
 			}
 		}
 		
@@ -468,54 +231,22 @@ package by.blooddy.core.net {
 
 		/**
 		 * @private
-		 * слушает прогресс, и обвноляет его, если _frameReady установлен в true.
 		 */
-		private function handler_progress(event:ProgressEvent):void {
-			if ( !this._frameReady ) return;
-			this._frameReady = false;
-			this.updateProgress( event.bytesLoaded, event.bytesTotal );
-		}
-		
-		/**
-		 * @private
-		 * устанавливает _frameReady в true. что бы избежать слишком частые обвноления со стороны загрузщиков.
-		 */
-		private function handler_enterFrame(event:Event):void {
-			this._frameReady = true;
-		}
-		
-		/**
-		 * @private
-		 */
-		private function handler_enterFrame2(event:Event):void {
-			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame2 );
-			if ( super.hasEventListener( Event.OPEN ) ) {
-				super.dispatchEvent( new Event( Event.OPEN ) );
-			}
-			this.parseInput();
-		}
-		
-		/**
-		 * @private
-		 * слушает ошибки
-		 */
-		private function handler_error(event:ErrorEvent):void {
-			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
-			this._state = _STATE_ERROR;
-			super.dispatchEvent( event );
-		}
-		
-		/**
-		 * @private
-		 */
-		private function handler_complete(event:Event):void {
-			this._input = new ByteArray();
-			this._stream.readBytes( this._input );
+		private function handler_stream_complete(event:Event):void {
+			var input:ByteArray = new ByteArray();
+			this._stream.readBytes( input );
 			this.clear_stream();
-			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
-			this.parseInput();
+			this.$loadBytes( input );
 		}
 
+		/**
+		 * @private
+		 */
+		private function handler_stream_error(event:Event):void {
+			this.clear_stream();
+			super.handler_complete( event );
+		}
+		
 	}
 
 }
