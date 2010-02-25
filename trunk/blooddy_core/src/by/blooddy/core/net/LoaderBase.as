@@ -18,6 +18,7 @@ package by.blooddy.core.net {
 	import flash.net.LocalConnection;
 	import flash.net.URLRequest;
 	import flash.utils.ByteArray;
+	import by.blooddy.core.utils.StringUtils;
 	
 	//--------------------------------------
 	//  Implements events: ILoadable
