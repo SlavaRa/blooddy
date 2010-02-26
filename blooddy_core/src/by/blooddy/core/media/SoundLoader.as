@@ -49,7 +49,7 @@ package by.blooddy.core.media {
 		//
 		//--------------------------------------------------------------------------
 
-		use namespace lb_protected;
+		use namespace $protected_load;
 
 		//--------------------------------------------------------------------------
 		//
@@ -143,7 +143,7 @@ package by.blooddy.core.media {
 		/**
 		 * @private
 		 */
-		lb_protected override function $load(request:URLRequest):void {
+		$protected_load override function $load(request:URLRequest):void {
 			this._sound = this.create_sound();
 			this._sound.$load( request, this.create_soundLoaderContext() );
 		}
@@ -151,14 +151,14 @@ package by.blooddy.core.media {
 		/**
 		 * @private
 		 */
-		lb_protected override function $loadBytes(bytes:ByteArray):void {
+		$protected_load override function $loadBytes(bytes:ByteArray):void {
 			throw new IllegalOperationError(); // TODO: дописать
 		}
 
 		/**
 		 * @private
 		 */
-		lb_protected override function $unload():Boolean {
+		$protected_load override function $unload():Boolean {
 			var unload:Boolean = Boolean( this._sound );
 			this._inited = true;
 			this.clear_sound();
@@ -228,7 +228,7 @@ package by.blooddy.core.media {
 		//
 		//--------------------------------------------------------------------------
 
-		lb_protected override function handler_progress(event:ProgressEvent):void {
+		$protected_load override function handler_progress(event:ProgressEvent):void {
 			super.handler_progress( event );
 			if ( !this._inited && this._sound.isBuffering ) {
 				this._inited = true;

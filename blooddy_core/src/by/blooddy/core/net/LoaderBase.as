@@ -6,6 +6,7 @@
 
 package by.blooddy.core.net {
 	
+	import by.blooddy.core.net.monitor.NetMonitor;
 	import by.blooddy.core.utils.ClassUtils;
 	import by.blooddy.core.utils.enterFrameBroadcaster;
 	
@@ -18,7 +19,6 @@ package by.blooddy.core.net {
 	import flash.net.LocalConnection;
 	import flash.net.URLRequest;
 	import flash.utils.ByteArray;
-	import by.blooddy.core.utils.StringUtils;
 	
 	//--------------------------------------
 	//  Implements events: ILoadable
@@ -89,9 +89,9 @@ package by.blooddy.core.net {
 		//
 		//--------------------------------------------------------------------------
 
-		protected namespace lb_protected;
+		protected namespace $protected_load;
 
-		use namespace lb_protected;
+		use namespace $protected_load;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -99,17 +99,17 @@ package by.blooddy.core.net {
 		//
 		//--------------------------------------------------------------------------
 		
-		lb_protected static const HTTP_RESPONSE_STATUS:String = ( 'HTTP_RESPONSE_STATUS' in HTTPStatusEvent ? HTTPStatusEvent['HTTP_RESPONSE_STATUS'] : null );
+		$protected_load static const HTTP_RESPONSE_STATUS:String = ( 'HTTP_RESPONSE_STATUS' in HTTPStatusEvent ? HTTPStatusEvent['HTTP_RESPONSE_STATUS'] : null );
 		
 		/**
 		 * @private
 		 */
-		lb_protected static const _DOMAIN:String = ( new flash.net.LocalConnection() ).domain;
+		$protected_load static const _DOMAIN:String = ( new flash.net.LocalConnection() ).domain;
 		
 		/**
 		 * @private
 		 */
-		lb_protected static const _URL:RegExp = ( _DOMAIN == 'localhost' ? null : new RegExp( '^((?!\w+://)|https?://(www\.)?' + _DOMAIN.replace( /\./g, '\\.' ) + ')', 'i' ) );
+		$protected_load static const _URL:RegExp = ( _DOMAIN == 'localhost' ? null : new RegExp( '^((?!\w+://)|https?://(www\.)?' + _DOMAIN.replace( /\./g, '\\.' ) + ')', 'i' ) );
 		
 		/**
 		 * @private
@@ -257,9 +257,9 @@ package by.blooddy.core.net {
 			if ( this._state != _STATE_IDLE ) throw new ArgumentError();
 			//else if ( this._state > _STATE_PROGRESS ) this.clear();
 			this.$load( request );
-			if ( NetworkMonitor.isMonitoring() ) {
-				this._id = StringUtils.random();
-				NetworkMonitor.adjustURLRequest( request, 'хуй знает', this._id );
+			if ( NetMonitor.isActive ) {
+				//this._id = StringUtils.random();
+				//FBNetMonitor.adjustURLRequest( request, 'хуй знает', this._id );
 			}
 			this._url = request.url;
 			this._state = _STATE_PROGRESS;
@@ -311,7 +311,7 @@ package by.blooddy.core.net {
 		 * @private
 		 * очисщает данные
 		 */
-		lb_protected function isIdle():Boolean {
+		$protected_load function isIdle():Boolean {
 			return this._state == _STATE_IDLE;
 		}
 		
@@ -319,14 +319,14 @@ package by.blooddy.core.net {
 		 * @private
 		 * очисщает данные
 		 */
-		lb_protected function $load(request:URLRequest):void {
+		$protected_load function $load(request:URLRequest):void {
 			throw new IllegalOperationError();
 		}
 		
 		/**
 		 * @private
 		 */
-		lb_protected function $loadBytes(bytes:ByteArray):void {
+		$protected_load function $loadBytes(bytes:ByteArray):void {
 			throw new IllegalOperationError();
 		}
 		
@@ -334,7 +334,7 @@ package by.blooddy.core.net {
 		 * @private
 		 * очисщает данные
 		 */
-		lb_protected function $unload():Boolean {
+		$protected_load function $unload():Boolean {
 			throw new IllegalOperationError();
 		}
 		
@@ -342,7 +342,7 @@ package by.blooddy.core.net {
 		 * @private
 		 * обвновление прогресса
 		 */
-		lb_protected function updateProgress(bytesLoaded:uint, bytesTotal:uint):void {
+		$protected_load function updateProgress(bytesLoaded:uint, bytesTotal:uint):void {
 			this._frameReady = false;
 			if ( this._bytesLoaded < bytesLoaded ) {
 				this._bytesLoaded = bytesLoaded;
@@ -408,7 +408,7 @@ package by.blooddy.core.net {
 		 * @private
 		 * слушает прогресс, и обвноляет его, если _frameReady установлен в true.
 		 */
-		lb_protected function handler_progress(event:ProgressEvent):void {
+		$protected_load function handler_progress(event:ProgressEvent):void {
 			if ( !this._frameReady ) return;
 			this.updateProgress( event.bytesLoaded, event.bytesTotal );
 		}
@@ -416,11 +416,11 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		lb_protected function handler_complete(event:Event):void {
+		$protected_load function handler_complete(event:Event):void {
 			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
 			this._state = ( event is ErrorEvent ? _STATE_ERROR : _STATE_COMPLETE );
-			if ( NetworkMonitor.isMonitoring() ) {
-				NetworkMonitor.monitorResult( '1231231231', 'asdasdasdasdas' );
+			if ( NetMonitor.isActive ) {
+				//NetMonitor.monitorResult( '1231231231', 'asdasdasdasdas' );
 			}
 			super.dispatchEvent( event );
 		}

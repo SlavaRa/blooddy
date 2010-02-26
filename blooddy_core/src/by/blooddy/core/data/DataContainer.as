@@ -20,6 +20,14 @@ package by.blooddy.core.data {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Namepsaces
+		//
+		//--------------------------------------------------------------------------
+
+		use namespace $protected_data;
+
+		//--------------------------------------------------------------------------
+		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
@@ -120,10 +128,10 @@ package by.blooddy.core.data {
 			// проверим не мыли это?
 			if ( child === this ) throw new ArgumentError( getErrorMessage( 2024 ), 2024 );
 			// если есть родитель, то надо его отуда удалить
-			if ( child.$parent === this ) {
+			if ( child._parent === this ) {
 				this.$setChildIndex( child, index, false );
 			} else {
-				var parent:DataContainer = child.$parent;
+				var parent:DataContainer = child._parent;
 				if ( parent ) {
 					parent.$removeChildAt(
 						parent.$getChildIndex(
@@ -141,7 +149,7 @@ package by.blooddy.core.data {
 				this._list.splice( index, 0, child );
 				// обновляем
 				this.addChild_before( child ); // вызовем событие о добавлние
-				child.set$parent( this );
+				child.setParent( this );
 			}
 			// возвращаем
 			return child;
@@ -198,7 +206,7 @@ package by.blooddy.core.data {
 			var child:Data = this._list.splice( index, 1 )[0] as Data;
 			// обновим
 			this.removeChild_before( child ); // вызовем событие о добавлние
-			child.set$parent( null );
+			child.setParent( null );
 			// вернём
 			return child;
 		}
@@ -229,7 +237,7 @@ package by.blooddy.core.data {
 			// проверим нашу пренадлежность, вдруг зацикливание
 			do {
 				if ( child === this ) return true;
-			} while ( child = child.$parent );
+			} while ( child = child._parent );
 			return false;
 		}
 
@@ -306,10 +314,10 @@ package by.blooddy.core.data {
 		/**
 		 * @private
 		 */
-		internal function $getChildIndex(child:Data, strict:Boolean=true):int {
+		private function $getChildIndex(child:Data, strict:Boolean=true):int {
 			if ( strict ) {
 				// проверяем мы ли родитель
-				if ( !child || child.$parent !== this ) throw new ArgumentError( getErrorMessage( 2025, this ), 2025 );
+				if ( !child || child._parent !== this ) throw new ArgumentError( getErrorMessage( 2025, this ), 2025 );
 			}
 			// ищем
 			return this._list.indexOf( child );

@@ -28,6 +28,16 @@ package by.blooddy.core.data {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Namespaces
+		//
+		//--------------------------------------------------------------------------
+
+		internal namespace $internal_data;
+
+		use namespace $internal_data;
+		
+		//--------------------------------------------------------------------------
+		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
@@ -56,12 +66,12 @@ package by.blooddy.core.data {
 		/**
 		 * @private
 		 */
-		internal var $stopped:Boolean = false;
+		$internal_data var $stopped:Boolean = false;
 
 		/**
 		 * @private
 		 */
-		internal var $canceled:Boolean = false;
+		$internal_data var $canceled:Boolean = false;
 
 		//--------------------------------------------------------------------------
 		//
@@ -76,7 +86,7 @@ package by.blooddy.core.data {
 		/**
 		 * @private
 		 */
-		internal var $target:Object;
+		$internal_data var $target:Object;
 
 		/**
 		 * @private
@@ -93,7 +103,7 @@ package by.blooddy.core.data {
 		/**
 		 * @private
 		 */
-		internal var $eventPhase:uint;
+		$internal_data var $eventPhase:uint;
 
 		/**
 		 * @private

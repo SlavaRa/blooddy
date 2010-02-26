@@ -21,6 +21,14 @@ package by.blooddy.core.display.resource {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Namespaces
+		//
+		//--------------------------------------------------------------------------
+
+		use namespace $protected_rs;
+
+		//--------------------------------------------------------------------------
+		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
@@ -70,14 +78,14 @@ package by.blooddy.core.display.resource {
 		/**
 		 * @private
 		 */
-		rs_protected override function getResourceManager():ResourceManagerProxy {
+		$protected_rs override function getResourceManager():ResourceManagerProxy {
 			if ( super.stage ) {
 				return this._manager;
 			}
 			return null;
 		}
 
-		rs_protected override function getDepth():int {
+		$protected_rs override function getDepth():int {
 			return int.MIN_VALUE;
 		}
 		

@@ -27,7 +27,7 @@ package by.blooddy.core.display {
 		//
 		//--------------------------------------------------------------------------
 		
-		use namespace mce_protected;
+		use namespace $protected_mc;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -118,7 +118,7 @@ package by.blooddy.core.display {
 		/**
 		 * @private
 		 */
-		mce_protected override function setCurrentFrame(value:int):void {
+		$protected_mc override function setCurrentFrame(value:int):void {
 			var oldFrame:int = this._currentFrame;
 			this._currentFrame = value;
 			// поменяем кадры

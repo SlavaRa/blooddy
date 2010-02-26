@@ -41,22 +41,6 @@ package by.blooddy.core.events.data {
 		public static const REMOVED:String = 'removed';
 
 		/**
-		 * @eventType			addedToBase
-		 * 
-		 * @see					by.blooddy.core.data.Data
-		 * @see					by.blooddy.core.data.DataBase
-		 */
-		public static const ADDED_TO_BASE:String = 'addedToBase';
-
-		/**
-		 * @eventType			removedFromBase
-		 * 
-		 * @see					by.blooddy.core.data.Data
-		 * @see					by.blooddy.core.data.DataBase
-		 */
-		public static const REMOVED_FROM_BASE:String = 'removedFromBase';
-
-		/**
 		 * @eventType			change
 		 * 
 		 * @see					by.blooddy.core.data.Data

@@ -34,7 +34,7 @@ package by.blooddy.core.net {
 		//
 		//--------------------------------------------------------------------------
 		
-		use namespace lb_protected;
+		use namespace $protected_load;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -113,7 +113,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		lb_protected override function $load(request:URLRequest):void {
+		$protected_load override function $load(request:URLRequest):void {
 			this._stream = this.create_stream();
 			this._stream.load( request );
 			this._input = this._stream;
@@ -122,7 +122,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		lb_protected override function $loadBytes(bytes:ByteArray):void {
+		$protected_load override function $loadBytes(bytes:ByteArray):void {
 			this._input = bytes;
 			if ( super.hasEventListener( Event.INIT ) ) {
 				super.dispatchEvent( new Event( Event.INIT ) );
@@ -134,7 +134,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		lb_protected override function $unload():Boolean {
+		$protected_load override function $unload():Boolean {
 			var unload:Boolean = ( this._stream || this._input );
 			this._connected = false;
 			this.clear_stream();
@@ -212,7 +212,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		lb_protected override function handler_progress(event:ProgressEvent):void {
+		$protected_load override function handler_progress(event:ProgressEvent):void {
 			super.handler_progress( event );
 			if ( super.hasEventListener( Event.INIT ) ) {
 				super.dispatchEvent( new Event( Event.INIT ) );
@@ -224,7 +224,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		lb_protected override function handler_complete(event:Event):void {
+		$protected_load override function handler_complete(event:Event):void {
 			this._connected = false;
 			super.handler_complete( event );
 		}

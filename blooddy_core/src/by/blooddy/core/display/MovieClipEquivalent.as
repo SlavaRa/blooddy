@@ -28,9 +28,9 @@ package by.blooddy.core.display {
 		//
 		//--------------------------------------------------------------------------
 
-		protected namespace mce_protected;
+		protected namespace $protected_mc;
 
-		use namespace mce_protected;
+		use namespace $protected_mc;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -71,7 +71,7 @@ package by.blooddy.core.display {
 		/**
 		 * @private
 		 */
-		mce_protected var _totalFrames:int = 0;
+		$protected_mc var _totalFrames:int = 0;
 
 		/**
 		 * @private
@@ -83,19 +83,19 @@ package by.blooddy.core.display {
 		/**
 		 * @private
 		 */
-		mce_protected var _currentFrame:int = 0;
+		$protected_mc var _currentFrame:int = 0;
 
 		/**
 		 * @private
 		 */
 		public override function get currentFrame():int {
-			return this.mce_protected::_currentFrame;
+			return this._currentFrame;
 		}
 
 		/**
 		 * @private
 		 */
-		mce_protected function setCurrentFrame(value:int):void {
+		$protected_mc function setCurrentFrame(value:int):void {
 			this._currentFrame = value;
 		}
 

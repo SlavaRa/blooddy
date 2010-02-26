@@ -38,7 +38,7 @@ package by.blooddy.core.net {
 		//
 		//--------------------------------------------------------------------------
 
-		use namespace lb_protected;
+		use namespace $protected_load;
 
 		//--------------------------------------------------------------------------
 		//
@@ -220,7 +220,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		lb_protected override function $load(request:URLRequest):void {
+		$protected_load override function $load(request:URLRequest):void {
 			this._request = copyURLRequest( request );
 			// определяем первоначальны контэнт по расширению
 			this._contentType = MIME.analyseURL( this._request.url );
@@ -246,7 +246,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		lb_protected override function $loadBytes(bytes:ByteArray):void {
+		$protected_load override function $loadBytes(bytes:ByteArray):void {
 			var bytesTotal:uint = bytes.length;
 			switch ( this._contentType ) {
 				
@@ -311,7 +311,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		lb_protected override function $unload():Boolean {
+		$protected_load override function $unload():Boolean {
 			var unload:Boolean = Boolean( this._content || this._stream || this._loader || this._sound || this._input );
 			this.clear_asset();
 			this._request = null;

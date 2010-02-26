@@ -64,9 +64,9 @@ package by.blooddy.core.display.resource {
 		//
 		//--------------------------------------------------------------------------
 
-		protected namespace rs_protected;
+		protected namespace $protected_rs;
 
-		use namespace rs_protected;
+		use namespace $protected_rs;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -160,7 +160,7 @@ package by.blooddy.core.display.resource {
 		//
 		//--------------------------------------------------------------------------
 
-		rs_protected function getResourceManager():ResourceManagerProxy {
+		$protected_rs function getResourceManager():ResourceManagerProxy {
 			var parent:DisplayObjectContainer = super.parent;
 			while ( parent ) {
 				if ( parent is ResourceSprite ) {
@@ -171,7 +171,7 @@ package by.blooddy.core.display.resource {
 			return ( super.stage ? _MANAGER : null );
 		}
 		
-		rs_protected function getDepth():int {
+		$protected_rs function getDepth():int {
 			var parent:DisplayObjectContainer = super.parent;
 			while ( parent ) {
 				if ( parent is ResourceSprite ) {
