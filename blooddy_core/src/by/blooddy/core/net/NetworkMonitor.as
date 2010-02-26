@@ -45,9 +45,13 @@ package by.blooddy.core.net {
 
 			var LoaderConfig:Class = ApplicationDomain.currentDomain.getDefinition( 'mx.messaging.config::LoaderConfig' ) as Class;
 			var parameters:Object = ( LoaderConfig ? LoaderConfig['parameters'] : null );
-
-			if ( parameters && parameters['netmonRTMPPort'] != null ) {
-				this._port = int( parameters['netmonRTMPPort'] );
+			if ( parameters ) {
+				if ( parameters['netmonRTMPPort'] != null ) {
+					this._socketPort = int( parameters['netmonRTMPPort'] );
+				}
+				if ( parameters['netmonHTTPPort'] != null ) {
+					this._httpPort = int( parameters['netmonHTTPPort'] );
+				}
 			}
 
 			this._socket = new Socket();
@@ -56,7 +60,7 @@ package by.blooddy.core.net {
 			this._socket.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_error );
 			this._socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error );
 			this._socket.addEventListener( ProgressEvent.SOCKET_DATA,			this.handler_socketData );
-			this._socket.connect( this._host, this._port );
+			this._socket.connect( this._host, this._socketPort );
 
 		}
 		
@@ -79,8 +83,13 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private var _port:int = 27813;
-		
+		private var _socketPort:int = 27813;
+
+		/**
+		 * @private
+		 */
+		private var _httpPort:int = 37813;
+
 		//--------------------------------------------------------------------------
 		//
 		//  Event handlers
