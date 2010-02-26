@@ -22,6 +22,14 @@ package by.blooddy.core.data {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Namespaces
+		//
+		//--------------------------------------------------------------------------
+
+		use namespace $protected_data;
+
+		//--------------------------------------------------------------------------
+		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
@@ -50,6 +58,16 @@ package by.blooddy.core.data {
 			throw new IllegalOperationError( getErrorMessage( 2071, this, 'name' ), 2071 );
 		}
 
+		//--------------------------------------------------------------------------
+		//
+		//  Overriden methods
+		//
+		//--------------------------------------------------------------------------
+
+		$protected_data override function setParent(value:DataContainer):void {
+			throw new ArgumentError();
+		}
+		
 	}
 
 }

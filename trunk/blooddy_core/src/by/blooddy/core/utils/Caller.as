@@ -25,7 +25,7 @@ package by.blooddy.core.utils {
 		 */
 		public function Caller(listener:Function, args:Array=null) {
 			super();
-			this.listener = listener;
+			this.func = listener;
 			this.args = args;
 		}
 
@@ -35,7 +35,7 @@ package by.blooddy.core.utils {
 		//
 		//--------------------------------------------------------------------------
 
-		public var listener:Function;
+		public var func:Function;
 
 		public var args:Array;
 
@@ -46,7 +46,7 @@ package by.blooddy.core.utils {
 		//--------------------------------------------------------------------------
 
 		public function call():* {
-			return this.listener.apply( null, this.args );
+			return this.func.apply( null, this.args );
 		}
 
 	}

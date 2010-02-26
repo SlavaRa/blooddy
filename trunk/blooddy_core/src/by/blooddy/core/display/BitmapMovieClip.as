@@ -35,7 +35,7 @@ package by.blooddy.core.display {
 		//
 		//--------------------------------------------------------------------------
 		
-		use namespace mce_protected;
+		use namespace $protected_mc;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -355,7 +355,7 @@ package by.blooddy.core.display {
 		//
 		//--------------------------------------------------------------------------
 
-		mce_protected override function setCurrentFrame(value:int):void {
+		$protected_mc override function setCurrentFrame(value:int):void {
 			this._currentFrame = value;
 			if ( this._list.length < value ) return;
 			var element:CollectionElement = this._list[ value - 1 ];

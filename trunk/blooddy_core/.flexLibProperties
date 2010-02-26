@@ -122,7 +122,6 @@
     <classEntry path="by.blooddy.core.net.LoaderPriority"/>
     <classEntry path="by.blooddy.core.net.MIME"/>
     <classEntry path="by.blooddy.core.net.NetCommand"/>
-    <classEntry path="by.blooddy.core.net.NetworkMonitor"/>
     <classEntry path="by.blooddy.core.net.Protocols"/>
     <classEntry path="by.blooddy.core.net.ProxyClient"/>
     <classEntry path="by.blooddy.core.net.ProxyRemoter"/>
@@ -135,6 +134,8 @@
     <classEntry path="by.blooddy.core.net.URLLoader"/>
     <classEntry path="by.blooddy.core.net.URLStream"/>
     <classEntry path="by.blooddy.core.net.copyURLRequest"/>
+    <classEntry path="by.blooddy.core.net.monitor.INetMonitor"/>
+    <classEntry path="by.blooddy.core.net.monitor.NetMonitor"/>
     <classEntry path="by.blooddy.core.parsers.BytesParser"/>
     <classEntry path="by.blooddy.core.text.BitmapFont"/>
     <classEntry path="by.blooddy.core.text.BitmapFontLoaderContext"/>
@@ -176,7 +177,6 @@
     <classEntry path="by.blooddy.core.utils.dispose"/>
     <classEntry path="by.blooddy.core.utils.enterFrameBroadcaster"/>
     <classEntry path="by.blooddy.core.utils.getCallerInfo"/>
-    <classEntry path="by.blooddy.core.utils.isActive"/>
     <classEntry path="by.blooddy.core.utils.math.Calculator"/>
     <classEntry path="by.blooddy.core.utils.math.NumberUtils"/>
     <classEntry path="by.blooddy.core.utils.nexframeCall"/>
@@ -197,9 +197,7 @@
     <classEntry path="by.blooddy.core.utils.version.Version"/>
     <classEntry path="by.blooddy.core.utils.xml.IXMLable"/>
     <classEntry path="by.blooddy.core.utils.xml.XMLUtils"/>
-    <classEntry path="mx.netmon.NetworkMonitorImpl"/>
     <classEntry path="parseBoolean"/>
-    <classEntry path="mx.netmon.origin.NetworkMonitorImpl"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

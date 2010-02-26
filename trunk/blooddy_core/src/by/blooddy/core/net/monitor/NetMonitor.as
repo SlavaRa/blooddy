@@ -1,59 +1,41 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  (C) 2009 BlooDHounD
+//  © 2010 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.net {
-
-	import flash.net.Responder;
-
+package by.blooddy.core.net.monitor {
+	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
+	 * @created					Feb 26, 2010 12:34:08 PM
 	 */
-	public class Responder extends flash.net.Responder {
-
-		//--------------------------------------------------------------------------
-		//
-		//  Constructor
-		//
-		//--------------------------------------------------------------------------
+	public final class NetMonitor {
 		
-		public function Responder(result:Function, status:Function=null) {
+		//--------------------------------------------------------------------------
+		//
+		//  Class properties
+		//
+		//--------------------------------------------------------------------------
 
-			super( result, status );
-
-			this._result = result;
-			this._status = status;
-		}
+		public static var monitor:INetMonitor;
 
 		//--------------------------------------------------------------------------
 		//
-		//  Properties
+		//  Class methods
 		//
 		//--------------------------------------------------------------------------
 
 		/**
-		 * @private
+		 * @copy	by.blooddy.core.net.monitor.INetMonitor#isActive
 		 */
-		private var _result:Function;
-
-		internal function get result():Function {
-			return this._result;
+		public static function get isActive():Boolean {
+			return ( monitor ? monitor.isActive : false );
 		}
-
-		/**
-		 * @private
-		 */
-		private var _status:Function;
-
-		internal function get status():Function {
-			return this._status;
-		}
-
+		
 	}
-
+	
 }

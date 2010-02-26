@@ -56,6 +56,14 @@ package by.blooddy.core.managers.drag {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Namespaces
+		//
+		//--------------------------------------------------------------------------
+		
+		private static const $internal_drag:Namespace = DragObject[ '$internal_drag' ];
+		
+		//--------------------------------------------------------------------------
+		//
 		//  Class variables
 		//
 		//--------------------------------------------------------------------------
@@ -180,11 +188,11 @@ package by.blooddy.core.managers.drag {
 
 			this._dragSource = dragSource;
 
-			this._dragObject = DragObject.$getInstance( this._dragSource, rescale, offset, bounds );
+			this._dragObject = DragObject.$internal_drag::$getInstance( this._dragSource, rescale, offset, bounds );
 
 			offset = this._dragObject.offset;
 
-			this._lastMouseEvent = new MouseEvent(MouseEvent.MOUSE_DOWN, true, false, offset.x, offset.y, null, false, false, false, true, 0);
+			this._lastMouseEvent = new MouseEvent( MouseEvent.MOUSE_DOWN, true, false, offset.x, offset.y, null, false, false, false, true, 0 );
 
 			var stage:Stage = this._dragSource.stage;
 
@@ -218,8 +226,8 @@ package by.blooddy.core.managers.drag {
 		 * @private
 		 */
 		private function clear():void {
-			if ( this._dragObject && this._dragObject.$parent ) {
-				this._dragObject.$parent.removeChild( this._dragObject );
+			if ( this._dragObject && this._dragObject.$internal_drag::$parent ) {
+				this._dragObject.$internal_drag::$parent.removeChild( this._dragObject );
 			}
 
 			if ( this._dragSource && this._dragSource.stage ) {

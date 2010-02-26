@@ -44,8 +44,8 @@ package by.blooddy.core.net {
 		//  Namespaces
 		//
 		//--------------------------------------------------------------------------
-		
-		use namespace lb_protected;
+
+		use namespace $protected_load;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -159,10 +159,15 @@ package by.blooddy.core.net {
 		//----------------------------------
 
 		/**
+		 * @private
+		 */
+		private var _loaderInfo:LoaderInfo;
+		
+		/**
 		 * @copy					flash.display.Loader#contentLoaderInfo
 		 */
 		public final function get loaderInfo():LoaderInfo {
-			return ( this._loader ? this._loader.$loaderInfo : null );
+			return this._loaderInfo;
 		}
 
 		//--------------------------------------------------------------------------
@@ -174,23 +179,25 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		lb_protected override function $load(request:URLRequest):void {
+		$protected_load override function $load(request:URLRequest):void {
 			this._loader = this.create_loader( true, true );
+			this._loaderInfo = this._loader.$loaderInfo;
 			this._loader.$load( request, this.create_loaderContext( _URL && _URL.test( request.url ) ) );
 		}
 
 		/**
 		 * @private
 		 */
-		lb_protected override function $loadBytes(bytes:ByteArray):void {
+		$protected_load override function $loadBytes(bytes:ByteArray):void {
 			this._loader = this.create_loader();
+			this._loaderInfo = this._loader.$loaderInfo;
 			this._loader.$loadBytes( bytes, this.create_loaderContext() );
 		}
 
 		/**
 		 * @private
 		 */
-		lb_protected override function $unload():Boolean {
+		$protected_load override function $unload():Boolean {
 			var unload:Boolean = Boolean( this._content || this._loader );
 			this.clear_loader();
 			if ( this._content ) {
@@ -264,7 +271,7 @@ package by.blooddy.core.net {
 		 */
 		private function clear_loader():void {
 			if ( this._loader ) {
-				var li:LoaderInfo = this._loader.$loaderInfo;
+				var li:LoaderInfo = this._loaderInfo;
 				li.removeEventListener( Event.OPEN,						super.dispatchEvent );
 				li.removeEventListener( HTTPStatusEvent.HTTP_STATUS,	super.dispatchEvent );
 				li.removeEventListener( ProgressEvent.PROGRESS,			super.handler_progress );
@@ -304,10 +311,9 @@ package by.blooddy.core.net {
 
 				if ( this._loaderContext && this._loaderContext.ignoreSecurity ) {
 
-					var li:LoaderInfo = this._loader.$loaderInfo;
-					this._contentType = li.contentType;
-					li.removeEventListener( Event.COMPLETE, this.handler_loader_complete );
-					li.addEventListener( Event.COMPLETE, this.handler_security_complete );
+					this._contentType = this._loaderInfo.contentType;
+					this._loaderInfo.removeEventListener( Event.COMPLETE, this.handler_loader_complete );
+					this._loaderInfo.addEventListener( Event.COMPLETE, this.handler_security_complete );
 
 				} else {
 
@@ -329,9 +335,9 @@ package by.blooddy.core.net {
 
 			var invalidSWF:Boolean = false;
 			
-			if ( this._contentType && this._contentType != this._loader.$loaderInfo.contentType ) { // если они не равны, то протикала загрузка через loadBytes.
+			if ( this._contentType && this._contentType != this._loaderInfo.contentType ) { // если они не равны, то протикала загрузка через loadBytes.
 				// BUGFIX: если грузить каринку черезе loadBytes, то она неправильно обрабатывается, и почему-то кладётся в MovieClip, что нас не устраивает.
-				switch ( this._loader.$loaderInfo.contentType ) {
+				switch ( this._loaderInfo.contentType ) {
 					case MIME.FLASH: break;
 					default: invalidSWF = true;
 				}
@@ -351,7 +357,7 @@ package by.blooddy.core.net {
 					}
 				}
 			} else {
-				this._contentType = this._loader.$loaderInfo.contentType;
+				this._contentType = this._loaderInfo.contentType;
 			}
 
 			if ( invalidSWF ) {
@@ -365,7 +371,7 @@ package by.blooddy.core.net {
 
 			} else {
 
-				switch ( this._loader.$loaderInfo.contentType ) {
+				switch ( this._loaderInfo.contentType ) {
 					case MIME.FLASH:
 						this._content = content;
 						break;
@@ -387,16 +393,17 @@ package by.blooddy.core.net {
 		 */
 		private function handler_security_complete(event:Event):void {
 			var loader:LoaderAsset = this.create_loader();
-			loader.$loadBytes( this._loader.$loaderInfo.bytes, this.create_loaderContext() );
+			loader.$loadBytes( this._loaderInfo.bytes, this.create_loaderContext() );
 			this.clear_loader();	// очищаем старый лоадер
 			this._loader = loader;	// записываем новый
+			this._loaderInfo = this._loader.$loaderInfo;
 		}
 
 		/**
 		 * @private
 		 */
 		private function handler_loader_complete(event:Event):void {
-			var bytesTotal:uint = this._loader.$loaderInfo.bytesTotal;
+			var bytesTotal:uint = this._loaderInfo.bytesTotal;
 			super.updateProgress( bytesTotal, bytesTotal );
 			super.handler_complete( event );
 		}

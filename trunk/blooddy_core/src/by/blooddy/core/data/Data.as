@@ -32,24 +32,6 @@ package by.blooddy.core.data {
 	[Event( name="removed", type="by.blooddy.core.events.data.DataBaseEvent" )]
 
 	/**
-	 * Транслируется, когда объект добавляется в базу.
-	 * 
-	 * @eventType			by.blooddy.core.events.data.DataBaseEvent.ADDED_TO_BASE
-	 * 
-	 * @see					by.blooddy.core.data.DataBase
-	 */
-	[Event( name="addedToBase", type="by.blooddy.core.events.data.DataBaseEvent" )]
-
-	/**
-	 * Транслируется, когда объект удаляется из базы.
-	 * 
-	 * @eventType			by.blooddy.core.events.data.DataBaseEvent.REMOVED_FROM_BASE
-	 * 
-	 * @see					by.blooddy.core.data.DataBase
-	 */
-	[Event( name="removedFromBase", type="by.blooddy.core.events.data.DataBaseEvent" )]
-
-	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 9
@@ -58,6 +40,18 @@ package by.blooddy.core.data {
 	 * @keyword					data
 	 */
 	public class Data extends EventDispatcher {
+
+		//--------------------------------------------------------------------------
+		//
+		//  Namespaces
+		//
+		//--------------------------------------------------------------------------
+
+		private static const $internal_data:Namespace = DataBaseNativeEvent[ '$internal_data' ];
+		
+		protected namespace $protected_data;
+
+		use namespace $protected_data;
 
 		//--------------------------------------------------------------------------
 		//
@@ -85,7 +79,7 @@ package by.blooddy.core.data {
 		/**
 		 * @private
 		 */
-		internal var $parent:DataContainer;
+		$protected_data var _parent:DataContainer;
 
 		/**
 		 * @private
@@ -98,28 +92,22 @@ package by.blooddy.core.data {
 		 * @keyword					data.parent, parent
 		 */
 		public function get parent():DataContainer {
-			return this.$parent;
+			return this._parent;
 		}
 
 		/**
 		 * @private
 		 */
-		internal function set$parent(value:DataContainer):void {
-			if ( this.$parent === value ) return;
-			var old:DataContainer = this.$parent;
-			this.$parent = value;
+		$protected_data function setParent(value:DataContainer):void {
+			if ( this._parent === value ) return;
+			var old:DataContainer = this._parent;
+			this._parent = value;
 			if ( old && old != value ) { // мы потеряли СТАРОГО папу
-				if ( super.hasEventListener( DataBaseEvent.REMOVED_FROM_BASE ) ) {
-					super.dispatchEvent( new DataBaseEvent( DataBaseEvent.REMOVED_FROM_BASE ) );
-				}
 				this.dispatchEventFunction( new DataBaseEvent( DataBaseEvent.REMOVED, true ) );
 			}
-			value = this.$parent;
+			value = this._parent;
 			this._bubble_parent = value;
 			if ( value && value != old ) { // появился НОВЫЙ папа :)
-				if ( super.hasEventListener( DataBaseEvent.ADDED_TO_BASE ) ) {
-					super.dispatchEvent( new DataBaseEvent( DataBaseEvent.ADDED_TO_BASE ) );
-				}
 				this.dispatchEventFunction( new DataBaseEvent( DataBaseEvent.ADDED, true ) );
 			}
 		}
@@ -134,7 +122,7 @@ package by.blooddy.core.data {
 		private var _name:String = '';
 
 		/**
-		 * ID-элементы.
+		 * имя модели
 		 * 
 		 * @keyword					data.name, name
 		 */
@@ -191,12 +179,12 @@ package by.blooddy.core.data {
 			while ( target ) {
 				if ( target.hasEventListener( event.type ) ) {
 					e = event.clone() as DataBaseNativeEvent;
-					e.$eventPhase = EventPhase.BUBBLING_PHASE;
-					e.$target = this;
-					e.$canceled = canceled;
+					e.$internal_data::$target = EventPhase.BUBBLING_PHASE;
+					e.$internal_data::$target = this;
+					e.$internal_data::$canceled = canceled;
 					target.$dispatchEvent( new EventContainer( e ) );
-					canceled = e.$canceled;
-					if ( event.$stopped ) break;
+					canceled &&= e.$internal_data::$canceled;
+					if ( e.$internal_data::$stopped ) break;
 				}
 				target = target._bubble_parent;
 			}
@@ -219,7 +207,7 @@ package by.blooddy.core.data {
 		 * @private
 		 */
 		public override function toString():String {
-			return ( this.$parent ? this.$parent + '.' : '' ) + ( this._name ? this._name : this.toLocaleString() );
+			return ( this._parent ? this._parent + '.' : '' ) + ( this._name ? this._name : this.toLocaleString() );
 		}
 
 		//----------------------------------
