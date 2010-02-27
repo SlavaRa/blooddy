@@ -5,6 +5,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.net.monitor {
+
+	import flash.net.URLRequest;
 	
 	/**
 	 * @author					BlooDHounD
@@ -15,8 +17,24 @@ package by.blooddy.core.net.monitor {
 	 */
 	public interface INetMonitor {
 
+		//--------------------------------------------------------------------------
+		//
+		//  Properties
+		//
+		//--------------------------------------------------------------------------
+		
 		function get isActive():Boolean;
 
+		//--------------------------------------------------------------------------
+		//
+		//  Methods
+		//
+		//--------------------------------------------------------------------------
+		
+		function adjustURL(url:String, correlationID:String=null):String;
+		
+		function adjustURLRequest(request:URLRequest, correlationID:String=null):void;
+		
 	}
 	
 }

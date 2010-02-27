@@ -34,12 +34,14 @@ package mx.netmon {
 			if ( NetMonitor.monitor ) return;
 			trace( FBNetMonitor + ' initialization...' );
 
-			trace( root.loaderInfo.loaderURL );
+			var appRoot:String = root.loaderInfo.loaderURL;
+			var i:int = appRoot.lastIndexOf( '/' );
+			appRoot = ( i < 0 ? '/' : appRoot.substr( 0, i ) );
 
 			var host:String;
 			var socketPort:int;
 			var httpPort:int;
-			
+
 			var parameters:Object = LoaderConfig[ 'parameters' ];
 			if ( parameters ) {
 				if ( parameters[ 'netmonRTMPPort' ] != null ) {
@@ -50,10 +52,10 @@ package mx.netmon {
 				}
 			}
 
-			NetMonitor.monitor = new FBNetMonitor( host, socketPort, httpPort );
+			NetMonitor.monitor = new FBNetMonitor( appRoot, host, socketPort, httpPort );
 
 		}
 
 	}
-	
+
 }

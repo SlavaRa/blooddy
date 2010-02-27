@@ -8,6 +8,7 @@ package by.blooddy.external.net {
 	
 	import by.blooddy.core.net.MIME;
 	import by.blooddy.core.net.ProxySharedObject;
+	import by.blooddy.core.utils.net.Location;
 	import by.blooddy.external.controllers.BaseController;
 	
 	import flash.display.DisplayObjectContainer;
@@ -37,13 +38,11 @@ package by.blooddy.external.net {
 		//
 		//--------------------------------------------------------------------------
 
-		private static const _MAX_LOADING:uint = 3;
-		
 		/**
 		 * @private
 		 */
-		private static const _R_URL:RegExp =	/^(\w+:)\/\/([^\/?#]*)(\/[^?#]*)?(\?[^#]*)?(#.+)?/;
-
+		private static const _MAX_LOADING:uint = 3;
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -95,14 +94,14 @@ package by.blooddy.external.net {
 		//
 		//--------------------------------------------------------------------------
 
-		public function load(uri:String, contentGET:String=null, contentPOST:String=null):uint {
+		public function load(uri:String, contentGET:String=null, contentPOST:String=null, contentType:String=null):uint {
 
 			if ( contentGET ) {
 				contentGET = encodeURI( contentGET );
-				var loc:Array = uri.match( _R_URL );
-				if ( loc[ 4 ] || loc[ 5 ] ) {
-					loc[ 4 ] = ( loc[ 4 ] ? loc[ 4 ] + '&' : '?' ) + contentGET;
-					uri = loc[ 1 ] + '//' + loc[ 2 ] + loc[ 3 ] + loc[ 4 ] + ( loc[ 5 ] || '' );
+				var loc:Location = new Location( uri );
+				if ( loc.search || loc.hash ) {
+					loc.search = ( loc.search ? loc.search + '&' : '?' ) + contentGET;
+					uri = loc.toString();
 				} else {
 					uri += '?' + contentGET;
 				}
@@ -110,7 +109,7 @@ package by.blooddy.external.net {
 
 			var request:URLRequest = new URLRequest( uri );
 			if ( contentPOST ) {
-				request.contentType = MIME.TEXT;
+				request.contentType = ( contentType || MIME.TEXT );
 				request.requestHeaders.push(
 					new URLRequestHeader( 'Content-Type', request.contentType )
 				);
@@ -238,8 +237,8 @@ package by.blooddy.external.net {
 
 import by.blooddy.core.utils.ClassUtils;
 
-import flash.events.Event;
 import flash.events.ErrorEvent;
+import flash.events.Event;
 import flash.net.URLLoader;
 import flash.net.URLRequest;
 

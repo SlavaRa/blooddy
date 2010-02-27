@@ -1,4 +1,10 @@
-package by.blooddy.core.net {
+////////////////////////////////////////////////////////////////////////////////
+//
+//  (C) 2009 BlooDHounD
+//
+////////////////////////////////////////////////////////////////////////////////
+
+package by.blooddy.core.utils.net {
 
 	import by.blooddy.core.utils.copyObject;
 	
@@ -6,7 +12,13 @@ package by.blooddy.core.net {
 	import flash.net.URLRequestHeader;
 	import flash.net.URLVariables;
 
-	internal function copyURLRequest(request:URLRequest):URLRequest {
+	/**
+	 * @author					BlooDHounD
+	 * @version					1.0
+	 * @playerversion			Flash 10
+	 * @langversion				3.0
+	 */
+	public function copyURLRequest(request:URLRequest):URLRequest {
 		var result:URLRequest = new URLRequest();
 		result.url = request.url;
 		result.method = request.method;

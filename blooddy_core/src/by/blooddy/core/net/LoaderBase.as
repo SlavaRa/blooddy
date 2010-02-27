@@ -256,11 +256,13 @@ package by.blooddy.core.net {
 		public function load(request:URLRequest):void {
 			if ( this._state != _STATE_IDLE ) throw new ArgumentError();
 			//else if ( this._state > _STATE_PROGRESS ) this.clear();
-			this.$load( request );
 			if ( NetMonitor.isActive ) {
-				//this._id = StringUtils.random();
-				//FBNetMonitor.adjustURLRequest( request, 'хуй знает', this._id );
+//				if ( this._id ) {
+					this._id = 'asdasdasd';
+					NetMonitor.adjustURLRequest( request, this._id );
+//				}
 			}
+			this.$load( request );
 			this._url = request.url;
 			this._state = _STATE_PROGRESS;
 			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
