@@ -6,7 +6,6 @@
 
 package by.blooddy.core.net {
 
-	import by.blooddy.core.managers.IProgressable;
 	import by.blooddy.core.utils.enterFrameBroadcaster;
 	
 	import flash.events.ErrorEvent;
@@ -47,7 +46,7 @@ package by.blooddy.core.net {
 	 * 
 	 * @keyword					loaderdispatcher, loader, dispatcher
 	 */
-	public class LoaderDispatcher extends EventDispatcher implements ILoadable, IProgressable {
+	public class LoaderDispatcher extends EventDispatcher implements ILoadable {
 
 		//--------------------------------------------------------------------------
 		//
@@ -327,7 +326,7 @@ package by.blooddy.core.net {
 				if ( loader.bytesTotal > 0 ) {
 					loaded += loader.bytesLoaded;
 					total += loader.bytesTotal;
-					progress += loader.bytesLoaded / loader.bytesTotal;
+					progress += loader.progress;
 				}
 				i++;
 			}

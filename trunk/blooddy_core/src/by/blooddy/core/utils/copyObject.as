@@ -1,7 +1,19 @@
+////////////////////////////////////////////////////////////////////////////////
+//
+//  (C) 2010 BlooDHounD
+//
+////////////////////////////////////////////////////////////////////////////////
+
 package by.blooddy.core.utils {
 
 	import flash.utils.Dictionary;
 
+	/**
+	 * @author					BlooDHounD
+	 * @version					1.0
+	 * @playerversion			Flash 9
+	 * @langversion				3.0
+	 */
 	public function copyObject(source:Object, target:Object=null):Object {
 		return $copyObject( new Dictionary(), source, target );
 	}

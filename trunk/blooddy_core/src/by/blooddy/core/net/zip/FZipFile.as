@@ -316,6 +316,9 @@ package by.blooddy.core.net.zip {
 			return this._loaded;
 		}
 
+		public function get progress():Number {
+			return 0; // TODO
+		}
 		//--------------------------------------------------------------------------
 		//
 		//  Properties

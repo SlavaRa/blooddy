@@ -1,8 +1,20 @@
+////////////////////////////////////////////////////////////////////////////////
+//
+//  (C) 2010 BlooDHounD
+//
+////////////////////////////////////////////////////////////////////////////////
+
 package by.blooddy.core.utils {
 
 	import flash.events.Event;
 
-	public final class CallerQueue {
+	/**
+	 * @author					BlooDHounD
+	 * @version					1.0
+	 * @playerversion			Flash 9
+	 * @langversion				3.0
+	 */
+	public class CallerQueue {
 
 		public function CallerQueue() {
 			super();

@@ -8,8 +8,6 @@ package by.blooddy.core.managers {
 
 	import flash.events.IEventDispatcher;
 
-	[Event( name="progress", type="flash.events.ProgressEvent" )]
-
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0

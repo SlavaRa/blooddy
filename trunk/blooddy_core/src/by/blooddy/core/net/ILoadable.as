@@ -7,6 +7,7 @@
 package by.blooddy.core.net {
 
 	import flash.events.IEventDispatcher;
+	import by.blooddy.core.managers.IProgressable;
 
 	//--------------------------------------
 	//  Events
@@ -55,7 +56,7 @@ package by.blooddy.core.net {
 	 * 
 	 * @keyword					iloadable
 	 */
-	public interface ILoadable extends IEventDispatcher {
+	public interface ILoadable extends IProgressable {
 		
 		//--------------------------------------------------------------------------
 		//

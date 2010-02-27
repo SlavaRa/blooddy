@@ -6,6 +6,12 @@
 
 package by.blooddy.core.utils {
 
+	/**
+	 * @author					BlooDHounD
+	 * @version					1.0
+	 * @playerversion			Flash 9
+	 * @langversion				3.0
+	 */
 	public final /*abstract*/ class MathUtils {
 
 		public static function convertRadix(value:String, inRadix:uint=10, outRadix:uint=10):String {

@@ -1,7 +1,19 @@
+////////////////////////////////////////////////////////////////////////////////
+//
+//  (C) 2010 BlooDHounD
+//
+////////////////////////////////////////////////////////////////////////////////
+
 package by.blooddy.core.utils {
 
 	import flash.system.Capabilities;
 
+	/**
+	 * @author					BlooDHounD
+	 * @version					1.0
+	 * @playerversion			Flash 9
+	 * @langversion				3.0
+	 */
 	public final class DateUtils {
 
 		public static function timeToString(time:Number, useUTC:Boolean=true, sep:String=":", seconds:Boolean=true, milliseconds:Boolean=false):String {
@@ -95,8 +107,7 @@ y 	Номер года, 2 цифры 	Примеры: 99, 03
 z 	Порядковый номер дня в году (нумерация с 0) 	От 0 до 365
 Z 	Смещение временной зоны в секундах. Для временных зон западнее UTC это отрицательное число, восточнее UTC - положительное. 	От -43200 до 43200
 */
-		public static function format(time:Number, format:String="", useUTC:Boolean=true, language:String=null):String { // Thu Oct 30 12:40:58 GMT+0300 2008
-			if ( !language ) language = Capabilities.language;
+		public static function format(time:Number, format:String="", useUTC:Boolean=true):String { // Thu Oct 30 12:40:58 GMT+0300 2008
 			var result:String = "";
 			var l:uint = format.length;
 			var char:String;
@@ -115,8 +126,8 @@ Z 	Смещение временной зоны в секундах. Для вр
 
 					case "c":	throw new ArgumentError();
 
-					case "D":	result += DAY_LOCALE_SHORT	[ language ][ useUTC ? d.getUTCDate() : d.getDay() ];					break;
-					case "l":	result += DAY_LOCALE		[ language ][ useUTC ? d.getUTCDate() : d.getDay() ];					break;
+					case "D":	result += DAY_LOCALE_SHORT	[ useUTC ? d.getUTCDate() : d.getDay() ];					break;
+					case "l":	result += DAY_LOCALE		[ useUTC ? d.getUTCDate() : d.getDay() ];					break;
 					case "d":	result += formatNumber( useUTC ? d.getUTCDate() : d.getDate() );									break;
 					case "j":	result += ( useUTC ? d.getUTCDate() : d.getDate() );												break; 
 					case "S":	if ( format.charAt( i-1 ) == "j" ) {
@@ -125,8 +136,8 @@ Z 	Смещение временной зоны в секундах. Для вр
 									result += "S";
 								}																									break;
 
-					case "F":	result += MONTH_LOCALE		[ language ][ useUTC ? d.getUTCMonth()  : d.getMonth()  ];				break;
-					case "M":	result += MONTH_LOCALE_SHORT[ language ][ useUTC ? d.getUTCMonth()  : d.getMonth()  ];				break;
+					case "F":	result += MONTH_LOCALE		[ useUTC ? d.getUTCMonth()  : d.getMonth()  ];				break;
+					case "M":	result += MONTH_LOCALE_SHORT[ useUTC ? d.getUTCMonth()  : d.getMonth()  ];				break;
 					case "m":	result += formatNumber( useUTC ? d.getUTCMonth() + 1 : d.getMonth() + 1 );							break;
 					case "n":	result += ( useUTC ? d.getUTCMonth() + 1 : d.getMonth() + 1);										break;
 
@@ -170,22 +181,18 @@ Z 	Смещение временной зоны в секундах. Для вр
 
 		private static const DAY:uint = DAY_BEAT * 1E3;
 
-		private static const MONTH_LOCALE:Object = {
-			en: [	"January",	"February",	"March",	"April",	"May",		"June",		"July",		"August",	"September",	"October",	"November",	"December"	],
-			ru: [	"Января",	"Февраля",	"Марта",	"Апреля",	"Мая",		"Июня",		"Июля",		"Августа",	"Сентября",		"Октября",	"Ноября",	"Декабря"	]
-		};
+		private static const MONTH_LOCALE:Array =
+			new Array(	"January",	"February",	"March",	"April",	"May",		"June",		"July",		"August",	"September",	"October",	"November",	"December"	);
 
-		private static const MONTH_LOCALE_SHORT:Object = {
-			en: [	"Jan",		"Feb",		"Mar",		"Apr",		"May",		"Jun",		"Jul",		"Aug",		"Sep",		"Oct",		"Nov",		"Dec"		]
-		};
+		private static const MONTH_LOCALE_SHORT:Array =
+			new Array(	"Jan",		"Feb",		"Mar",		"Apr",		"May",		"Jun",		"Jul",		"Aug",		"Sep",			"Oct",		"Nov",		"Dec"		);
 
-		private static const DAY_LOCALE:Object = {
-			en: [	"Monday",	"Tuesday",	"Wednesday","Thursday",	"Friday",	"Saturday",	"Sunday"	]
-		};
+		private static const DAY_LOCALE:Object =
+			new Array(	"Monday",	"Tuesday",	"Wednesday","Thursday",	"Friday",	"Saturday",	"Sunday"	);
 
-		private static const DAY_LOCALE_SHORT:Object = {
-			en: [	"Mon",		"Tue",		"Wed",		"Thu",		"Fri",		"Sat",		"Sun"		]
-		};
+
+		private static const DAY_LOCALE_SHORT:Object =
+			new Array(	"Mon",		"Tue",		"Wed",		"Thu",		"Fri",		"Sat",		"Sun"		);
 
 	}
 

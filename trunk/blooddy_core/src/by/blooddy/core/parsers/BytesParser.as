@@ -133,6 +133,9 @@ package by.blooddy.core.parsers {
 			return this._bytes.length;
 		}
 
+		public function get progress():Number {
+			return 0; // TODO
+		}
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
