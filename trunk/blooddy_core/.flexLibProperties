@@ -133,7 +133,7 @@
     <classEntry path="by.blooddy.core.net.SocketConnection"/>
     <classEntry path="by.blooddy.core.net.URLLoader"/>
     <classEntry path="by.blooddy.core.net.URLStream"/>
-    <classEntry path="by.blooddy.core.net.copyURLRequest"/>
+    <classEntry path="by.blooddy.core.utils.net.copyURLRequest"/>
     <classEntry path="by.blooddy.core.net.monitor.INetMonitor"/>
     <classEntry path="by.blooddy.core.net.monitor.NetMonitor"/>
     <classEntry path="by.blooddy.core.parsers.BytesParser"/>
@@ -198,6 +198,8 @@
     <classEntry path="by.blooddy.core.utils.xml.IXMLable"/>
     <classEntry path="by.blooddy.core.utils.xml.XMLUtils"/>
     <classEntry path="parseBoolean"/>
+    <classEntry path="by.blooddy.core.utils.net.URLUtils"/>
+    <classEntry path="by.blooddy.core.utils.net.Location"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

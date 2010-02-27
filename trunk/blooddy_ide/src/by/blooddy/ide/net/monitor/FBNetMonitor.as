@@ -8,6 +8,8 @@ package by.blooddy.core.net.monitor {
 
 	import by.blooddy.core.net.Socket;
 	import by.blooddy.core.utils.Caller;
+	import by.blooddy.core.utils.net.Location;
+	import by.blooddy.core.utils.net.URLUtils;
 	
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
@@ -15,6 +17,7 @@ package by.blooddy.core.net.monitor {
 	import flash.events.ProgressEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.net.URLRequest;
+	import flash.net.URLRequestHeader;
 	
 	/**
 	 * @author					BlooDHounD
@@ -63,6 +66,21 @@ package by.blooddy.core.net.monitor {
 		 */
 		private static const _STATE_COMPLETE:uint =		1 + _STATE_CONNECTING;
 		
+		/**
+		 * @private
+		 */
+		private static const _R_HTTP:RegExp =	/^https?$/;
+
+		/**
+		 * @private
+		 */
+		private static const _HEADER_ID:String =		'x-blooddy-netMonitor-correlationID';
+		
+		/**
+		 * @private
+		 */
+		private static const _HEADER_SERVICE:String =	'x-blooddy-netMonitor-serviceName';
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -72,9 +90,10 @@ package by.blooddy.core.net.monitor {
 		/**
 		 * Constructor
 		 */
-		public function FBNetMonitor(host:String=null, socketPort:int=0, httpPort:int=0) {
+		public function FBNetMonitor(appRoot:String, host:String=null, socketPort:int=0, httpPort:int=0) {
 			super();
 
+			this._appRoot = appRoot;
 			this._host = host || DEFAULT_HOST;
 			this._socketPort = socketPort || DEFAULT_SOCKET_PORT;
 			this._httpPort = httpPort || DEFAULT_HTTP_PORT;
@@ -95,6 +114,11 @@ package by.blooddy.core.net.monitor {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @private
+		 */
+		private var _appRoot:String;
+		
 		/**
 		 * @private
 		 */
@@ -141,8 +165,31 @@ package by.blooddy.core.net.monitor {
 		//
 		//--------------------------------------------------------------------------
 
-		public function adjustURLRequest(request:URLRequest):void {
+		public function adjustURL(url:String, correlationID:String=null):String {
+			if ( this._state < _STATE_CONNECTING ) return url;
+
+			var loc:Location;
+			loc = new Location( url );
+			if ( loc.host == this._host || loc.port == this._httpPort ) return url; // мы и так уже под дозой!
 			
+			loc = new Location( URLUtils.getAbsoluteURL( ( this._appRoot || '' ), url ) );
+			var arr:Array = loc.protocol.match( _R_HTTP );
+			if ( !arr ) return url;
+
+			var hostname:String = loc.hostname;
+			var httpsName:String = ( arr[ 1 ] ? 'Y' : 'N' );
+
+			loc.host = this._host;
+			loc.port = this._httpPort;
+			
+			return loc.toString() + '?hostport=' + hostname + '&https=' + httpsName + '&id=' + ( correlationID || '-1' );
+		}
+		
+		public function adjustURLRequest(request:URLRequest, correlationID:String=null):void {
+			if ( this._state < _STATE_CONNECTING ) return;
+			var url:String = this.adjustURL( request.url, correlationID );
+			if ( url == request.url ) return;
+			request.url = url;
 		}
 
 		//--------------------------------------------------------------------------

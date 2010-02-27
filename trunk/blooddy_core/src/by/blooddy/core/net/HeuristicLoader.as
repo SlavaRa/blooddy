@@ -8,6 +8,7 @@ package by.blooddy.core.net {
 
 	import by.blooddy.core.net.MIME;
 	import by.blooddy.core.utils.dispose;
+	import by.blooddy.core.utils.net.copyURLRequest;
 
 	import flash.display.LoaderInfo;
 	import flash.events.ErrorEvent;
