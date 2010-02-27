@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  (C) 20010 BlooDHounD
+//  (C) 2010 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -109,7 +109,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		$protected_load static const _URL:RegExp = ( _DOMAIN == 'localhost' ? null : new RegExp( '^((?!\w+://)|https?://(www\.)?' + _DOMAIN.replace( /\./g, '\\.' ) + ')', 'i' ) );
+		$protected_load static const _URL:RegExp = ( _DOMAIN == 'localhost' ? null : new RegExp( '^(?:(?!\\w+://)|https?://(?:www\\.)?' + _DOMAIN.replace( /\./g, '\\.' ) + ')', 'i' ) );
 		
 		/**
 		 * @private
@@ -234,6 +234,22 @@ package by.blooddy.core.net {
 		}
 		
 		//----------------------------------
+		//  progress
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
+		private var _progress:Number;
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get progress():Number {
+			return this._progress;
+		}
+		
+		//----------------------------------
 		//  loaded
 		//----------------------------------
 		
@@ -259,7 +275,8 @@ package by.blooddy.core.net {
 			if ( NetMonitor.isActive ) {
 //				if ( this._id ) {
 					this._id = 'asdasdasd';
-					NetMonitor.adjustURLRequest( request, this._id );
+					NetMonitor.monitorInvocation( this._id, request, this );
+					NetMonitor.adjustURLRequest( this._id, request );
 //				}
 			}
 			this.$load( request );
@@ -350,6 +367,11 @@ package by.blooddy.core.net {
 				this._bytesLoaded = bytesLoaded;
 			}
 			this._bytesTotal = bytesTotal;
+			if ( bytesTotal > 0 ) {
+				this._progress = this._bytesLoaded / this._bytesTotal;
+			} else {
+				this._progress = ( this._state >= _STATE_COMPLETE ? 1 : 0 );
+			}
 			super.dispatchEvent( new ProgressEvent( ProgressEvent.PROGRESS, false, false, this._bytesLoaded, this._bytesTotal ) );
 		}
 		
@@ -358,7 +380,7 @@ package by.blooddy.core.net {
 		//  Private methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 * очисщает данные
@@ -378,7 +400,7 @@ package by.blooddy.core.net {
 				super.dispatchEvent( new Event( Event.UNLOAD ) );
 			}
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Event handlers

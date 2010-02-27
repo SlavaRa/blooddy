@@ -4,10 +4,13 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.net.monitor {
+package by.blooddy.ide.net.monitor {
 
+	import by.blooddy.core.net.ILoadable;
 	import by.blooddy.core.net.Socket;
+	import by.blooddy.core.net.monitor.INetMonitor;
 	import by.blooddy.core.utils.Caller;
+	import by.blooddy.core.utils.ClassUtils;
 	import by.blooddy.core.utils.net.Location;
 	import by.blooddy.core.utils.net.URLUtils;
 	
@@ -17,7 +20,6 @@ package by.blooddy.core.net.monitor {
 	import flash.events.ProgressEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.net.URLRequest;
-	import flash.net.URLRequestHeader;
 	
 	/**
 	 * @author					BlooDHounD
@@ -71,16 +73,13 @@ package by.blooddy.core.net.monitor {
 		 */
 		private static const _R_HTTP:RegExp =	/^https?$/;
 
-		/**
-		 * @private
-		 */
-		private static const _HEADER_ID:String =		'x-blooddy-netMonitor-correlationID';
-		
-		/**
-		 * @private
-		 */
-		private static const _HEADER_SERVICE:String =	'x-blooddy-netMonitor-serviceName';
-		
+		private static const _MSG_EVENT:uint =		1;
+		private static const _MSG_RESULT:uint =		2;
+		private static const _MSG_FAULT:uint =		3;
+		private static const _MSG_INVOCATION:uint =	4;
+		private static const _MSG_SUSPEND:uint =	5;
+		private static const _MSG_RESUME:uint =		6;
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -172,7 +171,7 @@ package by.blooddy.core.net.monitor {
 			loc = new Location( url );
 			if ( loc.host == this._host || loc.port == this._httpPort ) return url; // мы и так уже под дозой!
 			
-			loc = new Location( URLUtils.getAbsoluteURL( ( this._appRoot || '' ), url ) );
+			loc = new Location( URLUtils.createAbsoluteURL( ( this._appRoot || '' ), url ) );
 			var arr:Array = loc.protocol.match( _R_HTTP );
 			if ( !arr ) return url;
 
@@ -185,11 +184,37 @@ package by.blooddy.core.net.monitor {
 			return loc.toString() + '?hostport=' + hostname + '&https=' + httpsName + '&id=' + ( correlationID || '-1' );
 		}
 		
-		public function adjustURLRequest(request:URLRequest, correlationID:String=null):void {
+		public function adjustURLRequest(correlationID:String, request:URLRequest):void {
 			if ( this._state < _STATE_CONNECTING ) return;
 			var url:String = this.adjustURL( request.url, correlationID );
 			if ( url == request.url ) return;
 			request.url = url;
+		}
+
+		public function monitorInvocation(correlationID:String, request:URLRequest, loader:ILoadable, context:*=null):void {
+			if ( this._state < _STATE_CONNECTING ) return;
+
+			if ( !context ) context = new SourceContext();
+
+			if ( this._state == _STATE_CONNECTING ) {
+
+				this.addToCache( this.monitorInvocation, correlationID, request, loader, context );
+
+			} else {
+
+				this._socket.writeByte( _MSG_INVOCATION );
+				this._socket.writeUTF( ClassUtils.getClassName( loader ) );
+				this._socket.writeUTF( context.file );
+				this._socket.writeInt( context.line );
+				this._socket.writeUTF( correlationID );
+				this._socket.writeObject( request.data );
+				this._socket.writeUTF( String( request ) );
+				this._socket.writeUTF( request.method );
+				this._socket.writeUTF( request.url );
+				this._socket.writeUTF( 'test2.mxml' );
+				this._socket.flush();
+
+			}
 		}
 
 		//--------------------------------------------------------------------------
@@ -216,6 +241,7 @@ package by.blooddy.core.net.monitor {
 		 * @private
 		 */
 		private function handler_connect(event:Event):void {
+			trace( this + ' constructed!' );
 			this._state = _STATE_COMPLETE;
 			if ( this._cache ) {
 				while ( this._cache.length > 0 ) {
@@ -229,6 +255,7 @@ package by.blooddy.core.net.monitor {
 		 * @private
 		 */
 		private function handler_close(event:ErrorEvent):void {
+			trace( this + ' destructed!' );
 			this._state = _STATE_IDLE;
 			this._cache = null;
 			this._socket.removeEventListener( Event.CONNECT,						this.handler_connect );
@@ -248,4 +275,43 @@ package by.blooddy.core.net.monitor {
 		
 	}
 	
+}
+
+/**
+ * @private
+ */
+internal final class SourceContext {
+
+	/**
+	 * @private
+	 */
+	private static const _LINE:RegExp = /^\s*at\s+([^(\/]+)(?:\/([^(]+))?\(\)(?:\[(.*?):(\d+)\])?$/gm;
+
+	/**
+	 * @private
+	 */
+	private static const _EXCLUDE:RegExp = /^by\.blooddy\.(?:core|ide)/;
+
+	public function SourceContext() {
+		super();
+
+		var stack:String = ( new Error() ).getStackTrace();
+
+		_LINE.lastIndex = 10; // пропускаем самих себя =)
+
+		var row:Array;
+		while ( row = _LINE.exec( stack ) ) {
+			if ( !_EXCLUDE.test( row[ 1 ] ) ) {
+				this.file = row[ 3 ];
+				this.line = parseInt( row[ 4 ], 10 );
+				break;
+			}
+		}
+
+	}
+
+	public var file:String;
+
+	public var line:uint;
+
 }

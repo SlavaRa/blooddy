@@ -6,8 +6,9 @@
 
 package mx.netmon {
 
-	import by.blooddy.core.net.monitor.FBNetMonitor;
 	import by.blooddy.core.net.monitor.NetMonitor;
+	import by.blooddy.core.utils.net.URLUtils;
+	import by.blooddy.ide.net.monitor.FBNetMonitor;
 	
 	import flash.display.DisplayObject;
 	
@@ -34,9 +35,9 @@ package mx.netmon {
 			if ( NetMonitor.monitor ) return;
 			trace( FBNetMonitor + ' initialization...' );
 
-			var appRoot:String = root.loaderInfo.loaderURL;
-			var i:int = appRoot.lastIndexOf( '/' );
-			appRoot = ( i < 0 ? '/' : appRoot.substr( 0, i ) );
+			var appRoot:String = URLUtils.getPathURL(
+				URLUtils.normalizeURL( root.loaderInfo.loaderURL )
+			);
 
 			var host:String;
 			var socketPort:int;

@@ -6,6 +6,8 @@
 
 package by.blooddy.core.net.monitor {
 
+	import by.blooddy.core.net.ILoadable;
+	
 	import flash.net.URLRequest;
 	
 	/**
@@ -49,11 +51,19 @@ package by.blooddy.core.net.monitor {
 		/**
 		 * @copy	by.blooddy.core.net.monitor.INetMonitor#adjustURLRequest()
 		 */
-		public static function adjustURLRequest(request:URLRequest, correlationID:String=null):void {
+		public static function adjustURLRequest(correlationID:String, request:URLRequest):void {
 			if ( !monitor ) return;
-			monitor.adjustURLRequest( request, correlationID );
+			monitor.adjustURLRequest( correlationID, request );
 		}
 		
+		/**
+		 * @copy	by.blooddy.core.net.monitor.INetMonitor#monitorInvocation()
+		 */
+		public static function monitorInvocation(correlationID:String, request:URLRequest, loader:ILoadable):void {
+			if ( !monitor ) return;
+			monitor.monitorInvocation( correlationID, request, loader );
+		}
+
 	}
 	
 }

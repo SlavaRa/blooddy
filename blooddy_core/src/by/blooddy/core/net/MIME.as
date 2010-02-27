@@ -22,7 +22,7 @@ package by.blooddy.core.net {
 		//
 		//--------------------------------------------------------------------------
 
-		private static const _EXTENSION:RegExp = /^[^\?]*?\.([^\.\?]+)(\?.+?)?$/;
+		private static const _EXTENSION:RegExp = /[^\.\?]+(?=\?.+$)/;
 
 		//--------------------------------------------------------------------------
 		//
@@ -123,7 +123,7 @@ package by.blooddy.core.net {
 			if ( url ) {
 				var m:Array = url.match( _EXTENSION );
 				if ( m ) {
-					switch ( m[1] ) {
+					switch ( m[ 0 ] ) {
 						case 'swf':		return FLASH;
 						case 'jpeg':
 						case 'jpg':		return JPEG;

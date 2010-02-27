@@ -6,6 +6,8 @@
 
 package by.blooddy.core.net.monitor {
 
+	import by.blooddy.core.net.ILoadable;
+	
 	import flash.net.URLRequest;
 	
 	/**
@@ -33,8 +35,10 @@ package by.blooddy.core.net.monitor {
 		
 		function adjustURL(url:String, correlationID:String=null):String;
 		
-		function adjustURLRequest(request:URLRequest, correlationID:String=null):void;
+		function adjustURLRequest(correlationID:String, request:URLRequest):void;
 		
+		function monitorInvocation(correlationID:String, request:URLRequest, loader:ILoadable, context:*=null):void;
+
 	}
 	
 }

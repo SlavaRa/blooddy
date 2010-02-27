@@ -24,7 +24,7 @@ package by.blooddy.core.utils.net {
 		/**
 		 * @private
 		 */
-		private static const _R_URL:RegExp = /^((\w+):\/\/([\w\.]+)(:(\d+))?(\/[^?#]*)?|([^?#]*))?(\?[^#]*)?(#.*)?$/;
+		private static const _R_URL:RegExp = /^(?:(\w+):\/\/([\w\.]+)(?::(\d+)?)?(\/[^?#]*)?|([^?#]*))?(\?[^#]*)?(#.*)?$/;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -53,14 +53,20 @@ package by.blooddy.core.utils.net {
 			super();
 			var arr:Array = url.match( _R_URL );
 			if ( !arr ) throw new URIError();
-			this.protocol =	arr[ 2 ];
-			this.host =		arr[ 3 ];
-			this.port =		arr[ 5 ];
-			this.path =		arr[ 6 ] || arr[ 7 ];
-			this.search =	arr[ 8 ];
-			this.hash =		arr[ 9 ];
+			this.protocol =	arr[ 1 ];
+			this.host =		arr[ 2 ];
+			this.port =		arr[ 3 ];
+			this.path =		arr[ 4 ] || arr[ 5 ];
+			this.search =	arr[ 6 ];
+			this.hash =		arr[ 7 ];
 		}
 
+		//--------------------------------------------------------------------------
+		//
+		//  Properties
+		//
+		//--------------------------------------------------------------------------
+		
 		public var protocol:String;
 
 		public var host:String;
@@ -68,7 +74,13 @@ package by.blooddy.core.utils.net {
 		public var port:int;
 
 		public function get hostname():String {
-			return ( this.host ? this.host + ( this.port > 0 && this.port != 80 ? ':' + this.port : '' ) : '' );
+			return ( this.host
+				?	this.host + ( this.protocol == 'file' || this.port > 0 && this.port != 80
+						?	':'
+						:	''
+					) + ( this.port || '' )
+				:	''
+			);
 		}
 
 		public var path:String;
@@ -77,8 +89,42 @@ package by.blooddy.core.utils.net {
 
 		public var hash:String;
 
+		//--------------------------------------------------------------------------
+		//
+		//  Methods
+		//
+		//--------------------------------------------------------------------------
+		
 		public function toString():String {
-			return ( this.host ? ( this.protocol ? this.protocol + '://' : '' ) + this.hostname : '' ) + ( this.path ? ( this.path.charAt( 0 ) == '/' ? '' : '/' ) + this.path : '' ) + ( this.search || '' ) + ( this.hash || '' ); 
+			return ( this.host
+				?	( this.protocol
+						?	this.protocol + '://'
+						:	''
+					) + this.hostname
+				:	''
+			) + this.getWithPrefix( this.path, '/' ) + this.getWithPrefix( this.search, '?' ) + this.getWithPrefix( this.hash, '#' );
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Private methods
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		 * @private
+		 */
+		private function getWithPrefix(str:String, prefix:String):String {
+			if ( str ) {
+				if ( str.charAt( 0 ) == prefix ) {
+					if ( str.length > 1 ) {
+						return str;
+					}
+				} else {
+					return prefix + str;
+				}
+			}
+			return '';
 		}
 
 	}

@@ -15,7 +15,7 @@ package by.blooddy.core.utils.net {
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
-	 * @playerversion			Flash 10
+	 * @playerversion			Flash 9
 	 * @langversion				3.0
 	 */
 	public function copyURLRequest(request:URLRequest):URLRequest {
