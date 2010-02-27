@@ -6,13 +6,17 @@
 
 package by.blooddy.core.net {
 
-	import flash.events.IEventDispatcher;
-	import by.blooddy.core.managers.IProgressable;
-
 	//--------------------------------------
 	//  Events
 	//--------------------------------------
 
+	/**
+	 * Транслируется, когда начинается загрузка.
+	 * 
+	 * @eventType			flash.events.Event.OPEN
+	 */
+	[Event( name="open", type="flash.events.Event" )]
+	
 	/**
 	 * Транслируется, когда загрузка заканчивается.
 	 * 
@@ -34,20 +38,6 @@ package by.blooddy.core.net {
 	 */
 	[Event( name="securityError", type="flash.events.SecurityErrorEvent" )]
 	
-	/**
-	 * Транслируется, когда начинается загрузка.
-	 * 
-	 * @eventType			flash.events.Event.OPEN
-	 */
-	[Event( name="open", type="flash.events.Event" )]
-
-	/**
-	 * Транслиуется, когда приходят байты данных.
-	 * 
-	 * @eventType			flash.events.ProgressEvent.PROGRESS
-	 */
-	[Event( name="progress", type="flash.events.ProgressEvent" )]
-
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
