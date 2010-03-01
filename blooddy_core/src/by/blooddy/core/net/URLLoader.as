@@ -122,6 +122,10 @@ package by.blooddy.core.net {
 		//
 		//--------------------------------------------------------------------------
 
+		$protected_load override function $getAbstractContent():* {
+			return this._content;
+		}
+		
 		$protected_load override function $load(request:URLRequest):void {
 			this._stream = this.create_stream();
 			this._stream.load( request );

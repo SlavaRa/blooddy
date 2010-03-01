@@ -6,6 +6,7 @@
 
 package by.blooddy.core.net {
 
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
@@ -157,7 +158,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private function handler_error(event:Event):void {
+		private function handler_error(event:ErrorEvent):void {
 			if ( this._hasError ) {
 				event.stopImmediatePropagation();
 			} else {

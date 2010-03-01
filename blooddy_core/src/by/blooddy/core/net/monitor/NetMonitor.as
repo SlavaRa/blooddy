@@ -8,6 +8,7 @@ package by.blooddy.core.net.monitor {
 
 	import by.blooddy.core.net.ILoadable;
 	
+	import flash.events.Event;
 	import flash.net.URLRequest;
 	
 	/**
@@ -27,18 +28,34 @@ package by.blooddy.core.net.monitor {
 
 		public static var monitor:INetMonitor;
 
-		/**
-		 * @copy	by.blooddy.core.net.monitor.INetMonitor#isActive
-		 */
-		public static function get isActive():Boolean {
-			return ( monitor ? monitor.isActive : false );
-		}
-		
 		//--------------------------------------------------------------------------
 		//
 		//  Class methods
 		//
 		//--------------------------------------------------------------------------
+		
+		/**
+		 * @copy	by.blooddy.core.net.monitor.INetMonitor#isActive
+		 */
+		public static function isActive():Boolean {
+			return ( monitor ? monitor.isActive() : false );
+		}
+		
+		/**
+		 * @copy	by.blooddy.core.net.monitor.INetMonitor#isURLAdjusted()
+		 */
+		public static function isURLAdjusted(url:String):Boolean {
+			if ( !monitor ) return false;
+			return monitor.isURLAdjusted( url );
+		}
+		
+		/**
+		 * @copy	by.blooddy.core.net.monitor.INetMonitor#isURLRequestAdjusted()
+		 */
+		public static function isURLRequestAdjusted(request:URLRequest):Boolean {
+			if ( !monitor ) return false;
+			return monitor.isURLRequestAdjusted( request );
+		}
 		
 		/**
 		 * @copy	by.blooddy.core.net.monitor.INetMonitor#adjustURL()
@@ -57,13 +74,37 @@ package by.blooddy.core.net.monitor {
 		}
 		
 		/**
-		 * @copy	by.blooddy.core.net.monitor.INetMonitor#monitorInvocation()
+		 * @copy	by.blooddy.core.net.monitor.INetMonitor#monitorEvent()
+		 */
+		public static function monitorEvent(correlationID:String, event:Event):void {
+			if ( !monitor ) return;
+			monitor.monitorLoadableEvent( correlationID, event );
+		}
+		
+		/**
+		 * @copy	by.blooddy.core.net.monitor.INetMonitor#monitorLoadableInvocation()
 		 */
 		public static function monitorInvocation(correlationID:String, request:URLRequest, loader:ILoadable):void {
 			if ( !monitor ) return;
-			monitor.monitorInvocation( correlationID, request, loader );
+			monitor.monitorLoadableInvocation( correlationID, request, loader );
 		}
 
+		/**
+		 * @copy	by.blooddy.core.net.monitor.INetMonitor#monitorLoadableResult()
+		 */
+		public static function monitorResult(correlationID:String, responceData:Object):void {
+			if ( !monitor ) return;
+			monitor.monitorLoadableResult( correlationID, responceData );
+		}
+		
+		/**
+		 * @copy	by.blooddy.core.net.monitor.INetMonitor#monitorLoadableFault()
+		 */
+		public static function monitorFault(correlationID:String, message:String):void {
+			if ( !monitor ) return;
+			monitor.monitorLoadableFault( correlationID, message );
+		}
+		
 	}
 	
 }

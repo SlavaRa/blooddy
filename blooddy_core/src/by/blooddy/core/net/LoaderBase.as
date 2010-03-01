@@ -8,6 +8,7 @@ package by.blooddy.core.net {
 	
 	import by.blooddy.core.net.monitor.NetMonitor;
 	import by.blooddy.core.utils.ClassUtils;
+	import by.blooddy.core.utils.crypto.UIDUtils;
 	import by.blooddy.core.utils.enterFrameBroadcaster;
 	
 	import flash.errors.IllegalOperationError;
@@ -272,12 +273,10 @@ package by.blooddy.core.net {
 		public function load(request:URLRequest):void {
 			if ( this._state != _STATE_IDLE ) throw new ArgumentError();
 			//else if ( this._state > _STATE_PROGRESS ) this.clear();
-			if ( NetMonitor.isActive ) {
-//				if ( this._id ) {
-					this._id = 'asdasdasd';
-					NetMonitor.monitorInvocation( this._id, request, this );
-					NetMonitor.adjustURLRequest( this._id, request );
-//				}
+			if ( NetMonitor.isActive() && !NetMonitor.isURLRequestAdjusted( request ) ) {
+				this._id = UIDUtils.createUID();
+				NetMonitor.monitorInvocation( this._id, request, this );
+				NetMonitor.adjustURLRequest( this._id, request );
 			}
 			this.$load( request );
 			this._url = request.url;
@@ -313,6 +312,16 @@ package by.blooddy.core.net {
 			this.clear();
 		}
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Methods
+		//
+		//--------------------------------------------------------------------------
+
+		public override function dispatchEvent(event:Event):Boolean {
+			return this.$dispatchEvent( event );
+		}
+
 		/**
 		 * @private
 		 */
@@ -326,6 +335,14 @@ package by.blooddy.core.net {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @private
+		 * очисщает данные
+		 */
+		$protected_load function $getAbstractContent():* {
+			return null;
+		}
+		
 		/**
 		 * @private
 		 * очисщает данные
@@ -372,7 +389,7 @@ package by.blooddy.core.net {
 			} else {
 				this._progress = ( this._state >= _STATE_COMPLETE ? 1 : 0 );
 			}
-			super.dispatchEvent( new ProgressEvent( ProgressEvent.PROGRESS, false, false, this._bytesLoaded, this._bytesTotal ) );
+			this.$dispatchEvent( new ProgressEvent( ProgressEvent.PROGRESS, false, false, this._bytesLoaded, this._bytesTotal ) );
 		}
 		
 		//--------------------------------------------------------------------------
@@ -381,6 +398,18 @@ package by.blooddy.core.net {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @private
+		 */
+		private function $dispatchEvent(event:Event):Boolean {
+			// странная штука. после отправки всегда статус становится Error. каким бы событие не было.
+			// в самом rpc нигде не используется
+			//if ( this._id && NetMonitor.isActive() ) {
+			//	NetMonitor.monitorEvent( this._id, event );
+			//}
+			return super.dispatchEvent( event );
+		}
+		
 		/**
 		 * @private
 		 * очисщает данные
@@ -392,6 +421,7 @@ package by.blooddy.core.net {
 				this._input.clear();
 				this._input = null;
 			}
+			this._id = null;
 			this._url = null;
 			this._bytesLoaded = 0;
 			this._bytesTotal = 0;
@@ -421,7 +451,7 @@ package by.blooddy.core.net {
 		private function handler_frameContructed(event:Event):void {
 			enterFrameBroadcaster.removeEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameContructed );
 			if ( super.hasEventListener( Event.OPEN ) ) {
-				super.dispatchEvent( new Event( Event.OPEN ) );
+				this.$dispatchEvent( new Event( Event.OPEN ) );
 			}
 			this.updateProgress( 0, this._input.length );
 			this.$loadBytes( this._input );
@@ -443,10 +473,14 @@ package by.blooddy.core.net {
 		$protected_load function handler_complete(event:Event):void {
 			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
 			this._state = ( event is ErrorEvent ? _STATE_ERROR : _STATE_COMPLETE );
-			if ( NetMonitor.isActive ) {
-				//NetMonitor.monitorResult( '1231231231', 'asdasdasdasdas' );
+			if ( this._id && NetMonitor.isActive() ) {
+				if ( this._state == _STATE_COMPLETE ) {
+					NetMonitor.monitorResult( this._id, this.$getAbstractContent() );
+				} else {
+					NetMonitor.monitorFault( this._id, ( event as ErrorEvent ).text );
+				}
 			}
-			super.dispatchEvent( event );
+			this.$dispatchEvent( event );
 		}
 		
 	}

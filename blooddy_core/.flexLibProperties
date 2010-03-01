@@ -77,7 +77,6 @@
     <classEntry path="by.blooddy.core.geom.WeightMatrix"/>
     <classEntry path="by.blooddy.core.logging.ILogging"/>
     <classEntry path="by.blooddy.core.logging.InfoLog"/>
-    <classEntry path="by.blooddy.core.logging.InfoLogger"/>
     <classEntry path="by.blooddy.core.logging.Log"/>
     <classEntry path="by.blooddy.core.logging.Logger"/>
     <classEntry path="by.blooddy.core.logging.LoggerProxy"/>
@@ -151,7 +150,6 @@
     <classEntry path="by.blooddy.core.utils.FPSListener"/>
     <classEntry path="by.blooddy.core.utils.HashArray"/>
     <classEntry path="by.blooddy.core.utils.IAbstractRemoter"/>
-    <classEntry path="by.blooddy.core.utils.IBytesExternalizable"/>
     <classEntry path="by.blooddy.core.utils.IDisposable"/>
     <classEntry path="by.blooddy.core.utils.IEquable"/>
     <classEntry path="by.blooddy.core.utils.IHashable"/>
@@ -198,6 +196,8 @@
     <classEntry path="parseBoolean"/>
     <classEntry path="by.blooddy.core.utils.net.URLUtils"/>
     <classEntry path="by.blooddy.core.utils.net.Location"/>
+    <classEntry path="by.blooddy.core.utils.crypto.UIDUtils"/>
+    <classEntry path="by.blooddy.core.display.DisplayObjectListener"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

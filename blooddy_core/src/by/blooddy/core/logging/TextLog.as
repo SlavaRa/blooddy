@@ -1,5 +1,17 @@
+////////////////////////////////////////////////////////////////////////////////
+//
+//  (C) 2010 BlooDHounD
+//
+////////////////////////////////////////////////////////////////////////////////
+
 package by.blooddy.core.logging {
 
+	/**
+	 * @author					BlooDHounD
+	 * @version					1.0
+	 * @playerversion			Flash 9
+	 * @langversion				3.0
+	 */
 	public class TextLog extends Log {
 
 		public function TextLog(text:String) {
