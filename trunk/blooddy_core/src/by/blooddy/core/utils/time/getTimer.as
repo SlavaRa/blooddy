@@ -6,8 +6,6 @@
 
 package by.blooddy.core.utils.time {
 
-	import flash.utils.getTimer;
-
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0

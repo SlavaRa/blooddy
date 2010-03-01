@@ -6,8 +6,6 @@
 
 package by.blooddy.core.net {
 
-	import flash.events.IEventDispatcher;
-
 	//--------------------------------------
 	//  Events
 	//--------------------------------------

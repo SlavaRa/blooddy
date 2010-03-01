@@ -20,7 +20,6 @@ package by.blooddy.core.net {
 	import flash.net.URLRequest;
 	import flash.net.URLRequestHeader;
 	import flash.net.URLRequestMethod;
-	import flash.net.URLStream;
 	import flash.net.URLVariables;
 	import flash.utils.ByteArray;
 	import flash.utils.clearTimeout;
@@ -119,7 +118,7 @@ package by.blooddy.core.net {
 		 * @see						#connect()
 		 * @see						by.blooddy.core.net.Socket#Socket()
 		 */
-		public function ProxySocket() {
+		public function ProxySocket(host:String=null, port:int=0.0) {
 			super();
 			// шаблон данных
 			this._request.method = URLRequestMethod.POST;
@@ -128,6 +127,9 @@ package by.blooddy.core.net {
 				new URLRequestHeader( 'pragma', 'no-cache' ),
 				new URLRequestHeader( 'Content-Type', MIME.BINARY )
 			);
+            if ( host && port ) {
+                this.connect( host, port );
+            }
 		}
 
 		//--------------------------------------------------------------------------
@@ -525,7 +527,7 @@ package by.blooddy.core.net {
 				//if ( this._conn1.connected ) this._conn1.close();
 			//}
 			
-			var pos:uint = this._input.position;
+			//var pos:uint = this._input.position;
 			conn.readBytes( this._input, this._input.length );
 			//trace( ( conn === this._conn1 ? 1 : 2 ), event, this._cmdID );
 			//trace( ByteArrayUtils.dump( this._input, pos ) );

@@ -80,7 +80,6 @@ package by.blooddy.core.utils {
 			length = Math.min( length, bytes.length ) || bytes.length;
 
 			var result:String = "";
-			var line:uint;
 			var col:uint;
 			var p:uint;
 			var line_s:String;

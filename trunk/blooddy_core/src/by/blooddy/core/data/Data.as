@@ -217,15 +217,15 @@ package by.blooddy.core.data {
 		/**
 		 * @private
 		 */
-		protected final function formatToString(...arguments):String {
-			var l:uint = arguments.length;
+		protected final function formatToString(...args):String {
+			var l:uint = args.length;
 			var v:*;
 			for ( var i:uint = 0; i<l; i++ ) {
-				v = this[ arguments[ i ] ];
+				v = this[ args[ i ] ];
 				if ( v is String )	v = '"' + v + '"';
-				arguments[ i ] += '=' + v; 
+				args[ i ] += '=' + v;
 			}
-			return '[' + ClassUtils.getClassName( this ) + ( arguments.length  > 0 ? ' ' + arguments.join( ' ' ) : '' ) + ']';
+			return '[' + ClassUtils.getClassName( this ) + ( args.length  > 0 ? ' ' + args.join( ' ' ) : '' ) + ']';
 		}
 
 	}

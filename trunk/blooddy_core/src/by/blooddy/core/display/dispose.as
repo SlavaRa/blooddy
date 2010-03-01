@@ -36,7 +36,6 @@ import flash.display.Shape;
 import flash.display.SimpleButton;
 import flash.display.Sprite;
 import flash.text.TextField;
-import flash.geom.Transform;
 
 ////////////////////////////////////////////////////////////////////////////////
 //

@@ -221,25 +221,6 @@ package by.blooddy.core.utils.crypto {
 		private static function HH(a:uint, b:uint, c:uint, d:uint, x:uint, s:uint, t:uint):uint	{ return transform(H, a, b, c, d, x, s, t) }
 		private static function II(a:uint, b:uint, c:uint, d:uint, x:uint, s:uint, t:uint):uint	{ return transform(I, a, b, c, d, x, s, t) }
 		
-		/**
-		 * @private
-		 * Converts a string to a sequence of 16-word blocks that we'll do the
-		 * processing on.  Appends padding and length in the process.
-		 */
-		private static function createBlocks(s:String):Array {
-			var blocks:Array = new Array();
-			var len:uint = s.length * 8;
-			var mask:uint = 0xFF; // ignore hi byte of characters > 0xFF
-			for( var i:uint = 0; i < len; i += 8 ) {
-				blocks[ i >> 5 ] |= ( s.charCodeAt( i / 8 ) & mask ) << ( i % 32 );
-			}
-			
-			// append padding and length
-			blocks[ len >> 5 ] |= 0x80 << ( len % 32 );
-			blocks[ ( ( ( len + 64 ) >>> 9 ) << 4 ) + 14 ] = len;
-			return blocks;
-		}
-		
 	}
 
 }

@@ -1,8 +1,13 @@
+////////////////////////////////////////////////////////////////////////////////
+//
+//  © 2010 BlooDHounD
+//
+////////////////////////////////////////////////////////////////////////////////
+
 package by.blooddy.core.utils.crypto {
 
 	import by.blooddy.core.utils.math.NumberUtils;
 	import flash.utils.ByteArray;
-	import flash.utils.Endian;
 	
 	/**
 	 * US Secure Hash Algorithm 1 (SHA1)

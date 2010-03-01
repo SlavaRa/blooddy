@@ -323,7 +323,7 @@ package by.blooddy.core.net {
 			XML.ignoreWhitespace = true;
 			XML.prettyPrinting = false;
 
-			var xml:XML = xml.copy();
+			xml = xml.copy();
 			var a:Array = new Array();
 			children = xml.children();
 			for each ( x in children ) {
@@ -354,7 +354,7 @@ package by.blooddy.core.net {
 			result.addNamespace( new Namespace( NetCommand.INPUT, NetCommand.INPUT ) );
 			result.addNamespace( new Namespace( NetCommand.OUTPUT, NetCommand.OUTPUT ) );
 			var hash:Dictionary = new Dictionary();
-			var pattern:NetCommandPattern
+			var pattern:NetCommandPattern;
 			for each ( pattern in this._input_patterns ) {
 				if ( pattern in hash ) continue;
 				hash[ pattern ] = true;
@@ -377,7 +377,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private function readType(input:IDataInput, desc:TypeDescription!, io:String):* {
+		private function readType(input:IDataInput, desc:TypeDescription, io:String):* {
 			var l:uint;
 			switch ( desc.type ) {
 				case TYPE_BOOLEAN:	return input.readBoolean();
@@ -429,7 +429,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private function writeType(output:IDataOutput, desc:TypeDescription!, value:*, io:String):void {
+		private function writeType(output:IDataOutput, desc:TypeDescription, value:*, io:String):void {
 			switch ( desc.type ) {
 				case TYPE_BOOLEAN:	output.writeBoolean( value );		break;
 				case TYPE_INT8:
@@ -494,8 +494,6 @@ package by.blooddy.core.net {
 import by.blooddy.core.net.NetCommand;
 import by.blooddy.core.utils.xml.IXMLable;
 import by.blooddy.core.utils.xml.XMLUtils;
-
-import flash.utils.ByteArray;
 
 ////////////////////////////////////////////////////////////////////////////////
 //

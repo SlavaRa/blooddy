@@ -15,7 +15,7 @@ package by.blooddy.core.net {
 
 	use namespace flash_proxy;
 
-	[Event( name="command", type="by.blooddy.core.events.net.CommandEvent" )]
+	[Event( name="command", type="by.blooddy.core.events.commands.CommandEvent" )]
 
 	/**
 	 * @author					BlooDHounD
@@ -78,7 +78,7 @@ package by.blooddy.core.net {
 					var app:ProxyClient = this;
 					result = function(...rest):* {
 						return app.dispatchCommand( name, rest );
-					}
+					};
 					if ( name is QName )	this._qname[ name.toString() ] = result;
 					else					this._name[ name ] = result;
 				}

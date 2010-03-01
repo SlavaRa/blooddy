@@ -5,6 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.display {
+
 	import flash.display.MovieClip;
 	import flash.events.Event;
 	import flash.text.TextField;

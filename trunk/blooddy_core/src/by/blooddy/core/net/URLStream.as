@@ -6,8 +6,6 @@
 
 package by.blooddy.core.net {
 
-	import by.blooddy.core.utils.ClassUtils;
-	
 	import flash.events.Event;
 	import flash.events.HTTPStatusEvent;
 	import flash.events.IOErrorEvent;

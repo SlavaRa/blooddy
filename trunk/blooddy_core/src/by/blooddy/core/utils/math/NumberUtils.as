@@ -7,7 +7,6 @@
 package by.blooddy.core.utils.math {
 
 	import flash.utils.Endian;
-	import flash.utils.ByteArray;
 
 	/**
 	 * Всякие функи для работы с циферями.

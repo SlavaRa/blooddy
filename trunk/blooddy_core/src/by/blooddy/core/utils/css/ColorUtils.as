@@ -16,7 +16,7 @@ package by.blooddy.core.utils.css {
 		/**
 		 * @private
 		 */
-		private static const COLORS:Object = {
+		private static const _COLORS:Object = {
 			alicemblue:				0xFFF0F8FF,
 			antiquewhite:			0xFFFAEBD7,
 			aqua:					0xFF00FFFF,
@@ -171,8 +171,8 @@ package by.blooddy.core.utils.css {
 			if (!color) return 0;
 			var float:Boolean = false;
 			
-			if (color in ColorUtils.COLORS) {
-				return ColorUtils.COLORS[color];
+			if (color in _COLORS) {
+				return _COLORS[color];
 			} else 	{
 				float = color.indexOf('0x') < 0 && color.indexOf('#') < 0;
 				if (!float) {
@@ -194,7 +194,7 @@ package by.blooddy.core.utils.css {
 		}
 
 		public static function colorToCSS(color:uint):String {
-			return ColorUtils.hexToCSS(color.toString(16));
+			return hexToCSS(color.toString(16));
 		}
 
 		public static function getGradientColor(position:Number, colors:Array):uint {

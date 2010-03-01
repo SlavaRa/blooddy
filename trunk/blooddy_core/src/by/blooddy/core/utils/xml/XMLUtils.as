@@ -22,7 +22,7 @@ package by.blooddy.core.utils.xml {
 		}
 
 		public static function parseToDate(xml:XML):Date {
-			if ( !xml ) return new Date()
+			if ( !xml ) return new Date();
 			return new Date( Date.parse( xml.toString() ) );
 		}
 

@@ -6,7 +6,6 @@
 
 package by.blooddy.core.data.xml.rss {
 
-	import by.blooddy.core.events.data.DataBaseEvent;
 	import by.blooddy.core.utils.xml.XMLUtils;
 
 	/**
