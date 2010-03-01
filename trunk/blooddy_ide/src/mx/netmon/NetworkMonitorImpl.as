@@ -8,6 +8,7 @@ package mx.netmon {
 
 	import by.blooddy.core.net.monitor.NetMonitor;
 	import by.blooddy.core.utils.net.URLUtils;
+	import by.blooddy.ide.net.monitor.FBFlexNetMonitor;
 	import by.blooddy.ide.net.monitor.FBNetMonitor;
 	
 	import flash.display.DisplayObject;
@@ -32,7 +33,6 @@ package mx.netmon {
 		//--------------------------------------------------------------------------
 		
 		public static function init(root:DisplayObject):void {
-			if ( NetMonitor.monitor ) return;
 			trace( FBNetMonitor + ' initialization...' );
 
 			var appRoot:String = URLUtils.getPathURL(
@@ -43,7 +43,7 @@ package mx.netmon {
 			var socketPort:int;
 			var httpPort:int;
 
-			var parameters:Object = LoaderConfig[ 'parameters' ];
+			var parameters:Object = LoaderConfig.parameters;
 			if ( parameters ) {
 				if ( parameters[ 'netmonRTMPPort' ] != null ) {
 					socketPort = int( parameters[ 'netmonRTMPPort' ] );
@@ -53,7 +53,19 @@ package mx.netmon {
 				}
 			}
 
-			NetMonitor.monitor = new FBNetMonitor( appRoot, host, socketPort, httpPort );
+			var monitor:FBFlexNetMonitor = new FBFlexNetMonitor( appRoot, host, socketPort, httpPort );
+			
+			if ( !NetMonitor.monitor ) {
+				NetMonitor.monitor = monitor;
+			}
+
+			NetworkMonitor.isMonitoringImpl =			monitor.isActive;
+			NetworkMonitor.adjustURLRequestImpl =		monitor.adjustFlexURLRequest;
+			NetworkMonitor.adjustNetConnectionURLImpl =	monitor.adjustFlexURL;
+			NetworkMonitor.monitorEventImpl =			monitor.monitorFlexEvent;
+			NetworkMonitor.monitorInvocationImpl =		monitor.monitorFlexInvocation;
+			NetworkMonitor.monitorResultImpl =			monitor.monitorFlexResult;
+			NetworkMonitor.monitorFaultImpl =			monitor.monitorFlexFault;
 
 		}
 

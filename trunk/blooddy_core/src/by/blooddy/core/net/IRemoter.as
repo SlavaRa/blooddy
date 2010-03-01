@@ -6,8 +6,9 @@
 
 package by.blooddy.core.net {
 
-	import flash.events.IEventDispatcher;
 	import by.blooddy.core.utils.IAbstractRemoter;
+	
+	import flash.events.IEventDispatcher;
 
 	/**
 	 * @author					BlooDHounD

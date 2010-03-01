@@ -6,6 +6,7 @@
 
 package by.blooddy.ide.net.monitor {
 
+	import by.blooddy.core.net.IAbstractSocket;
 	import by.blooddy.core.net.ILoadable;
 	import by.blooddy.core.net.Socket;
 	import by.blooddy.core.net.monitor.INetMonitor;
@@ -20,6 +21,7 @@ package by.blooddy.ide.net.monitor {
 	import flash.events.ProgressEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.net.URLRequest;
+	import flash.system.ApplicationDomain;
 	
 	/**
 	 * @author					BlooDHounD
@@ -28,7 +30,17 @@ package by.blooddy.ide.net.monitor {
 	 * @langversion				3.0
 	 * @created					25.02.2010 9:40:35
 	 */
-	public final class FBNetMonitor implements INetMonitor {
+	public class FBNetMonitor implements INetMonitor {
+
+		//--------------------------------------------------------------------------
+		//
+		//  Namespace
+		//
+		//--------------------------------------------------------------------------
+
+		protected namespace $protected_net;
+
+		use namespace $protected_net;
 
 		//--------------------------------------------------------------------------
 		//
@@ -56,17 +68,22 @@ package by.blooddy.ide.net.monitor {
 		/**
 		 * @private
 		 */
-		private static const _STATE_PAUSE:uint =		1 + _STATE_IDLE;
+		private static const _STATE_PAUSE:uint =	1 + _STATE_IDLE;
 
 		/**
 		 * @private
 		 */
-		private static const _STATE_CONNECTING:uint =	1 + _STATE_PAUSE;
+		private static const _STATE_ACTIVE:uint =	1 + _STATE_PAUSE;
 
 		/**
 		 * @private
 		 */
-		private static const _STATE_COMPLETE:uint =		1 + _STATE_CONNECTING;
+		private static const _R_LINE:RegExp = /^\s*at\s+([^(\/]+)(?:\/([^(]+))?\(\)(?:\[(.*?):(\d+)\])?$/gm;
+
+		/**
+		 * @private
+		 */
+		private static const _R_EXCLUDE_DEFAULT:RegExp = /^by\.blooddy\.(core|ide)/;
 		
 		/**
 		 * @private
@@ -141,7 +158,7 @@ package by.blooddy.ide.net.monitor {
 		/**
 		 * @private
 		 */
-		private var _state:uint = _STATE_CONNECTING;
+		private var _state:uint = _STATE_ACTIVE;
 
 		/**
 		 * @private
@@ -150,73 +167,125 @@ package by.blooddy.ide.net.monitor {
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Implements properties
-		//
-		//--------------------------------------------------------------------------
-
-		public function get isActive():Boolean {
-			return this._state >= _STATE_CONNECTING;
-		}
-
-		//--------------------------------------------------------------------------
-		//
 		//  Implements methods
 		//
 		//--------------------------------------------------------------------------
 
-		public function adjustURL(url:String, correlationID:String=null):String {
-			if ( this._state < _STATE_CONNECTING ) return url;
+		/**
+		 * @inheritDoc
+		 */
+		public function isActive():Boolean {
+			return this._state >= _STATE_ACTIVE;
+		}
 
-			var loc:Location;
-			loc = new Location( url );
-			if ( loc.host == this._host || loc.port == this._httpPort ) return url; // мы и так уже под дозой!
-			
-			loc = new Location( URLUtils.createAbsoluteURL( ( this._appRoot || '' ), url ) );
-			var arr:Array = loc.protocol.match( _R_HTTP );
-			if ( !arr ) return url;
-
-			var hostname:String = loc.hostname;
-			var httpsName:String = ( arr[ 1 ] ? 'Y' : 'N' );
-
-			loc.host = this._host;
-			loc.port = this._httpPort;
-			
-			return loc.toString() + '?hostport=' + hostname + '&https=' + httpsName + '&id=' + ( correlationID || '-1' );
+		public function isURLAdjusted(url:String):Boolean {
+			return false;
 		}
 		
+		public function isURLRequestAdjusted(request:URLRequest):Boolean {
+			return this.isURLAdjusted( request.url );
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function adjustURL(url:String, correlationID:String=null):String {
+			if ( this._state < _STATE_ACTIVE ) return url;
+			// TODO: проверка на урыл!
+			return this.adjustAbstractURL( this._appRoot, url, correlationID );
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
 		public function adjustURLRequest(correlationID:String, request:URLRequest):void {
-			if ( this._state < _STATE_CONNECTING ) return;
-			var url:String = this.adjustURL( request.url, correlationID );
-			if ( url == request.url ) return;
-			request.url = url;
+			if ( this._state < _STATE_ACTIVE ) return;
+			request.url = this.adjustAbstractURL( this._appRoot, request.url, correlationID );
 		}
 
-		public function monitorInvocation(correlationID:String, request:URLRequest, loader:ILoadable, context:*=null):void {
-			if ( this._state < _STATE_CONNECTING ) return;
-
-			if ( !context ) context = new SourceContext();
-
-			if ( this._state == _STATE_CONNECTING ) {
-
-				this.addToCache( this.monitorInvocation, correlationID, request, loader, context );
-
+		/**
+		 * @inheritDoc
+		 */
+		public function monitorLoadableEvent(correlationID:String, event:Event):void {
+			if ( this._state < _STATE_ACTIVE ) return;
+			if ( this._socket.connected ) {
+				this.sendEvent( correlationID, event );
 			} else {
-
-				this._socket.writeByte( _MSG_INVOCATION );
-				this._socket.writeUTF( ClassUtils.getClassName( loader ) );
-				this._socket.writeUTF( context.file );
-				this._socket.writeInt( context.line );
-				this._socket.writeUTF( correlationID );
-				this._socket.writeObject( request.data );
-				this._socket.writeUTF( String( request ) );
-				this._socket.writeUTF( request.method );
-				this._socket.writeUTF( request.url );
-				this._socket.writeUTF( 'test2.mxml' );
-				this._socket.flush();
-
+				this.addToCache( this.sendEvent, correlationID, event );
 			}
 		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function monitorLoadableInvocation(correlationID:String, request:URLRequest, loader:ILoadable):void {
+			if ( this._state < _STATE_ACTIVE ) return;
+			var context:SourceContext = this.getSourceContext();
+			this.sendInvocation(
+				correlationID,
+				request.url,
+				request.data,
+				String( request ),
+				request.method,
+				ClassUtils.cutClassName( context.value ),
+				ClassUtils.getClassName( loader ),
+				context
+			);
+		}
 
+		/**
+		 * @inheritDoc
+		 */
+		public function monitorLoadableResult(correlationID:String, responceData:Object):void {
+			if ( this._state < _STATE_ACTIVE ) return;
+			this.sendResult( correlationID, responceData, '' );
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function monitorLoadableFault(correlationID:String, message:String):void {
+			if ( this._state < _STATE_ACTIVE ) return;
+			this.sendFault( correlationID, message, '' );
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function monitorSocketOutput(correlationID:String, data:Object, socket:IAbstractSocket):void {
+			if ( this._state < _STATE_ACTIVE ) return;
+			var context:SourceContext = this.getSourceContext();
+			this.sendInvocation(
+				correlationID,
+				( socket.protocol ? socket.protocol + '://' : '' ) + socket.host + ':' + socket.port,
+				data,
+				String( data ),
+				'output',
+				ClassUtils.cutClassName( context.value ),
+				ClassUtils.getClassName( socket ),
+				context
+			);
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function monitorSocketInput(correlationID:String, data:Object, socket:IAbstractSocket):void {
+			if ( this._state < _STATE_ACTIVE ) return;
+			var context:SourceContext = this.getSourceContext();
+			this.sendInvocation(
+				correlationID,
+				( socket.protocol ? socket.protocol + '://' : '' ) + socket.host + ':' + socket.port,
+				'',
+				'',
+				'input',
+				ClassUtils.cutClassName( context.value ),
+				ClassUtils.getClassName( socket ),
+				context
+			);
+			this.sendResult( correlationID, data, ClassUtils.cutClassName( context.value ) );
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Private methods
@@ -231,6 +300,113 @@ package by.blooddy.ide.net.monitor {
 			this._cache.push( new Caller( func, args ) );
 		}
 
+		/**
+		 * @private
+		 */
+		$protected_net function getSourceContext(exclude:RegExp=null):SourceContext {
+			var stack:String = ( new Error() ).getStackTrace();
+			
+			_R_LINE.lastIndex = 10; // ~ пропускаем самих себя =)
+			
+			var row:Array;
+			while ( row = _R_LINE.exec( stack ) ) {
+				if (
+					!_R_EXCLUDE_DEFAULT.test( row[ 1 ] ) &&
+					!( exclude && exclude.test( row[ 1 ] ) ) &&
+					ApplicationDomain.currentDomain.hasDefinition( row[ 1 ] ) // exclude internal classes
+				) {
+					return new SourceContext( row[ 3 ], parseInt( row[ 4 ], 10 ), row[ 1 ] );
+				}
+			}
+			
+			return new SourceContext( '', 0, '' );
+		}
+
+		/**
+		 * @private
+		 */
+		$protected_net function adjustAbstractURL(root:String, url:String, correlationID:String=null):String {
+			var loc:Location;
+			loc = new Location( url );
+			
+			loc = new Location( URLUtils.createAbsoluteURL( root , url ) );
+			var arr:Array = loc.protocol.match( _R_HTTP );
+			if ( !arr ) return url;
+			
+			var hostname:String = loc.hostname;
+			var httpsName:String = ( arr[ 1 ] ? 'Y' : 'N' );
+			
+			loc.host = this._host;
+			loc.port = this._httpPort;
+			
+			return loc.toString() + '?hostport=' + hostname + '&https=' + httpsName + '&id=' + ( correlationID || '-1' );
+		}
+		
+		/**
+		 * @private
+		 */
+		$protected_net function sendEvent(correlationID:String, event:Event):void {
+			if ( this._socket.connected ) {
+				this._socket.writeByte( _MSG_EVENT );
+				this._socket.writeUTF( correlationID );
+				this._socket.writeUTF( event.type );
+				this._socket.flush();
+			} else {
+				this.addToCache( this.sendEvent, correlationID, event );
+			}
+		}
+
+		/**
+		 * @private
+		 */
+		$protected_net function sendInvocation(correlationID:String, url:String, requestData:Object, requestString:String, operation:String, destination:String, serviceName:String, context:SourceContext):void {
+			if ( this._socket.connected ) {
+				this._socket.writeByte( _MSG_INVOCATION );
+				this._socket.writeUTF( serviceName );
+				this._socket.writeUTF( context.file );
+				this._socket.writeInt( context.line );
+				this._socket.writeUTF( correlationID );
+				this._socket.writeObject( requestData );
+				this._socket.writeUTF( requestString );
+				this._socket.writeUTF( operation );
+				this._socket.writeUTF( url );
+				this._socket.writeUTF( destination );
+				this._socket.flush();
+			} else {
+				this.addToCache( this.sendInvocation, correlationID, url, requestData, requestString, operation, destination, serviceName, context );
+			}
+		}
+
+		/**
+		 * @private
+		 */
+		$protected_net function sendResult(correlationID:String, responceData:Object, destination:String):void {
+			if ( this._socket.connected ) {
+				this._socket.writeByte( _MSG_RESULT );
+				this._socket.writeUTF( correlationID );
+				this._socket.writeObject( responceData );
+				this._socket.writeUTF( destination );
+				this._socket.flush();
+			} else {
+				this.addToCache( this.sendResult, correlationID, responceData, destination );
+			}
+		}
+
+		/**
+		 * @private
+		 */
+		$protected_net function sendFault(correlationID:String, responceData:Object, destination:String):void {
+			if ( this._socket.connected ) {
+				this._socket.writeByte( _MSG_FAULT );
+				this._socket.writeUTF( correlationID );
+				this._socket.writeUTF( destination );
+				this._socket.writeObject( responceData );
+				this._socket.flush();
+			} else {
+				this.addToCache( this.sendFault, correlationID, responceData, destination );
+			}
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Event handlers
@@ -242,7 +418,6 @@ package by.blooddy.ide.net.monitor {
 		 */
 		private function handler_connect(event:Event):void {
 			trace( this + ' constructed!' );
-			this._state = _STATE_COMPLETE;
 			if ( this._cache ) {
 				while ( this._cache.length > 0 ) {
 					this._cache.shift().call();
@@ -277,41 +452,50 @@ package by.blooddy.ide.net.monitor {
 	
 }
 
+//==============================================================================
+//
+//  Inner definitions
+//
+//==============================================================================
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Helper class: EventContainer
+//
+////////////////////////////////////////////////////////////////////////////////
+
 /**
  * @private
  */
 internal final class SourceContext {
 
+	//--------------------------------------------------------------------------
+	//
+	//  Constructor
+	//
+	//--------------------------------------------------------------------------
+	
 	/**
 	 * @private
+	 * Constructor.
 	 */
-	private static const _LINE:RegExp = /^\s*at\s+([^(\/]+)(?:\/([^(]+))?\(\)(?:\[(.*?):(\d+)\])?$/gm;
-
-	/**
-	 * @private
-	 */
-	private static const _EXCLUDE:RegExp = /^by\.blooddy\.(?:core|ide)/;
-
-	public function SourceContext() {
+	public function SourceContext(file:String, line:uint, value:String) {
 		super();
-
-		var stack:String = ( new Error() ).getStackTrace();
-
-		_LINE.lastIndex = 10; // пропускаем самих себя =)
-
-		var row:Array;
-		while ( row = _LINE.exec( stack ) ) {
-			if ( !_EXCLUDE.test( row[ 1 ] ) ) {
-				this.file = row[ 3 ];
-				this.line = parseInt( row[ 4 ], 10 );
-				break;
-			}
-		}
-
+		this.file = file;
+		this.line = line;
+		this.value = value;
 	}
 
+	//--------------------------------------------------------------------------
+	//
+	//  Properties
+	//
+	//--------------------------------------------------------------------------
+	
 	public var file:String;
 
 	public var line:uint;
 
+	public var value:String;
+	
 }

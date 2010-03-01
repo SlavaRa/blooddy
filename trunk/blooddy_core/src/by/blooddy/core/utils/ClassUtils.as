@@ -28,6 +28,12 @@ package by.blooddy.core.utils {
 		//
 		//--------------------------------------------------------------------------
 
+		public static function cutClassName(name:String):String {
+			var index:int = name.lastIndexOf( '::' );
+			if ( index > 0 ) name = name.substr( index + 2 );
+			return name;
+		}
+
 		/**
 		 * @param	value			Объект, имя класса, которого нужно узнать.
 		 *
@@ -38,10 +44,7 @@ package by.blooddy.core.utils {
 		 * @see						flash.utils.getQualifiedClassName()
 		 */
 		public static function getClassName(o:Object):String {
-			var name:String = getQualifiedClassName( o) ;
-			var index:int = name.lastIndexOf( '::' );
-			if ( index > 0 ) name = name.substr( index + 2 );
-			return name;
+			return cutClassName( getQualifiedClassName( o ) );
 		}
 		
 		/**
@@ -54,10 +57,7 @@ package by.blooddy.core.utils {
 		 * @see						flash.utils.getQualifiedSuperclassName()
 		 */
 		public static function getSuperClassName(o:Object):String {
-			var name:String = getQualifiedSuperclassName( o );
-			var index:int = name.lastIndexOf( '::' );
-			if ( index >= 0 ) name = name.substr( index + 2 );
-			return name;
+			return cutClassName( getQualifiedSuperclassName( o ) );
 		}
 
 		public static function getClass(o:Object):Class {

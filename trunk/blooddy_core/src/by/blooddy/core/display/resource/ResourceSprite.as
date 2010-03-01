@@ -6,6 +6,7 @@
 
 package by.blooddy.core.display.resource {
 
+	import by.blooddy.core.display.SpriteAsset;
 	import by.blooddy.core.events.display.resource.ResourceErrorEvent;
 	import by.blooddy.core.events.display.resource.ResourceEvent;
 	import by.blooddy.core.events.net.LoaderEvent;
@@ -15,8 +16,6 @@ package by.blooddy.core.display.resource {
 	
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
-	import flash.display.Sprite;
-	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.media.Sound;
 	import flash.utils.Dictionary;
@@ -56,7 +55,7 @@ package by.blooddy.core.display.resource {
 	 * 
 	 * @keyword					resourcemangerownersprite, resourcemanagerowner, resourcemanager, resource, manager, sprite
 	 */
-	public class ResourceSprite extends Sprite {
+	public class ResourceSprite extends SpriteAsset {
 
 		//--------------------------------------------------------------------------
 		//
@@ -133,27 +132,8 @@ package by.blooddy.core.display.resource {
 		/**
 		 * @private
 		 */
-		private var _addedToStage:Boolean = false;
-
-		/**
-		 * @private
-		 */
 		private var _depth:int = 0;
 		
-		//--------------------------------------------------------------------------
-		//
-		//  Overriden peoperties: DisplayObject
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		public override function set filters(value:Array):void {
-			if ( !super.filters.length && ( !value || !value.length ) ) return;
-			super.filters = value;
-		}
-
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
@@ -310,40 +290,33 @@ package by.blooddy.core.display.resource {
 		 * @private
 		 */
 		private function handler_addedToStage(event:Event):void {
-			if ( this._addedToStage ) {
-				event.stopImmediatePropagation();
-			} else {
 
-				enterFrameBroadcaster.removeEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameContructed );
+			enterFrameBroadcaster.removeEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameContructed );
 
-				this._addedToStage = true;
-
-				this._depth = this.getDepth();
-				var manager:ResourceManagerProxy = this.getResourceManager();
-				
-				if ( this._manager && this._manager !== manager ) {
-					this.removeFromManager();
-				}
-				
-				if ( !this._manager ) {
-					this._manager = manager;
-					this._lockers = _LOCK_HASH[ manager ];
-					if ( !this._lockers ) {
-						_LOCK_HASH[ manager ] = this._lockers = new Object();
-					}
-					if ( super.hasEventListener( ResourceEvent.ADDED_TO_MANAGER ) ) {
-						super.dispatchEvent( new ResourceEvent( ResourceEvent.ADDED_TO_MANAGER ) );
-					}
-				}
-
+			this._depth = this.getDepth();
+			var manager:ResourceManagerProxy = this.getResourceManager();
+			
+			if ( this._manager && this._manager !== manager ) {
+				this.removeFromManager();
 			}
+			
+			if ( !this._manager ) {
+				this._manager = manager;
+				this._lockers = _LOCK_HASH[ manager ];
+				if ( !this._lockers ) {
+					_LOCK_HASH[ manager ] = this._lockers = new Object();
+				}
+				if ( super.hasEventListener( ResourceEvent.ADDED_TO_MANAGER ) ) {
+					super.dispatchEvent( new ResourceEvent( ResourceEvent.ADDED_TO_MANAGER ) );
+				}
+			}
+
 		}
 
 		/**
 		 * @private
 		 */
 		private function handler_removedFromStage(event:Event):void {
-			this._addedToStage = false;
 			enterFrameBroadcaster.addEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameContructed, false, this._depth );
 		}
 

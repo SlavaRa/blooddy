@@ -25,6 +25,9 @@ package by.blooddy.core.net {
 	//  Implements events: IConnection
 	//--------------------------------------
 
+	/**
+	 * @inheritDoc
+	 */
 	[Event( name="open", type="flash.events.Event" )]
 
 	/**
@@ -261,7 +264,6 @@ package by.blooddy.core.net {
 				case Protocols.SOCKET:
 					if ( !( this._socket is Socket ) ) this._socket = null;
 					this._socket = new Socket();
-					//Security.loadPolicyFile( 'xmlsocket://' + host + ':' + port );
 					break;
 				case Protocols.HTTP:
 					if ( !( this._socket is ProxySocket ) ) this._socket = null;
