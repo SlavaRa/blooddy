@@ -12,6 +12,7 @@ package by.blooddy.core.net {
 	import flash.events.SecurityErrorEvent;
 	import flash.net.URLLoaderDataFormat;
 	import flash.net.URLRequest;
+    import flash.net.URLStream;
 	import flash.net.URLVariables;
 	import flash.utils.ByteArray;
 
@@ -98,7 +99,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private var _dataFormat:String
+		private var _dataFormat:String;
 		
 		/**
 		 * @copy			flash.net.URLLoader#dataFormat

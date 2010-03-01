@@ -7,14 +7,13 @@
 package by.blooddy.core.utils.crypto {
 
 	import flash.utils.ByteArray;
-	import flash.utils.Endian;
 
 	/**
 	 * Converts a ByteArray to a sequence of 16-word blocks
 	 * that we'll do the processing on.  Appends padding
 	 * and length in the process.
 	 * 
-	 * @param	data		The data to split into blocks
+	 * @param	bytes		The data to split into blocks
 	 * 
 	 * @return				An array containing the blocks into which data was split
 	 * 
@@ -29,7 +28,7 @@ package by.blooddy.core.utils.crypto {
 
 		var blocks:Array = new Array();
 		var len:int = bytes.length * 8;
-		var mask:int = 0xFF; // ignore hi byte of characters > 0xFF
+//		var mask:int = 0xFF; // ignore hi byte of characters > 0xFF
 		for( var i:int = 0; i < len; i += 8 ) {
 //			blocks[ i >> 5 ] |= ( bytes[i/8] & mask ) << ( 24 - i % 32 );
 			blocks[ i >> 5 ] |= bytes[i/8] << ( i % 32 );

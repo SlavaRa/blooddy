@@ -67,7 +67,7 @@ package by.blooddy.core.net {
 		/**
 		 * начинает загрузку файла
 		 * 
-		 * @param	bytes		бинарник
+		 * @param	request		запрос к файлу
 		 * 
 		 * @event	open
 		 * @event	httpStatus
@@ -85,7 +85,7 @@ package by.blooddy.core.net {
 		/**
 		 * орабатывает бинарник. локальная загрузка
 		 * 
-		 * @param	request		запрос
+		 * @param	bytes		бинарник
 		 * 
 		 * @event	open
 		 * @event	httpStatus

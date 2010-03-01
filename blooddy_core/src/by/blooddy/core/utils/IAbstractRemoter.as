@@ -25,7 +25,7 @@ package by.blooddy.core.utils {
 		/**
 		 * Функа выполняет некую комманду.
 		 * 
-		 * @param	command			Команда.
+		 * @param	commandName		Команда.
 		 * @param	arguments		Аргументы команды.
 		 *
 		 * @keyword					iabstractremoter.call, call

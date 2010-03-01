@@ -88,7 +88,7 @@ package by.blooddy.core.display {
 
 		/**
 		 * 
-		 * @param	mc
+		 * @param	bitmap
 		 * @param	pixelSnapping
 		 * @param	smoothing
 		 * 
@@ -343,7 +343,7 @@ package by.blooddy.core.display {
 			this._totalFrames = 0;
 			var bmp:BitmapData;
 			while ( this._list.length ) {
-				bmp = this._list.pop().bmp
+				bmp = this._list.pop().bmp;
 				if ( bmp !== _EMPTY ) bmp.dispose();
 			}
 			this.stop();

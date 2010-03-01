@@ -9,7 +9,6 @@ package by.blooddy.core.net {
 	import by.blooddy.core.utils.enterFrameBroadcaster;
 	
 	import flash.events.ErrorEvent;
-	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
@@ -56,10 +55,6 @@ package by.blooddy.core.net {
 	
 		/**
 		 * Constructor
-		 *
-		 * @param	enabled			Включать ли по умолчанию лоадер.
-		 *
-		 * @see						#enabled
 		 */
 		public function LoaderDispatcher() {
 			super();

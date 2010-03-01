@@ -19,7 +19,7 @@ package by.blooddy.core.utils {
 	 * @langversion				3.0
 	 * @created					21.02.2010 18:26:29
 	 */
-	public function dispose(obj:Object!, safe:Boolean=true):void {
+	public function dispose(obj:Object, safe:Boolean=true):void {
 		if ( obj is IDisposable ) {
 			( obj as IDisposable ).dispose();
 		} else if ( obj is DisplayObject ) {

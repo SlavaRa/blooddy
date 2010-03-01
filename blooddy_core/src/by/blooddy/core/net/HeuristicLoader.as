@@ -6,7 +6,6 @@
 
 package by.blooddy.core.net {
 
-	import by.blooddy.core.net.MIME;
 	import by.blooddy.core.utils.dispose;
 	import by.blooddy.core.utils.net.copyURLRequest;
 
@@ -231,7 +230,7 @@ package by.blooddy.core.net {
 				case MIME.PNG:
 				case MIME.JPEG:
 				case MIME.GIF:	// для отображаемых типов сразу же пытаемся использовать обычный Loader
-					this._loader = this.create_loader( true, true, true );
+					this._loader = this.create_loader( true, true );
 					this._loader.load( this._request );
 					break;
 
@@ -277,14 +276,6 @@ package by.blooddy.core.net {
 					super.handler_complete( new Event( Event.COMPLETE ) );
 					break;
 				
-				case MIME.VARS:
-				case MIME.CSS:
-				case MIME.TEXT:
-				case MIME.HTML:
-				case MIME.RSS:
-				case MIME.XML:
-					var isText:Boolean = true;
-					
 				default:
 					// а вот хз, что это
 					try { // попытаемся узреть в нём текст
@@ -358,7 +349,7 @@ package by.blooddy.core.net {
 		 * @private
 		 * создаёт лоадер для загрузки
 		 */
-		private function create_loader(url:Boolean=false, open:Boolean=false, security:Boolean=false):LoaderAsset {
+		private function create_loader(url:Boolean=false, open:Boolean=false):LoaderAsset {
 			var result:LoaderAsset = new LoaderAsset( this );
 			result.loaderContext = this._loaderContext;
 			if ( open ) {	// событие уже могло быть послано
@@ -434,8 +425,6 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 * очищает loader
-		 * 
-		 * @param	unload	выгружать ли данные?
 		 */
 		private function clear_loader():void {
 			if ( this._loader ) {
@@ -461,8 +450,6 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 * очищает sound
-		 * 
-		 * @param	unload	выгружать ли данные?
 		 */
 		private function clear_sound():void {
 			if ( this._sound ) {
@@ -604,7 +591,7 @@ package by.blooddy.core.net {
 				case MIME.PNG:
 				case MIME.JPEG:
 				case MIME.GIF:
-					this._loader = this.create_loader( true, true, true );
+					this._loader = this.create_loader( true, true );
 					this._loader.load( this._request );
 					break;
 
@@ -756,9 +743,6 @@ package by.blooddy.core.net {
 import by.blooddy.core.media.SoundLoader;
 import by.blooddy.core.net.HeuristicLoader;
 import by.blooddy.core.net.Loader;
-
-import flash.net.URLRequest;
-import flash.net.URLStream;
 
 ////////////////////////////////////////////////////////////////////////////////
 //

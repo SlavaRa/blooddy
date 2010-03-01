@@ -274,9 +274,9 @@ package by.blooddy.core.data {
 		//----------------------------------
 
 		/**
-		 * Ищет дитё с конкретным id.
+		 * Ищет дитё с конкретным name.
 		 * 
-		 * @param	id				ID.
+		 * @param	name			name
 		 * 
 		 * @return					Возвращает найденное дитё или null.
 		 * 

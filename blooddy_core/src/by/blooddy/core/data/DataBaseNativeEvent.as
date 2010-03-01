@@ -122,10 +122,10 @@ package by.blooddy.core.data {
 		/**
 		 * @private
 		 */
-		public override function formatToString(className:String, ...arguments):String {
+		public override function formatToString(className:String, ...args):String {
 			if ( !className ) className = ClassUtils.getClassName( this );
-			arguments.unshift( className );
-			return super.formatToString.apply( this, arguments );
+			args.unshift( className );
+			return super.formatToString.apply( this, args );
 		}
 
 		/**

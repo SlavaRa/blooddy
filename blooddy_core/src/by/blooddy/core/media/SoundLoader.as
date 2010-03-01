@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  © 2010 BlooDHounD
+//  © 2007 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -19,6 +19,7 @@ package by.blooddy.core.media {
 	import flash.media.SoundMixer;
 	import flash.net.URLRequest;
 	import flash.utils.ByteArray;
+	import flash.media.SoundChannel;
 
 	//--------------------------------------
 	//  Events
@@ -160,7 +161,7 @@ package by.blooddy.core.media {
 		 */
 		$protected_load override function $unload():Boolean {
 			var unload:Boolean = Boolean( this._sound );
-			this._inited = true;
+			this._inited = false;
 			this.clear_sound();
 			return unload;
 		}
@@ -189,8 +190,6 @@ package by.blooddy.core.media {
 		/**
 		 * @private
 		 * очищает sound
-		 * 
-		 * @param	unload	выгружать ли данные?
 		 */
 		private function clear_sound():void {
 			if ( this._sound ) {
@@ -205,6 +204,11 @@ package by.blooddy.core.media {
 					this._sound.$close();
 				} catch ( e:Error ) {
 				}
+				for ( var o:Object in this._sound._hash ) {
+					( o as SoundChannel ).stop();
+					delete this._sound._hash[ o ];
+				}
+				this._sound._unloaded = true;
 				this._sound = null;
 			}
 		}
@@ -274,21 +278,24 @@ package by.blooddy.core.media {
 //
 //==============================================================================
 
-import by.blooddy.core.errors.getErrorMessage;
 import by.blooddy.core.media.SoundLoader;
+import by.blooddy.core.errors.getErrorMessage;
 
+import flash.errors.IOError;
 import flash.errors.IllegalOperationError;
 import flash.media.Sound;
+import flash.media.SoundChannel;
 import flash.media.SoundLoaderContext;
+import flash.media.SoundTransform;
 import flash.net.URLRequest;
 import flash.utils.ByteArray;
+import flash.utils.Dictionary;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  Helper class: SoundAsset
 //
 ////////////////////////////////////////////////////////////////////////////////
-
 
 /**
  * @private
@@ -325,6 +332,16 @@ internal final class SoundAsset extends Sound {
 	/**
 	 * @private
 	 */
+	internal var _unloaded:Boolean = false;
+	
+	/**
+	 * @private
+	 */
+	internal var _hash:Dictionary = new Dictionary( true );
+	
+	/**
+	 * @private
+	 */
 	private var _target:SoundLoader;
 	
 	//--------------------------------------------------------------------------
@@ -332,7 +349,14 @@ internal final class SoundAsset extends Sound {
 	//  Methods
 	//
 	//--------------------------------------------------------------------------
-	
+
+	public override function play(startTime:Number=0, loops:int=0, sndTransform:SoundTransform=null):SoundChannel {
+		if ( this._unloaded ) throw new IOError(); 
+		var channel:SoundChannel = super.play( startTime, loops, sndTransform );
+		this._hash[ channel ] = true;
+		return channel;
+	}
+
 	[Deprecated( message="метод запрещен", replacement="$load" )]
 	/**
 	 * @private
@@ -355,8 +379,7 @@ internal final class SoundAsset extends Sound {
 	public override function extract(target:ByteArray, length:Number, startPosition:Number=-1):Number {
 		throw new IllegalOperationError( getErrorMessage( 2071, this ), 2071 );
 	}
-	
-	
+
 	/**
 	 * @private
 	 */
@@ -370,5 +393,5 @@ internal final class SoundAsset extends Sound {
 	internal function $close():void {
 		super.close();
 	}
-	
+
 }

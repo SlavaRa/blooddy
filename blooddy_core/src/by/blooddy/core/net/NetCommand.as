@@ -114,7 +114,7 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		private function setIO(value:String):void {
-			value = value.toLowerCase()
+			value = value.toLowerCase();
 			switch ( value ) {
 				case INPUT:
 				case OUTPUT:

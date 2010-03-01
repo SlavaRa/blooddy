@@ -9,7 +9,6 @@ package by.blooddy.core.display {
 	import flash.display.DisplayObject;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
-	import flash.events.Event;
 
 	/**
 	 * @author					BlooDHounD

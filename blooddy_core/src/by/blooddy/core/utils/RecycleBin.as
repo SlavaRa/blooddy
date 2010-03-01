@@ -70,7 +70,7 @@ package by.blooddy.core.utils {
 		//
 		//--------------------------------------------------------------------------
 
-		public function takeIn(key:String!, resource:Object, time:uint=3*60*1E3):void {
+		public function takeIn(key:String, resource:Object, time:uint=3*60*1E3):void {
 			if ( resource == null || time <= 0 ) throw new ArgumentError();
 			var rcs:Vector.<ResourceContainer> = this._hash[ key ] as Vector.<ResourceContainer>;
 			if ( !rcs ) this._hash[ key ] = rcs = new Vector.<ResourceContainer>();
@@ -97,7 +97,7 @@ package by.blooddy.core.utils {
 			return false;
 		}
 
-		public function takeOut(key:String!):Object {
+		public function takeOut(key:String):Object {
 			var rcs:Vector.<ResourceContainer> = this._hash[ key ] as Vector.<ResourceContainer>;
 			if ( rcs && rcs.length > 0 ) {
 				this._length--;
