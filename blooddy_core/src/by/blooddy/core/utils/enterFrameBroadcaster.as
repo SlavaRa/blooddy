@@ -18,3 +18,25 @@ package by.blooddy.core.utils {
 	public const enterFrameBroadcaster:EventDispatcher = new Shape();
 
 }
+
+import by.blooddy.core.utils.enterFrameBroadcaster;
+
+import flash.events.Event;
+import flash.display.Sprite;
+import flash.errors.IllegalOperationError;
+
+enterFrameBroadcaster.addEventListener( Event.ADDED_TO_STAGE, this.handler_added );
+
+/**
+ * @private
+ */
+internal const _JUNK:Sprite = new Sprite();
+
+/**
+ * @private
+ */
+internal function handler_added(event:Event):void {
+	_JUNK.addChild( this );
+	_JUNK.removeChild( this );
+	throw new IllegalOperationError();
+}

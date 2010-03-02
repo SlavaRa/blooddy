@@ -6,7 +6,7 @@
 
 package by.blooddy.core.display.resource {
 
-	import by.blooddy.core.display.SpriteAsset;
+	import by.blooddy.core.display.BaseSprite;
 	import by.blooddy.core.events.display.resource.ResourceErrorEvent;
 	import by.blooddy.core.events.display.resource.ResourceEvent;
 	import by.blooddy.core.events.net.LoaderEvent;
@@ -55,7 +55,7 @@ package by.blooddy.core.display.resource {
 	 * 
 	 * @keyword					resourcemangerownersprite, resourcemanagerowner, resourcemanager, resource, manager, sprite
 	 */
-	public class ResourceSprite extends SpriteAsset {
+	public class ResourceSprite extends BaseSprite {
 
 		//--------------------------------------------------------------------------
 		//
@@ -300,7 +300,7 @@ package by.blooddy.core.display.resource {
 				this.removeFromManager();
 			}
 			
-			if ( !this._manager ) {
+			if ( !this._manager && manager ) {
 				this._manager = manager;
 				this._lockers = _LOCK_HASH[ manager ];
 				if ( !this._lockers ) {
@@ -317,7 +317,9 @@ package by.blooddy.core.display.resource {
 		 * @private
 		 */
 		private function handler_removedFromStage(event:Event):void {
-			enterFrameBroadcaster.addEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameContructed, false, this._depth );
+			if ( this._manager ) {
+				enterFrameBroadcaster.addEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameContructed, false, this._depth );
+			}
 		}
 
 		/**

@@ -11,6 +11,8 @@ package by.blooddy.core.display {
 
 	[ExcludeClass]
 	/**
+	 * класс для исправления бага с двойным addedToStage
+	 * 
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10

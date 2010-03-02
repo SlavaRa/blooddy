@@ -120,8 +120,8 @@ package by.blooddy.core.utils {
 		}
 		
 		public static function getDropTarget(container:DisplayObjectContainer, point:Point, objects:Array = null):DisplayObject {
-			if (!objects) {
-				objects = container.getObjectsUnderPoint(point);
+			if ( !objects ) {
+				objects = container.getObjectsUnderPoint( point );
 				getDropTarget_filter( objects );
 			}
 			
@@ -129,17 +129,17 @@ package by.blooddy.core.utils {
 			var doc:DisplayObjectContainer;
 			var i:uint;
 			
-			while (objects.length) {
+			while ( objects.length ) {
 				o = objects.pop() as DisplayObject;
-				if (!(o is DisplayObjectContainer)) return o;
+				if ( !( o is DisplayObjectContainer ) ) return o;
 				doc = o as DisplayObjectContainer;
 				
-				if (doc !== container) {
-					for (i = 0;i < objects.length;i++) {
-						if (!doc.contains(objects[i])) objects.splice(i--, 1);
+				if ( doc !== container ) {
+					for ( i = 0; i<objects.length; i++ ) {
+						if ( !doc.contains( objects[i] ) ) objects.splice( i--, 1 );
 					}
 					
-					return DisplayObjectUtils.getDropTarget(doc, point, objects);
+					return getDropTarget( doc, point, objects );
 				}
 			}
 			
@@ -159,27 +159,22 @@ package by.blooddy.core.utils {
 			var currentTarget:InteractiveObject;
 			var currentParent:DisplayObject;
 			var i:int = objects.length;
-		
-			while (i--) {
+			while ( i-- ) {
 				currentParent = objects[i];
-		
-				while (currentParent) {
-					if (currentTarget && (currentParent is SimpleButton || currentParent is TextField)) {
+				while ( currentParent ) {
+					if ( currentTarget && ( currentParent is SimpleButton || currentParent is TextField ) ) {
 						currentTarget = null;
-					} else if (currentTarget && !(currentParent as DisplayObjectContainer).mouseChildren) {
+					} else if ( currentTarget && !( currentParent as DisplayObjectContainer ).mouseChildren ) {
 						currentTarget = null;
 					}
-					
-					if (!currentTarget && currentParent is InteractiveObject && (currentParent as InteractiveObject).mouseEnabled) {
-						currentTarget = (currentParent as InteractiveObject);
+
+					if ( !currentTarget && currentParent is InteractiveObject && ( currentParent as InteractiveObject ).mouseEnabled ) {
+						currentTarget = ( currentParent as InteractiveObject );
 					}
 					
 					currentParent = currentParent.parent;
 				}
-				
-//				trace('not filtered:', i, objects[i].name,  objects[i]);
-				objects[i] = currentTarget;
-//				trace('filtered:', i, currentTarget.name, currentTarget);
+				objects[ i ] = currentTarget;
 				currentTarget = null;
 			}
 			
