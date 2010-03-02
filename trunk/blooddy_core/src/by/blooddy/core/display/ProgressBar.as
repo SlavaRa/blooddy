@@ -9,7 +9,6 @@ package by.blooddy.core.display {
 	import by.blooddy.core.net.IProgressable;
 	import by.blooddy.core.utils.css.ColorUtils;
 	
-	import flash.display.Shape;
 	import flash.events.Event;
 	import flash.events.ProgressEvent;
 
@@ -19,7 +18,7 @@ package by.blooddy.core.display {
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
 	 */
-	public class ProgressBar extends Shape implements IProgressBar {
+	public class ProgressBar extends BaseShape implements IProgressBar {
 
 		//--------------------------------------------------------------------------
 		//

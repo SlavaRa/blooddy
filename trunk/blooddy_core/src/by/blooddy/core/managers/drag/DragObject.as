@@ -6,11 +6,12 @@
 
 package by.blooddy.core.managers.drag {
 
+	import by.blooddy.core.display.BaseShape;
+	
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Graphics;
-	import flash.display.Shape;
 	import flash.display.Stage;
 	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
@@ -59,7 +60,7 @@ package by.blooddy.core.managers.drag {
 	 * 
 	 * @keyword					dragobject, drag
 	 */
-	public final class DragObject extends Shape {
+	public final class DragObject extends BaseShape {
 
 		//--------------------------------------------------------------------------
 		//

@@ -66,43 +66,45 @@ package by.blooddy.core.display.resource {
 
 			var resources:Array = this.getResourceBundles();
 			var loader:ILoadable;
-			if ( resources.length == 1 ) {
-				
-				loader = super.loadResourceBundle( resources[ 0 ] );
-				if ( !loader.loaded ) {
-					this._loader = loader;
-				}
-				
-			} else {
-
-				var loaderDispatcher:LoaderDispatcher;
-
-				for each ( var bundleName:String in resources ) {
-					loader = super.loadResourceBundle( bundleName );
+			if ( resources ) {
+				if ( resources.length == 1 ) {
+					
+					loader = super.loadResourceBundle( resources[ 0 ] );
 					if ( !loader.loaded ) {
-						if ( loaderDispatcher ) {
-		
-							loaderDispatcher.addLoaderListener( loader );
-		
-						} else if ( this._loader ) {
-		
-							if ( this._loader !== loader ) {
-
-								loaderDispatcher = new LoaderDispatcher();
-								loaderDispatcher.addLoaderListener( this._loader );
+						this._loader = loader;
+					}
+					
+				} else {
+	
+					var loaderDispatcher:LoaderDispatcher;
+	
+					for each ( var bundleName:String in resources ) {
+						loader = super.loadResourceBundle( bundleName );
+						if ( !loader.loaded ) {
+							if ( loaderDispatcher ) {
+			
 								loaderDispatcher.addLoaderListener( loader );
-								this._loader = loaderDispatcher;
-		
+			
+							} else if ( this._loader ) {
+			
+								if ( this._loader !== loader ) {
+	
+									loaderDispatcher = new LoaderDispatcher();
+									loaderDispatcher.addLoaderListener( this._loader );
+									loaderDispatcher.addLoaderListener( loader );
+									this._loader = loaderDispatcher;
+			
+								}
+			
+							} else {
+			
+								this._loader = loader;
+			
 							}
-		
-						} else {
-		
-							this._loader = loader;
-		
 						}
 					}
+	
 				}
-
 			}
 			if ( this._loader ) {
 

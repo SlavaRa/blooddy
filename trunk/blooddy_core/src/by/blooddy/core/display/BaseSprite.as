@@ -9,14 +9,12 @@ package by.blooddy.core.display {
 	import flash.display.Sprite;
 
 	/**
-	 * Класс хак.
-	 * 
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 9
 	 * @langversion				3.0
 	 */
-	public class SpriteAsset extends Sprite {
+	public class BaseSprite extends Sprite {
 
 		//--------------------------------------------------------------------------
 		//
@@ -27,7 +25,7 @@ package by.blooddy.core.display {
 		/**
 		 * Constructor
 		 */
-		public function SpriteAsset() {
+		public function BaseSprite() {
 			super();
 			new DisplayObjectListener( this );
 		}

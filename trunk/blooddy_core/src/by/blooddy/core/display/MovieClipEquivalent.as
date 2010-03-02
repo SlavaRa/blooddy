@@ -6,12 +6,10 @@
 
 package by.blooddy.core.display {
 
+	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
 
-	import flash.display.DisplayObject;
-	import flash.display.MovieClip;
-	import flash.errors.IllegalOperationError;
-
+	[ExcludeClass]
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -20,7 +18,7 @@ package by.blooddy.core.display {
 	 *
 	 * @keyword					movieclipcollectionasset, movieclip, collection
 	 */
-	public class MovieClipEquivalent extends MovieClip {
+	public class MovieClipEquivalent extends BaseMovieClip {
 
 		//--------------------------------------------------------------------------
 		//
