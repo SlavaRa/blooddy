@@ -81,11 +81,6 @@ package by.blooddy.core.media {
 		 */
 		private var _sound:SoundAsset;
 
-		/**
-		 * @private
-		 */
-		private var _inited:Boolean = false;
-
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
@@ -100,7 +95,7 @@ package by.blooddy.core.media {
 		 * 
 		 */
 		public function get content():Sound {
-			return ( this._inited ? this._sound : null );
+			return ( this._sound && this._sound.$inited ? this._sound : null );
 		}
 
 		//----------------------------------
@@ -161,7 +156,6 @@ package by.blooddy.core.media {
 		 */
 		$protected_load override function $unload():Boolean {
 			var unload:Boolean = Boolean( this._sound );
-			this._inited = false;
 			this.clear_sound();
 			return unload;
 		}
@@ -204,11 +198,11 @@ package by.blooddy.core.media {
 					this._sound.$close();
 				} catch ( e:Error ) {
 				}
-				for ( var o:Object in this._sound._hash ) {
+				for ( var o:Object in this._sound.$hash ) {
 					( o as SoundChannel ).stop();
-					delete this._sound._hash[ o ];
+					delete this._sound.$hash[ o ];
 				}
-				this._sound._unloaded = true;
+				this._sound.$inited = false;
 				this._sound = null;
 			}
 		}
@@ -234,12 +228,10 @@ package by.blooddy.core.media {
 
 		$protected_load override function handler_progress(event:ProgressEvent):void {
 			super.handler_progress( event );
-			if ( !this._inited && this._sound.isBuffering ) {
-				this._inited = true;
-				if ( this._inited ) {
-					this._sound.removeEventListener( ProgressEvent.PROGRESS,	this.handler_progress );
-					this._sound.addEventListener( ProgressEvent.PROGRESS,		super.handler_progress );
-				}
+			if ( this._sound.isBuffering && !this._sound.$inited ) {
+				this._sound.$inited = true;
+				this._sound.removeEventListener( ProgressEvent.PROGRESS,	this.handler_progress );
+				this._sound.addEventListener( ProgressEvent.PROGRESS,		super.handler_progress );
 				if ( super.hasEventListener( Event.INIT ) ) {
 					super.dispatchEvent( new Event( Event.INIT ) );
 				}
@@ -253,8 +245,8 @@ package by.blooddy.core.media {
 		private function handler_sound_complete(event:Event):void {
 			var bytesTotal:uint = this._sound.bytesLoaded;
 			super.updateProgress( bytesLoaded, bytesLoaded );
-			if ( !this._inited && super.hasEventListener( Event.INIT ) ) {
-				this._inited = true;
+			if ( !this._sound.$inited && super.hasEventListener( Event.INIT ) ) {
+				this._sound.$inited = true;
 				super.dispatchEvent( new Event( Event.INIT ) );
 			}
 			super.handler_complete( event );
@@ -332,12 +324,12 @@ internal final class SoundAsset extends Sound {
 	/**
 	 * @private
 	 */
-	internal var _unloaded:Boolean = false;
+	internal var $inited:Boolean = false;
 	
 	/**
 	 * @private
 	 */
-	internal var _hash:Dictionary = new Dictionary( true );
+	internal var $hash:Dictionary = new Dictionary( true );
 	
 	/**
 	 * @private
@@ -351,9 +343,9 @@ internal final class SoundAsset extends Sound {
 	//--------------------------------------------------------------------------
 
 	public override function play(startTime:Number=0, loops:int=0, sndTransform:SoundTransform=null):SoundChannel {
-		if ( this._unloaded ) throw new IOError(); 
+		if ( !this.$inited ) throw new IOError(); 
 		var channel:SoundChannel = super.play( startTime, loops, sndTransform );
-		this._hash[ channel ] = true;
+		this.$hash[ channel ] = true;
 		return channel;
 	}
 
