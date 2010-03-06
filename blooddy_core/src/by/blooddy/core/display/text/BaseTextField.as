@@ -4,9 +4,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.text {
-	
-	import by.blooddy.core.display.DisplayObjectListener;
+package by.blooddy.core.display.text {
 	
 	import flash.display.Loader;
 	import flash.display.LoaderInfo;
@@ -34,11 +32,14 @@ package by.blooddy.core.text {
 		 */
 		public function BaseTextField() {
 			super();
-			new DisplayObjectListener( this );
-			super.addEventListener( Event.ADDED,   this.handler_added,   false, int.MAX_VALUE, true );
-			super.addEventListener( Event.REMOVED, this.handler_remvoed, false, int.MAX_VALUE, true );
+			super.addEventListener( Event.ADDED,				this.handler_added,				false, int.MAX_VALUE, true );
+			super.addEventListener( Event.REMOVED,				this.handler_remvoed,			false, int.MAX_VALUE, true );
+			super.addEventListener( Event.ADDED_TO_STAGE,		this.handler_addedToStage,		false, int.MAX_VALUE, true );
+			super.addEventListener( Event.REMOVED_FROM_STAGE,	this.handler_removedFromStage,	false, int.MAX_VALUE, true );
 		}
-		
+
+		include "../../../../../includes/implements_BaseDisplayObject.as";
+
 		//--------------------------------------------------------------------------
 		//
 		//  Event handlers
@@ -57,8 +58,8 @@ package by.blooddy.core.text {
 				if ( event.target is Loader ) {
 					// так как мы не собираемся контролировать объект, лучше подпишимся со слабыми ссылками
 					var loader:LoaderInfo = ( event.target as Loader ).contentLoaderInfo;
-					loader.addEventListener( Event.COMPLETE,        this.handler_complete, false, int.MAX_VALUE, true );
-					loader.addEventListener( IOErrorEvent.IO_ERROR, this.handler_complete, false, int.MAX_VALUE, true );
+					loader.addEventListener( Event.COMPLETE,		this.handler_complete, false, int.MAX_VALUE, true );
+					loader.addEventListener( IOErrorEvent.IO_ERROR,	this.handler_complete, false, int.MAX_VALUE, true );
 				}
 			}
 		}
@@ -75,8 +76,8 @@ package by.blooddy.core.text {
 				if ( event.target is Loader ) {
 					// отписываемся
 					var loader:LoaderInfo = ( event.target as Loader ).contentLoaderInfo;
-					loader.removeEventListener( Event.COMPLETE,        this.handler_complete );
-					loader.removeEventListener( IOErrorEvent.IO_ERROR, this.handler_complete );
+					loader.removeEventListener( Event.COMPLETE,			this.handler_complete );
+					loader.removeEventListener( IOErrorEvent.IO_ERROR,	this.handler_complete );
 				}
 			}
 		}
@@ -86,8 +87,8 @@ package by.blooddy.core.text {
 		 */
 		private function handler_complete(event:Event):void {
 			var loader:LoaderInfo = event.target as LoaderInfo;
-			loader.removeEventListener( Event.COMPLETE,        this.handler_complete );
-			loader.removeEventListener( IOErrorEvent.IO_ERROR, this.handler_complete );
+			loader.removeEventListener( Event.COMPLETE,			this.handler_complete );
+			loader.removeEventListener( IOErrorEvent.IO_ERROR,	this.handler_complete );
 		}
 		
 	}

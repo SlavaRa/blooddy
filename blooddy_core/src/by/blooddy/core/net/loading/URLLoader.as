@@ -4,8 +4,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.net {
+package by.blooddy.core.net.loading {
 
+	import flash.events.Event;
 	import flash.events.HTTPStatusEvent;
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
@@ -50,14 +51,6 @@ package by.blooddy.core.net {
 		public function URLLoader(request:URLRequest=null) {
 			super( request );
 		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Includes
-		//
-		//--------------------------------------------------------------------------
-
-		include "../../../../includes/override_EventDispatcher.as"
 
 		//--------------------------------------------------------------------------
 		//

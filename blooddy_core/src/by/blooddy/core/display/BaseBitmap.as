@@ -29,8 +29,11 @@ package by.blooddy.core.display {
 		 */
 		public function BaseBitmap(bitmapData:BitmapData=null, pixelSnapping:String='auto', smoothing:Boolean=false) {
 			super( bitmapData, pixelSnapping, smoothing );
-			new DisplayObjectListener( this );
+			super.addEventListener( Event.ADDED_TO_STAGE,		this.handler_addedToStage,		false, int.MAX_VALUE, true );
+			super.addEventListener( Event.REMOVED_FROM_STAGE,	this.handler_removedFromStage,	false, int.MAX_VALUE, true );
 		}
+		
+		include "../../../../includes/implements_BaseDisplayObject.as";
 		
 	}
 

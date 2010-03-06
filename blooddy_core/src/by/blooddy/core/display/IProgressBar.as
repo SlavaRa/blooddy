@@ -6,7 +6,7 @@
 
 package by.blooddy.core.display {
 
-	import by.blooddy.core.net.IProgressable;
+	import by.blooddy.core.net.loading.IProgressable;
 
 	/**
 	 * Интерфейс прогресс бара.

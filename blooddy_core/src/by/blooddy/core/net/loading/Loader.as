@@ -4,10 +4,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.net {
+package by.blooddy.core.net.loading {
 
 	import by.blooddy.core.display.dispose;
 	import by.blooddy.core.errors.getErrorMessage;
+	import by.blooddy.core.net.MIME;
 	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
@@ -16,6 +17,7 @@ package by.blooddy.core.net {
 	import flash.display.LoaderInfo;
 	import flash.display.MovieClip;
 	import flash.errors.IllegalOperationError;
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.HTTPStatusEvent;
 	import flash.events.IOErrorEvent;
@@ -25,7 +27,6 @@ package by.blooddy.core.net {
 	import flash.system.LoaderContext;
 	import flash.system.SecurityDomain;
 	import flash.utils.ByteArray;
-	import flash.events.ErrorEvent;
 
 	/**
 	 * @author					BlooDHounD
@@ -59,20 +60,12 @@ package by.blooddy.core.net {
 		 * @param	request			Если надо, то сразу передадим и начнётся загрузка.
 		 * @param	loaderContext	Если надо грузить, то возможно пригодится.
 		 */
-		public function Loader(request:URLRequest=null, loaderContext:by.blooddy.core.net.LoaderContext=null) {
+		public function Loader(request:URLRequest=null, loaderContext:by.blooddy.core.net.loading.LoaderContext=null) {
 			super();
 			this._loaderContext = loaderContext;
 			if ( request ) this.load( request );
 		}
 
-		//--------------------------------------------------------------------------
-		//
-		//  Includes
-		//
-		//--------------------------------------------------------------------------
-		
-		include "../../../../includes/override_EventDispatcher.as"
-		
 		//--------------------------------------------------------------------------
 		//
 		//  Variblies
@@ -97,7 +90,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private var _loaderContext:by.blooddy.core.net.LoaderContext;
+		private var _loaderContext:by.blooddy.core.net.loading.LoaderContext;
 
 		/**
 		 * A LoaderContext object to use to control loading of the content.
@@ -112,14 +105,14 @@ package by.blooddy.core.net {
 		 * @see						flash.system.ApplicationDomain
 		 * @see						flash.system.SecurityDomain
 		 */
-		public function get loaderContext():by.blooddy.core.net.LoaderContext {
+		public function get loaderContext():by.blooddy.core.net.loading.LoaderContext {
 			return this._loaderContext;
 		}
 
 		/**
 		 * @private
 		 */
-		public function set loaderContext(value:by.blooddy.core.net.LoaderContext):void {
+		public function set loaderContext(value:by.blooddy.core.net.loading.LoaderContext):void {
 			if ( this._loaderContext === value ) return;
 			if ( !super.isIdle() ) throw new ArgumentError();
 			this._loaderContext = value;
@@ -481,7 +474,7 @@ internal final class LoaderAsset extends flash.display.Loader {
 	/**
 	 * @private
 	 */
-	public function LoaderAsset(target:by.blooddy.core.net.Loader) {
+	public function LoaderAsset(target:by.blooddy.core.net.loading.Loader) {
 		super();
 		this._target = target;
 		super.addEventListener( Event.ADDED, this.handler_added, false, int.MAX_VALUE, true );
@@ -496,7 +489,7 @@ internal final class LoaderAsset extends flash.display.Loader {
 	/**
 	 * @private
 	 */
-	private var _target:by.blooddy.core.net.Loader;
+	private var _target:by.blooddy.core.net.loading.Loader;
 
 	//--------------------------------------------------------------------------
 	//

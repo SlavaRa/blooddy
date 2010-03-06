@@ -7,8 +7,8 @@
 package by.blooddy.core.managers.resource {
 
 	import by.blooddy.core.events.managers.ResourceBundleEvent;
-	import by.blooddy.core.net.ILoadable;
-	import by.blooddy.core.net.LoaderPriority;
+	import by.blooddy.core.net.loading.ILoadable;
+	import by.blooddy.core.net.loading.LoaderPriority;
 	import by.blooddy.core.utils.enterFrameBroadcaster;
 	
 	import flash.events.Event;
@@ -489,7 +489,7 @@ package by.blooddy.core.managers.resource {
 //==============================================================================
 
 import by.blooddy.core.managers.resource.ResourceLoader;
-import by.blooddy.core.net.LoaderContext;
+import by.blooddy.core.net.loading.LoaderContext;
 
 import flash.errors.IllegalOperationError;
 import flash.events.Event;

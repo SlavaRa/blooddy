@@ -4,11 +4,12 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.net {
+package by.blooddy.core.net.loading {
 
+	import by.blooddy.core.net.MIME;
 	import by.blooddy.core.utils.dispose;
 	import by.blooddy.core.utils.net.copyURLRequest;
-
+	
 	import flash.display.LoaderInfo;
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
@@ -17,8 +18,8 @@ package by.blooddy.core.net {
 	import flash.events.ProgressEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.net.URLRequest;
-	import flash.utils.ByteArray;
 	import flash.net.URLStream;
+	import flash.utils.ByteArray;
 
 	/**
 	 * @author					BlooDHounD
@@ -63,7 +64,7 @@ package by.blooddy.core.net {
 		 * @param	request
 		 * @param	loaderContext
 		 */
-		public function HeuristicLoader(request:URLRequest=null, loaderContext:by.blooddy.core.net.LoaderContext=null) {
+		public function HeuristicLoader(request:URLRequest=null, loaderContext:by.blooddy.core.net.loading.LoaderContext=null) {
 			super();
 			this._loaderContext = loaderContext;
 			if ( request ) this.load( request );
@@ -135,7 +136,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private var _loaderContext:by.blooddy.core.net.LoaderContext;
+		private var _loaderContext:by.blooddy.core.net.loading.LoaderContext;
 
 		/**
 		 * A LoaderContext object to use to control loading of the content.
@@ -150,14 +151,14 @@ package by.blooddy.core.net {
 		 * @see						flash.system.ApplicationDomain
 		 * @see						flash.system.SecurityDomain
 		 */
-		public function get loaderContext():by.blooddy.core.net.LoaderContext {
+		public function get loaderContext():by.blooddy.core.net.loading.LoaderContext {
 			return this._loaderContext;
 		}
 
 		/**
 		 * @private
 		 */
-		public function set loaderContext(value:by.blooddy.core.net.LoaderContext):void {
+		public function set loaderContext(value:by.blooddy.core.net.loading.LoaderContext):void {
 			if ( this._loaderContext === value ) return;
 			if ( !super.isIdle() ) throw new ArgumentError();
 			this._loaderContext = value;
@@ -740,9 +741,9 @@ package by.blooddy.core.net {
 //
 //==============================================================================
 
-import by.blooddy.core.media.SoundLoader;
-import by.blooddy.core.net.HeuristicLoader;
-import by.blooddy.core.net.Loader;
+import by.blooddy.core.net.loading.HeuristicLoader;
+import by.blooddy.core.net.loading.Loader;
+import by.blooddy.core.net.loading.SoundLoader;
 
 ////////////////////////////////////////////////////////////////////////////////
 //

@@ -37,7 +37,6 @@
     <classEntry path="by.blooddy.core.display.BaseVideo"/>
     <classEntry path="by.blooddy.core.display.BitmapMovieClip"/>
     <classEntry path="by.blooddy.core.display.DisplayObjectLinker"/>
-    <classEntry path="by.blooddy.core.display.DisplayObjectListener"/>
     <classEntry path="by.blooddy.core.display.IProgressBar"/>
     <classEntry path="by.blooddy.core.display.MovieClipCollection"/>
     <classEntry path="by.blooddy.core.display.MovieClipEquivalent"/>
@@ -49,6 +48,7 @@
     <classEntry path="by.blooddy.core.display.resource.MainResourceSprite"/>
     <classEntry path="by.blooddy.core.display.resource.ResourceDefinition"/>
     <classEntry path="by.blooddy.core.display.resource.ResourceSprite"/>
+    <classEntry path="by.blooddy.core.display.text.BaseTextField"/>
     <classEntry path="by.blooddy.core.errors.ParserError"/>
     <classEntry path="by.blooddy.core.errors.SerializeError"/>
     <classEntry path="by.blooddy.core.errors.display.resource.ResourceError"/>
@@ -68,7 +68,7 @@
     <classEntry path="by.blooddy.core.events.managers.DragEvent"/>
     <classEntry path="by.blooddy.core.events.managers.RemoteModuleEvent"/>
     <classEntry path="by.blooddy.core.events.managers.ResourceBundleEvent"/>
-    <classEntry path="by.blooddy.core.events.net.LoaderEvent"/>
+    <classEntry path="by.blooddy.core.events.net.loading.LoaderEvent"/>
     <classEntry path="by.blooddy.core.events.net.SerializeErrorEvent"/>
     <classEntry path="by.blooddy.core.events.time.TimeEvent"/>
     <classEntry path="by.blooddy.core.external.ExternalConnection"/>
@@ -104,27 +104,16 @@
     <classEntry path="by.blooddy.core.math.BigInt"/>
     <classEntry path="by.blooddy.core.math.RoundingMode"/>
     <classEntry path="by.blooddy.core.media.Sound3DTransform"/>
-    <classEntry path="by.blooddy.core.media.SoundLoader"/>
     <classEntry path="by.blooddy.core.net.AbstractClient"/>
     <classEntry path="by.blooddy.core.net.AbstractRemoter"/>
-    <classEntry path="by.blooddy.core.net.HeuristicLoader"/>
     <classEntry path="by.blooddy.core.net.IAbstractConnection"/>
     <classEntry path="by.blooddy.core.net.IAbstractSocket"/>
     <classEntry path="by.blooddy.core.net.IConnection"/>
-    <classEntry path="by.blooddy.core.net.ILoadable"/>
-    <classEntry path="by.blooddy.core.net.ILoader"/>
     <classEntry path="by.blooddy.core.net.INetConnection"/>
-    <classEntry path="by.blooddy.core.net.IProgressable"/>
     <classEntry path="by.blooddy.core.net.IRemoter"/>
     <classEntry path="by.blooddy.core.net.ISocket"/>
     <classEntry path="by.blooddy.core.net.ISocketFilter"/>
     <classEntry path="by.blooddy.core.net.IXMLSocket"/>
-    <classEntry path="by.blooddy.core.net.Loader"/>
-    <classEntry path="by.blooddy.core.net.LoaderBase"/>
-    <classEntry path="by.blooddy.core.net.LoaderContext"/>
-    <classEntry path="by.blooddy.core.net.LoaderDispatcher"/>
-    <classEntry path="by.blooddy.core.net.LoaderListener"/>
-    <classEntry path="by.blooddy.core.net.LoaderPriority"/>
     <classEntry path="by.blooddy.core.net.MIME"/>
     <classEntry path="by.blooddy.core.net.NetCommand"/>
     <classEntry path="by.blooddy.core.net.Protocols"/>
@@ -136,8 +125,19 @@
     <classEntry path="by.blooddy.core.net.SincereSocketFilter"/>
     <classEntry path="by.blooddy.core.net.Socket"/>
     <classEntry path="by.blooddy.core.net.SocketConnection"/>
-    <classEntry path="by.blooddy.core.net.URLLoader"/>
-    <classEntry path="by.blooddy.core.net.URLStream"/>
+    <classEntry path="by.blooddy.core.net.loading.HeuristicLoader"/>
+    <classEntry path="by.blooddy.core.net.loading.ILoadable"/>
+    <classEntry path="by.blooddy.core.net.loading.ILoader"/>
+    <classEntry path="by.blooddy.core.net.loading.IProgressable"/>
+    <classEntry path="by.blooddy.core.net.loading.Loader"/>
+    <classEntry path="by.blooddy.core.net.loading.LoaderBase"/>
+    <classEntry path="by.blooddy.core.net.loading.LoaderContext"/>
+    <classEntry path="by.blooddy.core.net.loading.LoaderDispatcher"/>
+    <classEntry path="by.blooddy.core.net.loading.LoaderListener"/>
+    <classEntry path="by.blooddy.core.net.loading.LoaderPriority"/>
+    <classEntry path="by.blooddy.core.net.loading.SoundLoader"/>
+    <classEntry path="by.blooddy.core.net.loading.URLLoader"/>
+    <classEntry path="by.blooddy.core.net.loading.URLStream"/>
     <classEntry path="by.blooddy.core.net.monitor.INetMonitor"/>
     <classEntry path="by.blooddy.core.net.monitor.NetMonitor"/>
     <classEntry path="by.blooddy.core.parsers.BytesParser"/>
@@ -202,6 +202,18 @@
     <classEntry path="by.blooddy.core.utils.xml.IXMLable"/>
     <classEntry path="by.blooddy.core.utils.xml.XMLUtils"/>
     <classEntry path="parseBoolean"/>
+    <classEntry path="by.blooddy.core.meta.MetadataInfo"/>
+    <classEntry path="by.blooddy.core.meta.TypeInfo"/>
+    <classEntry path="by.blooddy.core.meta.DefinitionInfo"/>
+    <classEntry path="by.blooddy.core.meta.MemberInfo"/>
+    <classEntry path="by.blooddy.core.meta.PropertyInfo"/>
+    <classEntry path="by.blooddy.core.meta.MethodInfo"/>
+    <classEntry path="by.blooddy.core.meta.IFunctionInfo"/>
+    <classEntry path="by.blooddy.core.meta.ParameterInfo"/>
+    <classEntry path="by.blooddy.core.meta.AbstractInfo"/>
+    <classEntry path="by.blooddy.core.meta.ITypedInfo"/>
+    <classEntry path="by.blooddy.core.meta.ConstructorInfo"/>
+    <classEntry path="by.blooddy.core.meta.describeTypeRDF"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

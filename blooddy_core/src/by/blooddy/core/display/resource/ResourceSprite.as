@@ -9,9 +9,9 @@ package by.blooddy.core.display.resource {
 	import by.blooddy.core.display.BaseSprite;
 	import by.blooddy.core.events.display.resource.ResourceErrorEvent;
 	import by.blooddy.core.events.display.resource.ResourceEvent;
-	import by.blooddy.core.events.net.LoaderEvent;
+	import by.blooddy.core.events.net.loading.LoaderEvent;
 	import by.blooddy.core.managers.resource.ResourceManagerProxy;
-	import by.blooddy.core.net.ILoadable;
+	import by.blooddy.core.net.loading.ILoadable;
 	import by.blooddy.core.utils.enterFrameBroadcaster;
 	
 	import flash.display.DisplayObject;
@@ -26,9 +26,9 @@ package by.blooddy.core.display.resource {
 	//--------------------------------------
 
 	/**
-	 * @eventType			by.blooddy.core.events.net.LoaderEvent.LOADER_INIT
+	 * @eventType			by.blooddy.core.events.net.loading.LoaderEvent.LOADER_INIT
 	 */
-	[Event( name="loaderInit", type="by.blooddy.core.events.net.LoaderEvent" )]
+	[Event( name="loaderInit", type="by.blooddy.core.events.net.loading.LoaderEvent" )]
 
 	/**
 	 * @eventType			by.blooddy.core.events.display.resource.ResourceEvent.ADDED_TO_MANAGER

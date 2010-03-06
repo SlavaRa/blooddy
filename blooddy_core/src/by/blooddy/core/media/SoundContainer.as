@@ -1,6 +1,6 @@
 package by.blooddy.core.media {
 
-	import by.blooddy.core.events.net.LoaderEvent;
+	import by.blooddy.core.events.net.loading.LoaderEvent;
 	import by.blooddy.core.managers.resource.ResourceManager;
 	import by.blooddy.core.net.ILoadable;
 	

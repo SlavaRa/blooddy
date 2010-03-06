@@ -7,7 +7,7 @@
 package by.blooddy.core.parsers {
 
 	import by.blooddy.core.errors.getErrorMessage;
-	import by.blooddy.core.net.ILoadable;
+	import by.blooddy.core.net.loading.ILoadable;
 	
 	import flash.errors.IOError;
 	import flash.events.Event;

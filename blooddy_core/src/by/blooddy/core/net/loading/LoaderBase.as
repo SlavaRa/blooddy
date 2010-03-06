@@ -4,7 +4,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.net {
+package by.blooddy.core.net.loading {
 	
 	import by.blooddy.core.net.monitor.NetMonitor;
 	import by.blooddy.core.utils.ClassUtils;

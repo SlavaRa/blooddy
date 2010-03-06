@@ -8,8 +8,8 @@ package by.blooddy.external.media {
 	
 	import by.blooddy.core.events.DynamicEvent;
 	import by.blooddy.core.managers.resource.ResourceManager;
-	import by.blooddy.core.net.ILoadable;
 	import by.blooddy.core.net.ProxySharedObject;
+	import by.blooddy.core.net.loading.ILoadable;
 	import by.blooddy.external.controllers.BaseController;
 	
 	import flash.display.DisplayObjectContainer;
@@ -287,7 +287,7 @@ package by.blooddy.external.media {
 //
 //==============================================================================
 
-import by.blooddy.core.net.ILoadable;
+import by.blooddy.core.net.loading.ILoadable;
 
 import flash.media.Sound;
 import flash.media.SoundChannel;
