@@ -4,22 +4,19 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.media {
+package by.blooddy.core.net.loading {
 
-	import by.blooddy.core.net.LoaderBase;
-	import by.blooddy.core.net.LoaderContext;
-	
 	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.media.Sound;
+	import flash.media.SoundChannel;
 	import flash.media.SoundLoaderContext;
 	import flash.media.SoundMixer;
 	import flash.net.URLRequest;
 	import flash.utils.ByteArray;
-	import flash.media.SoundChannel;
 
 	//--------------------------------------
 	//  Events
@@ -270,8 +267,8 @@ package by.blooddy.core.media {
 //
 //==============================================================================
 
-import by.blooddy.core.media.SoundLoader;
 import by.blooddy.core.errors.getErrorMessage;
+import by.blooddy.core.net.loading.SoundLoader;
 
 import flash.errors.IOError;
 import flash.errors.IllegalOperationError;

@@ -8,17 +8,15 @@
 package by.blooddy.core.net.zip {
 
 	import by.blooddy.core.errors.ParserError;
-
+	import by.blooddy.core.net.loading.ILoadable;
+	
 	import flash.events.Event;
+	import flash.events.EventDispatcher;
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
-
-	import flash.utils.IDataInput;
-	import flash.utils.Endian;
 	import flash.utils.ByteArray;
-
-	import by.blooddy.core.net.ILoadable;
-	import flash.events.EventDispatcher;
+	import flash.utils.Endian;
+	import flash.utils.IDataInput;
 
 	//--------------------------------------
 	//  Implemented events: ILoadable

@@ -6,9 +6,9 @@
 
 package by.blooddy.core.managers.resource {
 
-	import by.blooddy.core.net.HeuristicLoader;
-	import by.blooddy.core.net.LoaderContext;
 	import by.blooddy.core.net.MIME;
+	import by.blooddy.core.net.loading.HeuristicLoader;
+	import by.blooddy.core.net.loading.LoaderContext;
 	import by.blooddy.core.utils.DefinitionFinder;
 	import by.blooddy.core.utils.crypto.MD5;
 	

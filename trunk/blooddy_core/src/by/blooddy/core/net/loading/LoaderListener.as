@@ -4,9 +4,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.net {
+package by.blooddy.core.net.loading {
 
-	import by.blooddy.core.events.net.LoaderEvent;
+	import by.blooddy.core.events.net.loading.LoaderEvent;
 	
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
@@ -15,8 +15,8 @@ package by.blooddy.core.net {
 	//  Events
 	//--------------------------------------
 
-	[Event( name="loaderEnabled", type="by.blooddy.core.events.net.LoaderEvent" )]
-	[Event( name="loaderDisabled", type="by.blooddy.core.events.net.LoaderEvent" )]
+	[Event( name="loaderEnabled", type="by.blooddy.core.events.net.loading.LoaderEvent" )]
+	[Event( name="loaderDisabled", type="by.blooddy.core.events.net.loading.LoaderEvent" )]
 
 	/**
 	 * @author					BlooDHounD
@@ -94,7 +94,7 @@ package by.blooddy.core.net {
 			super.addLoaderListener( event.loader );
 			if ( loaded && !super.loaded ) {
 				this._running = true;
-				super.$dispatchEvent( new LoaderEvent( LoaderEvent.LOADER_ENABLED, false, false, this ) );
+				super.dispatchEvent( new LoaderEvent( LoaderEvent.LOADER_ENABLED, false, false, this ) );
 			}
 		}
 
@@ -103,7 +103,7 @@ package by.blooddy.core.net {
 		 */
 		private function handler_complete(event:Event):void {
 			this._running = false;
-			super.$dispatchEvent( new LoaderEvent( LoaderEvent.LOADER_DISABLED, false, false, this ) );
+			super.dispatchEvent( new LoaderEvent( LoaderEvent.LOADER_DISABLED, false, false, this ) );
 		}
 
 	}

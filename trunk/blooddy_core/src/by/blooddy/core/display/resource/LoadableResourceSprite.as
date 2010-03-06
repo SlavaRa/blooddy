@@ -7,8 +7,8 @@
 package by.blooddy.core.display.resource {
 
 	import by.blooddy.core.events.display.resource.ResourceEvent;
-	import by.blooddy.core.net.ILoadable;
-	import by.blooddy.core.net.LoaderDispatcher;
+	import by.blooddy.core.net.loading.ILoadable;
+	import by.blooddy.core.net.loading.LoaderDispatcher;
 	
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;

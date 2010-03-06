@@ -6,7 +6,7 @@
 
 package by.blooddy.core.net.monitor {
 
-	import by.blooddy.core.net.ILoadable;
+	import by.blooddy.core.net.loading.ILoadable;
 	
 	import flash.events.Event;
 	import flash.net.URLRequest;

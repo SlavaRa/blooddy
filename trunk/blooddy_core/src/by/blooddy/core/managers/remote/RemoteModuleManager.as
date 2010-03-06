@@ -7,8 +7,8 @@
 package by.blooddy.core.managers.remote {
 
 	import by.blooddy.core.events.managers.RemoteModuleEvent;
-	import by.blooddy.core.net.LoaderContext;
 	import by.blooddy.core.net.MIME;
+	import by.blooddy.core.net.loading.LoaderContext;
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -154,8 +154,8 @@ package by.blooddy.core.managers.remote {
 //
 //==============================================================================
 
-import by.blooddy.core.net.Loader;
 import by.blooddy.core.managers.remote.IRemoteModule;
+import by.blooddy.core.net.loading.Loader;
 
 ////////////////////////////////////////////////////////////////////////////////
 //

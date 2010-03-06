@@ -4,11 +4,12 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.net {
+package by.blooddy.core.net.loading {
 
 	import by.blooddy.core.utils.enterFrameBroadcaster;
 	
 	import flash.events.ErrorEvent;
+	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
@@ -59,14 +60,6 @@ package by.blooddy.core.net {
 		public function LoaderDispatcher() {
 			super();
 		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Includes
-		//
-		//--------------------------------------------------------------------------
-
-		include "../../../../includes/override_EventDispatcher.as"
 
 		//--------------------------------------------------------------------------
 		//
