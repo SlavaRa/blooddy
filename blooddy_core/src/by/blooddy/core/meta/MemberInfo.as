@@ -6,8 +6,6 @@
 
 package by.blooddy.core.meta {
 
-	import flash.errors.IllegalOperationError;
-
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -23,7 +21,7 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 
-		use namespace $protected_inf;
+		use namespace $protected_info;
 
 		//--------------------------------------------------------------------------
 		//
@@ -49,11 +47,14 @@ package by.blooddy.core.meta {
 		 */
 		protected var _type:QName;
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function get type():QName {
 			return this._type;
 		}
 
-		$protected_inf var _owner:TypeInfo;
+		$protected_info var _owner:TypeInfo;
 		
 		public function get owner():TypeInfo {
 			return this._owner;
@@ -67,7 +68,13 @@ package by.blooddy.core.meta {
 
 		public override function toXML():XML {
 			var xml:XML = super.toXML();
-			xml.@ns_rdf::about = typeURI( this._owner._name ) + '#' + this._name;
+			// about
+			xml.@ns_rdf::about = '#' + encodeURI( this._owner._name + '-' + this._name );
+			// define
+			var x:XML = <isDefinedBy />;
+			x.setNamespace( ns_rdfs );
+			x.@ns_rdf::resource = '#' + encodeURI( this._owner._name.toString() );
+			xml.appendChild( x );
 			return xml;
 		}
 
@@ -77,9 +84,9 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 
-		$protected_inf override function parseXML(xml:XML):void {
+		$protected_info override function parseXML(xml:XML):void {
 			super.parseXML( xml );
-			this._name = new QName( xml.@uri.toString(), xml.@name.toString() );
+			this._name = getName( xml );
 		}
 
 	}

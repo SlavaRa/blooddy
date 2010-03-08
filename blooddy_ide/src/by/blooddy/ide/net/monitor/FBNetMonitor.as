@@ -7,8 +7,8 @@
 package by.blooddy.ide.net.monitor {
 
 	import by.blooddy.core.net.IAbstractSocket;
-	import by.blooddy.core.net.ILoadable;
 	import by.blooddy.core.net.Socket;
+	import by.blooddy.core.net.loading.ILoadable;
 	import by.blooddy.core.net.monitor.INetMonitor;
 	import by.blooddy.core.utils.Caller;
 	import by.blooddy.core.utils.ClassUtils;
