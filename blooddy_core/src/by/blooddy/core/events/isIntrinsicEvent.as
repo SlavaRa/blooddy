@@ -8,6 +8,7 @@ package by.blooddy.core.events {
 
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
+	import by.blooddy.core.meta.TypeInfo;
 
 	/**
 	 * Функция проверяет произвольное событие произвольным экземпляром ксласса. 
@@ -20,7 +21,7 @@ package by.blooddy.core.events {
 	 * @author					BlooDHounD
 	 */
 	public function isIntrinsicEvent(dispatcher:IEventDispatcher, event:Event):Boolean {
-		var info:EventDispatcherInfo = EventDispatcherInfo.getInfo( dispatcher );
+		var info:EventDispatcherInfo = EventDispatcherInfo.getInfo( TypeInfo.getInfo( dispatcher ) );
 		if ( info ) return info.hasEvent( event );
 		return false;
 	}
@@ -33,15 +34,12 @@ package by.blooddy.core.events {
 //
 //==============================================================================
 
+import by.blooddy.core.meta.TypeInfo;
+
 import flash.events.IEventDispatcher;
 import flash.events.Event;
-
 import flash.utils.Dictionary;
-
 import flash.utils.getQualifiedClassName;
-
-import by.blooddy.core.utils.ObjectInfo;
-import flash.utils.getDefinitionByName;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -62,20 +60,28 @@ internal final class EventDispatcherInfo {
 
 	//--------------------------------------------------------------------------
 	//
-	//  Class constants
+	//  Class methods
 	//
 	//--------------------------------------------------------------------------
 
 	/**
 	 * @private
 	 */
-	public static function getInfo(dispatcher:IEventDispatcher):EventDispatcherInfo {
-		return getClassInfo( ( dispatcher as Object ).constructor as Class );
+	public static function getInfo(info:TypeInfo):EventDispatcherInfo {
+		var result:EventDispatcherInfo;
+		if ( result ) {
+			result = _HASH[ info ];
+			if ( !result ) {
+				_HASH[ info ] = result = new EventDispatcherInfo();
+				result.parseInfo( info );
+			}
+		}
+		return result;
 	}
 
 	//--------------------------------------------------------------------------
 	//
-	//  Private class constants
+	//  Class variables
 	//
 	//--------------------------------------------------------------------------
 
@@ -84,25 +90,11 @@ internal final class EventDispatcherInfo {
 	 */
 	private static const _HASH:Dictionary = new Dictionary( true );
 
-	//--------------------------------------------------------------------------
-	//
-	//  Private class methods
-	//
-	//--------------------------------------------------------------------------
-
 	/**
 	 * @private
 	 */
-	private static function getClassInfo(c:Object):EventDispatcherInfo {
-		var info:EventDispatcherInfo = _HASH[ c ];
-		if ( !info ) {
-			var info2:ObjectInfo = ObjectInfo.getInfo( c );
-			_HASH[ c ] = info = new EventDispatcherInfo();
-			info.setInfo( info2 );
-		}
-		return info;
-	}
-
+	private static const _NAME_EVENT_DISPATCHER:String = getQualifiedClassName( IEventDispatcher );
+	
 	//--------------------------------------------------------------------------
 	//
 	//  Constructor
@@ -111,7 +103,7 @@ internal final class EventDispatcherInfo {
 
 	/**
 	 * @private
-		 * Constructor
+	 * Constructor
 	 */
 	public function EventDispatcherInfo() {
 		super();
@@ -126,33 +118,7 @@ internal final class EventDispatcherInfo {
 	/**
 	 * @private
 	 */
-	private var _info:ObjectInfo;
-
-	/**
-	 * @private
-	 */
 	private const _events:Object = new Object();
-
-	//--------------------------------------------------------------------------
-	//
-	//  Properties
-	//
-	//--------------------------------------------------------------------------
-
-	/**
-	 * @private
-	 */
-	private var _parent:EventDispatcherInfo;
-
-	/**
-	 * @private
-	 */
-	public function get parent():EventDispatcherInfo {
-		if ( !this._parent && this._info.parent && this._info.parent.hasInterface( IEventDispatcher ) ) {
-			this._parent = getClassInfo( getDefinitionByName( this._info.parent.name.toString() ) );
-		}
-		return this._parent;
-	}
 
 	//--------------------------------------------------------------------------
 	//
@@ -164,10 +130,7 @@ internal final class EventDispatcherInfo {
 	 * @private
 	 */
 	public function hasEvent(event:Event):Boolean {
-		var c:Class = this._events[ event.type.toLowerCase() ] as Class;
-		if ( c && event is c ) return true;
-		else if ( this.parent && this.parent.hasEvent( event ) ) return true;
-		return false;
+		return event.type in this._events;
 	}
 
 	//--------------------------------------------------------------------------
@@ -179,16 +142,22 @@ internal final class EventDispatcherInfo {
 	/**
 	 * @private
 	 */
-	private function setInfo(info:ObjectInfo):void {
-		this._info = info;
-		var list:XMLList, xml:XML, arg:XML, name:String, type:Object;
-		list = info.getMetadata( "Event", ObjectInfo.META_SELF );
-		for each ( xml in list ) {
-			arg = xml.arg.( @key =="name" )[0];
-			if ( arg && ( name = arg.@value.toXMLString().toLowerCase() ) ) {
-				arg = xml.arg.( @key == "type" )[0];
-				if ( arg && ( type = getDefinitionByName( arg.@value.toXMLString() ) ) ) {
-					_events[ name ] = type;
+	private function parseInfo(info:TypeInfo):void {
+		if ( info.parent && info.parent.hasInterface( _NAME_EVENT_DISPATCHER ) ) {
+			var events:Object = getInfo( info.parent )._events;
+			for ( var key:Object in events ) {
+				this._events[ key ] = true;
+			}
+		}
+		var list:XMLList = info.getMetadata( false ).( @name == 'Event' );
+		var arg:XML, name:String;
+		for each ( var xml:XML in list ) {
+			list = xml.arg;
+			arg = list.( @key == 'name' );
+			if ( arg.length() > 0 ) {
+				name = arg[ 0 ].@value.toString();
+				if ( name ) {
+					this._events[ name ] = true;
 				}
 			}
 		}

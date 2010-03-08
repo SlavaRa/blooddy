@@ -6,6 +6,9 @@
 
 package by.blooddy.core.utils {
 
+	import by.blooddy.core.meta.PropertyInfo;
+	import by.blooddy.core.meta.TypeInfo;
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -25,11 +28,9 @@ package by.blooddy.core.utils {
 			return ( o2 as IEquable ).equals( o1 );
 		}
 
-		// проверим нединамические свойства
-		var arr:Array = ObjectInfo.getInfo( o1 ).getMembers( ObjectInfo.MEMBER_PROPERTIES ); // получили встроенные свойства
-		var prop:ObjectInfo;
+		// получили встроенные свойства
 		var name:QName;
-		for each ( prop in arr ) {
+		for each ( var prop:PropertyInfo in TypeInfo.getInfo( o1 ).getProperties() ) {
 			name = prop.name;
 			if ( o1[ name ] != o2[ name ] ) return false;
 		}

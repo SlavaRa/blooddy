@@ -20,10 +20,21 @@ package by.blooddy.core.utils {
 
 }
 
+//==============================================================================
+//
+//  Inner definitions
+//
+//==============================================================================
+
+import by.blooddy.core.meta.TypeInfo;
+import by.blooddy.core.meta.PropertyInfo;
+
 import flash.utils.Dictionary;
 import flash.utils.ByteArray;
-import by.blooddy.core.utils.ObjectInfo;
 
+/**
+ * @private
+ */
 internal function $copyObject(hash:Dictionary, source:Object, target:Object=null):Object {
 	if ( !( source is Object ) ) {
 		if ( target is Object ) throw new ArgumentError();
@@ -61,17 +72,15 @@ internal function $copyObject(hash:Dictionary, source:Object, target:Object=null
 		target = source.copy();
 		hash[ source ] = target; // ADD
 	} else {
-		var info:ObjectInfo = ObjectInfo.getInfo( source );
 		if ( !target ) {
 			if ( source is Array )	target = new Array();
 			else					target = new Object();
 		}
 		hash[ source ] = target; // ADD
-		var members:Array = info.getMembers( ObjectInfo.MEMBER_PROPERTIES );
 		var key:*, value:*;
 		const props:Dictionary = new Dictionary();
-		for each ( var member:ObjectInfo in members ) {
-			key = member.name;
+		for each ( var prop:PropertyInfo in TypeInfo.getInfo( source ).getProperties() ) {
+			key = prop.name;
 			props[ key ] = true;
 			try {
 				value = $copyObject( hash, source[ key ] );
