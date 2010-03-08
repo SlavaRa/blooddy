@@ -159,7 +159,6 @@
     <classEntry path="by.blooddy.core.utils.IHashable"/>
     <classEntry path="by.blooddy.core.utils.MapedByteArray"/>
     <classEntry path="by.blooddy.core.utils.MathUtils"/>
-    <classEntry path="by.blooddy.core.utils.ObjectInfo"/>
     <classEntry path="by.blooddy.core.utils.RecycleBin"/>
     <classEntry path="by.blooddy.core.utils.SWFByteArray"/>
     <classEntry path="by.blooddy.core.utils.StringUtils"/>

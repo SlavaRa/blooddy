@@ -12,6 +12,7 @@ package by.blooddy.core.meta {
 	import flash.utils.Dictionary;
 	import flash.utils.describeType;
 	import flash.utils.getDefinitionByName;
+	import flash.utils.getQualifiedClassName;
 	
 	/**
 	 * @author					BlooDHounD
@@ -223,8 +224,25 @@ package by.blooddy.core.meta {
 		//  superClasses
 		//----------------------------------
 		
-		public function hasSuperclass(name:*):Boolean {
-			return String( name ) in this._superclasses_hash;
+		public function hasSuperclass(o:*):Boolean {
+			var n:String;
+			if ( o is Class ) {
+				n = getQualifiedClassName( o );
+			} else if ( o is QName ) {
+				n = o.toString();
+			} else if ( o is String ) {
+				n = o;
+				// нормализуем
+				if ( n.lastIndexOf( '::' ) < 0 ) {
+					var i:int = n.lastIndexOf( '.' );
+					if ( i > 0 ) {
+						n = n.substr( 0, i ) + '::' + n.substr( i + 1 );
+					}
+				}
+			} else {
+				throw new ArgumentError();
+			}
+			return n in this._superclasses_hash;
 		}
 		
 		public function getSuperclasses():Vector.<QName> {
@@ -235,8 +253,25 @@ package by.blooddy.core.meta {
 		//  interfaces
 		//----------------------------------
 		
-		public function hasInterface(name:*):Boolean {
-			return String( name ) in this._interfaces_hash;
+		public function hasInterface(o:*):Boolean {
+			var n:String;
+			if ( o is Class ) {
+				n = getQualifiedClassName( o );
+			} else if ( o is QName ) {
+				n = o.toString();
+			} else if ( o is String ) {
+				n = o;
+				// нормализуем
+				if ( n.lastIndexOf( '::' ) < 0 ) {
+					var i:int = n.lastIndexOf( '.' );
+					if ( i > 0 ) {
+						n = n.substr( 0, i ) + '::' + n.substr( i + 1 );
+					}
+				}
+			} else {
+				throw new ArgumentError();
+			}
+			return n in this._interfaces_hash;
 		}
 		
 		public function getInterfaces(all:Boolean=true):Vector.<QName> {
