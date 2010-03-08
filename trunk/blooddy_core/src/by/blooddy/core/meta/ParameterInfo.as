@@ -13,7 +13,7 @@ package by.blooddy.core.meta {
 	 * @langversion				3.0
 	 * @created					06.03.2010 13:08:12
 	 */
-	public class ParameterInfo extends AbstractInfo implements ITypedInfo {
+	public final class ParameterInfo extends AbstractInfo implements ITypedInfo {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -21,7 +21,7 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 		
-		use namespace $protected_inf;
+		use namespace $protected_info;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -47,6 +47,9 @@ package by.blooddy.core.meta {
 		 */
 		private var _type:QName;
 
+		/**
+		 * @inheritDoc
+		 */
 		public function get type():QName {
 			return this._type;
 		}
@@ -73,10 +76,11 @@ package by.blooddy.core.meta {
 			// type
 			x = <type />;
 			x.setNamespace( ns_as3 );
-			x.@ns_rdf::resource = typeURI( this._type );
+			x.@ns_rdf::resource = '#' + encodeURI( this._type.toString() );
 			xml.appendChild( x );
 			// optional
-			x = <optional>{this._optional}</optional>;
+			x = <optional />;
+			x.appendChild( this._optional );
 			x.setNamespace( ns_as3 );
 			//x.@ns_rdf::datatype = 'http://www.w3.org/2001/XMLSchema#boolean';
 			xml.appendChild( x );
@@ -89,7 +93,7 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 		
-		$protected_inf override function parseXML(xml:XML):void {
+		$protected_info override function parseXML(xml:XML):void {
 			this._type = parseType( xml.@type.toString() );
 			this._optional = parseBoolean( xml.@optional.toString() );
 		}

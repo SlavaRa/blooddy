@@ -52,7 +52,7 @@ package by.blooddy.core.utils.proxy {
 				return hash[ name ];
 			} else {
 				if ( name in c.prototype ) return c.prototype;
-				return ( hash[ name ] = getPrototypeByProperty( ClassUtils.getSuperClass( c ), name ) ); // save
+				return ( hash[ name ] = getPrototypeByProperty( ClassUtils.getSuperclass( c ), name ) ); // save
 			}
 		}
 

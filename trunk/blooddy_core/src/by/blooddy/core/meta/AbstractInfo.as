@@ -5,7 +5,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.meta {
-	
+
+	[ExcludeClass]
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -21,41 +22,39 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 		
-		protected namespace $protected_inf;
+		protected namespace $protected_info;
 		
-		use namespace $protected_inf;
+		use namespace $protected_info;
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Class variables
+		//
+		//--------------------------------------------------------------------------
+		
+		internal static const ns_rdf:Namespace = new Namespace( 'rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#' );
+		
+		internal static const ns_as3:Namespace = new Namespace( 'as3', AS3 + '#' );
+		
+		internal static const ns_dc:Namespace = new Namespace( 'dc', 'http://purl.org/dc/elements/1.1/' );
+
+		internal static const ns_rdfs:Namespace = new Namespace( 'rdfs', 'http://www.w3.org/2000/01/rdf-schema' );
+
 		//--------------------------------------------------------------------------
 		//
 		//  Protected class methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		protected static function parseType(name:String):QName {
-			var arr:Array = name.split( '::', 2 );
-			if ( arr.length > 1 ) {
-				return new QName( arr[ 0 ], arr[ 1 ] );
+			var i:int = name.indexOf( '::' );
+			if ( i < 0 ) {
+				return new QName( '', name );
 			} else {
-				return new QName( '', arr[ 0 ] );
+				return new QName( name.substr( 0, i ), name.substr( i + 2 ) );
 			}
 		}
 		
-		protected static function typeURI(name:QName):String {
-			return 'class://' + name;
-		}
-		
-		//--------------------------------------------------------------------------
-		//
-		//  Protected class variables
-		//
-		//--------------------------------------------------------------------------
-		
-		protected static const ns_rdf:Namespace = new Namespace( 'rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#' );
-		
-		protected static const ns_as3:Namespace = new Namespace( 'as3', AS3 + '#' );
-
-		protected static const ns_dc:Namespace = new Namespace( 'dc', 'http://purl.org/dc/elements/1.1/' );
-
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -89,7 +88,7 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 		
-		$protected_inf function parseXML(xml:XML):void {
+		$protected_info function parseXML(xml:XML):void {
 		}
 		
 	}

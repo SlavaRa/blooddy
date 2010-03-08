@@ -56,7 +56,7 @@ package by.blooddy.core.utils {
 		 *
 		 * @see						flash.utils.getQualifiedSuperclassName()
 		 */
-		public static function getSuperClassName(o:Object):String {
+		public static function getSuperclassName(o:Object):String {
 			return cutClassName( getQualifiedSuperclassName( o ) );
 		}
 
@@ -68,7 +68,7 @@ package by.blooddy.core.utils {
 			return null;
 		}
 
-		public static function getSuperClass(o:Object):Class {
+		public static function getSuperclass(o:Object):Class {
 			var name:String = getQualifiedSuperclassName( o );
 			if ( name ) {
 				try {

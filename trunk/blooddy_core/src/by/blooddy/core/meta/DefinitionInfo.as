@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.meta {
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -14,15 +14,30 @@ package by.blooddy.core.meta {
 	 * @created					06.03.2010 0:37:29
 	 */
 	public class DefinitionInfo extends AbstractInfo {
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Namespaces
 		//
 		//--------------------------------------------------------------------------
 
-		use namespace $protected_inf;
-		
+		/**
+		 * @private
+		 */
+		private static const _DESCRIPTION:QName = new QName( ns_rdf, 'Description' )
+
+		//--------------------------------------------------------------------------
+		//
+		//  Namespaces
+		//
+		//--------------------------------------------------------------------------
+
+		use namespace $protected_info;
+
+		protected static function getName(x:XML):QName {
+			return new QName( x.@uri.toString(), x.@name.toString() );
+		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -38,6 +53,17 @@ package by.blooddy.core.meta {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Variables
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		 * @private
+		 */
+		$protected_info var _parent:DefinitionInfo;
+		
+		//--------------------------------------------------------------------------
+		//
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
@@ -45,12 +71,30 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		$protected_inf var _name:QName;
+		$protected_info var _name:QName;
 
 		public function get name():QName {
 			return this._name;
 		}
+
+		/**
+		 * @private
+		 */
+		$protected_info var _metadata:XMLList;
+
+		/**
+		 * @private
+		 */
+		$protected_info var _metadata_local:XMLList;
 		
+		public function getMetadata(all:Boolean=true):XMLList {
+			if ( all ) {
+				return this._metadata.copy();
+			} else {
+				return this._metadata_local.copy();
+			}
+		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
@@ -59,12 +103,22 @@ package by.blooddy.core.meta {
 
 		public override function toXML():XML {
 			var xml:XML = super.toXML();
-			xml.setName( new QName( ns_rdf, 'Description' ) );
+			xml.setName( _DESCRIPTION );
+			var x:XML;
 			// title
-			var dc:XML = <title />;
-			dc.setNamespace( ns_dc );
-			dc.appendChild( this._name );
-			xml.appendChild( dc );
+			x = <title />;
+			x.setNamespace( ns_dc );
+			x.appendChild( this._name.toString() );
+			xml.appendChild( x );
+			// metadata
+			if ( this._metadata_local.length() > 0 ) {
+				x = <metadata />;
+				x.setNamespace( ns_as3 );
+				x.@ns_rdf::parseType = 'Literal';
+				x.setChildren( this._metadata_local );
+				xml.appendChild( x );
+			}
+			
 			return xml;
 		}
 		
@@ -74,8 +128,25 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 
-		$protected_inf override function parseXML(xml:XML):void {
-			var list:XMLList = xml.metadata;
+		$protected_info override function parseXML(xml:XML):void {
+			this._metadata_local = xml.metadata.( @name != '__go_to_definition_help' );
+			if ( this._parent ) {
+				if ( this._metadata_local.length() > 0 ) {
+					if ( this._parent._metadata.length() > 0 ) {
+						this._metadata = this._metadata_local + this._parent._metadata;
+					} else {
+						this._metadata = this._metadata_local;
+					}
+				} else {
+					if ( this._parent._metadata.length() > 0 ) {
+						this._metadata = this._parent._metadata;
+					} else {
+						this._metadata = this._metadata_local = this._parent._metadata;
+					}
+				}
+			} else {
+				this._metadata = this._metadata_local;
+			}
 		}
 
 	}

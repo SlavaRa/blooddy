@@ -13,7 +13,7 @@ package by.blooddy.core.meta {
 	 * @langversion				3.0
 	 * @created					06.03.2010 2:22:30
 	 */
-	public class MethodInfo extends MemberInfo implements IFunctionInfo {
+	public final class MethodInfo extends MemberInfo implements IFunctionInfo {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -21,7 +21,7 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 		
-		use namespace $protected_inf;
+		use namespace $protected_info;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -33,7 +33,12 @@ package by.blooddy.core.meta {
 		 * @private
 		 */
 		private static const _TYPE:QName = new QName( '', 'Function' );
-		
+
+		/**
+		 * @private
+		 */
+		private static const _LI:QName = new QName( ns_rdf, 'li' );
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -50,9 +55,24 @@ package by.blooddy.core.meta {
 		
 		//--------------------------------------------------------------------------
 		//
+		//  Variables
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		 * @private
+		 */
+		private const _parameters:Vector.<ParameterInfo> = new Vector.<ParameterInfo>();
+		
+		//--------------------------------------------------------------------------
+		//
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
+		
+		public function get parent():MethodInfo {
+			return this._parent as MethodInfo;
+		}
 		
 		/**
 		 * @private
@@ -63,21 +83,19 @@ package by.blooddy.core.meta {
 			return this._returnType;
 		}
 
-		/**
-		 * @private
-		 */
-		private const _parameters:Vector.<ParameterInfo> = new Vector.<ParameterInfo>();
-
-		public function get parameters():Vector.<ParameterInfo> {
-			return this._parameters.slice();
-		}
-
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @inheritDoc
+		 */
+		public function getParameters():Vector.<ParameterInfo> {
+			return this._parameters.slice();
+		}
+		
 		public override function toXML():XML {
 			var xml:XML = super.toXML();
 			var x:XML;
@@ -88,14 +106,14 @@ package by.blooddy.core.meta {
 			// returnType
 			x = <returnType />;
 			x.setNamespace( ns_as3 );
-			x.@ns_rdf::resource = typeURI( this._returnType );
+			x.@ns_rdf::resource = '#' + encodeURI( this._returnType.toString() );
 			xml.appendChild( x );
 			// parametrs
 			var seq:XML = <Seq />;
 			var l:uint = this._parameters.length;
 			for ( var i:uint = 0; i<l; i++ ) {
 				x = this._parameters[ 0 ].toXML();
-				x.setName( new QName( ns_rdf, 'li' ) );
+				x.setName( _LI );
 				seq.appendChild( x );
 			}
 			if ( seq.hasComplexContent() ) {
@@ -114,7 +132,7 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 		
-		$protected_inf override function parseXML(xml:XML):void {
+		$protected_info override function parseXML(xml:XML):void {
 			super.parseXML( xml );
 			this._returnType = parseType( xml.@returnType.toString() );
 			var list:XMLList = xml.parameter;

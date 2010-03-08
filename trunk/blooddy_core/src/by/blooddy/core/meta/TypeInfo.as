@@ -20,7 +20,7 @@ package by.blooddy.core.meta {
 	 * @langversion				3.0
 	 * @created					05.03.2010 23:44:05
 	 */
-	public class TypeInfo extends DefinitionInfo {
+	public final class TypeInfo extends DefinitionInfo {
 
 		//--------------------------------------------------------------------------
 		//
@@ -28,7 +28,7 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 		
-		use namespace $protected_inf;
+		use namespace $protected_info;
 
 		//--------------------------------------------------------------------------
 		//
@@ -55,6 +55,18 @@ package by.blooddy.core.meta {
 				_privateCall = false;
 			}
 			return result;
+		}
+
+		public static function getInfoByName(o:*):TypeInfo {
+			var c:Class;
+			try {
+				c = getDefinitionByName( o ) as Class;
+			} catch ( e:Error ) {
+			}
+			if ( c ) {
+				return getInfo( c );
+			}
+			return null;
 		}
 
 		//--------------------------------------------------------------------------
@@ -92,6 +104,43 @@ package by.blooddy.core.meta {
 		//  Variables
 		//
 		//--------------------------------------------------------------------------
+
+		//----------------------------------
+		//  superClasses
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
+		private const _superclasses_hash:Object = new Object();
+		
+		/**
+		 * @private
+		 */
+		private const _superclasses_list:Vector.<QName> = new Vector.<QName>();
+		
+		//----------------------------------
+		//  interfaces
+		//----------------------------------
+		
+		/**
+		 * @private
+		 */
+		private const _interfaces_hash:Object = new Object();
+		
+		/**
+		 * @private
+		 */
+		private var _interfaces_list:Vector.<QName>;
+		
+		/**
+		 * @private
+		 */
+		private const _interfaces_list_local:Vector.<QName> = new Vector.<QName>();
+		
+		//----------------------------------
+		//  members
+		//----------------------------------
 		
 		/**
 		 * @private
@@ -101,7 +150,40 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		private const _members_list:Vector.<MemberInfo> = new Vector.<MemberInfo>();
+		private var _members_list:Vector.<MemberInfo>;
+		
+		/**
+		 * @private
+		 */
+		private const _members_list_local:Vector.<MemberInfo> = new Vector.<MemberInfo>();
+		
+		//----------------------------------
+		//  properties
+		//----------------------------------
+		
+		/**
+		 * @private
+		 */
+		private var _properties_list:Vector.<PropertyInfo>;
+		
+		/**
+		 * @private
+		 */
+		private const _properties_list_local:Vector.<PropertyInfo> = new Vector.<PropertyInfo>();
+		
+		//----------------------------------
+		//  methods
+		//----------------------------------
+		
+		/**
+		 * @private
+		 */
+		private var _methods_list:Vector.<MethodInfo>;
+		
+		/**
+		 * @private
+		 */
+		private const _methods_list_local:Vector.<MethodInfo> = new Vector.<MethodInfo>();
 		
 		//--------------------------------------------------------------------------
 		//
@@ -109,31 +191,8 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 
-		/**
-		 * @private
-		 */
-		private var _parent:TypeInfo;
-		
 		public function get parent():TypeInfo {
-			return this._parent;
-		}
-
-		/**
-		 * @private
-		 */
-		private const _superClasses:Vector.<QName> = new Vector.<QName>();
-
-		public function get superClasses():Vector.<QName> {
-			return this._superClasses.slice();
-		}
-		
-		/**
-		 * @private
-		 */
-		private const _interfaces:Vector.<QName> = new Vector.<QName>();
-
-		public function get interfaces():Vector.<QName> {
-			return this._interfaces;
+			return this._parent as TypeInfo;
 		}
 
 		/**
@@ -145,26 +204,13 @@ package by.blooddy.core.meta {
 			return this._constructor;
 		}
 
-		public function get members():Vector.<MemberInfo> {
-			return this._members_list.slice();
-		}
-		
 		/**
 		 * @private
 		 */
-		private const _properties:Vector.<PropertyInfo> = new Vector.<PropertyInfo>();
-		
-		public function get properties():Vector.<PropertyInfo> {
-			return this._properties.slice();
-		}
-		
-		/**
-		 * @private
-		 */
-		private const _methods:Vector.<MethodInfo> = new Vector.<MethodInfo>();
-		
-		public function get methods():Vector.<MethodInfo> {
-			return this._methods.slice();
+		private var _source:String;
+
+		public function get source():String {
+			return this._source;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -173,17 +219,89 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 
-		public function getMember(name:*):MemberInfo {
-			if ( !name ) throw new ArgumentError();
-			return this._members_hash[ name ];
+		//----------------------------------
+		//  superClasses
+		//----------------------------------
+		
+		public function hasSuperclass(name:*):Boolean {
+			return String( name ) in this._superclasses_hash;
+		}
+		
+		public function getSuperclasses():Vector.<QName> {
+			return this._superclasses_list.slice();
+		}
+		
+		//----------------------------------
+		//  interfaces
+		//----------------------------------
+		
+		public function hasInterface(name:*):Boolean {
+			return String( name ) in this._interfaces_hash;
+		}
+		
+		public function getInterfaces(all:Boolean=true):Vector.<QName> {
+			if ( all ) {
+				return this._interfaces_list.slice();
+			} else {
+				return this._interfaces_list_local.slice();
+			}
+		}
+		
+		//----------------------------------
+		//  members
+		//----------------------------------
+
+		public function hasMember(name:*):Boolean {
+			return String( name ) in this._members_hash;
 		}
 
+		public function getMembers(all:Boolean=true):Vector.<MemberInfo> {
+			if ( all ) {
+				return this._members_list.slice();
+			} else {
+				return this._members_list_local.slice();
+			}
+		}
+
+		public function getMember(name:*):MemberInfo {
+			if ( !name ) throw new ArgumentError();
+			return this._members_hash[ String( name ) ];
+		}
+		
+		//----------------------------------
+		//  properties
+		//----------------------------------
+		
+		public function getProperties(all:Boolean=true):Vector.<PropertyInfo> {
+			if ( all ) {
+				return this._properties_list.slice();
+			} else {
+				return this._properties_list_local.slice();
+			}
+		}
+		
+		//----------------------------------
+		//  methods
+		//----------------------------------
+		
+		public function getMethods(all:Boolean=true):Vector.<MethodInfo> {
+			if ( all ) {
+				return this._methods_list.slice();
+			} else {
+				return this._methods_list_local.slice();
+			}
+		}
+
+		/**
+		 * @private
+		 */
 		public override function toXML():XML {
 			var xml:XML = super.toXML();
-			xml.addNamespace( ns_as3 );
+			xml.addNamespace( ns_rdfs );
 			xml.addNamespace( ns_dc );
+			xml.addNamespace( ns_as3 );
 
-			xml.@ns_rdf::about = typeURI( this._name );
+			xml.@ns_rdf::about = '#' + encodeURI( this._name.toString() );
 
 			var resource:XML;
 			var seq:XML;
@@ -194,9 +312,17 @@ package by.blooddy.core.meta {
 			x = <type>type</type>;
 			x.setNamespace( ns_dc );
 			xml.appendChild( x );
-			
+
+			// source
+			if ( this._source ) {
+				x = <source />;
+				x.appendChild( this._source );
+				x.setNamespace( ns_dc );
+				xml.appendChild( x );
+			}
+
 			// superClasses
-			l = this._superClasses.length;
+			l = this._superclasses_list.length;
 			if ( l > 0 ) {
 				resource = <extendsClass />
 				resource.setNamespace( ns_as3 );
@@ -207,7 +333,7 @@ package by.blooddy.core.meta {
 				for ( i=0; i<l; i++ ) {
 					x = <li />
 					x.setNamespace( ns_rdf );
-					x.@ns_rdf::resource = typeURI( this._superClasses[ i ] );
+					x.@ns_rdf::resource = '#' + encodeURI( this._superclasses_list[ i ].toString() );
 
 					seq.appendChild( x );
 				}
@@ -218,7 +344,7 @@ package by.blooddy.core.meta {
 			}
 
 			// interfaces
-			l = this._interfaces.length;
+			l = this._interfaces_list_local.length;
 			if ( l > 0 ) {
 				resource = <implementsInterface />
 				resource.setNamespace( ns_as3 );
@@ -229,7 +355,7 @@ package by.blooddy.core.meta {
 				for ( i=0; i<l; i++ ) {
 					x = <li />
 					x.setNamespace( ns_rdf );
-					x.@ns_rdf::resource = typeURI( this._interfaces[ i ] );
+					x.@ns_rdf::resource = '#' + encodeURI( this._interfaces_list_local[ i ].toString() );
 					
 					seq.appendChild( x );
 				}
@@ -248,50 +374,18 @@ package by.blooddy.core.meta {
 			}
 
 			// properties
-			if ( this._members_list.length > 0 ) {
+			if ( this._members_list_local.length > 0 ) {
 				resource = <members />
 				resource.setNamespace( ns_as3 );
 				resource.@ns_rdf::parseType = 'Collection';
-				for each ( var m:MemberInfo in this._members_list ) {
-					if ( this._name == m.owner.name ) {
-						resource.appendChild( m.toXML() );
-					}
+				for each ( var m:MemberInfo in this._members_list_local ) {
+					resource.appendChild( m.toXML() );
 				}
 				xml.appendChild( resource );
 			}
 
-
 			return xml;
 		}
-/*
-
-<?xml version="1.0" encoding="UTF-8" ?>
-<rdf:RDF xml:lang="ru"
-	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-	xmlns:dc="http://purl.org/dc/elements/1.1/"
-	xmlns:as3="http://adobe.com/AS3/2006/builtin#"
->
-<rdf:Description rdf:about="by.blooddy.core.display.resource::MainResourceSprite">
-
-</rdf:Description>
-
-*/
-		
-private var x:XML = <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-   <rdf:Description rdf:about="" xmlns:shared="http://timezero.com/library/shared/">
-    <shared:library rdf:parseType="Resource">
-      <shared:domain rdf:resource="lib/graphics/user/shared/weapon/man/dizarm.swf"/>
-      <shared:definition>
-        <rdf:Bag>
-          <rdf:li>x0000</rdf:li>
-          <rdf:li>x001o</rdf:li>
-          <rdf:li>x003c</rdf:li>
-          <rdf:li>x0050</rdf:li>
-        </rdf:Bag>
-      </shared:definition>
-    </shared:library>
-  </rdf:Description>
-</rdf:RDF>
 		
 		//--------------------------------------------------------------------------
 		//
@@ -312,74 +406,132 @@ private var x:XML = <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-
 		//
 		//--------------------------------------------------------------------------
 
-		$protected_inf override function parseXML(xml:XML):void {
-			//trace( xml );
-			super.parseXML( xml );
-			this._name = parseType( xml.@name.toString() );
-			xml = xml.factory[ 0 ];
+		$protected_info override function parseXML(xml:XML):void {
+			xml = xml.factory[ 0 ]; // дергаем factory
+			this._name = parseType( xml.@type.toString() ); // выдёргиваем имя
 			var list:XMLList, x:XML;
+			var n:String;
+			var q:QName;
 			// superclasses
+			// собираем суперклассы
 			list = xml.extendsClass;
 			for each ( x in list ) {
-				this._superClasses.push( parseType( x.@type.toString() ) );
-			}
-			// interfaces
-			list = xml.implementsInterface;
-			for each ( x in list ) {
-				this._interfaces.push( parseType( x.@type.toString() ) );
+				n = x.@type.toString();
+				this._superclasses_hash[ n ] = true;
+				this._superclasses_list.push( parseType( n ) );
 			}
 			// parent
-			if ( this._superClasses.length > 0 ) {
+			// надо найти нашего папу
+			var parent:TypeInfo;
+			if ( this._superclasses_list.length > 0 ) {
 				var o:Class;
-				try {
-					o = getDefinitionByName( this._superClasses[ 0 ].toString() ) as Class;
-				} catch ( e:Error ) {
-				}
+				var i:uint = 0;
+				do {
+					try {
+						o = getDefinitionByName( this._superclasses_list[ i ].toString() ) as Class;
+					} catch ( e:Error ) { // промежуточный класс может быть неоступен из области видимости, мы его проустим
+					}
+				} while ( !o && ++i < this._superclasses_list.length );
 				if ( o ) {
-					this._parent = getInfo( o );
+					this._parent = parent = getInfo( o ); // папочка найден
 				}
 			}
-			// members
-			var name:String = this._name.toString();
-			var n:String;
-			// properties
-			var p:PropertyInfo;
-			list = xml.variable + xml.constant + xml.accessor;
+			// interfaces
+			// собираем список интерфейсов на основании списка нашего папы
+			list = xml.implementsInterface;
+			this._interfaces_list = ( parent ? parent._interfaces_list.slice() : new Vector.<QName>() ); // копируем 
 			for each ( x in list ) {
-				n = x.@declaredBy.toString();
-				if ( !n || n == name ) {
+				n = x.@type.toString();
+				if ( parent && !( n in parent._interfaces_hash ) ) { // добавляем только недостающие
+					q = parseType( n );
+					this._interfaces_list_local.push( q );
+					this._interfaces_list.push( q );
+				}
+				this._interfaces_hash[ n ] = true;
+			}
+			// metadata
+			// запускаем дефолтный парсер
+			super.parseXML( xml );
+			// members
+			// надо распарсить всех наших многочленов
+			var name:String = this._name.toString();
+			var dn:String;
+			this._members_list = ( parent ? parent._members_list.slice() : new Vector.<MemberInfo>() ); // копируем список
+			// properties
+			this._properties_list = ( parent ? parent._properties_list.slice() : new Vector.<PropertyInfo>() ); // копируем список
+			var p:PropertyInfo, pp:PropertyInfo;
+			list = xml.variable + xml.constant + xml.accessor; // выдёргиваем все свойства
+			for each ( x in list ) {
+				n = getName( x ).toString();
+				if ( parent && n in parent._members_hash ) { // ищем свойство у родителя
+					pp = parent._members_hash[ n ] as PropertyInfo;
+				} else {
+					pp = null;
+				}
+				dn = x.@declaredBy.toString();
+				if ( !dn || dn == name ) { // это свойство объявленно у нас
 					p = new PropertyInfo();
 					p._owner = this;
+					p._parent = pp;
 					p.parseXML( x );
+					if ( pp && pp._metadata == p._metadata && pp.access == p.access ) { // наше свойство неотличается от ролительского
+						p = pp; // переиспользуем: нечего создавать лишние связи
+					}
 				} else {
-					n = x.@uri.toString();
-					p = this._parent._members_hash[ ( n ? n + '::' : '' ) + x.@name.toString() ];
+					p = pp;
 				}
-				this._members_hash[ p._name.toString() ] = p;
-				this._members_list.push( p );
-				this._properties.push( p );
+				if ( p !== pp ) { // добавляем только наши свойства
+					this._members_list_local.push ( p );
+					this._members_list.push( p );
+					this._properties_list_local.push( p );
+					this._properties_list.push( p );
+				}
+				this._members_hash[ n ] = p;
 			}
 			// methods
-			var m:MethodInfo;
+			this._methods_list = ( parent ? parent._methods_list.slice() : new Vector.<MethodInfo>() ); // копируем список
+			var m:MethodInfo, mm:MethodInfo;
 			list = xml.method;
 			for each ( x in list ) {
-				n = x.@declaredBy.toString();
-				if ( !n || n == name ) {
+				n = getName( x ).toString();
+				if ( parent && n in parent._members_hash ) { // ищем метод у папы
+					mm = parent._members_hash[ n ] as MethodInfo;
+				} else {
+					mm = null;
+				}
+				dn = x.@declaredBy.toString();
+				if ( !dn || dn == name ) { // метод объявлен у нас
 					m = new MethodInfo();
 					m._owner = this;
+					m._parent = mm;
 					m.parseXML( x );
+					if ( mm && mm._metadata == m._metadata ) { // метод ничем не отличается от родительского
+						m = mm;
+					}
 				} else {
-					n = x.@uri.toString();
-					m = this._parent._members_hash[ ( n ? n + '::' : '' ) + x.@name.toString() ];
+					m = mm;
 				}
-				this._members_hash[ m._name.toString() ] = m;
-				this._members_list.push( m );
-				this._methods.push( m );
+				if ( m !== mm ) { // добавляем в списки только наших
+					this._members_list_local.push ( m );
+					this._members_list.push( m );
+					this._methods_list_local.push( m );
+					this._methods_list.push( m );
+				}
+				this._members_hash[ n ] = m;
 			}
 			// constructor
+			// распишем конструктор
 			list = xml.constructor;
 			if ( list.length() > 0 ) {
 				this._constructor.parseXML( list[ 0 ] );
+			}
+			// source
+			list = xml.metadata.( @name == '__go_to_definition_help' );
+			if ( list.length() > 0 ) {
+				list = list[ 0 ].arg.( @key == 'file' );
+				if ( list.length() > 0 ) {
+					this._source = list[ 0 ].@value.toString();
+				}
 			}
 		}
 
