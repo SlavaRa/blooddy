@@ -24,7 +24,7 @@ package by.blooddy.core.utils.crypto {
 	 */
 	internal function createBlocksFromString(s:String):Array {
 		var bytes:ByteArray = new ByteArray();
-		bytes.writeUTFBytes(s);
+		bytes.writeUTFBytes( s );
 		return createBlocksFromByteArray( bytes );
 	}
 

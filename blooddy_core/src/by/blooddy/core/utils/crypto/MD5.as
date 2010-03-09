@@ -195,17 +195,17 @@ package by.blooddy.core.utils.crypto {
 			}
 
 			// Finish up by concatening the buffers with their hex output
-			return NumberUtils.toHex(a) + NumberUtils.toHex(b) + NumberUtils.toHex(c) + NumberUtils.toHex(d);
+			return NumberUtils.toHex( a ) + NumberUtils.toHex( b ) + NumberUtils.toHex( c ) + NumberUtils.toHex( d );
 		}
 
 		/**
 		 * @private
 		 * F, G, H and I are basic MD5 functions.
 		 */
-		private static function F(x:uint, y:uint, z:uint):uint	{ return ( x & y ) | ( (~x) & z ) }
-		private static function G(x:uint, y:uint, z:uint):uint	{ return ( x & z ) | ( y & (~z) ) }
+		private static function F(x:uint, y:uint, z:uint):uint	{ return ( x & y ) | ( ( ~x ) & z ) }
+		private static function G(x:uint, y:uint, z:uint):uint	{ return ( x & z ) | ( y & ( ~z ) ) }
 		private static function H(x:uint, y:uint, z:uint):uint	{ return x ^ y ^ z }
-		private static function I(x:uint, y:uint, z:uint):uint	{ return y ^ ( x | (~z) ) }
+		private static function I(x:uint, y:uint, z:uint):uint	{ return y ^ ( x | ( ~z ) ) }
 		
 		/**
 		 * @private
@@ -214,7 +214,7 @@ package by.blooddy.core.utils.crypto {
 		 */
 		private static function transform(func:Function, a:uint, b:uint, c:uint, d:uint, x:uint, s:uint, t:uint):uint {
 			a += int( func( b, c, d ) ) + x + t;
-			return NumberUtils.rol(a, s) +  b;
+			return NumberUtils.rol( a, s ) +  b;
 		}
 		private static function FF(a:uint, b:uint, c:uint, d:uint, x:uint, s:uint, t:uint):uint	{ return transform(F, a, b, c, d, x, s, t) }
 		private static function GG(a:uint, b:uint, c:uint, d:uint, x:uint, s:uint, t:uint):uint	{ return transform(G, a, b, c, d, x, s, t) }

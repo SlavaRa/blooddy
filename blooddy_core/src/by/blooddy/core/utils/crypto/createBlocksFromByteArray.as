@@ -31,7 +31,7 @@ package by.blooddy.core.utils.crypto {
 //		var mask:int = 0xFF; // ignore hi byte of characters > 0xFF
 		for( var i:int = 0; i < len; i += 8 ) {
 //			blocks[ i >> 5 ] |= ( bytes[i/8] & mask ) << ( 24 - i % 32 );
-			blocks[ i >> 5 ] |= bytes[i/8] << ( i % 32 );
+			blocks[ i >> 5 ] |= bytes[ i / 8 ] << ( i % 32 );
 		}
 
 		// append padding and length

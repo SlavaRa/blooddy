@@ -19,15 +19,24 @@ package by.blooddy.core.utils {
 	 */
 	public final class ByteArrayUtils {
 
-		public static function bytesToHashString(bytes:ByteArray):String {
+		public static function bytesToHashString(bytes:ByteArray, shift:uint=0):String {
 			var l:uint = bytes.length;
 			var arr:Array = new Array();
 			for ( var i:uint = 0; i<l; i++ ) {
-				arr[i] = bytes[i] & 0xFF;
+				arr[i] = bytes[i] + shift;
 			}
 			return String.fromCharCode.apply( String, arr );
 		}
 
+		public static function bytesFromHashString(str:String, shift:uint=0):ByteArray {
+			var l:uint = str.length;
+			var bytes:ByteArray = new ByteArray();
+			for ( var i:uint = 0; i<l; i++ ) {
+				bytes[i] = str.charCodeAt( i ) - shift;
+			}
+			return bytes;
+		}
+		
 		public static function bytesToString(bytes:ByteArray, separator:String=""):String {
 			var arr:Array = new Array();
 			var l:uint = bytes.length;
@@ -39,7 +48,7 @@ package by.blooddy.core.utils {
 			return arr.join(separator);
 		}
 
-		public static function stringToBytes(s:String, separator:String=""):ByteArray {
+		public static function stringFromBytes(s:String, separator:String=''):ByteArray {
 			var bytes:ByteArray = new ByteArray();
 			var arr:Array, l:uint, i:uint;
 			if ( separator ) {

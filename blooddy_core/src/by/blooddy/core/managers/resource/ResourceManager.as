@@ -581,6 +581,13 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 		return this._url;
 	}
 
+	/**
+	 * @private
+	 */
+	public override function set loaderContext(value:LoaderContext):void {
+		throw new IllegalOperationError();
+	}
+	
 	//--------------------------------------------------------------------------
 	//
 	//  Overriden methods
@@ -710,13 +717,6 @@ internal class DefaultResourceBundle implements IResourceBundle {
 		return '';
 	}
 	
-	/**
-	 * @inheritDoc
-	 */
-	public function get empty():Boolean {
-		return false;
-	}
-	
 	//--------------------------------------------------------------------------
 	//
 	//  Implements methods: IResourceBundle
@@ -726,26 +726,22 @@ internal class DefaultResourceBundle implements IResourceBundle {
 	/**
 	 * @inheritDoc
 	 */
-	public function getResource(name:String):* {
+	public function getResource(name:String=null):* {
 		if ( !name ) {
 			return null;
 		} else if ( name in this._hash ) { // пытаемся найти в кэше
 			return this._hash[ name ];
 		} else {
 			
-			var resource:*;
-			var domain:ApplicationDomain = ApplicationDomain.currentDomain;
-			if ( domain && domain.hasDefinition( name ) ) { // пытаемся найти в домене
-				resource = domain.getDefinition( name );
-				if ( resource is Class ) {
-					var resourceClass:Class = resource as Class;
-					if ( BitmapData.prototype.isPrototypeOf( resourceClass.prototype ) ) {
-						resource = new resourceClass( 0, 0 );
-					} else if ( Sound.prototype.isPrototypeOf( resourceClass.prototype ) ) {
-						resource = new resourceClass();
-					}
-				}				
-			}
+			var resource:* = ApplicationDomain.currentDomain.getDefinition( name );
+			if ( resource is Class ) {
+				var resourceClass:Class = resource as Class;
+				if ( BitmapData.prototype.isPrototypeOf( resourceClass.prototype ) ) {
+					resource = new resourceClass( 0, 0 );
+				} else if ( Sound.prototype.isPrototypeOf( resourceClass.prototype ) ) {
+					resource = new resourceClass();
+				}
+			}				
 			this._hash[ name ] = resource;
 			return resource;
 
@@ -755,7 +751,7 @@ internal class DefaultResourceBundle implements IResourceBundle {
 	/**
 	 * @inheritDoc
 	 */
-	public function hasResource(name:String):Boolean {
+	public function hasResource(name:String=null):Boolean {
 		return (
 			name && (
 				name in this._hash || // пытаемся найти в кэше
@@ -764,13 +760,6 @@ internal class DefaultResourceBundle implements IResourceBundle {
 		);
 	}
 	
-	/**
-	 * @inheritDoc
-	 */
-	public function getResources():Array {
-		return new Array();
-	}
-
 	/**
 	 * @private
 	 */

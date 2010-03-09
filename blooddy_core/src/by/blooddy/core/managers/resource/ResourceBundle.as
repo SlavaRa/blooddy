@@ -73,16 +73,6 @@ package by.blooddy.core.managers.resource {
 			return this._name;
 		}
 
-		/**
-		 * @inheritDoc
-		 */
-		public function get empty():Boolean {
-			for ( var name:String in this._hash ) {
-				return false; // что-то есть
-			}
-			return true;
-		}
-
 		//--------------------------------------------------------------------------
 		//
 		//  Implements methods: IResourceBundle
@@ -92,26 +82,15 @@ package by.blooddy.core.managers.resource {
 		/**
 		 * @inheritDoc
 		 */
-		public function getResource(name:String):* {
-			return this._hash[ name ] || null;
+		public function getResource(name:String=null):* {
+			return this._hash[ ( name || '' ) ] || null;
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public function hasResource(name:String):Boolean {
-			return name in this._hash;
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public function getResources():Array {
-			var result:Array = new Array();
-			for ( var name:String in this._hash ) {
-				result.push( name );
-			}
-			return result;
+		public function hasResource(name:String=null):Boolean {
+			return ( name || '' ) in this._hash;
 		}
 
 		//--------------------------------------------------------------------------
