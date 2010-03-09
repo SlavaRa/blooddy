@@ -157,6 +157,21 @@ package by.blooddy.core.data {
 			return this.$canceled;
 		}
 
+		/**
+		 * @private
+		 */
+		public override function clone():Event {
+			var c:Class = ( this as Object ).constructor as Class;
+			return new c( super.type, super.bubbles, super.cancelable );
+		}
+		
+		/**
+		 * @private
+		 */
+		public override function toString():String {
+			return super.formatToString( ClassUtils.getClassName( this ), 'type', 'bubbles', 'cancelable' );
+		}
+		
 	}
 
 }

@@ -6,6 +6,10 @@
 
 package by.blooddy.core.managers.resource {
 
+	import by.blooddy.core.utils.ClassUtils;
+	
+	import flash.errors.IllegalOperationError;
+
 	/**
 	 * Динамический пучёк ресурсов.
 	 * 
@@ -31,6 +35,7 @@ package by.blooddy.core.managers.resource {
 		 */
 		public function ResourceBundle(name:String) {
 			super();
+			if ( !name ) throw new IllegalOperationError();
 			this._name = name;
 		}
 
@@ -124,7 +129,7 @@ package by.blooddy.core.managers.resource {
 		 * @keyword				resourcebundle.addresource, addresource
 		 */
 		public function addResource(name:String, object:*):void {
-			this._hash[name] = object;
+			this._hash[ name ] = object;
 		}
 
 		/**
@@ -135,9 +140,16 @@ package by.blooddy.core.managers.resource {
 		 * @keyword				resourcebundle.removeresource, removeresource
 		 */
 		public function removeResource(name:String):void {
-			delete this._hash[name];
+			delete this._hash[ name ];
 		}
 
+		/**
+		 * @private
+		 */
+		public function toString():String {
+			return '[' + ClassUtils.getClassName( this ) + ' name="' + this._name + '"]';
+		}
+		
 	}
 
 }

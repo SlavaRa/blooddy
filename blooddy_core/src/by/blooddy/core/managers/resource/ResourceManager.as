@@ -57,12 +57,17 @@ package by.blooddy.core.managers.resource {
 		/**
 		 * @private
 		 */
-		private static var _loading:uint = 0;
+		private static const _DEFAULT_BUNDLE:DefaultResourceBundle = new DefaultResourceBundle();
 
 		/**
 		 * @private
 		 */
 		private static const _HASH:Object = new Object();
+
+		/**
+		 * @private
+		 */
+		private static var _loading:uint = 0;
 
 		/**
 		 * @private
@@ -224,6 +229,7 @@ package by.blooddy.core.managers.resource {
 		 */
 		public function ResourceManager() {
 			super();
+			this._hash[ '' ] = _DEFAULT_BUNDLE;
 		}
 
 		//--------------------------------------------------------------------------
@@ -488,12 +494,16 @@ package by.blooddy.core.managers.resource {
 //
 //==============================================================================
 
+import by.blooddy.core.managers.resource.IResourceBundle;
 import by.blooddy.core.managers.resource.ResourceLoader;
 import by.blooddy.core.net.loading.LoaderContext;
+import by.blooddy.core.utils.ClassUtils;
 
+import flash.display.BitmapData;
 import flash.errors.IllegalOperationError;
 import flash.events.Event;
 import flash.net.URLRequest;
+import flash.media.Sound;
 import flash.system.ApplicationDomain;
 import flash.utils.ByteArray;
 import flash.utils.Dictionary;
@@ -640,5 +650,132 @@ internal final class QueueItem {
 	public var priority:int;
 	
 	public const time:Number = getTimer();
+
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Helper class: DefaultResourceBundle
+//
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * дефолтный пучёк ресурсов
+ * обёртка вокруг ApplicationDomain.currentDomain
+ */
+internal class DefaultResourceBundle implements IResourceBundle {
+	
+	//--------------------------------------------------------------------------
+	//
+	//  Constructor
+	//
+	//--------------------------------------------------------------------------
+	
+	/**
+	 * Constructor
+	 * 
+	 * @param	name		Имя пучка.
+	 */
+	public function DefaultResourceBundle() {
+		super();
+	}
+	
+	//--------------------------------------------------------------------------
+	//
+	//  Variables
+	//
+	//--------------------------------------------------------------------------
+	
+	/**
+	 * @private
+	 * Хранилеще ресурсов.
+	 */
+	private const _hash:Object = new Object();
+	
+	//--------------------------------------------------------------------------
+	//
+	//  Implements properties: IResourceBundle
+	//
+	//--------------------------------------------------------------------------
+	
+	//----------------------------------
+	//  name
+	//----------------------------------
+	
+	/**
+	 * @inheritDoc
+	 */
+	public function get name():String {
+		return '';
+	}
+	
+	/**
+	 * @inheritDoc
+	 */
+	public function get empty():Boolean {
+		return false;
+	}
+	
+	//--------------------------------------------------------------------------
+	//
+	//  Implements methods: IResourceBundle
+	//
+	//--------------------------------------------------------------------------
+	
+	/**
+	 * @inheritDoc
+	 */
+	public function getResource(name:String):* {
+		if ( !name ) {
+			return null;
+		} else if ( name in this._hash ) { // пытаемся найти в кэше
+			return this._hash[ name ];
+		} else {
+			
+			var resource:*;
+			var domain:ApplicationDomain = ApplicationDomain.currentDomain;
+			if ( domain && domain.hasDefinition( name ) ) { // пытаемся найти в домене
+				resource = domain.getDefinition( name );
+				if ( resource is Class ) {
+					var resourceClass:Class = resource as Class;
+					if ( BitmapData.prototype.isPrototypeOf( resourceClass.prototype ) ) {
+						resource = new resourceClass( 0, 0 );
+					} else if ( Sound.prototype.isPrototypeOf( resourceClass.prototype ) ) {
+						resource = new resourceClass();
+					}
+				}				
+			}
+			this._hash[ name ] = resource;
+			return resource;
+
+		}
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function hasResource(name:String):Boolean {
+		return (
+			name && (
+				name in this._hash || // пытаемся найти в кэше
+				ApplicationDomain.currentDomain.hasDefinition( name ) // пытаемся найти в домене
+			)
+		);
+	}
+	
+	/**
+	 * @inheritDoc
+	 */
+	public function getResources():Array {
+		return new Array();
+	}
+
+	/**
+	 * @private
+	 */
+	public function toString():String {
+		return '[' + ClassUtils.getClassName( this ) + ' object]';
+	}
 
 }

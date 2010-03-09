@@ -47,6 +47,9 @@ package by.blooddy.core.data {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @private
+		 */
 		private static const $internal_data:Namespace = DataBaseNativeEvent[ '$internal_data' ];
 		
 		protected namespace $protected_data;
@@ -179,7 +182,7 @@ package by.blooddy.core.data {
 			while ( target ) {
 				if ( target.hasEventListener( event.type ) ) {
 					e = event.clone() as DataBaseNativeEvent;
-					e.$internal_data::$target = EventPhase.BUBBLING_PHASE;
+					e.$internal_data::$eventPhase = EventPhase.BUBBLING_PHASE;
 					e.$internal_data::$target = this;
 					e.$internal_data::$canceled = canceled;
 					target.$dispatchEvent( new EventContainer( e ) );

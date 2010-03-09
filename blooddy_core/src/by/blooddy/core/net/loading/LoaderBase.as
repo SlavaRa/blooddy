@@ -326,7 +326,7 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 */
 		public override function toString():String {
-			return '[' + ClassUtils.getClassName( this ) + ' url="' + ( this.url || '' ) + '"]';
+			return '[' + ClassUtils.getClassName( this ) + ( this.url ? ' url="' + this.url + '"' : ' object' ) + ']';
 		}
 		
 		//--------------------------------------------------------------------------
