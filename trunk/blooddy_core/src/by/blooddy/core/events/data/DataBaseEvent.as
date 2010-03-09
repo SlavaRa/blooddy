@@ -66,27 +66,6 @@ package by.blooddy.core.events.data {
 			super( type, bubbles, cancelable );
 		}
 
-		//--------------------------------------------------------------------------
-		//
-		//  Overriden methods: Event
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		public override function clone():Event {
-			var c:Class = ( this as Object ).constructor as Class;
-			return new c( super.type, super.bubbles, super.cancelable );
-		}
-
-		/**
-		 * @private
-		 */
-		public override function toString():String {
-			return super.formatToString( null, 'type', 'bubbles', 'cancelable' );
-		}
-
 	}
 
 }

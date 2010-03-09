@@ -9,6 +9,7 @@ package by.blooddy.core.managers.resource {
 	import by.blooddy.core.net.MIME;
 	import by.blooddy.core.net.loading.HeuristicLoader;
 	import by.blooddy.core.net.loading.LoaderContext;
+	import by.blooddy.core.utils.ClassUtils;
 	import by.blooddy.core.utils.DefinitionFinder;
 	import by.blooddy.core.utils.crypto.MD5;
 	
@@ -220,6 +221,13 @@ package by.blooddy.core.managers.resource {
 			super.close();
 		}
 
+		/**
+		 * @private
+		 */
+		public override function toString():String {
+			return '[' + ClassUtils.getClassName( this ) + ( this.url ? ' name="' + this.url + '"' : ' object' ) + ']';
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Private methods
