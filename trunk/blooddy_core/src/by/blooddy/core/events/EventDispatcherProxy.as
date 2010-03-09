@@ -10,6 +10,12 @@ package by.blooddy.core.events {
 	import flash.events.IEventDispatcher;
 	import flash.utils.Dictionary;
 
+	//--------------------------------------
+	//  Excluded APIs
+	//--------------------------------------
+
+	[Exclude( kind="method", name="dispatchEvent" )]
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0

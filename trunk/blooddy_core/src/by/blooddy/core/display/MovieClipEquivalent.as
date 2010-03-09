@@ -9,6 +9,18 @@ package by.blooddy.core.display {
 	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
 
+	//--------------------------------------
+	//  Excluded APIs
+	//--------------------------------------
+	
+	[Exclude( kind="namespace", name="$protected_mc" )]
+
+	[Exclude( kind="method", name="_totalFrames" )]
+	[Exclude( kind="method", name="_currentFrame" )]
+	
+	[Exclude( kind="method", name="addFrameScript" )]
+	[Exclude( kind="method", name="setCurrentFrame" )]
+
 	[ExcludeClass]
 	/**
 	 * @author					BlooDHounD

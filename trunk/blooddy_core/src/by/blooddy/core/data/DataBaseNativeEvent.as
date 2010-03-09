@@ -12,6 +12,17 @@ package by.blooddy.core.data {
 	
 	import flash.events.Event;
 
+	//--------------------------------------
+	//  Excluded APIs
+	//--------------------------------------
+
+	[Exclude( kind="namespace", name="$internal_data" )]
+
+	[Exclude( kind="property", name="$stopped" )]
+	[Exclude( kind="property", name="$canceled" )]
+	[Exclude( kind="property", name="$target" )]
+	[Exclude( kind="property", name="$eventPhase" )]
+
 	[ExcludeClass]
 	/**
 	 * @private

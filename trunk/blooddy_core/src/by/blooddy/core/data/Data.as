@@ -31,6 +31,16 @@ package by.blooddy.core.data {
 	 */
 	[Event( name="removed", type="by.blooddy.core.events.data.DataBaseEvent" )]
 
+	//--------------------------------------
+	//  Excluded APIs
+	//--------------------------------------
+
+	[Exclude( kind="namespace", name="$protected_data" )]
+
+	[Exclude( kind="property", name="_parent" )]
+
+	[Exclude( kind="method", name="setParent" )]
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0

@@ -44,6 +44,8 @@ package by.blooddy.core.managers.drag {
 	//  Excluded APIs
 	//--------------------------------------
 
+	[Exclude( kind="namespace", name="$internal_drag" )]
+
 	[Exclude( kind="property", name="graphics" )]
 	[Exclude( kind="property", name="parent" )]
 	[Exclude( kind="property", name="$parent" )]
