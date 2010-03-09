@@ -37,7 +37,7 @@ package by.blooddy.core.utils.math {
 		 * @return						Псевдо случайное число.
 		 */
 		public static function getRND(date:Date=null):Number {
-			return (date || new Date()).getTime()/1000 + Math.random();
+			return ( date || new Date() ).getTime() / 1000 + Math.random();
 		}
 
 		/**
@@ -69,7 +69,7 @@ package by.blooddy.core.utils.math {
 		 * @private
 		 * String for quick lookup of a hex character based on index
 		 */
-		private static const hexChars:String = "0123456789abcdef";
+		private static const hexChars:String = '0123456789abcdef';
 
 		/**
 		 * Outputs the hex value of a int, allowing the developer to specify
@@ -80,10 +80,10 @@ package by.blooddy.core.utils.math {
 		 * 
 		 * @return						A string of length 8 corresponding to the hex representation of n ( minus the leading "0x" )
 		 */
-		public static function toHex(n:int, endian:String="littleEndian"):String {
-			var s:String = "";
+		public static function toHex(n:int, endian:String='littleEndian'):String {
+			var s:String = '';
 
-			switch (endian) {
+			switch ( endian ) {
 				case Endian.BIG_ENDIAN:
 					for ( var i:int = 0; i < 4; i++ ) {
 						s +=	hexChars.charAt( ( n >> ( ( 3 - i ) * 8 + 4 ) ) & 0xF ) +

@@ -96,13 +96,6 @@ package by.blooddy.core.managers.resource {
 			return this._name || super.url;
 		}
 
-		/**
-		 * @inheritDoc
-		 */
-		public function get empty():Boolean {
-			return !super.loaded;
-		}
-
 		//--------------------------------------------------------------------------
 		//
 		//  Implements methods: IResourceBundle
@@ -112,7 +105,7 @@ package by.blooddy.core.managers.resource {
 		/**
 		 * @inheritDoc
 		 */
-		public function getResource(name:String):* {
+		public function getResource(name:String=null):* {
 			if ( !name ) {
 
 				return super.content;
@@ -131,26 +124,26 @@ package by.blooddy.core.managers.resource {
 					resource = domain.getDefinition( name );
 
 					if ( resource is Class ) {
-						
+
 						var resourceClass:Class = resource as Class;
-						
+
 						if (
 							BitmapData.prototype.isPrototypeOf( resourceClass.prototype ) ||
 							domain.getDefinition( _NAME_BITMAP_DATA ).prototype.isPrototypeOf( resourceClass.prototype )
 						) {
 
 							resource = new resourceClass( 0, 0 );
-							
+
 						} else if ( 
 							Sound.prototype.isPrototypeOf( resourceClass.prototype ) ||
 							domain.getDefinition( _NAME_SOUND ).prototype.isPrototypeOf( resourceClass.prototype )
 						) {
-							
+
 							resource = new resourceClass();
-							
+
 						}
-						
-					}				
+
+					}
 
 				} else if ( super.content && name in super.content ) { // пытаемся найти в контэнте
 
@@ -169,26 +162,15 @@ package by.blooddy.core.managers.resource {
 		/**
 		 * @inheritDoc
 		 */
-		public function hasResource(name:String):Boolean {
+		public function hasResource(name:String=null):Boolean {
+			if ( !name ) {
+				return super.content != undefined;
+			}
 			return (
 				( name in this._hash ) || // пытаемся найти в кэше
-				( !name && super.content ) ||
 				( super.loaderInfo && super.loaderInfo.applicationDomain && super.loaderInfo.applicationDomain.hasDefinition( name ) ) || // пытаемся найти в домене
 				( super.content && name in super.content ) // пытаемся найти в контэнте
 			);
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public function getResources():Array {
-			if ( super.contentType == MIME.FLASH ) {
-				if ( !this._definitions ) {
-					if ( super.loaderInfo ) this._definitions = new DefinitionFinder( super.loaderInfo.bytes );
-				}
-				return this._definitions.getDefinitionNames();
-			}
-			return new Array();
 		}
 
 		//--------------------------------------------------------------------------
@@ -228,6 +210,24 @@ package by.blooddy.core.managers.resource {
 			return '[' + ClassUtils.getClassName( this ) + ( this.url ? ' name="' + this.url + '"' : ' object' ) + ']';
 		}
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Methods
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		 */
+		public function getResources():Array {
+			if ( super.loaded && super.contentType == MIME.FLASH ) {
+				if ( !this._definitions ) {
+					if ( super.loaderInfo ) this._definitions = new DefinitionFinder( super.loaderInfo.bytes );
+				}
+				return this._definitions.getDefinitionNames();
+			}
+			return new Array();
+		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Private methods

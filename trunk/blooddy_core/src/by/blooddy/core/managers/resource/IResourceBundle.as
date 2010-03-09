@@ -35,17 +35,6 @@ package by.blooddy.core.managers.resource {
 	     */
 		function get name():String;
 
-		//----------------------------------
-		//  empty
-		//----------------------------------
-
-	    /**
-	     * Имя пучка.
-	     * 
-		 * @keyword					resourcebundle.name, name
-	     */
-		function get empty():Boolean;
-
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
@@ -61,11 +50,9 @@ package by.blooddy.core.managers.resource {
 	     * 
 		 * @keyword					resourcebundle.getresource, getresource
 	     */
-		function getResource(name:String):*;
+		function getResource(name:String=null):*;
 
-		function hasResource(name:String):Boolean;
-
-		function getResources():Array;
+		function hasResource(name:String=null):Boolean;
 
 	}
 
