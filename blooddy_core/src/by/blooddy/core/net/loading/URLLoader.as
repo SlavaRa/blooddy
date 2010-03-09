@@ -189,8 +189,8 @@ package by.blooddy.core.net.loading {
 			var result:flash.net.URLStream = new flash.net.URLStream();
 			result.addEventListener( Event.OPEN,						super.dispatchEvent );
 			result.addEventListener( HTTPStatusEvent.HTTP_STATUS,		super.dispatchEvent );
-			if ( HTTP_RESPONSE_STATUS ) {
-				result.addEventListener( HTTP_RESPONSE_STATUS,			super.dispatchEvent );
+			if ( _HTTP_RESPONSE_STATUS ) {
+				result.addEventListener( _HTTP_RESPONSE_STATUS,			super.dispatchEvent );
 			}
 			result.addEventListener( ProgressEvent.PROGRESS,			super.handler_progress );
 			result.addEventListener( Event.COMPLETE,					this.handler_stream_complete );
@@ -210,8 +210,8 @@ package by.blooddy.core.net.loading {
 				}
 				this._stream.removeEventListener( Event.OPEN,							super.dispatchEvent );
 				this._stream.removeEventListener( HTTPStatusEvent.HTTP_STATUS,			super.dispatchEvent );
-				if ( HTTP_RESPONSE_STATUS ) {
-					this._stream.removeEventListener( HTTP_RESPONSE_STATUS,				super.dispatchEvent );
+				if ( _HTTP_RESPONSE_STATUS ) {
+					this._stream.removeEventListener( _HTTP_RESPONSE_STATUS,			super.dispatchEvent );
 				}
 				this._stream.removeEventListener( ProgressEvent.PROGRESS,				super.handler_progress );
 				this._stream.removeEventListener( Event.COMPLETE,						this.handler_stream_complete );

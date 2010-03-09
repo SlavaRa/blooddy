@@ -19,6 +19,22 @@ package by.blooddy.core.display {
 	import flash.geom.Rectangle;
 	import flash.system.Capabilities;
 
+	//--------------------------------------
+	//  Excluded APIs
+	//--------------------------------------
+
+	[Exclude( kind="method", name="addChild" )]
+	[Exclude( kind="method", name="addChildAt" )]
+	[Exclude( kind="method", name="removeChild" )]
+	[Exclude( kind="method", name="removeChildAt" )]
+	[Exclude( kind="method", name="getChildAt" )]
+	[Exclude( kind="method", name="getChildIndex" )]
+	[Exclude( kind="method", name="getChildByName" )]
+	[Exclude( kind="method", name="setChildIndex" )]
+	[Exclude( kind="method", name="swapChildren" )]
+	[Exclude( kind="method", name="swapChildrenAt" )]
+	[Exclude( kind="method", name="contains" )]
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0

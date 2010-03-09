@@ -6,6 +6,14 @@
 
 package by.blooddy.core.meta {
 
+	//--------------------------------------
+	//  Excluded APIs
+	//--------------------------------------
+
+	[Exclude( kind="namespace", name="$protected_info" )]
+
+	[Exclude( kind="method", name="parseXML" )]
+
 	[ExcludeClass]
 	/**
 	 * @author					BlooDHounD

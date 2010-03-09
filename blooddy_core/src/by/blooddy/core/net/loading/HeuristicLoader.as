@@ -332,8 +332,8 @@ package by.blooddy.core.net.loading {
 				result.addEventListener( Event.OPEN,					super.dispatchEvent );
 			}
 			result.addEventListener( HTTPStatusEvent.HTTP_STATUS,		super.dispatchEvent );
-			if ( HTTP_RESPONSE_STATUS ) {
-				result.addEventListener( HTTP_RESPONSE_STATUS,			super.dispatchEvent );
+			if ( _HTTP_RESPONSE_STATUS ) {
+				result.addEventListener( _HTTP_RESPONSE_STATUS,			super.dispatchEvent );
 			}
 			if ( progress ) { // если беда с доменами, то пытаемся выебнуться
 				result.addEventListener( ProgressEvent.PROGRESS,		this.handler_stream_init_progress );
@@ -406,8 +406,8 @@ package by.blooddy.core.net.loading {
 			if ( this._stream ) {
 				this._stream.removeEventListener( Event.OPEN,							super.dispatchEvent );
 				this._stream.removeEventListener( HTTPStatusEvent.HTTP_STATUS,			super.dispatchEvent );
-				if ( HTTP_RESPONSE_STATUS ) {
-					this._stream.removeEventListener( HTTP_RESPONSE_STATUS,				super.dispatchEvent );
+				if ( _HTTP_RESPONSE_STATUS ) {
+					this._stream.removeEventListener( _HTTP_RESPONSE_STATUS,			super.dispatchEvent );
 				}
 				this._stream.removeEventListener( ProgressEvent.PROGRESS,				this.handler_stream_init_progress );
 				this._stream.removeEventListener( ProgressEvent.PROGRESS,				super.handler_progress );

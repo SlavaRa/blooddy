@@ -6,6 +6,15 @@
 
 package by.blooddy.core.meta {
 
+	//--------------------------------------
+	//  Excluded APIs
+	//--------------------------------------
+
+	[Exclude( kind="property", name="_parent" )]
+	[Exclude( kind="property", name="_name" )]
+	[Exclude( kind="property", name="_metadata" )]
+	[Exclude( kind="property", name="_metadata_local" )]
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0

@@ -45,6 +45,15 @@ package by.blooddy.core.display.resource {
 	 */
 	[Event( name="resourceError", type="by.blooddy.core.events.display.resource.ResourceErrorEvent" )]
 	
+	//--------------------------------------
+	//  Excluded APIs
+	//--------------------------------------
+
+	[Exclude( kind="namespace", name="$protected_rs" )]
+
+	[Exclude( kind="method", name="getResourceManager" )]
+	[Exclude( kind="method", name="getDepth" )]
+
 	/**
 	 * Класс у когорого есть ссылка на манагер ресурсов.
 	 * 

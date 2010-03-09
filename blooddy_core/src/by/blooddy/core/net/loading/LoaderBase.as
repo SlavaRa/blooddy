@@ -74,6 +74,25 @@ package by.blooddy.core.net.loading {
 	 */
 	[Event( name="unload", type="flash.events.Event" )]
 
+	//--------------------------------------
+	//  Excluded APIs
+	//--------------------------------------
+
+	[Exclude( kind="namespace", name="$protected_load" )]
+
+	[Exclude( kind="property", name="HTTP_RESPONSE_STATUS" )]
+	[Exclude( kind="property", name="_DOMAIN" )]
+	[Exclude( kind="property", name="_URL" )]
+
+	[Exclude( kind="method", name="$getAbstractContent" )]
+	[Exclude( kind="method", name="isIdle" )]
+	[Exclude( kind="method", name="$load" )]
+	[Exclude( kind="method", name="$loadBytes" )]
+	[Exclude( kind="method", name="$unload" )]
+	[Exclude( kind="method", name="updateProgress" )]
+	[Exclude( kind="method", name="handler_progress" )]
+	[Exclude( kind="method", name="handler_complete" )]
+
 	[ExcludeClass]
 	/**
 	 * @author					BlooDHounD
@@ -100,7 +119,7 @@ package by.blooddy.core.net.loading {
 		//
 		//--------------------------------------------------------------------------
 		
-		$protected_load static const HTTP_RESPONSE_STATUS:String = ( 'HTTP_RESPONSE_STATUS' in HTTPStatusEvent ? HTTPStatusEvent['HTTP_RESPONSE_STATUS'] : null );
+		$protected_load static const _HTTP_RESPONSE_STATUS:String = ( 'HTTP_RESPONSE_STATUS' in HTTPStatusEvent ? HTTPStatusEvent['HTTP_RESPONSE_STATUS'] : null );
 		
 		/**
 		 * @private
