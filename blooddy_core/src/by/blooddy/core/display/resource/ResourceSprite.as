@@ -183,35 +183,38 @@ package by.blooddy.core.display.resource {
 			return loader;
 		}
 
-		protected final function hasResource(bundleName:String, resourceName:String):Boolean {
+		protected final function hasResource(bundleName:String, resourceName:String=null):Boolean {
 			if ( !this._manager ) throw new ArgumentError();
 			return this._manager.hasResource( bundleName, resourceName );
 		}
 
-		protected final function getResource(bundleName:String, resourceName:String):Object {
+		protected final function getResource(bundleName:String, resourceName:String=null):Object {
 			if ( !this._manager ) throw new ArgumentError();
 			var result:Object = this._manager.getResource( bundleName, resourceName );
 			switch ( typeof result ) {
 				case 'object':
 				case 'function':
+					if ( !resourceName ) resourceName = '';
 					this.saveResource( bundleName, resourceName, result );
 			}
 			return result;
 		}
 
-		protected final function getDisplayObject(bundleName:String, resourceName:String):DisplayObject {
+		protected final function getDisplayObject(bundleName:String, resourceName:String=null):DisplayObject {
 			if ( !this._manager ) throw new ArgumentError();
 			var result:DisplayObject = this._manager.getDisplayObject( bundleName, resourceName );
 			if ( result ) {
+				if ( !resourceName ) resourceName = '';
 				this.saveResource( bundleName, resourceName, result );
 			}
 			return result;
 		}
 
-		protected final function getSound(bundleName:String, resourceName:String):Sound {
+		protected final function getSound(bundleName:String, resourceName:String=null):Sound {
 			if ( !this._manager ) throw new ArgumentError();
 			var result:Sound = this._manager.getSound( bundleName, resourceName );
 			if ( result ) {
+				if ( !resourceName ) resourceName = '';
 				this.saveResource( bundleName, resourceName, result );
 			}
 			return result;

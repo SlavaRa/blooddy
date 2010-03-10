@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.parsers {
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -16,9 +16,14 @@ package by.blooddy.core.parsers {
 	public interface IScanner {
 
 		function get tokenContext():TokenContext;
-		
+
+		function get lastToken():int;
+
+		function get lastPosition():uint;
+
 		function readToken():int;
 
 	}
 	
 }
+

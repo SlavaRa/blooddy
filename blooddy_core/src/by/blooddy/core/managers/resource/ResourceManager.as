@@ -260,12 +260,12 @@ package by.blooddy.core.managers.resource {
 		 * 
 		 * @keyword					resourcemanager.getobject, getobject
 		 */
-		public function getResource(bundleName:String, resourceName:String):* {
+		public function getResource(bundleName:String, resourceName:String=null):* {
 			if ( !( bundleName in this._hash ) ) return null;
 			return ( this._hash[ bundleName ] as IResourceBundle ).getResource( resourceName );
 		}
 
-		public function hasResource(bundleName:String, resourceName:String):Boolean {
+		public function hasResource(bundleName:String, resourceName:String=null):Boolean {
 			if ( !this.hasResourceBundle( bundleName ) ) return false;
 			return ( this._hash[ bundleName ] as IResourceBundle ).hasResource( resourceName );
 		}
@@ -279,12 +279,10 @@ package by.blooddy.core.managers.resource {
 		 * 
 		 * @keyword					resourcemanager.hasresourcebundle, hasresourcebundle
 		 */
-		public function hasResourceBundle(bundleName:String, ignoreLoaded:Boolean=false):Boolean {
+		public function hasResourceBundle(bundleName:String):Boolean {
 			if ( !( bundleName in this._hash ) ) return false;
-			if ( !ignoreLoaded ) {
-				var loader:ILoadable = this._hash[ bundleName ] as ILoadable;
-				if ( loader && !loader.loaded ) return false;
-			}
+			var loader:ILoadable = this._hash[ bundleName ] as ILoadable;
+			if ( loader && !loader.loaded ) return false;
 			return true;
 		}
 
@@ -297,9 +295,9 @@ package by.blooddy.core.managers.resource {
 		 * 
 		 * @keyword					resourcemanager.getresourcebundle, getresourcebundle
 		 */
-		public function getResourceBundle(bundleName:String, ignoreLoaded:Boolean=false):IResourceBundle {
+		public function getResourceBundle(bundleName:String):IResourceBundle {
 			var bundle:IResourceBundle = this._hash[ bundleName ] as IResourceBundle;
-			return ( !ignoreLoaded && bundle is ILoadable && !( bundle as ILoadable ).loaded ? null : bundle );
+			return ( bundle is ILoadable && !( bundle as ILoadable ).loaded ? null : bundle );
 		}
 
 		public function getResourceBundles():Vector.<String> {
