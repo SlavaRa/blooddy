@@ -28,7 +28,7 @@ package by.blooddy.core.parsers {
 		 * 
 		 * @return	
 		 */
-		public static function getHash(kind:int, text:String):String {
+		public static function getHash(kind:uint, text:String):String {
 			return String.fromCharCode( kind >>> 16 ) + String.fromCharCode( kind & 0xFFFF ) + text;
 		}
 
@@ -44,7 +44,7 @@ package by.blooddy.core.parsers {
 		 * @param	kind	
 		 * @param	text	
 		 */
-		public function Token(kind:int, text:String) {
+		public function Token(kind:uint, text:String) {
 			super();
 			this._kind = kind;
 			this._text = text;
@@ -75,9 +75,9 @@ package by.blooddy.core.parsers {
 		/**
 		 * @private
 		 */
-		private var _kind:int;
+		private var _kind:uint;
 
-		public function get kind():int {
+		public function get kind():uint {
 			return this._kind;
 		}
 

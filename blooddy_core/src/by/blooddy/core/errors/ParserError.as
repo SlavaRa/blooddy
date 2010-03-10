@@ -29,13 +29,13 @@ package by.blooddy.core.errors {
 		/**
 		 * @inheritDoc
 		 */
-		public function ParserError(message:String="", id:int=0) {
-			super(message, id);
-			this.name = ClassUtils.getClassName(this);
+		public function ParserError(message:String='', id:int=0) {
+			super( message, id );
+			this.name = ClassUtils.getClassName( this );
 		}
 
 		public function toString():String {
-			return this.name + " #" + super.errorID + ": " + super.message;
+			return this.name + ' #' + super.errorID + ': ' + super.message;
 		}
 
 	}

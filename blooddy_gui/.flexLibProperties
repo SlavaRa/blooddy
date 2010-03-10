@@ -2,6 +2,8 @@
 <flexLibProperties includeAllClasses="false" version="3">
   <includeClasses>
     <classEntry path="by.blooddy.gui.styles.CSSScanner"/>
+    <classEntry path="by.blooddy.gui.styles.StyleSheet"/>
+    <classEntry path="by.blooddy.gui.styles.CSSToken"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

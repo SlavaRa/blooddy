@@ -49,12 +49,12 @@ package by.blooddy.core.parsers {
 		//
 		//--------------------------------------------------------------------------
 
-		public function hasToken(kind:int, text:String):Boolean {
+		public function hasToken(kind:uint, text:String):Boolean {
 			return ( this.getTokenID( kind, text ) > 0 );
 		}
 
-		public function addToken(kind:int, text:String):int {
-			var id:int = this.getTokenID( kind, text );
+		public function addToken(kind:uint, text:String):uint {
+			var id:uint = this.getTokenID( kind, text );
 			if ( !id ) {
 				var tok:Token = new Token( kind, text );
 				id = this._list.push( tok ) - 1;
@@ -63,11 +63,11 @@ package by.blooddy.core.parsers {
 			return id;
 		}
 
-		public function getToken(id:int):Token {
+		public function getToken(id:uint):Token {
 			return this._list[ id ] as Token;
 		}
 
-		public function getTokenID(kind:int, text:String):int {
+		public function getTokenID(kind:uint, text:String):uint {
 			return this._hash[ Token.getHash( kind, text ) ];
 		}
 
