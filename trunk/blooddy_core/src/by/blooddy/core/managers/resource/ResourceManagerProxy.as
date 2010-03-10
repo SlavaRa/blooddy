@@ -158,16 +158,18 @@ package by.blooddy.core.managers.resource {
 			return this._manager.loadResourceBundle( bundleName, priority );
 		}
 		
-		public function hasResource(bundleName:String, resourceName:String):Boolean {
+		public function hasResource(bundleName:String, resourceName:String=null):Boolean {
+			if ( !resourceName ) resourceName = '';
 			if ( this._bin.has( bundleName + _SEPARATOR + resourceName ) ) return true;
 			else return this._manager.hasResource( bundleName, resourceName );
 		}
 		
-		public function getResource(bundleName:String, resourceName:String):Object {
+		public function getResource(bundleName:String, resourceName:String=null):Object {
 			var result:Object = this._manager.getResource( bundleName, resourceName );
 			switch ( typeof result ) {
 				case 'object':
 				case 'function':
+					if ( !resourceName ) resourceName = '';
 					this.saveResource( bundleName, resourceName, result );
 					break;
 				case 'xml':
@@ -177,7 +179,8 @@ package by.blooddy.core.managers.resource {
 			return result;
 		}
 		
-		public function getDisplayObject(bundleName:String, resourceName:String):DisplayObject {
+		public function getDisplayObject(bundleName:String, resourceName:String=null):DisplayObject {
+			if ( !resourceName ) resourceName = '';
 			var key:String = bundleName + _SEPARATOR + resourceName;
 			var result:DisplayObject;
 			if ( this._bin.has( key ) ) {
@@ -205,13 +208,14 @@ package by.blooddy.core.managers.resource {
 			return result;
 		}
 		
-		public function getSound(bundleName:String, resourceName:String):Sound {
+		public function getSound(bundleName:String, resourceName:String=null):Sound {
 			var resource:Object = this._manager.getResource( bundleName, resourceName );
 			var result:Sound;
 			if ( resource is Sound ) {
 				result = resource as Sound;
 			}
 			if ( result ) {
+				if ( !resourceName ) resourceName = '';
 				this.saveResource( bundleName, resourceName, result );
 			}
 			return result;
