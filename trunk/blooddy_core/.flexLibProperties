@@ -50,7 +50,6 @@
     <classEntry path="by.blooddy.core.display.resource.ResourceSprite"/>
     <classEntry path="by.blooddy.core.display.text.BaseTextField"/>
     <classEntry path="by.blooddy.core.errors.ParserError"/>
-    <classEntry path="by.blooddy.core.errors.SerializeError"/>
     <classEntry path="by.blooddy.core.errors.display.resource.ResourceError"/>
     <classEntry path="by.blooddy.core.errors.getErrorMessage"/>
     <classEntry path="by.blooddy.core.events.AccumulativeEventDispatcher"/>
@@ -162,6 +161,7 @@
     <classEntry path="by.blooddy.core.utils.ByteArrayUtils"/>
     <classEntry path="by.blooddy.core.utils.Caller"/>
     <classEntry path="by.blooddy.core.utils.CallerQueue"/>
+    <classEntry path="by.blooddy.core.utils.Char"/>
     <classEntry path="by.blooddy.core.utils.ClassUtils"/>
     <classEntry path="by.blooddy.core.utils.DataBaseUtils"/>
     <classEntry path="by.blooddy.core.utils.DateUtils"/>

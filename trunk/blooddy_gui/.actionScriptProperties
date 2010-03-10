@@ -37,7 +37,6 @@
         </excludedEntries>
       </libraryPathEntry>
       <libraryPathEntry kind="3" linkType="2" path="/blooddy_core/bin-debug/blooddy_core.swc" useDefaultLinkType="false"/>
-      <libraryPathEntry kind="3" linkType="1" path="libs/default_resources.swc" useDefaultLinkType="false"/>
     </libraryPath>
     <sourceAttachmentPath/>
   </compiler>

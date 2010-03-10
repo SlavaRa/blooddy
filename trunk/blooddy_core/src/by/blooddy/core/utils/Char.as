@@ -104,7 +104,7 @@ package by.blooddy.core.utils {
 		public static const RIGHT_BRACKET:uint =	']'.charCodeAt( 0 );
 		public static const TILDE:uint =			'~'.charCodeAt( 0 );
 		public static const AT:uint =				'@'.charCodeAt( 0 );
-		public static const SHARP:uint =			'#'.charCodeAt( 0 );
+		public static const HASH:uint =				'#'.charCodeAt( 0 );
 		public static const SINGLE_QUOTE:uint =		'\''.charCodeAt( 0 );
 		public static const DOUBLE_QUOTE:uint =		'\"'.charCodeAt( 0 );
 		public static const UNDER_SCORE:uint =		'_'.charCodeAt( 0 );
@@ -121,6 +121,7 @@ package by.blooddy.core.utils {
 
 		public static const LS:uint =				0x2028;
 		public static const PS:uint =				0x2029;
+
 	}
 
 }
