@@ -88,7 +88,12 @@ package by.blooddy.core.parsers {
 		//  Methods
 		//
 		//--------------------------------------------------------------------------
-		
+
+		public function reset():void {
+			this._numToken = 0;
+			this._buffer.splice( 0, this._buffer.length );
+		}
+
 		public function readToken():Token {
 			this.numToken++;
 			return this.currentToken;

@@ -32,19 +32,21 @@ package by.blooddy.gui.styles {
 		public function CSSScanner() {
 			super();
 			this._tokenContext.addToken( CSSToken.EOF, String.fromCharCode( 0 ) );
-			this._tokenContext.addToken( CSSToken.IMPORT, '@import' );
 			this._tokenContext.addToken( CSSToken.COLON, ':' );
 			this._tokenContext.addToken( CSSToken.LEFT_BRACE, '{' );
 			this._tokenContext.addToken( CSSToken.RIGHT_BRACE, '}' );
-			this._tokenContext.addToken( CSSToken.LEFT_PAREN, '(' );
-			this._tokenContext.addToken( CSSToken.RIGHT_PAREN, ')' );
+			this._tokenContext.addToken( CSSToken.LEFT_PAREN, '{' );
+			this._tokenContext.addToken( CSSToken.RIGHT_PAREN, '}' );
 			this._tokenContext.addToken( CSSToken.HASH, '#' );
 			this._tokenContext.addToken( CSSToken.DOT, '.' );
 			this._tokenContext.addToken( CSSToken.COMMA, ',' );
 			this._tokenContext.addToken( CSSToken.DASH, '-' );
+			this._tokenContext.addToken( CSSToken.AT, '@' );
 			this._tokenContext.addToken( CSSToken.SEMI_COLON, ';' );
 			this._tokenContext.addToken( CSSToken.IDENTIFIER, '' );
 			this._tokenContext.addToken( CSSToken.STRING_LITERAL, '' );
+			this._tokenContext.addToken( CSSToken.BLOCK_COMMENT, '' );
+			this._tokenContext.addToken( CSSToken.LINE_COMMENT, '' );
 		}
 
 		//--------------------------------------------------------------------------
@@ -115,6 +117,7 @@ package by.blooddy.gui.styles {
 
 		public function readToken():uint {
 			var c:uint;
+			var t:String;
 			while ( ( c = this.readCharCode() ) != Char.EOS ) {
 
 				this._lastPosition = this._position - 1;
@@ -144,31 +147,36 @@ package by.blooddy.gui.styles {
 					case Char.COLON:		return this.makeToken( CSSToken.COLON );
 					case Char.LEFT_BRACE:	return this.makeToken( CSSToken.LEFT_BRACE );
 					case Char.RIGHT_BRACE:	return this.makeToken( CSSToken.RIGHT_BRACE );
+					case Char.LEFT_PAREN:	return this.makeToken( CSSToken.LEFT_PAREN );
+					case Char.RIGHT_PAREN:	return this.makeToken( CSSToken.RIGHT_PAREN );
 					case Char.HASH:			return this.makeToken( CSSToken.HASH );
 					case Char.DOT:			return this.makeToken( CSSToken.DOT );
 					case Char.COMMA:		return this.makeToken( CSSToken.COMMA );
-					case Char.SEMI_COLON:	return this.makeToken( CSSToken.SEMI_COLON );
 					case Char.DASH:			return this.makeToken( CSSToken.DASH );
-
-					case Char.AT:
-						if (
-							this.readCharCode() == Char.i &&
-							this.readCharCode() == Char.m &&
-							this.readCharCode() == Char.p &&
-							this.readCharCode() == Char.o &&
-							this.readCharCode() == Char.r &&
-							this.readCharCode() == Char.t
-						) {
-							return this.makeToken( CSSToken.IMPORT );
-						}
-						throw new ParserError();
+					case Char.AT:			return this.makeToken( CSSToken.AT );
+					case Char.SEMI_COLON:	return this.makeToken( CSSToken.SEMI_COLON );
 
 					case Char.SINGLE_QUOTE:
 					case Char.DOUBLE_QUOTE:
 						this._position--;
-						return this.makeToken( CSSToken.STRING_LITERAL, this.readString() );
-						
+						t = this.readString();
+						if ( t != null ) return this.makeToken( CSSToken.STRING_LITERAL, t );
+						throw new ParserError();
+
+					case Char.SLASH:
+						switch ( this.readCharCode() ) {
+							case Char.ASTERISK:
+								this._position -= 2;
+								t = this.readBlockComment();
+								if ( t != null ) return this.makeToken( CSSToken.BLOCK_COMMENT, t );
+								throw new ParserError();
+							case Char.SLASH:
+								return this.makeToken( CSSToken.LINE_COMMENT, this.readLine() );
+						}
+						throw new ParserError();
+
 					default:
+						this._position--;
 						if (
 							( c >= Char.a && c <= Char.z ) ||
 							( c >= Char.A && c <= Char.Z ) ||
@@ -176,9 +184,9 @@ package by.blooddy.gui.styles {
 							c == Char.UNDER_SCORE ||
 							c > 0x7f
 						) {
-							this._position--;
 							return this.makeToken( CSSToken.IDENTIFIER, this.readIdentifier() );
 						}
+						throw new ParserError();
 
 				}
 				
@@ -262,8 +270,7 @@ package by.blooddy.gui.styles {
 						return null;
 				}
 			}
-			result += this._source.substring( p, this._position - 1 );
-			return result;
+			return result + this._source.substring( p, this._position - 1 );
 		}
 
 		/**
@@ -315,6 +322,75 @@ package by.blooddy.gui.styles {
 			return this._source.substring( this._position - i, this._position );
 		}
 
+		/**
+		 * @private
+		 */
+		private function readLineTo(to:uint):String {
+			var pos:uint = this._position;
+			var c:uint;
+			do {
+				c = this.readCharCode();
+				if ( c == Char.NEWLINE || c == Char.CARRIAGE_RETURN || c == Char.EOS ) {
+					this._position = pos;
+					return null;
+				}
+			} while ( c != to );
+			this._position--;
+			return this._source.substring( pos, this._position );
+		}
+		
+		/**
+		 * @private
+		 */
+		private function readLine():String {
+			var pos:uint = this._position;
+			var c:uint;
+			do {
+				c = this.readCharCode();
+			} while ( c != Char.NEWLINE && c != Char.CARRIAGE_RETURN && c != Char.EOS );
+			this._position--;
+			return this._source.substring( pos, this._position );
+		}
+
+		/**
+		 * @private
+		 */
+		private function readBlockComment():String {
+			var pos:uint = this._position;
+			if (
+				this.readCharCode() != Char.SLASH ||
+				this.readCharCode() != Char.ASTERISK
+			) {
+				this._position = pos;
+				return null;
+			}
+			do {
+				switch ( this.readCharCode() ) {
+					case Char.ASTERISK:
+						if ( this.readCharCode() == Char.SLASH ) {
+							return this._source.substring( pos + 2, this._position - 2 );
+						} else {
+							this._position--;
+						}
+						break;
+					case Char.CARRIAGE_RETURN:
+						if ( this.readCharCode() != Char.NEWLINE ) {
+							this._position--;
+						}
+						this._line++;
+						break;
+					case Char.NEWLINE:
+						this._line++;
+						break;
+					case Char.EOS:
+						this._position = pos;
+						return null;
+				}
+			} while ( true );
+			this._position = pos;
+			return null;
+		}
+		
 	}
 
 }
