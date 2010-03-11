@@ -17,11 +17,11 @@ package by.blooddy.core.parsers {
 
 		function get tokenContext():TokenContext;
 
-		function get lastToken():int;
+		function get lastToken():uint;
 
 		function get lastPosition():uint;
 
-		function readToken():int;
+		function readToken():uint;
 
 	}
 	

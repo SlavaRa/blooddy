@@ -20,16 +20,19 @@ package by.blooddy.gui.styles {
 		//  Class constants
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public static const EOF:uint =							  0;
 		public static const IMPORT:uint =			EOF			+ 1;
 		public static const COLON:uint =			IMPORT		+ 1;
 		public static const LEFT_BRACE:uint =		COLON		+ 1;
 		public static const RIGHT_BRACE:uint =		LEFT_BRACE	+ 1;
-		public static const HASH:uint =				RIGHT_BRACE	+ 1;
+		public static const LEFT_PAREN:uint =		RIGHT_BRACE	+ 1;
+		public static const RIGHT_PAREN:uint =		LEFT_PAREN	+ 1;
+		public static const HASH:uint =				RIGHT_PAREN	+ 1;
 		public static const DOT:uint =				HASH		+ 1;
 		public static const COMMA:uint =			DOT			+ 1;
-		public static const SEMI_COLON:uint =		COMMA		+ 1;
+		public static const DASH:uint =				COMMA		+ 1;
+		public static const SEMI_COLON:uint =		DASH		+ 1;
 		public static const IDENTIFIER:uint =		SEMI_COLON	+ 1;
 		public static const STRING_LITERAL:uint =	IDENTIFIER	+ 1;
 		

@@ -6,10 +6,10 @@
 
 package by.blooddy.gui.styles {
 
+	import by.blooddy.core.errors.ParserError;
 	import by.blooddy.core.parsers.IScanner;
 	import by.blooddy.core.parsers.TokenContext;
 	import by.blooddy.core.utils.Char;
-	import by.blooddy.core.errors.ParserError;
 
 	/**
 	 * @author					BlooDHounD
@@ -36,9 +36,12 @@ package by.blooddy.gui.styles {
 			this._tokenContext.addToken( CSSToken.COLON, ':' );
 			this._tokenContext.addToken( CSSToken.LEFT_BRACE, '{' );
 			this._tokenContext.addToken( CSSToken.RIGHT_BRACE, '}' );
+			this._tokenContext.addToken( CSSToken.LEFT_PAREN, '(' );
+			this._tokenContext.addToken( CSSToken.RIGHT_PAREN, ')' );
 			this._tokenContext.addToken( CSSToken.HASH, '#' );
 			this._tokenContext.addToken( CSSToken.DOT, '.' );
 			this._tokenContext.addToken( CSSToken.COMMA, ',' );
+			this._tokenContext.addToken( CSSToken.DASH, '-' );
 			this._tokenContext.addToken( CSSToken.SEMI_COLON, ';' );
 			this._tokenContext.addToken( CSSToken.IDENTIFIER, '' );
 			this._tokenContext.addToken( CSSToken.STRING_LITERAL, '' );
@@ -85,7 +88,7 @@ package by.blooddy.gui.styles {
 		 */
 		private var _lastToken:int;
 
-		public function get lastToken():int {
+		public function get lastToken():uint {
 			return this._lastToken;
 		}
 
@@ -110,7 +113,7 @@ package by.blooddy.gui.styles {
 			this._source = source;
 		}
 
-		public function readToken():int {
+		public function readToken():uint {
 			var c:uint;
 			while ( ( c = this.readCharCode() ) != Char.EOS ) {
 
@@ -145,6 +148,7 @@ package by.blooddy.gui.styles {
 					case Char.DOT:			return this.makeToken( CSSToken.DOT );
 					case Char.COMMA:		return this.makeToken( CSSToken.COMMA );
 					case Char.SEMI_COLON:	return this.makeToken( CSSToken.SEMI_COLON );
+					case Char.DASH:			return this.makeToken( CSSToken.DASH );
 
 					case Char.AT:
 						if (
@@ -164,8 +168,17 @@ package by.blooddy.gui.styles {
 						this._position--;
 						return this.makeToken( CSSToken.STRING_LITERAL, this.readString() );
 						
-					//default:
-						
+					default:
+						if (
+							( c >= Char.a && c <= Char.z ) ||
+							( c >= Char.A && c <= Char.Z ) ||
+							c == Char.DOLLAR ||
+							c == Char.UNDER_SCORE ||
+							c > 0x7f
+						) {
+							this._position--;
+							return this.makeToken( CSSToken.IDENTIFIER, this.readIdentifier() );
+						}
 
 				}
 				
@@ -210,65 +223,96 @@ package by.blooddy.gui.styles {
 		 */
 		private function readString():String {
 			var pos:uint = this._position;
-			var to:String = this.readChar();
-			if ( to != '\'' && to != '\"' ) throw new ParserError();
+			var to:uint = this.readCharCode();
+			if ( to != Char.SINGLE_QUOTE && to != Char.DOUBLE_QUOTE ) throw new ParserError();
+			var p:uint = pos + 1;
 			var result:String = '';
-			var c:String;
-			while ( ( c = this.readChar() ) != to ) {
-				switch( c ) {
-					case '\\':
-						switch ( c = this.readChar() ) {
-							case 'n':	c = '\n';	break;
-							case 'r':	c = '\r';	break;
-							case 't':	c = '\t';	break;
-							case 'v':	c = '\v';	break;
-							case 'f':	c = '\f';	break;
-							case 'b':	c = '\b';	break;
-							case 'x':
-								c = this.readFixedHex( 2 );
-								if ( c )	c = String.fromCharCode( parseInt( c, 16 ) );
-								else		c = 'x';
+			var c:uint, t:String;
+			while ( ( c = this.readCharCode() ) != to ) {
+				switch ( c ) {
+					case Char.BACK_SLASH:
+						result += this._source.substring( p, this._position - 1 );
+						switch ( c = this.readCharCode() ) {
+							case Char.n:	result += '\n';	break;
+							case Char.r:	result += '\r';	break;
+							case Char.t:	result += '\t';	break;
+							case Char.v:	result += '\v';	break;
+							case Char.f:	result += '\f';	break;
+							case Char.b:	result += '\b';	break;
+							case Char.x:
+								t = this.readFixedHex( 2 );
+								if ( t )	result += String.fromCharCode( parseInt( t, 16 ) );
+								else		result += 'x';
 								break;
-							case 'u':
-								c = this.readFixedHex( 4 );
-								if ( c )	c = String.fromCharCode( parseInt( c, 16 ) );
-								else		c = 'u';
+							case Char.u:
+								t = this.readFixedHex( 4 );
+								if ( t )	result += String.fromCharCode( parseInt( t, 16 ) );
+								else		result += 'u';
 								break;
 							default:
-								c = this.readChar();
+								result += this.readChar();
 								break;
 						}
+						p = this._position;
 						break;
-					case '\x00':
-					case '\r':
-					case '\n':
+					case Char.EOS:
+					case Char.CARRIAGE_RETURN:
+					case Char.NEWLINE:
 						this._position = pos; // откатываемся
-						throw new ParserError();
+						return null;
 				}
-				result += c;
 			}
+			result += this._source.substring( p, this._position - 1 );
 			return result;
 		}
 
 		/**
 		 * @private
 		 */
+		private function readIdentifier():String {
+			var pos:uint = this._position;
+			var c:uint = this.readCharCode();
+			if ( 
+				( c < Char.a || c > Char.z ) &&
+				( c < Char.A || c > Char.Z ) &&
+				c != Char.DOLLAR &&
+				c != Char.UNDER_SCORE &&
+				c <= 0x7f
+			) {
+				this._position--;
+				return null;
+			}
+			do {
+				c = this.readCharCode();
+			} while (
+				( c >= Char.a && c <= Char.z ) ||
+				( c >= Char.A && c <= Char.Z ) ||
+				( c >= Char.ZERO && c <= Char.NINE ) ||
+				c == Char.DOLLAR ||
+				c == Char.UNDER_SCORE ||
+				c > 0x7f
+			);
+			this._position--;
+			return this._source.substring( pos, this._position );
+		}
+
+		/**
+		 * @private
+		 */
 		private function readFixedHex(length:uint=0):String {
-			var result:String = '';
-			var c:String;
+			var c:uint;
 			for ( var i:uint = 0; i<length; i++ ) {
-				c = this.readChar();
+				c = this.readCharCode();
 				if (
-					( c < '0' || c > '9' ) &&
-					( c < 'a' || c > 'f' ) &&
-					( c < 'A' || c > 'F' )
+					( c < Char.ZERO || c > Char.NINE ) &&
+					( c < Char.a || c > Char.f ) &&
+					( c < Char.A || c > Char.F )
 				) {
 					this._position -= i;
 					return null;
 				}
-				result += c;
 			}
-			return result;
+			return this._source.substring( this._position - i, this._position );
 		}
 
 	}
