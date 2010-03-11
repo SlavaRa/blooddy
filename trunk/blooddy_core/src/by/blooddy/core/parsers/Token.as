@@ -29,7 +29,7 @@ package by.blooddy.core.parsers {
 		 * @return	
 		 */
 		public static function getHash(kind:uint, text:String):String {
-			return String.fromCharCode( kind >>> 16 ) + String.fromCharCode( kind & 0xFFFF ) + text;
+			return String.fromCharCode( kind >>> 16 ) + String.fromCharCode( kind & 0xFFFF ) + ( text || '\x00' );
 		}
 
 		//--------------------------------------------------------------------------
