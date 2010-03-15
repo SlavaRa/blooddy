@@ -12,7 +12,7 @@ package by.blooddy.core.managers.resource {
 	import by.blooddy.core.net.loading.ILoadable;
 	import by.blooddy.core.utils.DisplayObjectUtils;
 	import by.blooddy.core.utils.RecycleBin;
-	
+
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
@@ -23,7 +23,7 @@ package by.blooddy.core.managers.resource {
 	import flash.utils.Timer;
 	import flash.utils.getQualifiedClassName;
 	import flash.utils.getTimer;
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -32,29 +32,29 @@ package by.blooddy.core.managers.resource {
 	 * @created					21.02.2010 3:46:27
 	 */
 	public final class ResourceManagerProxy {
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class variables
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 */
 		private static const _SEPARATOR:String = String.fromCharCode( 0 );
-		
+
 		/**
 		 * @private
 		 */
 		private static const _NAME_DISPLAY_OBJECT:String = getQualifiedClassName( DisplayObject );
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * Constructor
 		 */
@@ -63,7 +63,7 @@ package by.blooddy.core.managers.resource {
 			this._manager.addEventListener( ResourceBundleEvent.BUNDLE_ADDED,	this.handler_bundleAdded, false, int.MAX_VALUE, true );
 			this._manager.addEventListener( ResourceBundleEvent.BUNDLE_REMOVED,	this.handler_bundleRemoved, false, int.MAX_VALUE, true );
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Variables
@@ -84,32 +84,32 @@ package by.blooddy.core.managers.resource {
 		 * @private
 		 */
 		private const _resources:Dictionary = new Dictionary( true );
-		
+
 		/**
 		 * @private
 		 */
 		private const _resourceUsages:Object = new Object();
-		
+
 		/**
 		 * @private
 		 */
 		private const _timer:Timer = new Timer( 15e3 );
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 */
 		private var _resourceLiveTime:uint = 60e3;
-		
+
 		public final function get resourceLiveTime():uint {
 			return this._resourceLiveTime;
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -118,7 +118,7 @@ package by.blooddy.core.managers.resource {
 			this._resourceLiveTime = value;
 			this._timer.delay = this._resourceLiveTime / 4;
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
@@ -157,13 +157,13 @@ package by.blooddy.core.managers.resource {
 		public function loadResourceBundle(bundleName:String, priority:int=0.0):ILoadable {
 			return this._manager.loadResourceBundle( bundleName, priority );
 		}
-		
+
 		public function hasResource(bundleName:String, resourceName:String=null):Boolean {
 			if ( !resourceName ) resourceName = '';
 			if ( this._bin.has( bundleName + _SEPARATOR + resourceName ) ) return true;
 			else return this._manager.hasResource( bundleName, resourceName );
 		}
-		
+
 		public function getResource(bundleName:String, resourceName:String=null):Object {
 			var result:Object = this._manager.getResource( bundleName, resourceName );
 			switch ( typeof result ) {
@@ -178,7 +178,7 @@ package by.blooddy.core.managers.resource {
 			}
 			return result;
 		}
-		
+
 		public function getDisplayObject(bundleName:String, resourceName:String=null):DisplayObject {
 			if ( !resourceName ) resourceName = '';
 			var key:String = bundleName + _SEPARATOR + resourceName;
@@ -207,7 +207,7 @@ package by.blooddy.core.managers.resource {
 			}
 			return result;
 		}
-		
+
 		public function getSound(bundleName:String, resourceName:String=null):Sound {
 			var resource:Object = this._manager.getResource( bundleName, resourceName );
 			var result:Sound;
@@ -220,7 +220,7 @@ package by.blooddy.core.managers.resource {
 			}
 			return result;
 		}
-		
+
 		public function trashResource(resource:Object, time:uint=3*60*1E3):void {
 			var def:ResourceLinker = this._resources[ resource ];
 			if ( !def ) throw new ArgumentError( 'Ресурс не был создан.', 5101 );
@@ -244,13 +244,13 @@ package by.blooddy.core.managers.resource {
 			usage.count--;
 			if ( usage.count <= 0 ) usage.lastUse = getTimer();
 		}
-		
+
 		public function lockResourceBundle(bundleName:String):void {
 			var usage:ResourceUsage = this._resourceUsages[ bundleName ] as ResourceUsage;
 			if ( !usage ) this._resourceUsages[ bundleName ] = usage = new ResourceUsage();
 			usage.lock = true;
 		}
-		
+
 		public function unlockResourceBundle(bundleName:String):void {
 			var usage:ResourceUsage = this._resourceUsages[ bundleName ] as ResourceUsage;
 			if ( usage && usage.lock ) {
@@ -258,13 +258,13 @@ package by.blooddy.core.managers.resource {
 				if ( usage.count <= 0 ) usage.lastUse = getTimer();
 			}
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Private methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 */
@@ -336,9 +336,9 @@ package by.blooddy.core.managers.resource {
 				}
 			}
 		}
-		
+
 	}
-	
+
 }
 
 //==============================================================================
