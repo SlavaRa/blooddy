@@ -57,11 +57,6 @@ package by.blooddy.core.managers.resource {
 		/**
 		 * @private
 		 */
-		private static const _DEFAULT_BUNDLE:DefaultResourceBundle = new DefaultResourceBundle();
-
-		/**
-		 * @private
-		 */
 		private static const _HASH:Object = new Object();
 
 		/**
@@ -506,6 +501,17 @@ import flash.system.ApplicationDomain;
 import flash.utils.ByteArray;
 import flash.utils.Dictionary;
 import flash.utils.getTimer;
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Helper variables
+//
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ */
+internal const _DEFAULT_BUNDLE:DefaultResourceBundle = new DefaultResourceBundle();
 
 ////////////////////////////////////////////////////////////////////////////////
 //

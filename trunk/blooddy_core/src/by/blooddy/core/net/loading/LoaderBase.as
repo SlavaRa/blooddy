@@ -6,6 +6,7 @@
 
 package by.blooddy.core.net.loading {
 	
+	import by.blooddy.core.net.domain;
 	import by.blooddy.core.net.monitor.NetMonitor;
 	import by.blooddy.core.utils.ClassUtils;
 	import by.blooddy.core.utils.crypto.UIDUtils;
@@ -17,7 +18,6 @@ package by.blooddy.core.net.loading {
 	import flash.events.EventDispatcher;
 	import flash.events.HTTPStatusEvent;
 	import flash.events.ProgressEvent;
-	import flash.net.LocalConnection;
 	import flash.net.URLRequest;
 	import flash.utils.ByteArray;
 	
@@ -120,16 +120,11 @@ package by.blooddy.core.net.loading {
 		//--------------------------------------------------------------------------
 		
 		$protected_load static const _HTTP_RESPONSE_STATUS:String = ( 'HTTP_RESPONSE_STATUS' in HTTPStatusEvent ? HTTPStatusEvent['HTTP_RESPONSE_STATUS'] : null );
-		
+
 		/**
 		 * @private
 		 */
-		$protected_load static const _DOMAIN:String = ( new flash.net.LocalConnection() ).domain;
-		
-		/**
-		 * @private
-		 */
-		$protected_load static const _URL:RegExp = ( _DOMAIN == 'localhost' ? null : new RegExp( '^(?:(?!\\w+://)|https?://(?:www\\.)?' + _DOMAIN.replace( /\./g, '\\.' ) + ')', 'i' ) );
+		$protected_load static const _URL:RegExp = ( domain == 'localhost' ? null : new RegExp( '^(?:(?!\\w+://)|https?://(?:www\\.)?' + domain.replace( /\./g, '\\.' ) + ')', 'i' ) );
 		
 		/**
 		 * @private

@@ -12,6 +12,7 @@ package by.blooddy.core.managers.resource {
 	import by.blooddy.core.utils.ClassUtils;
 	import by.blooddy.core.utils.DefinitionFinder;
 	import by.blooddy.core.utils.crypto.MD5;
+	import by.blooddy.core.utils.dispose;
 	
 	import flash.display.BitmapData;
 	import flash.media.Sound;
@@ -42,12 +43,17 @@ package by.blooddy.core.managers.resource {
 		/**
 		 * @private
 		 */
-		private static const _NAME_BITMAP_DATA:String = getQualifiedClassName( BitmapData );
+		private static const _NAME_BITMAP_DATA:String =	getQualifiedClassName( BitmapData );
 		
 		/**
 		 * @private
 		 */
-		private static const _NAME_SOUND:String = getQualifiedClassName( Sound );
+		private static const _NAME_SOUND:String =		getQualifiedClassName( Sound );
+		
+		/**
+		 * @private
+		 */
+		private static const _NAME_BYTE_ARRAY:String =	getQualifiedClassName( ByteArray );
 		
 		//--------------------------------------------------------------------------
 		//
@@ -120,35 +126,26 @@ package by.blooddy.core.managers.resource {
 				var domain:ApplicationDomain = ( super.loaderInfo ? super.loaderInfo.applicationDomain : null );
 
 				if ( domain && domain.hasDefinition( name ) ) { // пытаемся найти в домене
-
 					resource = domain.getDefinition( name );
-
-					if ( resource is Class ) {
-
-						var resourceClass:Class = resource as Class;
-
-						if (
-							BitmapData.prototype.isPrototypeOf( resourceClass.prototype ) ||
-							domain.getDefinition( _NAME_BITMAP_DATA ).prototype.isPrototypeOf( resourceClass.prototype )
-						) {
-
-							resource = new resourceClass( 0, 0 );
-
-						} else if ( 
-							Sound.prototype.isPrototypeOf( resourceClass.prototype ) ||
-							domain.getDefinition( _NAME_SOUND ).prototype.isPrototypeOf( resourceClass.prototype )
-						) {
-
-							resource = new resourceClass();
-
-						}
-
-					}
-
 				} else if ( super.content && name in super.content ) { // пытаемся найти в контэнте
-
 					resource = super.content[ name ];
+				}
 
+				if ( resource is Class ) {
+					var resourceClass:Class = resource as Class;
+					if (
+						BitmapData.prototype.isPrototypeOf( resourceClass.prototype ) ||
+						domain.getDefinition( _NAME_BITMAP_DATA ).prototype.isPrototypeOf( resourceClass.prototype )
+					) {
+						resource = new resourceClass( 0, 0 );
+					} else if ( 
+						Sound.prototype.isPrototypeOf( resourceClass.prototype ) ||
+						ByteArray.prototype.isPrototypeOf( resourceClass.prototype ) ||
+						domain.getDefinition( _NAME_SOUND ).prototype.isPrototypeOf( resourceClass.prototype ) ||
+						domain.getDefinition( _NAME_BYTE_ARRAY ).prototype.isPrototypeOf( resourceClass.prototype )
+					) {
+						resource = new resourceClass();
+					}
 				}
 
 				this._hash[ name ] = resource;
@@ -242,8 +239,8 @@ package by.blooddy.core.managers.resource {
 			var resource:*;
 			for ( var name:String in this._hash ) {
 				resource = this._hash[ name ];
-				if ( resource is BitmapData ) {
-					( resource as BitmapData ).dispose();
+				if ( typeof resource == 'object' ) {
+					dispose( resource );
 				}
 				delete this._hash[ name ];
 			}

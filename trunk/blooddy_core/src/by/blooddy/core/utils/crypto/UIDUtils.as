@@ -6,7 +6,7 @@
 
 package by.blooddy.core.utils.crypto {
 
-	import flash.net.LocalConnection;
+	import by.blooddy.core.net.domain;
 	
 	/**
 	 * @author					BlooDHounD
@@ -26,11 +26,6 @@ package by.blooddy.core.utils.crypto {
 		/**
 		 * @private
 		 */
-		private static const _DOMAIN:String = ( new LocalConnection() ).domain;
-		
-		/**
-		 * @private
-		 */
 		private static const _hash:Object = new Object();
 
 		//--------------------------------------------------------------------------
@@ -42,7 +37,7 @@ package by.blooddy.core.utils.crypto {
 		public static function createUID():String {
 			var hash:String;
 			do {
-				hash = MD5.hash( Math.random() + '-' + _DOMAIN + '-' + Math.random() + '-' + ( new Date() ).getTime() + '-' + Math.random() );
+				hash = MD5.hash( Math.random() + '-' + domain + '-' + Math.random() + '-' + ( new Date() ).getTime() + '-' + Math.random() );
 			} while ( hash in _hash );
 			return (
 				hash.substr( 0, 8 ) + '-' +

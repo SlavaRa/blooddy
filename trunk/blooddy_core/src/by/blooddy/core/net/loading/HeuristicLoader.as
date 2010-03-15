@@ -351,8 +351,7 @@ package by.blooddy.core.net.loading {
 		 * создаёт лоадер для загрузки
 		 */
 		private function create_loader(url:Boolean=false, open:Boolean=false):LoaderAsset {
-			var result:LoaderAsset = new LoaderAsset( this );
-			result.loaderContext = this._loaderContext;
+			var result:LoaderAsset = new LoaderAsset( this, this._loaderContext );
 			if ( open ) {	// событие уже могло быть послано
 				result.addEventListener( Event.OPEN,					super.dispatchEvent );
 			}
@@ -384,8 +383,7 @@ package by.blooddy.core.net.loading {
 		 * создаём звук для загрузки
 		 */
 		private function create_sound(open:Boolean=false):SoundAsset {
-			var result:SoundAsset = new SoundAsset( this );
-			result.loaderContext = this._loaderContext;
+			var result:SoundAsset = new SoundAsset( this, this._loaderContext );
 			if ( open ) {
 				result.addEventListener( Event.OPEN,					super.dispatchEvent );
 			}
@@ -743,6 +741,7 @@ package by.blooddy.core.net.loading {
 
 import by.blooddy.core.net.loading.HeuristicLoader;
 import by.blooddy.core.net.loading.Loader;
+import by.blooddy.core.net.loading.LoaderContext;
 import by.blooddy.core.net.loading.SoundLoader;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -771,8 +770,8 @@ internal final class LoaderAsset extends Loader {
 	 * @private
 	 * Constructor
 	 */
-	public function LoaderAsset(target:HeuristicLoader) {
-		super();
+	public function LoaderAsset(target:HeuristicLoader, loaderContext:LoaderContext) {
+		super( null, loaderContext );
 		this._target = target;
 	}
 
@@ -848,8 +847,8 @@ internal final class SoundAsset extends SoundLoader {
 	 * @private
 	 * Constructor
 	 */
-	public function SoundAsset(target:HeuristicLoader) {
-		super();
+	public function SoundAsset(target:HeuristicLoader, loaderContext:LoaderContext) {
+		super( null, loaderContext );
 		this._target = target;
 	}
 
