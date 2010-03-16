@@ -7,7 +7,7 @@
 package by.blooddy.external.media {
 	
 	import by.blooddy.core.events.DynamicEvent;
-	import by.blooddy.core.managers.resource.ResourceManager;
+	import by.blooddy.core.managers.resource.ResourceManagerProxy;
 	import by.blooddy.core.net.ProxySharedObject;
 	import by.blooddy.core.net.loading.ILoadable;
 	import by.blooddy.external.controllers.BaseController;
@@ -21,7 +21,6 @@ package by.blooddy.external.media {
 	import flash.media.SoundChannel;
 	import flash.media.SoundTransform;
 	import flash.utils.Dictionary;
-	import flash.utils.getQualifiedClassName;
 	
 	/**
 	 * @author					BlooDHounD
@@ -56,17 +55,6 @@ package by.blooddy.external.media {
 
 		//--------------------------------------------------------------------------
 		//
-		//  Class variables
-		//
-		//--------------------------------------------------------------------------
-		
-		/**
-		 * @private
-		 */
-		private static const _NAME_SOUND:String = getQualifiedClassName( Sound );
-		
-		//--------------------------------------------------------------------------
-		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
@@ -88,7 +76,7 @@ package by.blooddy.external.media {
 		/**
 		 * @private
 		 */
-		private const _resourceManager:ResourceManager = new ResourceManager();
+		private const _manager:ResourceManagerProxy = new ResourceManagerProxy();
 		
 		/**
 		 * @private
@@ -127,14 +115,14 @@ package by.blooddy.external.media {
 		//--------------------------------------------------------------------------
 
 		public function load(uri:String):void {
-			var arr:Array = uri.split( '#', 2 );
-			this._resourceManager.loadResourceBundle( arr[0] );
-			//this._resourceManager.lockResourceBundle( arr[0] );
+			var name:String = uri.split( '#', 2 )[ 0 ];
+			this._manager.loadResourceBundle( name );
+			this._manager.lockResourceBundle( name );
 		}
 
 		public function loadAndPlay(uri:String, startTime:Number=0, loops:int=0, transform:Object=null, afterLoad:Boolean=false):uint {
 			var arr:Array = uri.split( '#', 2 );
-			var loader:ILoadable = this._resourceManager.loadResourceBundle( arr[0], int.MAX_VALUE );
+			var loader:ILoadable = this._manager.loadResourceBundle( arr[0], int.MAX_VALUE );
 			if ( !loader.loaded ) {
 				if ( !afterLoad ) return 0;
 				var plays:Vector.<PlayAsset> = this._loaders[ loader ];
@@ -156,11 +144,6 @@ package by.blooddy.external.media {
 			var id:uint = this.$play( this._lastID + 1, uri, startTime, loops, transform );
 			if ( id ) this._lastID = id;
 			return id;
-		}
-
-		public function unload(uri:String):void {
-			var arr:Array = uri.split( '#', 2 );
-			this._resourceManager.removeResourceBundle( arr[0] );
 		}
 
 		public function stop(id:uint):void {
@@ -196,7 +179,14 @@ package by.blooddy.external.media {
 		}
 		
 		protected override function destruct():void {
-			// TODO: clear all
+			var key:Object;
+			for ( key in this._channels_id ) {
+				this.stop( uint( key ) );
+			}
+			for ( key in this._sounds ) {
+				delete this._sounds[ key ];
+			}
+			this._manager.clear();
 		}
 		
 		//--------------------------------------------------------------------------
@@ -213,20 +203,7 @@ package by.blooddy.external.media {
 
 			var sound:Sound = this._sounds[ uri ];
 			if ( !sound ) {
-				var o:Object = this._resourceManager.getResource( arr[0], arr[1] || '' );
-				if ( o is Class ) {
-					var c:Class = o as Class;
-					if (
-						Sound.prototype.isPrototypeOf( c.prototype ) ||
-						this._resourceManager.getResource( arr[0], _NAME_SOUND ).prototype.isPrototypeOf( c.prototype )
-					) {
-						o = new c() as Sound;
-					}
-				}
-				if ( o is Sound ) {
-					sound = o as Sound;
-				}
-				this._sounds[ uri ] = sound;
+				this._sounds[ uri ] = sound = this._manager.getSound( arr[0], arr[1] );
 			}
 
 			if ( sound ) {

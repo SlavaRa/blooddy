@@ -152,16 +152,11 @@
     <classEntry path="by.blooddy.core.net.loading.URLStream"/>
     <classEntry path="by.blooddy.core.net.monitor.INetMonitor"/>
     <classEntry path="by.blooddy.core.net.monitor.NetMonitor"/>
-    <classEntry path="by.blooddy.core.parsers.IScanner"/>
-    <classEntry path="by.blooddy.core.parsers.Token"/>
-    <classEntry path="by.blooddy.core.parsers.TokenContext"/>
-    <classEntry path="by.blooddy.core.parsers.TokenScanner"/>
     <classEntry path="by.blooddy.core.utils.ActivityListener"/>
     <classEntry path="by.blooddy.core.utils.ArrayEventDispatcher"/>
     <classEntry path="by.blooddy.core.utils.ByteArrayUtils"/>
     <classEntry path="by.blooddy.core.utils.Caller"/>
     <classEntry path="by.blooddy.core.utils.CallerQueue"/>
-    <classEntry path="by.blooddy.core.utils.Char"/>
     <classEntry path="by.blooddy.core.utils.ClassUtils"/>
     <classEntry path="by.blooddy.core.utils.DataBaseUtils"/>
     <classEntry path="by.blooddy.core.utils.DateUtils"/>
