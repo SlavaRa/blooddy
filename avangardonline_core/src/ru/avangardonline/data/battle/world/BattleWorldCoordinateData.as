@@ -8,7 +8,7 @@ package ru.avangardonline.data.battle.world {
 
 	import by.blooddy.core.data.Data;
 	import by.blooddy.core.events.time.TimeEvent;
-	import by.blooddy.core.managers.IProgressable;
+	import by.blooddy.core.net.loading.IProgressable;
 	import by.blooddy.core.utils.enterFrameBroadcaster;
 	import by.blooddy.core.utils.time.Time;
 	

@@ -11,7 +11,7 @@ package ru.avangardonline.display.gfx.battle.world {
 	import by.blooddy.core.display.resource.MainResourceSprite;
 	import by.blooddy.core.events.data.DataBaseEvent;
 	import by.blooddy.core.events.display.resource.ResourceEvent;
-	import by.blooddy.core.net.ILoadable;
+	import by.blooddy.core.net.loading.ILoadable;
 	import by.blooddy.core.utils.IDisposable;
 	import by.blooddy.core.utils.enterFrameBroadcaster;
 	

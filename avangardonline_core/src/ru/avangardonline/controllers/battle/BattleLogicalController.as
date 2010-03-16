@@ -11,8 +11,8 @@ package ru.avangardonline.controllers.battle {
 	import by.blooddy.core.controllers.IController;
 	import by.blooddy.core.data.DataBase;
 	import by.blooddy.core.events.time.TimeEvent;
-	import by.blooddy.core.managers.IProgressable;
 	import by.blooddy.core.net.AbstractRemoter;
+	import by.blooddy.core.net.loading.IProgressable;
 	import by.blooddy.core.utils.time.RelativeTime;
 	
 	import flash.events.Event;

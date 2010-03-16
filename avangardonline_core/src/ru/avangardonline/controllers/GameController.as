@@ -11,9 +11,9 @@ package ru.avangardonline.controllers {
 	import by.blooddy.core.data.DataBase;
 	import by.blooddy.core.external.ExternalConnection;
 	import by.blooddy.core.managers.resource.ResourceManager;
-	import by.blooddy.core.net.ILoadable;
-	import by.blooddy.core.net.LoaderListener;
 	import by.blooddy.core.net.ProxySharedObject;
+	import by.blooddy.core.net.loading.ILoadable;
+	import by.blooddy.core.net.loading.LoaderListener;
 	import by.blooddy.core.utils.time.RelativeTime;
 	
 	import flash.display.DisplayObjectContainer;
