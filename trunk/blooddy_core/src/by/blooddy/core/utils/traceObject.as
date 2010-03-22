@@ -8,7 +8,7 @@ package by.blooddy.core.utils {
 
 	import flash.utils.Dictionary;
 
-	public function traceObject(object:Object):void {
+	public function traceObject(object:*):void {
 		trace("======== >> =====");
 		trace( var_dump( new Dictionary(), object ) );
 		trace("======== << =====");
@@ -32,9 +32,11 @@ import flash.utils.Dictionary;
 /**
  * @private
  */
-internal function var_dump(hash:Dictionary, o:Object, char:String='\t', prefix:String=''):String {
+internal function var_dump(hash:Dictionary, o:*, char:String='\t', prefix:String=''):String {
 	var result:String;
-	if ( !( o is Object ) ) {
+	if ( o === undefined ) {
+		result = 'undefined';
+	} else if ( !( o is Object ) ) {
 		result = 'null';
 	} else if (
 		o is Number ||

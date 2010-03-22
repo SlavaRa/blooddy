@@ -96,7 +96,7 @@ package by.blooddy.core.utils {
 			}
 			return result;
 		}
-		
+
 	}
 
 }

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties includeAllClasses="false" version="1">
+  <includeClasses>
+    <classEntry path="by.blooddy.code.AbstractScanner"/>
+    <classEntry path="by.blooddy.code.IScanner"/>
+    <classEntry path="by.blooddy.code.Token"/>
+    <classEntry path="by.blooddy.code.TokenContext"/>
+    <classEntry path="by.blooddy.code.css.CSSParser"/>
+    <classEntry path="by.blooddy.code.css.CSSScanner"/>
+    <classEntry path="by.blooddy.code.css.CSSToken"/>
+    <classEntry path="by.blooddy.code.css.selectors.AttributeSelector"/>
+    <classEntry path="by.blooddy.code.css.selectors.CSSSelector"/>
+    <classEntry path="by.blooddy.code.css.selectors.ChildSelector"/>
+    <classEntry path="by.blooddy.code.css.selectors.ClassSelector"/>
+    <classEntry path="by.blooddy.code.css.selectors.DescendantSelector"/>
+    <classEntry path="by.blooddy.code.css.selectors.IDSelector"/>
+    <classEntry path="by.blooddy.code.css.selectors.PseudoSelector"/>
+    <classEntry path="by.blooddy.code.css.selectors.TypeSelector"/>
+    <classEntry path="by.blooddy.code.errors.ParserError"/>
+    <classEntry path="by.blooddy.code.json.JSONParser"/>
+    <classEntry path="by.blooddy.code.json.JSONScanner"/>
+    <classEntry path="by.blooddy.code.json.JSONToken"/>
+    <classEntry path="by.blooddy.code.utils.Char"/>
+    <classEntry path="by.blooddy.code.json.JSON"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>
