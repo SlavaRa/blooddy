@@ -53,7 +53,7 @@ package by.blooddy.core.logging.commands {
 		//
 		//--------------------------------------------------------------------------
 
-		public override function toString():String {
+		public function toHTMLString():String {
 			var d:Date = new Date( super.time );
 			var resut:String = DateUtils.timeToString( super.time, true, ":", true, true ) + "@ " + this._command;
 			if ( this._command is NetCommand ) {
@@ -63,6 +63,11 @@ package by.blooddy.core.logging.commands {
 			//return this.formatToString("time", "command");
 		}
 
+		public override function toString():String {
+			var d:Date = new Date( super.time );
+			return DateUtils.timeToString( super.time, true, ":", true, true ) + "@ " + this._command;
+		}
+		
 	}
 
 }

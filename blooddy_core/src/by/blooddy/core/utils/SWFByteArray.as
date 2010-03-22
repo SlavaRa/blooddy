@@ -209,7 +209,7 @@ package by.blooddy.core.utils {
 		
 		public function readString():String {
 			var i:uint = super.position;
-			while (this[i] && (i+=1));
+			while (this[i] && (i+=1)) {};
 			var str:String = super.readUTFBytes(i - super.position);
 			super.position = i+1; 
 			return str;

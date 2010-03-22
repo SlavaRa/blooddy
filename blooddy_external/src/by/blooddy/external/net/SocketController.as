@@ -7,9 +7,9 @@
 package by.blooddy.external.net {
 
 	import by.blooddy.core.events.net.SerializeErrorEvent;
-	import by.blooddy.core.net.ISocketFilter;
 	import by.blooddy.core.net.ProxySharedObject;
-	import by.blooddy.core.net.SocketConnection;
+	import by.blooddy.core.net.connection.SocketConnection;
+	import by.blooddy.core.net.connection.filters.ISocketFilter;
 	import by.blooddy.external.controllers.BaseController;
 	
 	import flash.display.DisplayObjectContainer;

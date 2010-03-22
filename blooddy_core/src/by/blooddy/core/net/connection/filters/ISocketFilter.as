@@ -4,8 +4,10 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.net {
+package by.blooddy.core.net.connection.filters {
 
+	import by.blooddy.core.net.NetCommand;
+	
 	import flash.utils.IDataInput;
 	import flash.utils.IDataOutput;
 
@@ -20,7 +22,7 @@ package by.blooddy.core.net {
 	public interface ISocketFilter {
 
 		function getHash():String;
-		
+
 		function readCommand(input:IDataInput, io:String='input'):NetCommand;
 
 		function writeCommand(output:IDataOutput, command:NetCommand):void;

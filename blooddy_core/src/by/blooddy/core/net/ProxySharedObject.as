@@ -7,9 +7,10 @@
 package by.blooddy.core.net {
 
 	import by.blooddy.core.utils.proxy.ProxyObject;
-	import flash.events.IEventDispatcher;
+	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.events.IEventDispatcher;
 	import flash.net.SharedObject;
 	import flash.utils.Dictionary;
 

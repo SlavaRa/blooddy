@@ -8,11 +8,11 @@ package by.blooddy.external.net {
 
 	import by.blooddy.core.net.Protocols;
 	import by.blooddy.core.net.RemoterProxy;
-	import by.blooddy.core.net.SocketConnection;
+	import by.blooddy.core.net.connection.SocketConnection;
+	import by.blooddy.core.net.connection.filters.ISocketFilter;
 	import by.blooddy.core.utils.time.setTimeout;
 	
 	import flash.events.AsyncErrorEvent;
-	import by.blooddy.core.net.ISocketFilter;
 
 	//--------------------------------------
 	//  Events

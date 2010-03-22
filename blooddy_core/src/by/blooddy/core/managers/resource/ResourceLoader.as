@@ -137,7 +137,11 @@ package by.blooddy.core.managers.resource {
 						BitmapData.prototype.isPrototypeOf( resourceClass.prototype ) ||
 						domain.getDefinition( _NAME_BITMAP_DATA ).prototype.isPrototypeOf( resourceClass.prototype )
 					) {
-						resource = new resourceClass( 0, 0 );
+						try {
+							resource = new resourceClass( 0, 0 );
+						} catch ( e:Error ) {
+							resource = new resourceClass();
+						}
 					} else if ( 
 						Sound.prototype.isPrototypeOf( resourceClass.prototype ) ||
 						ByteArray.prototype.isPrototypeOf( resourceClass.prototype ) ||

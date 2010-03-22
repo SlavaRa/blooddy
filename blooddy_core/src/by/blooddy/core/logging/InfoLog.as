@@ -6,6 +6,8 @@
 
 package by.blooddy.core.logging {
 
+	import by.blooddy.core.utils.DateUtils;
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -25,7 +27,7 @@ package by.blooddy.core.logging {
 		public static const DEBUG:uint = uint.MAX_VALUE;
 		
 		private static function getClassByType(type:uint):String {
-			switch (type) {
+			switch ( type ) {
 				case INFO: 			return 'info';
 				case WARN: 			return 'warn';
 				case ERROR: 		return 'error';
@@ -47,8 +49,18 @@ package by.blooddy.core.logging {
 			return this._type;
 		}
 		
-		public override function toString():String {
+		public function toHTMLString():String {
 			return '<span class="log_' + getClassByType(this._type) +'">' + super.text + '</span>';
 		}
+
+		/**
+		 * @private
+		 */
+		public override function toString():String {
+			var d:Date = new Date( super.time );
+			return DateUtils.timeToString( super.time, true, ':', true, true ) + '@ ' + super.text;
+		}
+
 	}
+
 }
