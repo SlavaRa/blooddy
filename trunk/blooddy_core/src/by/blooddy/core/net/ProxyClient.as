@@ -60,7 +60,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		flash_proxy override function hasProperty(name:*) : Boolean {
+		flash_proxy override function hasProperty(name:*):Boolean {
 			return name && ( name is QName || name is String );
 		}
 

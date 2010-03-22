@@ -146,7 +146,7 @@ package by.blooddy.core.net {
 		 * @inheritDoc
 		 */
 		protected override function bubbleUpdate(...propertyPath):Boolean {
-			return this._dispatcher.dispatchEvent( new Event( propertyPath.join(".") ) );
+			return this._dispatcher.dispatchEvent( new Event( propertyPath.join( '.' ) ) );
 		}
 
 	}
