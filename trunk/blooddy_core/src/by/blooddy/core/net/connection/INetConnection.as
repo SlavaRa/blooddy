@@ -4,7 +4,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.net {
+package by.blooddy.core.net.connection {
+
+	import by.blooddy.core.net.IAbstractSocket;
 
 	/**
 	 * @author					BlooDHounD

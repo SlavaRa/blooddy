@@ -50,7 +50,7 @@ package by.blooddy.core.utils {
 			
 			var result:String = "";
 			i = hash.length;
-			while ( i-- && hash[ i ] == 0 );
+			while ( i-- && hash[ i ] == 0 ) {};
 			i++;
 			while ( i-- ) {
 				result += hash[ i ].toString( outRadix );

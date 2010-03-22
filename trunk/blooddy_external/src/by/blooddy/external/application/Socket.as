@@ -6,7 +6,7 @@
 
 package by.blooddy.external.application {
 
-	import by.blooddy.core.net.SincereSocketFilter;
+	import by.blooddy.core.net.connection.filters.SincereSocketFilter;
 	import by.blooddy.external.net.SocketController;
 	
 	import flash.display.Sprite;

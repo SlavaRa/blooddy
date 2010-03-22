@@ -25,5 +25,5 @@ package by.blooddy.core.net {
 				:	( new flash.net.LocalConnection() ).domain
 			)
 	);
-	
+
 }

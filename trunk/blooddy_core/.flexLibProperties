@@ -56,7 +56,6 @@
     <classEntry path="by.blooddy.core.events.DynamicErrorEvent"/>
     <classEntry path="by.blooddy.core.events.DynamicEvent"/>
     <classEntry path="by.blooddy.core.events.EventDispatcherProxy"/>
-    <classEntry path="by.blooddy.core.events.FZipEvent"/>
     <classEntry path="by.blooddy.core.events.ParserErrorEvent"/>
     <classEntry path="by.blooddy.core.events.commands.CommandEvent"/>
     <classEntry path="by.blooddy.core.events.data.DataBaseEvent"/>
@@ -117,26 +116,26 @@
     <classEntry path="by.blooddy.core.meta.describeTypeRDF"/>
     <classEntry path="by.blooddy.core.net.AbstractClient"/>
     <classEntry path="by.blooddy.core.net.AbstractRemoter"/>
-    <classEntry path="by.blooddy.core.net.IAbstractConnection"/>
     <classEntry path="by.blooddy.core.net.IAbstractSocket"/>
-    <classEntry path="by.blooddy.core.net.IConnection"/>
-    <classEntry path="by.blooddy.core.net.INetConnection"/>
     <classEntry path="by.blooddy.core.net.IRemoter"/>
     <classEntry path="by.blooddy.core.net.ISocket"/>
-    <classEntry path="by.blooddy.core.net.ISocketFilter"/>
-    <classEntry path="by.blooddy.core.net.IXMLSocket"/>
     <classEntry path="by.blooddy.core.net.MIME"/>
     <classEntry path="by.blooddy.core.net.NetCommand"/>
     <classEntry path="by.blooddy.core.net.Protocols"/>
     <classEntry path="by.blooddy.core.net.ProxyClient"/>
-    <classEntry path="by.blooddy.core.net.ProxyRemoter"/>
     <classEntry path="by.blooddy.core.net.ProxySharedObject"/>
     <classEntry path="by.blooddy.core.net.ProxySocket"/>
     <classEntry path="by.blooddy.core.net.RemoterProxy"/>
     <classEntry path="by.blooddy.core.net.Responder"/>
-    <classEntry path="by.blooddy.core.net.SincereSocketFilter"/>
     <classEntry path="by.blooddy.core.net.Socket"/>
-    <classEntry path="by.blooddy.core.net.SocketConnection"/>
+    <classEntry path="by.blooddy.core.net.connection.IAbstractConnection"/>
+    <classEntry path="by.blooddy.core.net.connection.IConnection"/>
+    <classEntry path="by.blooddy.core.net.connection.INetConnection"/>
+    <classEntry path="by.blooddy.core.net.connection.SocketConnection"/>
+    <classEntry path="by.blooddy.core.net.connection.filters.ISocketFilter"/>
+    <classEntry path="by.blooddy.core.net.connection.filters.SincereSocketFilter"/>
+    <classEntry path="by.blooddy.core.net.connection.filters.TextSocketFilter"/>
+    <classEntry path="by.blooddy.core.net.domain"/>
     <classEntry path="by.blooddy.core.net.loading.HeuristicLoader"/>
     <classEntry path="by.blooddy.core.net.loading.ILoadable"/>
     <classEntry path="by.blooddy.core.net.loading.ILoader"/>
@@ -211,8 +210,8 @@
     <classEntry path="by.blooddy.core.utils.version.Version"/>
     <classEntry path="by.blooddy.core.utils.xml.IXMLable"/>
     <classEntry path="by.blooddy.core.utils.xml.XMLUtils"/>
-    <classEntry path="com.adobe.serialization.json.JSON"/>
     <classEntry path="parseBoolean"/>
+    <classEntry path="by.blooddy.core.logging.LogTracer"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

@@ -6,13 +6,13 @@
 
 package by.blooddy.core.controllers {
 
+	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.commands.CommandDispatcher;
 	import by.blooddy.core.data.DataBase;
 	import by.blooddy.core.errors.getErrorMessage;
 	import by.blooddy.core.net.ProxySharedObject;
 	
 	import flash.display.DisplayObjectContainer;
-	import flash.errors.IllegalOperationError;
 
 	/**
 	 * @author					BlooDHounD
@@ -117,8 +117,8 @@ package by.blooddy.core.controllers {
 		/**
 		 * @inheritDoc
 		 */
-		public virtual function call(commandName:String, ...arguments):* {
-			throw new IllegalOperationError( getErrorMessage( 2071, this, 'call' ), 2071 );
+		public function call(commandName:String, ...arguments):* {
+			super.dispatchCommand( new Command( commandName, arguments ) );
 		}
 
 	}

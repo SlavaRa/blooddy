@@ -39,6 +39,7 @@ package by.blooddy.core.utils.crypto {
 			do {
 				hash = MD5.hash( Math.random() + '-' + domain + '-' + Math.random() + '-' + ( new Date() ).getTime() + '-' + Math.random() );
 			} while ( hash in _hash );
+			_hash[ hash ] = true;
 			return (
 				hash.substr( 0, 8 ) + '-' +
 				hash.substr( 8, 4 ) + '-' +

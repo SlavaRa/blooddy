@@ -11,8 +11,8 @@ package by.blooddy.core.external {
 	import by.blooddy.core.events.DynamicEvent;
 	import by.blooddy.core.logging.InfoLog;
 	import by.blooddy.core.net.AbstractRemoter;
-	import by.blooddy.core.net.IConnection;
 	import by.blooddy.core.net.NetCommand;
+	import by.blooddy.core.net.connection.IConnection;
 	import by.blooddy.core.utils.copyObject;
 	import by.blooddy.core.utils.nexframeCall;
 	import by.blooddy.core.utils.time.setTimeout;

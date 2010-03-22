@@ -6,6 +6,8 @@
 
 package by.blooddy.core.net {
 
+	import by.blooddy.core.net.connection.IAbstractConnection;
+
 	//--------------------------------------
 	//  Events
 	//--------------------------------------

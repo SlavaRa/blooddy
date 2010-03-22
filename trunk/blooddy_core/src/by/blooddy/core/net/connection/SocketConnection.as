@@ -4,12 +4,19 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.net {
+package by.blooddy.core.net.connection {
 
 	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.errors.getErrorMessage;
 	import by.blooddy.core.events.net.SerializeErrorEvent;
 	import by.blooddy.core.logging.InfoLog;
+	import by.blooddy.core.net.AbstractRemoter;
+	import by.blooddy.core.net.ISocket;
+	import by.blooddy.core.net.NetCommand;
+	import by.blooddy.core.net.Protocols;
+	import by.blooddy.core.net.ProxySocket;
+	import by.blooddy.core.net.Socket;
+	import by.blooddy.core.net.connection.filters.ISocketFilter;
 	import by.blooddy.core.utils.ByteArrayUtils;
 	
 	import flash.errors.IOError;
