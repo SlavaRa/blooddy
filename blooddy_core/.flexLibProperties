@@ -211,6 +211,7 @@
     <classEntry path="by.blooddy.core.utils.version.Version"/>
     <classEntry path="by.blooddy.core.utils.xml.IXMLable"/>
     <classEntry path="by.blooddy.core.utils.xml.XMLUtils"/>
+    <classEntry path="com.adobe.serialization.json.JSON"/>
     <classEntry path="parseBoolean"/>
   </includeClasses>
   <includeResources/>
