@@ -11,7 +11,9 @@ package by.blooddy.core.net.loading {
 	import by.blooddy.core.utils.ClassUtils;
 	import by.blooddy.core.utils.crypto.UIDUtils;
 	import by.blooddy.core.utils.enterFrameBroadcaster;
+	import by.blooddy.core.utils.net.URLUtils;
 	
+	import flash.display.Loader;
 	import flash.errors.IllegalOperationError;
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
@@ -119,12 +121,22 @@ package by.blooddy.core.net.loading {
 		//
 		//--------------------------------------------------------------------------
 		
+		/**
+		 * @private
+		 */
 		$protected_load static const _HTTP_RESPONSE_STATUS:String = ( 'HTTP_RESPONSE_STATUS' in HTTPStatusEvent ? HTTPStatusEvent['HTTP_RESPONSE_STATUS'] : null );
 
 		/**
 		 * @private
 		 */
 		$protected_load static const _URL:RegExp = ( domain == 'localhost' ? null : new RegExp( '^(?:(?!\\w+://)|https?://(?:www\\.)?' + domain.replace( /\./g, '\\.' ) + ')', 'i' ) );
+		
+		/**
+		 * @private
+		 */
+		$protected_load static const _ROOT:String = URLUtils.getPathURL(
+			URLUtils.normalizeURL( ( new flash.display.Loader() ).contentLoaderInfo.loaderURL )
+		);
 		
 		/**
 		 * @private
@@ -293,7 +305,7 @@ package by.blooddy.core.net.loading {
 				NetMonitor.adjustURLRequest( this._id, request );
 			}
 			this.$load( request );
-			this._url = request.url;
+			this._url = URLUtils.createAbsoluteURL( _ROOT, request.url );
 			this._state = _STATE_PROGRESS;
 			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
 		}

@@ -62,7 +62,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private var _name:Object = new Object();
+		private var _hash:Object = new Object();
 
 		//--------------------------------------------------------------------------
 		//
@@ -85,10 +85,10 @@ package by.blooddy.core.net {
 				return super.flash_proxy::getProperty( name );
 			} else {
 				var n:String = name.toString();
-				var result:*;
+				var result:* = this._hash[ n ];
 				if ( result == null ) {
 					var app:RemoterProxy = this;
-					this._name[ n ] = result = function(...rest):* {
+					this._hash[ n ] = result = function(...rest):* {
 						return app.call( n, rest );
 					}
 				}
