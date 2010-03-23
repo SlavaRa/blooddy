@@ -75,7 +75,7 @@ package by.blooddy.core.utils.net {
 
 		public function get hostname():String {
 			return ( this.host
-				?	this.host + ( this.protocol == 'file' || this.port > 0 && this.port != 80
+				?	this.host + ( this.protocol == 'file' || ( this.port > 0 && this.port != 80 )
 						?	':'
 						:	''
 					) + ( this.port || '' )
@@ -102,7 +102,7 @@ package by.blooddy.core.utils.net {
 						:	''
 					) + this.hostname
 				:	''
-			) + this.getWithPrefix( this.path, '/' ) + this.getWithPrefix( this.search, '?' ) + this.getWithPrefix( this.hash, '#' );
+			) + this.getWithPrefix( this.path, ( this.host ? '/' : '' ) ) + this.getWithPrefix( this.search, '?' ) + this.getWithPrefix( this.hash, '#' );
 		}
 
 		//--------------------------------------------------------------------------

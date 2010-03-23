@@ -31,8 +31,6 @@ package by.blooddy.core.events.net.loading {
 
 		public static const LOADER_INIT:String =		'loaderInit';
 
-		public static const LOADER_UNLOAD:String =		'loaderUnload';
-
 		public static const LOADER_ENABLED:String =		'loaderEnabled';
 
 		public static const LOADER_DISABLED:String =	'loaderDisabled';

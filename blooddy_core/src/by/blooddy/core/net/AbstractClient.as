@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  © 2007 BlooDHounD
+//  (C) 2009 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -44,12 +44,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private var _qname:Object = new Object();
-
-		/**
-		 * @private
-		 */
-		private var _name:Object = new Object();
+		private var _hash:Object = new Object();
 
 		//--------------------------------------------------------------------------
 		//
@@ -64,16 +59,13 @@ package by.blooddy.core.net {
 			if ( super.flash_proxy::hasProperty( name ) ) {
 				return super.flash_proxy::getProperty( name );
 			} else {
-				var result:*;
-				if ( name is QName )	result = this._qname[ ( name as QName ).toString() ];
-				else					result = this._name[ name ];
+				var n:String = name.toString();
+				var result:* = this._hash[ name ];
 				if ( result == null ) {
 					var app:AbstractClient = this;
-					result = function(...rest):* {
+					this._hash[ name ] = result = function(...rest):* {
 						return app.dispatchCommand( name, rest );
 					};
-					if ( name is QName )	this._qname[ name ] =	result;
-					else					this._hash[ name ] =	result;
 				}
 				return result;
 			}

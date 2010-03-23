@@ -64,16 +64,17 @@ internal function var_dump(hash:Dictionary, o:*, char:String='\t', prefix:String
 			result = ( o is Array ? '[' : '{' ) + '\n';
 			var key:*;
 			var new_prefix:String = prefix + char;
-			const props:Dictionary = new Dictionary();
+			const props:Array = new Array();
 			for each ( var prop:PropertyInfo in TypeInfo.getInfo( o ).getProperties() ) {
-				key = prop.name;
-				props[ key ] = true;
-				result += new_prefix + key + ' : ' + var_dump( hash, o[ key ], char, new_prefix ) + '\n';
+				props.push( prop.name );
 			}
 			for ( key in o ) {
-				if ( !( key in props ) ) {
-					result += new_prefix + key + ' : ' + var_dump( hash, o[ key ], char, new_prefix ) + '\n';
-				}
+				if ( props.indexOf( key ) <= 0 ) props.push( key );
+			}
+			props.sort();
+			var l:uint = props.length;
+			for ( var i:uint = 0; i<l; i++ ) {
+				result += new_prefix + props[ i ] + ' : ' + var_dump( hash, o[ props[ i ] ], char, new_prefix ) + '\n';
 			}
 			result += prefix + ( o is Array ? ']' : '}' );
 		}
