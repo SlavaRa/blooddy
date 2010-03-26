@@ -6,7 +6,6 @@
     <classEntry path="by.blooddy.core.commands.ICommandDispatcher"/>
     <classEntry path="by.blooddy.core.controllers.AbstractController"/>
     <classEntry path="by.blooddy.core.controllers.BaseController"/>
-    <classEntry path="by.blooddy.core.controllers.BaseControllerSprite"/>
     <classEntry path="by.blooddy.core.controllers.DisplayObjectController"/>
     <classEntry path="by.blooddy.core.controllers.IBaseController"/>
     <classEntry path="by.blooddy.core.controllers.IController"/>

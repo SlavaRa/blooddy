@@ -10,7 +10,8 @@ package by.blooddy.external.net {
 	import by.blooddy.core.net.ProxySharedObject;
 	import by.blooddy.core.net.connection.SocketConnection;
 	import by.blooddy.core.net.connection.filters.ISocketFilter;
-	import by.blooddy.external.controllers.BaseController;
+	import by.blooddy.external.ExternalConnectionController;
+	import by.blooddy.external.ExternalConnectionWrapper;
 	
 	import flash.display.DisplayObjectContainer;
 	import flash.events.AsyncErrorEvent;
@@ -25,7 +26,7 @@ package by.blooddy.external.net {
 	 * @langversion				3.0
 	 * @created					13.09.2009 23:50:40
 	 */
-	public class SocketController extends BaseController {
+	public class SocketController extends ExternalConnectionController {
 
 		//--------------------------------------------------------------------------
 		//

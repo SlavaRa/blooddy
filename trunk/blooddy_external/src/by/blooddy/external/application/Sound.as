@@ -6,13 +6,12 @@
 
 package by.blooddy.external.application {
 
-	import by.blooddy.core.net.ProxySharedObject;
 	import by.blooddy.external.media.SoundController;
 	
-	import flash.display.Sprite;
+	import flash.display.Stage;
 	
+	[Frame( factoryClass="by.blooddy.factory.SimpleApplicationFactory" )]
 	[SWF( width="1", height="1", frameRate="120", backgroundColor="#FF0000" )]
-	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -20,7 +19,7 @@ package by.blooddy.external.application {
 	 * @langversion				3.0
 	 * @created					05.11.2009 3:24:22
 	 */
-	public class Sound extends Sprite {
+	public class Sound extends SoundController {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -31,21 +30,9 @@ package by.blooddy.external.application {
 		/**
 		 * Constructor
 		 */
-		public function Sound() {
-			super();
-			this._controller = new SoundController( this, this.loaderInfo.parameters.so );
+		public function Sound(stage:Stage) {
+			super( stage, stage.loaderInfo.parameters.so );
 		}
-		
-		//--------------------------------------------------------------------------
-		//
-		//  Variables
-		//
-		//--------------------------------------------------------------------------
-		
-		/**
-		 * @private
-		 */
-		private var _controller:SoundController;
 		
 	}
 	

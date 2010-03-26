@@ -29,6 +29,7 @@ package by.blooddy.factory {
 	import flash.text.TextSnapshot;
 	import flash.ui.ContextMenu;
 	import flash.utils.getQualifiedClassName;
+	import flash.display.MovieClip;
 
 	//--------------------------------------
 	//  Excluded APIs
@@ -159,7 +160,7 @@ package by.blooddy.factory {
 		/**
 		 * @private
 		 */
-		private var _factory:ApplicationFactory;
+		private var _factory:MovieClip;
 
 		//--------------------------------------------------------------------------
 		//
@@ -179,10 +180,11 @@ package by.blooddy.factory {
 		 */
 		private function handler_loader_init(event:Event):void {
 			var info:LoaderInfo = event.target as LoaderInfo;
-			if ( !( info.content is ApplicationFactory ) ) {
+			var c:Class = info.applicationDomain.getDefinition( 'by.blooddy.factory::ApplicationFactory' ) as Class;
+			if ( !c || !( info.content is c ) ) {
 				throw new InvalidSWFError();
 			}
-			this._factory = info.content as ApplicationFactory;
+			this._factory = info.content as MovieClip;
 			this._factory.addEventListener( Event.INIT, this.handler_factory_init );
 		}
 
@@ -697,12 +699,12 @@ package by.blooddy.factory {
 
 import flash.display.DisplayObject;
 import flash.display.Loader;
+import flash.display.Sprite;
 import flash.errors.IllegalOperationError;
+import flash.events.Event;
 import flash.net.URLRequest;
 import flash.system.LoaderContext;
 import flash.utils.ByteArray;
-import flash.events.Event;
-import flash.display.Sprite;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -718,17 +720,6 @@ import flash.display.Sprite;
  * свойства были перекрыты
  */
 internal final class LoaderAsset extends Loader {
-
-	//--------------------------------------------------------------------------
-	//
-	//  Class variables
-	//
-	//--------------------------------------------------------------------------
-
-	/**
-	 * @private
-	 */
-	private static const _JUNK:Sprite = new Sprite();
 
 	//--------------------------------------------------------------------------
 	//
@@ -841,8 +832,9 @@ internal final class LoaderAsset extends Loader {
 	 * @private
 	 */
 	private function handler_addedToStage(event:Event):void {
-		_JUNK.addChild( this );
-		_JUNK.removeChild( this );
+		var s:Sprite = new Sprite();
+		s.addChild( this );
+		s.removeChild( this );
 		throw new IllegalOperationError();
 	}
 

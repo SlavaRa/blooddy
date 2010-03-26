@@ -10,7 +10,7 @@ package by.blooddy.external.media {
 	import by.blooddy.core.managers.resource.ResourceManagerProxy;
 	import by.blooddy.core.net.ProxySharedObject;
 	import by.blooddy.core.net.loading.ILoadable;
-	import by.blooddy.external.controllers.BaseController;
+	import by.blooddy.external.ExternalConnectionController;
 	
 	import flash.display.DisplayObjectContainer;
 	import flash.events.ErrorEvent;
@@ -29,7 +29,7 @@ package by.blooddy.external.media {
 	 * @langversion				3.0
 	 * @created					27.10.2009 19:29:51
 	 */
-	public class SoundController extends BaseController {
+	public class SoundController extends ExternalConnectionController {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -276,6 +276,9 @@ import flash.media.SoundTransform;
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @private
+ */
 internal final class PlayAsset {
 
 	public function PlayAsset(loader:ILoadable, id:uint, uri:String, startTime:Number, loops:int, transform:SoundTransform) {

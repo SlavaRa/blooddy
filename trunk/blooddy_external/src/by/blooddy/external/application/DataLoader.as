@@ -8,10 +8,10 @@ package by.blooddy.external.application {
 	
 	import by.blooddy.external.net.DataLoaderController;
 	
-	import flash.display.Sprite;
+	import flash.display.Stage;
 	
+	[Frame( factoryClass="by.blooddy.factory.SimpleApplicationFactory" )]
 	[SWF( width="1", height="1", frameRate="120", backgroundColor="#FF0000" )]
-	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -19,7 +19,7 @@ package by.blooddy.external.application {
 	 * @langversion				3.0
 	 * @created					25.01.2010 22:36:44
 	 */
-	public class DataLoader extends Sprite {
+	public class DataLoader extends DataLoaderController {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -30,21 +30,9 @@ package by.blooddy.external.application {
 		/**
 		 * Constructor
 		 */
-		public function DataLoader() {
-			super();
-			this._controller = new DataLoaderController( this, this.loaderInfo.parameters.so );
+		public function DataLoader(stage:Stage) {
+			super( stage, stage.loaderInfo.parameters.so );
 		}
-		
-		//--------------------------------------------------------------------------
-		//
-		//  Variables
-		//
-		//--------------------------------------------------------------------------
-		
-		/**
-		 * @private
-		 */
-		private var _controller:DataLoaderController;
 		
 	}
 	

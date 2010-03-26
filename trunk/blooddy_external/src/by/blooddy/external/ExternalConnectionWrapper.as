@@ -4,7 +4,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.external.net {
+package by.blooddy.external {
 
 	import by.blooddy.core.external.ExternalConnection;
 	import by.blooddy.core.net.RemoterProxy;

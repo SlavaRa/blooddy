@@ -4,7 +4,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.external.controllers {
+package by.blooddy.external {
 	
 	import by.blooddy.core.controllers.BaseController;
 	import by.blooddy.core.data.DataBase;
@@ -26,7 +26,7 @@ package by.blooddy.external.controllers {
 	 * @langversion				3.0
 	 * @created					27.10.2009 23:50:26
 	 */
-	public class BaseController extends by.blooddy.core.controllers.BaseController {
+	public class ExternalConnectionController extends by.blooddy.core.controllers.BaseController {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -37,7 +37,7 @@ package by.blooddy.external.controllers {
 		/**
 		 * Constructor
 		 */
-		public function BaseController(container:DisplayObjectContainer, sharedObject:ProxySharedObject) {
+		public function ExternalConnectionController(container:DisplayObjectContainer, sharedObject:ProxySharedObject) {
 			super( container, new DataBase(), sharedObject );
 			this._external = new ExternalConnection( container.loaderInfo.parameters.externalID );
 			this._external.logging = false;

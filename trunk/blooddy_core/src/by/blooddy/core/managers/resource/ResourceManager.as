@@ -98,7 +98,7 @@ package by.blooddy.core.managers.resource {
 		/**
 		 * @private
 		 */
-		private static var _maxLoading:uint = ( Capabilities.playerType == 'StandAlone' ? 240 : 3 );
+		private static var _maxLoading:uint = ( Capabilities.playerType == 'StandAlone' ? uint.MAX_VALUE : 3 );
 
 		public static function get maxLoading():uint {
 			return _maxLoading;
@@ -495,8 +495,8 @@ import by.blooddy.core.utils.ClassUtils;
 import flash.display.BitmapData;
 import flash.errors.IllegalOperationError;
 import flash.events.Event;
-import flash.net.URLRequest;
 import flash.media.Sound;
+import flash.net.URLRequest;
 import flash.system.ApplicationDomain;
 import flash.utils.ByteArray;
 import flash.utils.Dictionary;

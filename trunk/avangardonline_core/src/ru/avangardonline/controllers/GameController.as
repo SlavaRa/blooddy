@@ -257,6 +257,9 @@ package ru.avangardonline.controllers {
 			trace( event );
 		}
 
+		/**
+		 * @private
+		 */
 		private function handler_loader_complete(event:Event):void {
 			this._loader.removeEventListener( Event.COMPLETE, this.handler_loader_complete );
 			this._loader = null;
