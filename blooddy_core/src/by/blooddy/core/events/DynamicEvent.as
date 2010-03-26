@@ -47,9 +47,9 @@ package by.blooddy.core.events {
 		//
 		//--------------------------------------------------------------------------
 
-	    /**
-	     * @private
-	     */
+		/**
+		 * @private
+		 */
 		public override function clone():Event {
 			var event:DynamicEvent = new DynamicEvent( super.type, super.bubbles, super.cancelable );
 			for ( var i:String in this ) {
@@ -58,9 +58,9 @@ package by.blooddy.core.events {
 			return event;
 		}
 
-	    /**
-	     * @private
-	     */
+		/**
+		 * @private
+		 */
 		public override function toString():String {
 			var arr:Array = new Array( ClassUtils.getClassName( this ), 'type', 'bubbles', 'cancelable' );
 			for ( var i:String in this ) {

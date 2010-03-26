@@ -53,16 +53,16 @@ package by.blooddy.core.events {
 		//
 		//--------------------------------------------------------------------------
 
-	    /**
-	     * @private
-	     */
+		/**
+		 * @private
+		 */
 		public override function clone():Event {
 			return new ParserErrorEvent(this.type, this.bubbles, this.cancelable, this.text);
 		}
 
-	    /**
-	     * @private
-	     */
+		/**
+		 * @private
+		 */
 		public override function toString():String {
 			return super.formatToString(ClassUtils.getClassName(this), "type", "bubbles", "cancelable", "text");
 		}

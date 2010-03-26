@@ -151,29 +151,29 @@ package by.blooddy.core.utils {
 		/**
 		 * Читает signed int (u30, нефиксированная длина, от 1 до 5-ти байт)
 		 */
-	    public function readASInt():int {
-	        /*var pos:uint = super.position;
-	        var out:int = 0;
-	        var i:uint = 0;
-	        var byte:uint = this[pos];
-	        
-	        if (!(byte & 0x80)) {
-	            super.position = pos+1;
-	            return byte;
-	        }
-	        
-	        pos += 1;
-	        
-	        while ((byte & 0x80)) {
-	            out |= (byte ^ 0x80) << (i * 7);
-	            i += 1;
-	            byte = this[pos];
-	            pos += 1;
-	        }
-	        
-	        out |= (byte << (i * 7)); 
+		public function readASInt():int {
+			/*var pos:uint = super.position;
+			var out:int = 0;
+			var i:uint = 0;
+			var byte:uint = this[pos];
+			
+			if (!(byte & 0x80)) {
+				super.position = pos+1;
+				return byte;
+			}
+			
+			pos += 1;
+			
+			while ((byte & 0x80)) {
+				out |= (byte ^ 0x80) << (i * 7);
+				i += 1;
+				byte = this[pos];
+				pos += 1;
+			}
+			
+			out |= (byte << (i * 7)); 
 			super.position = pos;
-	        return out;*/
+			return out;*/
 			var result:uint = 0;
 			var i:uint = 0, byte:uint;
 			do {
@@ -181,26 +181,26 @@ package by.blooddy.core.utils {
 				result |= ( byte & 0x7F ) << ( i*7 );
 				i+=1;
 			} while ( byte & 1<<7 );
-			return result;	        
-	    }
+			return result;			
+		}
 	
 		/**
 		 * Читает signed 24-bit число (фиксированной длины, 3 байта)
 		 */
-	    public function readSignedInt24():int {
-	        var pos:uint = super.position;
-	        var out:int = (this[pos] << 16);
-	        out += (this[pos+=1] << 8);
-	        out += this[pos+=1]; 
-	        
-	        if (out >= 0x808080) {
-	            out -= 0xFFFFFF;
-	        }
-	        
-	        super.position = pos+1;
-	        return out;
-	    }
-	    		
+		public function readSignedInt24():int {
+			var pos:uint = super.position;
+			var out:int = (this[pos] << 16);
+			out += (this[pos+=1] << 8);
+			out += this[pos+=1]; 
+			
+			if (out >= 0x808080) {
+				out -= 0xFFFFFF;
+			}
+			
+			super.position = pos+1;
+			return out;
+		}
+				
 		public function readUnsignedInt64():Number {
 			var n1:Number = super.readUnsignedInt();
 			var n2:Number = super.readUnsignedInt();
@@ -213,7 +213,7 @@ package by.blooddy.core.utils {
 			var str:String = super.readUTFBytes(i - super.position);
 			super.position = i+1; 
 			return str;
-	    }
+		}
 
 		public function readRect():Rectangle {
 			var pos:uint = super.position;

@@ -286,8 +286,8 @@ package by.blooddy.core.net.connection {
 			this._socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error );
 			this._socket.addEventListener( Event.CLOSE,							this.handler_close );
 			this._socket.connect( host, port );
-			this._host = this._socket.host;
-			this._port = this._socket.port;
+			this._host = host;
+			this._port = port;
 			if ( super.logging ) {
 				super.logger.addLog( new InfoLog( 'Open: ' + this._host + ':' + this._port, InfoLog.INFO ) );
 			}

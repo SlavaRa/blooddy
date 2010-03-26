@@ -5,6 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.utils {
+
 	import flash.utils.ByteArray;
 
 	/**
@@ -33,12 +34,12 @@ package by.blooddy.core.utils {
 		/**
 		 * @private
 		 */
-	    private static const VERSION_MINOR:uint = 0x0010;
+		private static const VERSION_MINOR:uint = 0x0010;
 
 		/**
 		 * @private
 		 */
-	    private static const VERSION_MAJOR:uint = 0x002E;
+		private static const VERSION_MAJOR:uint = 0x002E;
 		
 		public function DefinitionFinder(bytes:ByteArray) {
 			super();
@@ -212,33 +213,33 @@ package by.blooddy.core.utils {
 			id = 1;
 			
 			while (count > 0 && count--) {
-                kind = this._data.readASInt();
-                
-                switch (kind) {
-                    case 0x07:
-                    case 0x0D:
-                    	ns =  this._data.readASInt();
-                        this._multinameTable[id] = [ns, this._data.readASInt()];
-                    break;    
-                    case 0x0F:
-                    case 0x10:
-                        this._multinameTable[id] = [0, this._stringTable[this._data.readASInt()]];
-                    break;    
-                    case 0x11:
-                    case 0x12:
-                    break;    
-                    case 0x09:
-                    case 0x0E:
-                        this._multinameTable[id] = [0, this._stringTable[this._data.readASInt()]];
-                        this._data.readASInt();
-                    break;    
-                    case 0x1B:
-                    case 0x1C:
-                        this._data.readASInt();
-                    break;    
-                }
-                
-                id++;
+				kind = this._data.readASInt();
+				
+				switch (kind) {
+					case 0x07:
+					case 0x0D:
+						ns =  this._data.readASInt();
+						this._multinameTable[id] = [ns, this._data.readASInt()];
+						break;
+					case 0x0F:
+					case 0x10:
+						this._multinameTable[id] = [0, this._stringTable[this._data.readASInt()]];
+						break;
+					case 0x11:
+					case 0x12:
+						break;
+					case 0x09:
+					case 0x0E:
+						this._multinameTable[id] = [0, this._stringTable[this._data.readASInt()]];
+						this._data.readASInt();
+						break;
+					case 0x1B:
+					case 0x1C:
+						this._data.readASInt();
+						break;
+				}
+				
+				id++;
 			}
 			
 			// Method table
@@ -287,43 +288,43 @@ package by.blooddy.core.utils {
 			while (count > 0 && count--) {
 				id = this._data.readASInt();
 				this._data.readASInt();
-	            flags = this._data.readUnsignedByte();
-	            if (flags & 0x08) nss = this._data.readASInt();
-	            counter = this._data.readASInt();
-	            while (counter--) this._data.readASInt();
-	            this._data.readASInt();
-		        var traitCount:uint = this._data.readASInt();
+				flags = this._data.readUnsignedByte();
+				if (flags & 0x08) nss = this._data.readASInt();
+				counter = this._data.readASInt();
+				while (counter--) this._data.readASInt();
+				this._data.readASInt();
+				var traitCount:uint = this._data.readASInt();
 		
-		        while (traitCount--) {
-		            this._data.readASInt();
-		            kind = this._data.readUnsignedByte();
-		            var upperBits:uint = kind >> 4;
-		            var lowerBits:uint = kind & 0xF;
+				while (traitCount--) {
+					this._data.readASInt();
+					kind = this._data.readUnsignedByte();
+					var upperBits:uint = kind >> 4;
+					var lowerBits:uint = kind & 0xF;
 		
-		            switch (lowerBits) {
-		                case 0x00:
-		                case 0x06:
-		                    this._data.readASInt();
-		                    this._data.readASInt();
-		                    if (this._data.readASInt()) this._data.readUnsignedByte();        
-		                break;
-		                default:
-		                    this._data.readASInt();
-		                    this._data.readASInt();
-		            }
+					switch (lowerBits) {
+						case 0x00:
+						case 0x06:
+							this._data.readASInt();
+							this._data.readASInt();
+							if (this._data.readASInt()) this._data.readUnsignedByte();		
+						break;
+						default:
+							this._data.readASInt();
+							this._data.readASInt();
+					}
 		
-		            if (upperBits & 0x04) {
-		                counter = this._data.readASInt();
-		                while (counter--) this._data.readASInt();
-		            }
-		        }
-		        
-	        	ns = this._multinameTable[id][0];
-	        	var nameSpace:String = this._stringTable[this._namespaceTable[ns]];
-	        	
-	        	if (flags & 0x08 && !this._namespaceTable[ns]) {
-	        		//names.push(this._stringTable[this._namespaceTable[nss]].replace(':','::')); // exclude private classes
-	        	} else names.push((nameSpace ? nameSpace+'::' : '') + this._stringTable[this._multinameTable[id][1]]);
+					if (upperBits & 0x04) {
+						counter = this._data.readASInt();
+						while (counter--) this._data.readASInt();
+					}
+				}
+				
+				ns = this._multinameTable[id][0];
+				var nameSpace:String = this._stringTable[this._namespaceTable[ns]];
+				
+				if (flags & 0x08 && !this._namespaceTable[ns]) {
+					//names.push(this._stringTable[this._namespaceTable[nss]].replace(':','::')); // exclude private classes
+				} else names.push((nameSpace ? nameSpace+'::' : '') + this._stringTable[this._multinameTable[id][1]]);
 			}
 
 			return names;
