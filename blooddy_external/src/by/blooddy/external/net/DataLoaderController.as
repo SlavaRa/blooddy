@@ -9,7 +9,7 @@ package by.blooddy.external.net {
 	import by.blooddy.core.net.MIME;
 	import by.blooddy.core.net.ProxySharedObject;
 	import by.blooddy.core.utils.net.Location;
-	import by.blooddy.external.controllers.BaseController;
+	import by.blooddy.external.ExternalConnectionController;
 	
 	import flash.display.DisplayObjectContainer;
 	import flash.events.ErrorEvent;
@@ -21,6 +21,7 @@ package by.blooddy.external.net {
 	import flash.net.URLRequest;
 	import flash.net.URLRequestHeader;
 	import flash.net.URLRequestMethod;
+	import flash.system.Capabilities;
 	import flash.utils.Dictionary;
 	
 	/**
@@ -30,7 +31,7 @@ package by.blooddy.external.net {
 	 * @langversion				3.0
 	 * @created					25.01.2010 22:31:28
 	 */
-	public class DataLoaderController extends BaseController {
+	public class DataLoaderController extends ExternalConnectionController {
 
 		//--------------------------------------------------------------------------
 		//
@@ -41,7 +42,7 @@ package by.blooddy.external.net {
 		/**
 		 * @private
 		 */
-		private static const _MAX_LOADING:uint = 3;
+		private static const _MAX_LOADING:uint = ( Capabilities.playerType == 'StandAlone' ? uint.MAX_VALUE : 3 );
 		
 		//--------------------------------------------------------------------------
 		//
