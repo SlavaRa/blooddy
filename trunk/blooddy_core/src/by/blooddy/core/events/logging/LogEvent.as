@@ -62,16 +62,16 @@ package by.blooddy.core.events.logging {
 		//
 		//--------------------------------------------------------------------------
 
-	    /**
-	     * @private
-	     */
+		/**
+		 * @private
+		 */
 		public override function clone():Event {
 			return new LogEvent( super.type, super.bubbles, super.cancelable, this.log );
 		}
 
-	    /**
-	     * @private
-	     */
+		/**
+		 * @private
+		 */
 		public override function toString():String {
 			return super.formatToString( ClassUtils.getClassName( this ), 'type', 'bubbles', 'cancelable', 'log' );
 		}

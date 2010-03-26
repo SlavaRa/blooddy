@@ -87,7 +87,7 @@ package by.blooddy.core.utils.math {
 				case Endian.BIG_ENDIAN:
 					for ( var i:int = 0; i < 4; i++ ) {
 						s +=	hexChars.charAt( ( n >> ( ( 3 - i ) * 8 + 4 ) ) & 0xF ) +
-								hexChars.charAt( ( n >> ( ( 3 - i ) * 8     ) ) & 0xF );
+								hexChars.charAt( ( n >> ( ( 3 - i ) * 8	 ) ) & 0xF );
 					}
 					break;
 				case Endian.LITTLE_ENDIAN:

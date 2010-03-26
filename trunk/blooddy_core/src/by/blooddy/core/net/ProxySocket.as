@@ -127,9 +127,9 @@ package by.blooddy.core.net {
 				new URLRequestHeader( 'pragma', 'no-cache' ),
 				new URLRequestHeader( 'Content-Type', MIME.BINARY )
 			);
-            if ( host && port ) {
-                this.connect( host, port );
-            }
+			if ( host && port ) {
+				this.connect( host, port );
+			}
 		}
 
 		//--------------------------------------------------------------------------

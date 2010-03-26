@@ -63,16 +63,16 @@ package by.blooddy.core.events.net.loading {
 		//
 		//--------------------------------------------------------------------------
 
-	    /**
-	     * @private
-	     */
+		/**
+		 * @private
+		 */
 		public override function clone():Event {
 			return new LoaderEvent( super.type, super.bubbles, super.cancelable, this.loader );
 		}
 
-	    /**
-	     * @private
-	     */
+		/**
+		 * @private
+		 */
 		public override function toString():String {
 			return super.formatToString( ClassUtils.getClassName( this ), 'type', 'bubbles', 'cancelable', 'loader' );
 		}

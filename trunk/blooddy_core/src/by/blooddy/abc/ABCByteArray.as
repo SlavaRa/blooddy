@@ -22,7 +22,7 @@ package by.blooddy.abc {
 			return this.$readUInt24();
 		}
 
-        public function readUInt32():uint {
+		public function readUInt32():uint {
 			return super.readUnsignedInt();
 		}
 

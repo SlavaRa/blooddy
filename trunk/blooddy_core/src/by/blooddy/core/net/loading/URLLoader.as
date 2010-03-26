@@ -13,7 +13,7 @@ package by.blooddy.core.net.loading {
 	import flash.events.SecurityErrorEvent;
 	import flash.net.URLLoaderDataFormat;
 	import flash.net.URLRequest;
-    import flash.net.URLStream;
+	import flash.net.URLStream;
 	import flash.net.URLVariables;
 	import flash.utils.ByteArray;
 

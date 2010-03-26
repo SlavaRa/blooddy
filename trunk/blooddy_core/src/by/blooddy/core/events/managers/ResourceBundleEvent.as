@@ -83,16 +83,16 @@ package by.blooddy.core.events.managers {
 		//
 		//--------------------------------------------------------------------------
 
-	    /**
-	     * @private
-	     */
+		/**
+		 * @private
+		 */
 		public override function clone():Event {
 			return new ResourceBundleEvent( super.type, super.bubbles, super.cancelable, this.bundle );
 		}
 
-	    /**
-	     * @private
-	     */
+		/**
+		 * @private
+		 */
 		public override function toString():String {
 			return super.formatToString( ClassUtils.getClassName( this ), 'type', 'bubbles', 'cancelable', 'bundle' );
 		}
