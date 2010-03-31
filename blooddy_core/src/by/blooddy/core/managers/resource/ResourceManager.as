@@ -742,7 +742,10 @@ internal class DefaultResourceBundle implements IResourceBundle {
 				var resourceClass:Class = resource as Class;
 				if ( BitmapData.prototype.isPrototypeOf( resourceClass.prototype ) ) {
 					resource = new resourceClass( 0, 0 );
-				} else if ( Sound.prototype.isPrototypeOf( resourceClass.prototype ) ) {
+				} else if (
+					Sound.prototype.isPrototypeOf( resourceClass.prototype ) ||
+					ByteArray.prototype.isPrototypeOf( resourceClass.prototype )
+				) {
 					resource = new resourceClass();
 				}
 			}				

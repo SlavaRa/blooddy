@@ -91,8 +91,9 @@ package by.blooddy.core.display {
 //
 //==============================================================================
 
-import flash.events.IEventDispatcher;
 import by.blooddy.core.errors.getErrorMessage;
+
+import flash.events.IEventDispatcher;
 
 ////////////////////////////////////////////////////////////////////////////////
 //

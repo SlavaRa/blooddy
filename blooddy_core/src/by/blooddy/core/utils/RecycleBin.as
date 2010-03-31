@@ -166,6 +166,7 @@ package by.blooddy.core.utils {
 					}
 					dispose( rc.resource );
 				}
+				rcs.splice( 0, i );
 				if ( i >= 1 ) { // минимум один элемент на удаление
 					this._length -= i;
 					if ( this._length == 0 ) {
