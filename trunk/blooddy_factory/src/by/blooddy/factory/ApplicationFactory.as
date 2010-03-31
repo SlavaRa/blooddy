@@ -452,7 +452,7 @@ package by.blooddy.factory {
 			loaderInfo.addEventListener( IOErrorEvent.IO_ERROR, this.handler_ioError );
 			loaderInfo.addEventListener( ProgressEvent.PROGRESS, this.handler_progress );
 			this._loaders.push( loaderInfo );
-			this._loaded.push( loaderInfo.bytesLoaded >= loaderInfo.bytesTotal );
+			this._loaded.push( false );
 			if ( loaderInfo.bytesTotal > 0 ) {
 				this.updateProgress();
 			}

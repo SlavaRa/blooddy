@@ -69,7 +69,13 @@ package by.blooddy.code.json {
 				case 'string':		return '"' + encodeString( value ) + '"';
 				case 'object':
 					if ( value is XMLDocument ) return '"' + encodeString( ( value as XMLDocument ).toString() ) + '"';
-					else if ( value is Array )	return encodeArray( value, list );
+					else if (
+						value is Array ||
+						value is Vector.<*> ||
+						value is Vector.<uint> ||
+						value is Vector.<int> ||
+						value is Vector.<Number>
+					)	return encodeArray( value, list );
 					else if ( value is Object ) return encodeObject( value, list );
 					break;
 			}
@@ -115,7 +121,7 @@ package by.blooddy.code.json {
 		/**
 		 * @private
 		 */
-		private static function encodeArray(value:Array, list:Array):String {
+		private static function encodeArray(value:Object, list:Array):String {
 			var arr:Array = new Array();
 			var l:int = value.length - 1;
 			while ( l > 0 && value[ l ] == null ) {
