@@ -15,9 +15,9 @@ package by.blooddy.code {
 	 */
 	public interface IScanner {
 
+		function get tokenKind():uint;
+		
 		function get tokenText():String;
-
-		function get position():uint;
 
 		function readToken():uint;
 

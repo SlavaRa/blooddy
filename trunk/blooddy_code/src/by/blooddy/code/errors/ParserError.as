@@ -27,13 +27,22 @@ package by.blooddy.code.errors {
 		//--------------------------------------------------------------------------
 
 		/**
-		 * @inheritDoc
+		 * Constructor
 		 */
 		public function ParserError(message:String='', id:int=0) {
 			super( message, id );
 			this.name = ClassUtils.getClassName( this );
 		}
 
+		//--------------------------------------------------------------------------
+		//
+		//  Methods
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
 		public function toString():String {
 			return this.name + ' #' + super.errorID + ': ' + super.message;
 		}

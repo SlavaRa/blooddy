@@ -228,7 +228,7 @@ package by.blooddy.core.display.resource {
 			if ( !def.count ) {
 				delete this._resources[ resource ];
 			}
-			this._manager.trashResource( resource );
+			this._manager.trashResource( resource, time );
 		}
 
 		protected final function lockResourceBundle(bundleName:String):void {

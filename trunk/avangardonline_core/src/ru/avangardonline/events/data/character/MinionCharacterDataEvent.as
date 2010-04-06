@@ -13,7 +13,7 @@ package ru.avangardonline.events.data.character {
 	 * @langversion				3.0
 	 * @created					06.09.2009 17:17:38
 	 */
-	public class MinionCharacterDataEvent extends CharacterDataEvent {
+	public class MinionCharacterDataEvent extends HeroCharacterDataEvent {
 
 		//--------------------------------------------------------------------------
 		//

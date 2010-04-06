@@ -24,8 +24,8 @@ package by.blooddy.code.css.selectors {
 		/**
 		 * Constructor
 		 */
-		public function IDSelector(id:String) {
-			super( id );
+		public function IDSelector(id:String, selector:AttributeSelector=null) {
+			super( id, selector );
 		}
 		
 		//--------------------------------------------------------------------------
@@ -35,9 +35,13 @@ package by.blooddy.code.css.selectors {
 		//--------------------------------------------------------------------------
 		
 		public function toString():String {
-			return ( this.selector || '' ) + ( this.value ? '#' + this.value : '' );
+			if ( this.selector is TagSelector ) {
+				return ( this.selector.value || '' ) + ( this.value ? '#' + this.value : '' ) + ( this.selector.selector || '' );
+			} else {
+				return ( this.value ? '#' + this.value : '' ) + ( this.selector || '' );
+			}
 		}
-		
+
 	}
 	
 }

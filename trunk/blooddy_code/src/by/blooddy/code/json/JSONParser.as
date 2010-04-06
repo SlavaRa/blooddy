@@ -6,7 +6,6 @@
 
 package by.blooddy.code.json {
 
-	import by.blooddy.code.Token;
 	import by.blooddy.code.errors.ParserError;
 	
 	/**

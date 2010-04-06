@@ -14,6 +14,9 @@ package ru.avangardonline.display.gfx.character {
 	import flash.text.TextFormat;
 	
 	import ru.avangardonline.data.character.HeroCharacterData;
+	import ru.avangardonline.events.data.character.HeroCharacterDataEvent;
+	import ru.avangardonline.display.gfx.battle.world.animation.Animation;
+	import by.blooddy.core.display.StageObserver;
 	
 	/**
 	 * @author					BlooDHounD
@@ -33,12 +36,22 @@ package ru.avangardonline.display.gfx.character {
 		/**
 		 * @private
 		 */
-		private static const _TEXT_FORMAT:TextFormat = new TextFormat( '_sans', 14, 0xFFFFFF, true, null, null, null, null, 'center' );
+		private static const _TEXT_FORMAT:TextFormat =		new TextFormat( '_sans', 14, 0xFFFFFF, true, null, null, null, null, 'center' );
 		
 		/**
 		 * @private
 		 */
-		private static const _TEXT_FILTERS:Array = new Array( new DropShadowFilter( 2, 45, 0x000000, 1, 3, 3 ) );
+		private static const _TEXT_FILTERS:Array =			new Array( new DropShadowFilter( 2, 45, 0x000000, 1, 3, 3 ) );
+		
+		/**
+		 * @private
+		 */
+		protected static const _ANIM_LOSE:Animation =		new Animation( 10, 1 );
+		
+		/**
+		 * @private
+		 */
+		protected static const _ANIM_VICTORY:Animation =	new Animation( 11, 1 );
 		
 		//--------------------------------------------------------------------------
 		//
@@ -52,6 +65,10 @@ package ru.avangardonline.display.gfx.character {
 		public function HeroCharacterView(data:HeroCharacterData) {
 			super( data );
 			this._data = data;
+			var observer:StageObserver = new StageObserver( this );
+			observer.registerEventListener( data, HeroCharacterDataEvent.VICTORY,	this.handler_victory );
+			observer.registerEventListener( data, HeroCharacterDataEvent.LOSE,		this.handler_lose );
+			observer.registerEventListener( data, HeroCharacterDataEvent.NORMALIZE,	this.handler_normalize );
 		}
 
 		//--------------------------------------------------------------------------
@@ -91,7 +108,7 @@ package ru.avangardonline.display.gfx.character {
 			super.addChild( this._nick );
 			
 			this._nick.x = -60;
-			this._nick.y = -105 - this._nick.textHeight;
+			this._nick.y = -135 - this._nick.textHeight;
 
 			return true;
 		}
@@ -113,13 +130,41 @@ package ru.avangardonline.display.gfx.character {
 		protected override function getAnimationDefinition():ResourceDefinition {
 			var race:String = this._data.race.toString();
 			while ( race.length < 2 ) race = '0' + race;
-			return new ResourceDefinition( 'lib/display/character/c' + race + '03' + '.swf', 'x' );
+			var sex:String = ( this._data.sex ? '01' : '00' );
+			return new ResourceDefinition( 'lib/display/character/h' + race + sex + '.swf', 'x' );
 		}
 
 		protected override function getAnimationKey():String {
-			return String.fromCharCode( this._data.race, 3, this.currentAnim.id );
+			return 'h' + String.fromCharCode( this._data.race, int( this._data.sex ), this.currentAnim.id );
 		}
 
+		//--------------------------------------------------------------------------
+		//
+		//  Event handlers
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		 * @private
+		 */
+		private function handler_victory(event:HeroCharacterDataEvent):void {
+			this.setAnimation( _ANIM_VICTORY );
+		}
+		
+		/**
+		 * @private
+		 */
+		private function handler_lose(event:HeroCharacterDataEvent):void {
+			this.setAnimation( _ANIM_LOSE );
+		}
+
+		/**
+		 * @private
+		 */
+		private function handler_normalize(event:HeroCharacterDataEvent):void {
+			this.setAnimation( _ANIM_IDLE );
+		}
+		
 	}
 
 }

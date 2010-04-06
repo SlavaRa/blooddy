@@ -9,7 +9,6 @@ package ru.avangardonline.display.gfx.battle.world {
 	import by.blooddy.core.display.StageObserver;
 	import by.blooddy.core.display.resource.ResourceSprite;
 	import by.blooddy.core.events.display.resource.ResourceEvent;
-	import by.blooddy.core.utils.IDisposable;
 	
 	import flash.events.Event;
 	
@@ -23,7 +22,7 @@ package ru.avangardonline.display.gfx.battle.world {
 	 * @langversion				3.0
 	 * @created					05.08.2009 21:32:04
 	 */
-	public class BattleWorldFieldView extends ResourceSprite implements IDisposable {
+	public class BattleWorldFieldView extends ResourceSprite {
 
 		//--------------------------------------------------------------------------
 		//
@@ -42,11 +41,6 @@ package ru.avangardonline.display.gfx.battle.world {
 			var observer:StageObserver = new StageObserver( this );
 			observer.registerEventListener( data, BattleWorldFieldDataEvent.WIDTH_CHANGE,	this.render );
 			observer.registerEventListener( data, BattleWorldFieldDataEvent.HEIGHT_CHANGE,	this.render );
-		}
-
-		public function dispose():void {
-			by.blooddy.core.display.dispose( this );
-			this._data = null;
 		}
 
 		//--------------------------------------------------------------------------
@@ -136,6 +130,7 @@ package ru.avangardonline.display.gfx.battle.world {
 
 import flash.display.LineScaleMode;
 import flash.display.Shape;
+
 import ru.avangardonline.display.gfx.battle.world.BattleWorldView;
 
 /**

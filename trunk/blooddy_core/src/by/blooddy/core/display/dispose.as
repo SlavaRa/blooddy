@@ -47,6 +47,7 @@ import flash.text.TextField;
  * @private
  */
 internal function $dispose(child:DisplayObject, safe:Boolean):void {
+	if ( !child ) return;
 	if ( child is DisplayObjectContainer ) {
 		var container:DisplayObjectContainer = child as DisplayObjectContainer;
 		while ( container.numChildren ) {

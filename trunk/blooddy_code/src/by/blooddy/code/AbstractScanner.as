@@ -46,8 +46,28 @@ package by.blooddy.code {
 		/**
 		 * @private
 		 */
+		protected var _position:uint;
+		
+		/**
+		 * @private
+		 */
 		protected var _prevPosition:uint;
 
+		/**
+		 * @private
+		 */
+		protected var _nextPosition:uint;
+		
+		/**
+		 * @private
+		 */
+		protected var _nextTokenKind:uint;
+		
+		/**
+		 * @private
+		 */
+		protected var _nextTokenText:String;
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
@@ -57,19 +77,25 @@ package by.blooddy.code {
 		/**
 		 * @private
 		 */
-		protected var _tokenText:String;
-		
-		public final function get tokenText():String {
-			return this._tokenText;
-		}
+		protected var _tokenKind:uint;
 
+		/**
+		 * @inhertDoc
+		 */
+		public final function get tokenKind():uint {
+			return this._tokenKind;
+		}
+		
 		/**
 		 * @private
 		 */
-		protected var _position:uint;
+		protected var _tokenText:String;
 		
-		public final function get position():uint {
-			return this._position;
+		/**
+		 * @inhertDoc
+		 */
+		public final function get tokenText():String {
+			return this._tokenText;
 		}
 
 		//--------------------------------------------------------------------------
@@ -78,28 +104,45 @@ package by.blooddy.code {
 		//
 		//--------------------------------------------------------------------------
 		
-		public function writeSource(source:String):void {
+		public final function writeSource(source:String):void {
 			this._prevPosition = 0;
 			this._position = 0;
 			this._tokenText = null;
 			this._source = source;
 		}
 		
-		public function readToken():uint {
+		public final function readToken():uint {
+			this._prevPosition = this._position;
+			if ( this._nextPosition > 0 ) {
+				this._position = this._nextPosition;
+				this._tokenKind = this._nextTokenKind;
+				this._tokenText = this._nextTokenText;
+				this._nextPosition = 0;
+				return this._tokenKind;
+			} else {
+				return this.$readToken();
+			}
+		}
+
+		public final function retreat():void {
+			this._nextTokenKind = this._tokenKind;
+			this._nextTokenText = this._tokenText;
+			this._nextPosition = this._position;
+			this._tokenKind = 0;
+			this._tokenText = null;
+			this._position = this._prevPosition;
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
+
+		protected virtual function $readToken():uint {
 			throw new IllegalOperationError();
 		}
 
-		public function retreat():void {
-			this._position = this._prevPosition;
-			this._tokenText = null;
-		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Private methods
-		//
-		//--------------------------------------------------------------------------
-		
 		/**
 		 * @private
 		 */
@@ -118,6 +161,7 @@ package by.blooddy.code {
 		 * @private
 		 */
 		protected final function makeToken(kind:uint, text:String):uint {
+			this._tokenKind = kind;
 			this._tokenText = text;
 			return kind;
 		}

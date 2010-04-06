@@ -248,7 +248,6 @@ package by.blooddy.factory {
 				if ( DisplayObject.prototype.isPrototypeOf( Root.prototype ) ) {
 					// сделаем рут
 					$root = new Root();
-					( $root as DisplayObject ).addEventListener( Event.REMOVED_FROM_STAGE, $throwError );
 					stage.addChild( $root as DisplayObject );
 				} else {
 					$root = new Root( stage );
@@ -627,10 +626,4 @@ package by.blooddy.factory {
 
 }
 
-import flash.events.Event;
-
 internal var $root:Object;
-
-internal function $throwError(...rest):void {
-	throw new ReferenceError( '' );
-}

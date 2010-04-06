@@ -38,7 +38,7 @@
     <classEntry path="ru.avangardonline.events.data.battle.world.BattleWorldCoordinateDataEvent"/>
     <classEntry path="ru.avangardonline.events.data.battle.world.BattleWorldDataEvent"/>
     <classEntry path="ru.avangardonline.events.data.battle.world.BattleWorldFieldDataEvent"/>
-    <classEntry path="ru.avangardonline.events.data.character.CharacterDataEvent"/>
+    <classEntry path="ru.avangardonline.events.data.character.HeroCharacterDataEvent"/>
     <classEntry path="ru.avangardonline.events.data.character.CharacterInteractionDataEvent"/>
     <classEntry path="ru.avangardonline.events.data.character.MinionCharacterDataEvent"/>
     <classEntry path="ru.avangardonline.serializers.txt.data.battle.BattleDataSerializer"/>
@@ -65,6 +65,12 @@
     <classEntry path="ru.avangardonline.serializers.txt.data.battle.result.BattleResultElementDataSerializer"/>
     <classEntry path="ru.avangardonline.data.IClonableData"/>
     <classEntry path="ru.avangardonline.display.gui.battle.BattleResultView"/>
+    <classEntry path="ru.avangardonline.data.battle.actions.BattleLoseActionData"/>
+    <classEntry path="ru.avangardonline.data.battle.actions.BattleNormalizeActionData"/>
+    <classEntry path="ru.avangardonline.data.items.RuneData"/>
+    <classEntry path="ru.avangardonline.serializers.txt.data.items.RuneDataSerializer"/>
+    <classEntry path="ru.avangardonline.display.gui.battle.RunesView"/>
+    <classEntry path="ru.avangardonline.display.gui.battle.RuneView"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

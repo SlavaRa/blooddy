@@ -37,6 +37,16 @@ package by.blooddy.code.css.selectors {
 		
 		public var parent:CSSSelector;
 
+		//--------------------------------------------------------------------------
+		//
+		//  Methods
+		//
+		//--------------------------------------------------------------------------
+		
+		public override function toString():String {
+			return ( this.parent ? this.parent + ' ' : '' ) + ( this.selector || '' );
+		}
+		
 	}
 	
 }

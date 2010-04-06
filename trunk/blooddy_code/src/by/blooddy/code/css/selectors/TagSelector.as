@@ -1,21 +1,19 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  © 2010 BlooDHounD
+//  (C) 2010 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.display {
-	
-	import flash.display.MovieClip;
+package by.blooddy.code.css.selectors {
 	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					Mar 1, 2010 1:43:46 PM
+	 * @created					14.03.2010 17:29:18
 	 */
-	public class BaseMovieClip extends MovieClip {
+	public class TagSelector extends AttributeSelector {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -24,22 +22,21 @@ package by.blooddy.core.display {
 		//--------------------------------------------------------------------------
 		
 		/**
-		 * Constructor.
+		 * Constructor
 		 */
-		public function BaseMovieClip() {
-			super();
-			super.mouseEnabled = false;
-			super.addEventListener( Event.ADDED_TO_STAGE,		this.handler_addedToStage,		false, int.MAX_VALUE, true );
-			super.addEventListener( Event.REMOVED_FROM_STAGE,	this.handler_removedFromStage,	false, int.MAX_VALUE, true );
+		public function TagSelector(type:String, selector:AttributeSelector=null) {
+			super( type, selector );
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
-		//  Includes
+		//  Methods
 		//
 		//--------------------------------------------------------------------------
 		
-		include "../../../../includes/implements_BaseDisplayObject.as";
+		public function toString():String {
+			return ( this.value || '' ) + ( this.selector || '' );
+		}
 		
 	}
 	

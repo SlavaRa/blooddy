@@ -15,7 +15,7 @@ package ru.avangardonline.events.data.character {
 	 * @langversion				3.0
 	 * @created					06.09.2009 14:15:33
 	 */
-	public class CharacterInteractionDataEvent extends CharacterDataEvent {
+	public class CharacterInteractionDataEvent extends HeroCharacterDataEvent {
 
 		//--------------------------------------------------------------------------
 		//

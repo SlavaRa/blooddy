@@ -6,12 +6,15 @@
 
 package by.blooddy.code.css {
 
-	import by.blooddy.code.Token;
 	import by.blooddy.code.css.selectors.AttributeSelector;
+	import by.blooddy.code.css.selectors.CSSDeclaration;
+	import by.blooddy.code.css.selectors.CSSSelector;
+	import by.blooddy.code.css.selectors.ChildSelector;
 	import by.blooddy.code.css.selectors.ClassSelector;
+	import by.blooddy.code.css.selectors.DescendantSelector;
 	import by.blooddy.code.css.selectors.IDSelector;
 	import by.blooddy.code.css.selectors.PseudoSelector;
-	import by.blooddy.code.css.selectors.TypeSelector;
+	import by.blooddy.code.css.selectors.TagSelector;
 	import by.blooddy.code.errors.ParserError;
 	
 	import flash.events.EventDispatcher;
@@ -58,7 +61,7 @@ package by.blooddy.code.css {
 		public function parse(value:String):void {
 			this._scanner.writeSource( value );
 			var tok:uint;
-			while ( true ) {
+			do {
 				//try { // top-level обработка
 
 					tok = this.readToken();
@@ -77,7 +80,7 @@ package by.blooddy.code.css {
 									} else {
 										this._scanner.retreat();
 									}
-									this.readSemicolon();
+									this.readFixToken( CSSToken.SEMI_COLON );
 									break;
 								case 'media':
 									tok = this.readFixToken( CSSToken.IDENTIFIER );
@@ -96,7 +99,8 @@ package by.blooddy.code.css {
 						case CSSToken.IDENTIFIER:
 						case CSSToken.COLON:
 							this._scanner.retreat();
-							var c:AttributeSelector = this.readSelector();
+							var c:Vector.<CSSSelector> = this.readSelectors();
+							this.readDeclaration();
 							trace( c );
 							break;
 						
@@ -108,7 +112,7 @@ package by.blooddy.code.css {
 				//} catch ( e:Error ) {
 				//	trace( e.getStackTrace() );
 				//}
-			}
+			} while ( tok == CSSToken.EOF );
 		}
 
 		//--------------------------------------------------------------------------
@@ -140,13 +144,6 @@ package by.blooddy.code.css {
 			return tok;
 		}
 
-		/**
-		 * @private
-		 */
-		private function readSemicolon():void {
-			this.readFixToken( CSSToken.SEMI_COLON );
-		}
-		
 		/**
 		 * @private
 		 */
@@ -186,133 +183,216 @@ package by.blooddy.code.css {
 			}
 			return result;
 		}
+
+		/**
+		 * @private
+		 */
+		private function readSelectors():Vector.<CSSSelector> {
+			var result:Vector.<CSSSelector> = new Vector.<CSSSelector>();
+			var tok:uint;
+			do {
+				result.push( this.readSelector( new CSSSelector() ) );
+			} while ( this.readToken() == CSSToken.COMMA );
+			this._scanner.retreat();
+			return result;
+		}
 		
 		/**
 		 * @private
 		 */
-		private function readSelector():AttributeSelector {
-			var child:AttributeSelector;
-			var tok:uint = this._scanner.readToken();
-			switch ( tok ) {
+		private function readSelector(child:CSSSelector):CSSSelector {
+			child.selector = this.readAttributeSelector();
+			switch ( this._scanner.readToken() ) {
+				case CSSToken.LEFT_BRACE:
+				case CSSToken.COMMA:
+					this._scanner.retreat();
+					return child;
+				case CSSToken.RIGHT_ANGLE:
+					return this.readSelector( new ChildSelector( child ) );
+				case CSSToken.WHITESPACE:
+					switch ( this.readToken() ) {
+						case CSSToken.LEFT_BRACE:
+						case CSSToken.COMMA:
+							this._scanner.retreat();
+							return child;
+						case CSSToken.RIGHT_ANGLE:
+							return this.readSelector( new ChildSelector( child ) );
+					}
+					this._scanner.retreat();
+					return this.readSelector( new DescendantSelector( child ) );
+			}
+			throw new ParserError();
+		}
+
+		/**
+		 * @private
+		 */
+		private function readAttributeSelector():AttributeSelector {
+			switch ( this.readToken() ) {
 				case CSSToken.IDENTIFIER:
-					child = new TypeSelector( this._scanner.tokenText );
-					child.selector = this.readSelectorAfterIdentifier( child );
-					break;
+					return this.readSelectorAfterTag( new TagSelector( this._scanner.tokenText ) );
 				case CSSToken.HASH:
 					this.readFixToken( CSSToken.IDENTIFIER, false, false );
-					child = new IDSelector( this._scanner.tokenText );
-					child.selector = this.readSelectorAfterID( child );
-					break;
+					return new IDSelector( this._scanner.tokenText, this.readSelectorAfterID() );
 				case CSSToken.DOT:
 					this.readFixToken( CSSToken.IDENTIFIER, false, false );
-					child = new ClassSelector( this._scanner.tokenText );
-					child.selector = this.readSelectorAfterID( child );
-					break;
+					return new ClassSelector( this._scanner.tokenText, this.readSelectorAfterClass() );
 				case CSSToken.COLON:
 					this.readFixToken( CSSToken.IDENTIFIER, false, false );
-					child = new PseudoSelector( this._scanner.tokenText );
-					child.selector = this.readSelectorAfterPseudo( child );
-					break;
+					return new PseudoSelector( this._scanner.tokenText );
 			}
-			if ( child ) return child;
-			throw new ParserError();
+			return null;
 		}
 
 		/**
 		 * @private
 		 */
-		private function readSelectorAfterIdentifier(parent:AttributeSelector):AttributeSelector {
-			var child:AttributeSelector;
-			var tok:uint = this._scanner.readToken();
-			switch ( tok ) {
+		private function readSelectorAfterTag(tag:TagSelector):AttributeSelector {
+			switch ( this._scanner.readToken() ) {
 				case CSSToken.HASH:
 					this.readFixToken( CSSToken.IDENTIFIER, false, false );
-					child = new IDSelector( this._scanner.tokenText );
-					child.selector = parent;
-					return this.readSelectorAfterID( child );
+					var result:IDSelector = new IDSelector( this._scanner.tokenText, tag );
+					tag.selector = this.readSelectorAfterID();
+					return result;
 				case CSSToken.DOT:
 					this.readFixToken( CSSToken.IDENTIFIER, false, false );
-					child = new ClassSelector( this._scanner.tokenText );
-					child.selector = parent;
-					return this.readSelectorAfterID( child );
+					tag.selector = new ClassSelector( this._scanner.tokenText, this.readSelectorAfterClass() );
+					break;
 				case CSSToken.COLON:
 					this.readFixToken( CSSToken.IDENTIFIER, false, false );
-					child = new PseudoSelector( this._scanner.tokenText );
-					child.selector = parent;
-					return this.readSelectorAfterPseudo( child );
-				case CSSToken.WHITESPACE:
-				case CSSToken.BLOCK_COMMENT:
+					tag.selector = new PseudoSelector( this._scanner.tokenText );
+					break;
+				default:
 					this._scanner.retreat();
-					switch ( tok ) {
-						case CSSToken.RIGHT_ANGLE:
-						case CSSToken.COMMA:
-						case CSSToken.LEFT_BRACE:
-							return parent;
-					}
-					return this.readSelector();
-				case CSSToken.COMMA:
-				case CSSToken.RIGHT_ANGLE:
-					return parent;
+					break;
 			}
-			throw new ParserError();
+			return tag;
 		}
 
 		/**
 		 * @private
 		 */
-		private function readSelectorAfterID(parent:AttributeSelector):AttributeSelector {
-			var child:AttributeSelector;
-			var tok:uint = this._scanner.readToken();
-			switch ( tok ) {
+		private function readSelectorAfterID():AttributeSelector {
+			switch ( this._scanner.readToken() ) {
 				case CSSToken.DOT:
 					this.readFixToken( CSSToken.IDENTIFIER, false, false );
-					child = new ClassSelector( this._scanner.tokenText );
-					child.selector = parent;
-					return this.readSelectorAfterID( child );
+					return new ClassSelector( this._scanner.tokenText, this.readSelectorAfterClass() );
 				case CSSToken.COLON:
 					this.readFixToken( CSSToken.IDENTIFIER, false, false );
-					child = new PseudoSelector( this._scanner.tokenText );
-					child.selector = parent;
-					return this.readSelectorAfterPseudo( child );
-				case CSSToken.WHITESPACE:
-				case CSSToken.BLOCK_COMMENT:
+					return new PseudoSelector( this._scanner.tokenText );
+				default:
 					this._scanner.retreat();
-					switch ( tok ) {
-						case CSSToken.RIGHT_ANGLE:
-						case CSSToken.COMMA:
-						case CSSToken.LEFT_BRACE:
-							return parent;
-					}
-					return this.readSelector();
-				case CSSToken.COMMA:
-				case CSSToken.RIGHT_ANGLE:
-					return parent;
+					break;
 			}
-			throw new ParserError();
+			return null;
+		}
+
+		/**
+		 * @private
+		 */
+		private function readSelectorAfterClass():AttributeSelector {
+			var result:AttributeSelector;
+			switch ( this._scanner.readToken() ) {
+				case CSSToken.DOT:
+					this.readFixToken( CSSToken.IDENTIFIER, false, false );
+					result = new ClassSelector( this._scanner.tokenText );
+					result.selector = this.readSelectorAfterClass();
+					break;
+				case CSSToken.COLON:
+					this.readFixToken( CSSToken.IDENTIFIER, false, false );
+					result = new PseudoSelector( this._scanner.tokenText );
+					break;
+				default:
+					this._scanner.retreat();
+					break;
+			}
+			return result;
+		}
+
+		/**
+		 * @private
+		 */
+		private function readDeclaration():CSSDeclaration {
+			this.readFixToken( CSSToken.LEFT_BRACE );
+			var result:CSSDeclaration = new CSSDeclaration();
+			var tok:uint;
+			while ( true ) {
+				tok = this.readToken();
+				if ( tok == CSSToken.RIGHT_BRACE ) break;
+				this._scanner.retreat();
+				this.readDeclarationName();
+				this.readFixToken( CSSToken.COLON );
+				this.readDeclarationValue();
+			}
+			return result;
+		}
+
+		/**
+		 * @private
+		 */
+		private function readDeclarationName():String {
+			var result:String = '';
+			var t:String;
+			var u:Boolean = false;
+			var tok:uint = this.readToken();
+			do {
+				switch ( tok ) {
+					case CSSToken.DASH:
+						u = true;
+						break;
+					case CSSToken.IDENTIFIER:
+						t = this._scanner.tokenText.toLowerCase();
+						result += ( u ? t.charAt( 0 ).toUpperCase() + t.substr( 1 ) : t );
+						break;
+					default:
+						this._scanner.retreat();
+						return result;
+				}
+			} while ( tok = this._scanner.readToken() );
+			return result;
 		}
 		
 		/**
 		 * @private
 		 */
-		private function readSelectorAfterPseudo(parent:AttributeSelector):AttributeSelector {
-			var child:AttributeSelector;
-			var tok:uint = this._scanner.readToken();
-			switch ( tok ) {
-				case CSSToken.WHITESPACE:
-				case CSSToken.BLOCK_COMMENT:
-					this._scanner.retreat();
-					switch ( tok ) {
-						case CSSToken.RIGHT_ANGLE:
-						case CSSToken.COMMA:
-						case CSSToken.LEFT_BRACE:
-							return parent;
-					}
-					return this.readSelector();
-				case CSSToken.COMMA:
-				case CSSToken.RIGHT_ANGLE:
-					return parent;
-			}
-			throw new ParserError();
+		private function readDeclarationValue():Array {
+			var result:Array = new Array();
+			var t:String;
+			do {
+				switch ( this.readToken() ) {
+
+					case CSSToken.RIGHT_BRACE:
+						this._scanner.retreat();
+					case CSSToken.SEMI_COLON:
+						return result;
+
+					case CSSToken.STRING_LITERAL:
+						result.push( this._scanner.tokenText );
+						break;
+					case CSSToken.IDENTIFIER:
+						t = this._scanner.tokenText;
+						switch ( t.toLowerCase() ) {
+							case 'true':	result.push( true );	break;
+							case 'false':	result.push( false );	break;
+							default:		result.push( t );		break;
+						}
+						break;
+					case CSSToken.NUMBER_LITERAL:
+						var n:Number = parseFloat( this._scanner.tokenText );
+						if ( n % 1 == 0 && n > int.MIN_VALUE ) {
+							if ( n < int.MAX_VALUE ) {
+								result.push( int( n ) );
+								break;
+							} else if ( n < uint.MAX_VALUE ) {
+								result.push( uint( n ) );
+								break;
+							}
+						}
+						result.push( n );
+						break;
+				}
+			} while ( true );
+			return result;
 		}
 		
 	}

@@ -7,12 +7,10 @@
 package ru.avangardonline.display.gfx.battle.world {
 
 	import by.blooddy.core.display.StageObserver;
-	import by.blooddy.core.display.dispose;
 	import by.blooddy.core.display.resource.MainResourceSprite;
 	import by.blooddy.core.events.data.DataBaseEvent;
 	import by.blooddy.core.events.display.resource.ResourceEvent;
 	import by.blooddy.core.net.loading.ILoadable;
-	import by.blooddy.core.utils.IDisposable;
 	import by.blooddy.core.utils.enterFrameBroadcaster;
 	
 	import flash.display.DisplayObject;
@@ -34,7 +32,7 @@ package ru.avangardonline.display.gfx.battle.world {
 	 * @langversion				3.0
 	 * @created					04.08.2009 19:58:31
 	 */
-	public class BattleWorldView extends MainResourceSprite implements IDisposable {
+	public class BattleWorldView extends MainResourceSprite {
 
 		//--------------------------------------------------------------------------
 		//
@@ -69,14 +67,6 @@ package ru.avangardonline.display.gfx.battle.world {
 			observer.registerEventListener( data.elements, BattleWorldCoordinateDataEvent.COORDINATE_CHANGE,	this.handler_coordinateChange );
 			observer.registerEventListener( data.elements, BattleWorldCoordinateDataEvent.MOVING_START,			this.handler_movingStart );
 			observer.registerEventListener( data.elements, BattleWorldCoordinateDataEvent.MOVING_STOP,			this.handler_movingStop );
-		}
-
-		public function dispose():void {
-			this._data = null;
-			this._factory = null;
-			this._field.dispose();
-			this._field = null;
-			by.blooddy.core.display.dispose( this );
 		}
 
 		//--------------------------------------------------------------------------
