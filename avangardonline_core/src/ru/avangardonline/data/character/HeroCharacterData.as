@@ -9,6 +9,9 @@ package ru.avangardonline.data.character {
 	import by.blooddy.core.data.Data;
 	
 	import flash.errors.IllegalOperationError;
+	
+	import ru.avangardonline.data.items.RuneData;
+	import ru.avangardonline.events.data.character.HeroCharacterDataEvent;
 
 	/**
 	 * @author					BlooDHounD
@@ -32,6 +35,17 @@ package ru.avangardonline.data.character {
 			super( id );
 			super.name = name;
 		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Variables
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private const _runes:Vector.<RuneData> = new Vector.<RuneData>();
 
 		//--------------------------------------------------------------------------
 		//
@@ -70,7 +84,17 @@ package ru.avangardonline.data.character {
 			if ( this._sex == value ) return;
 			this._sex = value;
 		}
-		
+
+		//--------------------------------------------------------------------------
+		//
+		//  Methods
+		//
+		//--------------------------------------------------------------------------
+
+		public function getRunes():Vector.<RuneData> {
+			return this._runes.slice();
+		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Overriden methods
@@ -92,8 +116,48 @@ package ru.avangardonline.data.character {
 			if ( !target ) throw new ArgumentError();
 			super.copyFrom( target );
 			this.sex = target._sex;
+			var rune:RuneData;
+			for each ( rune in this._runes ) {
+				super.removeChild( rune );
+			}
+			for each ( rune in target._runes ) {
+				super.addChild( rune.clone() );
+			}
 		}
 
+		public function victory():void {
+			super.dispatchEvent( new HeroCharacterDataEvent( HeroCharacterDataEvent.VICTORY ) );
+		}
+		
+		public function lose():void {
+			super.dispatchEvent( new HeroCharacterDataEvent( HeroCharacterDataEvent.LOSE ) );
+		}
+
+		public function normalize():void {
+			super.dispatchEvent( new HeroCharacterDataEvent( HeroCharacterDataEvent.NORMALIZE ) );
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Private methods
+		//
+		//--------------------------------------------------------------------------
+
+		protected override function addChild_before(child:Data):void {
+			super.addChild_before( child );
+			if ( child is RuneData ) {
+				this._runes.push( child as RuneData );
+			}
+		}
+
+		protected override function removeChild_before(child:Data):void {
+			super.addChild_before( child );
+			if ( child is RuneData ) {
+				var i:int = this._runes.indexOf( child as RuneData );
+				this._runes.splice( i, 1 );
+			}
+		}
+		
 	}
 
 }

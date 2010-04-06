@@ -11,7 +11,6 @@ package by.blooddy.code.json {
 	import by.blooddy.core.meta.TypeInfo;
 	
 	import flash.xml.XMLDocument;
-	import flash.errors.IllegalOperationError;
 	
 	/**
 	 * @author					BlooDHounD

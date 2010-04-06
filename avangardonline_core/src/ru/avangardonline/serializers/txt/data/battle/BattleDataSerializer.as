@@ -12,10 +12,16 @@ package ru.avangardonline.serializers.txt.data.battle {
 	
 	import ru.avangardonline.data.battle.BattleData;
 	import ru.avangardonline.data.battle.actions.BattleActionData;
+	import ru.avangardonline.data.battle.actions.BattleLoseActionData;
+	import ru.avangardonline.data.battle.actions.BattleVictoryActionData;
+	import ru.avangardonline.data.battle.actions.BattleWorldElementActionData;
 	import ru.avangardonline.data.battle.turns.BattleTurnData;
+	import ru.avangardonline.data.battle.world.BattleWorldAbstractElementData;
+	import ru.avangardonline.data.character.HeroCharacterData;
 	import ru.avangardonline.serializers.txt.data.battle.result.BattleResultDataSerializer;
 	import ru.avangardonline.serializers.txt.data.battle.world.BattleWorldElementCollectionDataSerializer;
 	import ru.avangardonline.serializers.txt.data.battle.world.BattleWorldFieldDataSerializer;
+	import ru.avangardonline.data.battle.actions.BattleNormalizeActionData;
 	
 	/**
 	 * @author					BlooDHounD
@@ -114,6 +120,25 @@ package ru.avangardonline.serializers.txt.data.battle {
 			// посмотри что там есть
 			if ( i < l && tmp[ i ].charAt( 0 ) == 'R' ) {
 				BattleResultDataSerializer.deserialize( tmp[ i ].substr( 1 ), data.result );
+				l = data.numTurns - 1;
+				var eaction:BattleWorldElementActionData;
+				var hero:HeroCharacterData;
+				for each ( var e:BattleWorldAbstractElementData in data.world.elements.getElements() ) {
+					if ( e is HeroCharacterData ) {
+						hero = e as HeroCharacterData;
+						if ( hero.group == data.result.group ) {
+							eaction = new BattleVictoryActionData();
+						} else {
+							eaction = new BattleLoseActionData();
+						}
+						eaction.startTime = BattleTurnData.TURN_DELAY * l + 200 * Math.random() + BattleTurnData.TURN_LENGTH - 400 * Math.random();
+						eaction.elementID = hero.id;
+						data.getTurn( l ).addChild( eaction );
+						eaction = new BattleNormalizeActionData();
+						eaction.elementID = hero.id;
+						data.getTurn( 0 ).addChild( eaction );
+					}
+				}
 			}
 			l = i;
 			// удаляем лишние ходы

@@ -7,6 +7,7 @@
 package by.blooddy.core.net.loading {
 
 	import by.blooddy.core.utils.enterFrameBroadcaster;
+	import by.blooddy.core.utils.nexframeCall;
 	
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
@@ -237,11 +238,7 @@ package by.blooddy.core.net.loading {
 
 			this._toLoaders = true;
 			this._loaded = this._loaded && loader.loaded;
-			if ( this._loaded ) {
-				this.updateComplete();
-			} else {
-				this.toProgress();
-			}
+			nexframeCall( this.updateComplete );
 		}
 
 		/**
@@ -293,11 +290,7 @@ package by.blooddy.core.net.loading {
 					break;
 				}
 			}
-			if ( this._loaded ) {
-				this.updateComplete();
-			} else {
-				this.toProgress();
-			}
+			nexframeCall( this.updateComplete );
 		}
 
 		/**
@@ -338,7 +331,8 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 */
 		private function updateComplete():void {
-			this.updateProgress();
+			this.toProgress();
+			if ( !this._loaded ) return;
 			// загрузилось всё. чистимся и вызываемся.
 			var loader:ILoadable;
 			while ( this._loaders.length > 0 ) {

@@ -290,13 +290,13 @@ package ru.avangardonline.controllers.battle {
 			if ( nextTurn >= this._battle.numTurns ) {
 				nextTurn = this._battle.numTurns;
 				if ( prevTurn == nextTurn && this._lastUpdate >= ( nextTurn * BattleTurnData.TURN_DELAY ) ) { 
-					if ( this._time.currentTime >= ( ( nextTurn - 1 ) * BattleTurnData.TURN_DELAY ) + BattleTurnData.TURN_LENGTH ) {
+					if ( this._time.currentTime >= ( ( nextTurn - 1 ) * BattleTurnData.TURN_DELAY ) + BattleTurnData.TURN_LENGTH * 3 ) {
 						this._time.speed = 0;
 						if ( !this._inResult ) {
 							this.$call( 'openBattleResult', this._battle.result );
+							this._inResult = true;
 						}
 					}
-					this._inResult = true;
 					return;
 				}
 			}

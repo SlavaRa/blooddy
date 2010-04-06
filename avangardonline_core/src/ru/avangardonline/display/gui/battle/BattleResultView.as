@@ -18,6 +18,8 @@ package ru.avangardonline.display.gui.battle {
 	import ru.avangardonline.data.battle.result.BattleResultData;
 	import ru.avangardonline.data.battle.result.BattleResultElementData;
 	import ru.avangardonline.data.character.HeroCharacterData;
+	import flash.display.MovieClip;
+	import flash.geom.Rectangle;
 	
 	/**
 	 * @author					BlooDHounD
@@ -70,6 +72,11 @@ package ru.avangardonline.display.gui.battle {
 		 */
 		private var _element:DisplayObject;
 
+		/**
+		 * @private
+		 */
+		private var _img:MovieClip;
+		
 		/**
 		 * @private
 		 */
@@ -127,6 +134,7 @@ package ru.avangardonline.display.gui.battle {
 			if ( this._element ) {
 				if ( this._element is DisplayObjectContainer ) {
 					var cont:DisplayObjectContainer = this._element as DisplayObjectContainer;
+					this._img =				cont.getChildByName( 'img' ) as MovieClip;
 					this._txt_result =		cont.getChildByName( 'txt_result' ) as TextField;
 					this._txt_exp =			cont.getChildByName( 'txt_exp' ) as TextField;
 					this._txt_v1 =			cont.getChildByName( 'txt_v1' ) as TextField;
@@ -135,12 +143,16 @@ package ru.avangardonline.display.gui.battle {
 					this._btn_replay =		cont.getChildByName( 'btn_replay' ) as InteractiveObject;
 					this._btn_continue =	cont.getChildByName( 'btn_continue' ) as InteractiveObject;
 				}
-				this._element.x = super.stage.stageWidth / 2;
-				this._element.y = super.stage.stageHeight / 2 - this._element.height / 2;
+				var rect:Rectangle = super.getBounds( null );
+				this._element.x = super.stage.stageWidth / 2 + rect.x - rect.width / 2;
+				this._element.y = super.stage.stageHeight / 2 + rect.y - rect.height / 2;
 				super.addChild( this._element );
 			}
 
 			if ( this._hero ) {
+				if ( this._img ) {
+					this._img.gotoAndStop( ( this._hero.race - 1 ) * 3 + ( this._result.group == this._hero.group ? 0 : 1 ) + 1 );
+				}
 				if ( this._txt_result ) {
 					this._txt_result.text = ( this._result.group == this._hero.group ? 'ВЫ ПОБЕДИЛИ !' : 'ВЫ ПРОИГРАЛИ !' );
 				}
@@ -152,6 +164,9 @@ package ru.avangardonline.display.gui.battle {
 					if ( this._txt_v3 )			this._txt_v3.text = ( element.values[2] > 0 ? '+' : '' ) + element.values[2];
 				}
 			} else {
+				if ( this._img ) {
+					this._img.visible = false;
+				}
 				if ( this._txt_result ) {
 					this._txt_result.text = 'БОЙ ОКОНЧЕН';
 				}
@@ -167,6 +182,7 @@ package ru.avangardonline.display.gui.battle {
 		 */
 		protected override function clear():Boolean {
 			if ( this._element ) {
+				if ( this._img )			this._img.visible = true;
 				if ( this._txt_exp )		this._txt_exp.text = '';
 				if ( this._txt_v1 )			this._txt_v1.text = '';
 				if ( this._txt_v2 )			this._txt_v2.text = '';

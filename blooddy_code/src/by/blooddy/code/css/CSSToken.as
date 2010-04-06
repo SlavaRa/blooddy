@@ -48,6 +48,7 @@ package by.blooddy.code.css {
 		public static const AT:uint =				i++;
 		public static const SEMI_COLON:uint =		i++;
 		public static const IDENTIFIER:uint =		i++;
+		public static const NUMBER_LITERAL:uint =	i++;
 		public static const STRING_LITERAL:uint =	i++;
 		public static const BLOCK_COMMENT:uint =	i++;
 		public static const UNKNOWN:uint =			i++;

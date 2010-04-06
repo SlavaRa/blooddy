@@ -6,6 +6,7 @@
 
 package ru.avangardonline.serializers.txt.data.battle.world {
 
+	import by.blooddy.core.data.Data;
 	import by.blooddy.game.serializers.txt.ISerializer;
 	
 	import flash.errors.IllegalOperationError;
@@ -16,6 +17,8 @@ package ru.avangardonline.serializers.txt.data.battle.world {
 	import ru.avangardonline.data.battle.world.BattleWorldElementData;
 	import ru.avangardonline.data.character.CharacterData;
 	import ru.avangardonline.data.character.HeroCharacterData;
+	import ru.avangardonline.serializers.txt.data.items.RuneDataSerializer;
+	import ru.avangardonline.data.items.RuneData;
 
 	/**
 	 * @author					BlooDHounD
@@ -74,37 +77,67 @@ package ru.avangardonline.serializers.txt.data.battle.world {
 			var data:BattleWorldElementCollectionData = target as BattleWorldElementCollectionData;
 			if ( !data ) throw new ArgumentError();
 			var arr:Array = source.split( '\n' );
-			var element:BattleWorldElementData;
+			var element:Data;
 			var h:Boolean;
+			var g:uint;
 			var id:uint;
+			var type:String;
 			var non:Vector.<CharacterData> = new Vector.<CharacterData>();
-			var races:Object = new Object();
+			var heroes:Object = new Object();
 			var char:CharacterData;
 			var hash:Dictionary = new Dictionary();
+			var runes:Object = new Object();
 			for each ( var s:String in arr ) {
-				id = parseInt( s.split( ',', 1 )[0].substr( 2 ) );
-				element = data.getElement( id );
-				h = Boolean( element );
-				element = BattleWorldElementDataSerializer.deserialize( s, element );
-				if ( element is CharacterData ) { // хук для экономии трафика
-					char = element as CharacterData;
-					if ( char is HeroCharacterData ) { // если это герой, то надо сохранить рассу
-						races[ char.group ] = char.race;
-					} else {
-						if ( char.group in races ) {
-							char.race = races[ char.group ];
-						} else {
-							non.push( char );
+				type = s.charAt( 0 );
+				switch ( type ) {
+					case 'r':
+						switch ( s.charAt( 1 ) ) {
+							case 'l':	g = 1;	break;
+							case 'r':	g = 2;	break;
+							default:	throw new ArgumentError();
 						}
-					}
+						element = RuneDataSerializer.deserialize( s );
+						if ( g in heroes ) {
+							heroes[ g ].addChild( element );
+						} else {
+							if ( !( g in runes ) ) runes[ g ] = new Vector.<RuneData>();
+							runes[ g ].push( element );
+						}
+						break;
+					default:
+						id = parseInt( s.split( ',', 1 )[0].substr( 2 ) );
+						element = data.getElement( id );
+						h = Boolean( element );
+						element = BattleWorldElementDataSerializer.deserialize( s, element );
+						if ( element is BattleWorldElementData ) {
+							if ( element is CharacterData ) { // хук для экономии трафика
+								char = element as CharacterData;
+								if ( char is HeroCharacterData ) { // если это герой, то надо сохранить рассу
+									heroes[ char.group ] = char;
+								} else {
+									if ( char.group in heroes ) {
+										char.race = heroes[ char.group ].race;
+									} else {
+										non.push( char );
+									}
+								}
+							}
+							if ( !h ) data.addChild( element );
+						}
+						hash[ element ] = true;
 				}
-				if ( !h ) data.addChild( element );
-				hash[ element ] = true;
 			}
 			// попишем рассу запоздавшим персонажам
 			for each ( char in non ) {
-				if ( char.group in races ) {
-					char.race = races[ char.group ];
+				if ( char.group in heroes ) {
+					char.race = heroes[ char.group ].race;
+				}
+			}
+			// добавим запаздавгие руны
+			var o:Object;
+			for ( o in runes ) {
+				for each ( element in runes[ o ] ) {
+					heroes[ o ].addChild( element );
 				}
 			}
 			// удалим ненужные элементы

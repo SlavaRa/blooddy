@@ -6,12 +6,12 @@
 
 package ru.avangardonline.serializers.txt.data.battle.world {
 
+	import by.blooddy.core.data.Data;
 	import by.blooddy.core.errors.getErrorMessage;
 	import by.blooddy.game.serializers.txt.ISerializer;
 	
 	import flash.errors.IllegalOperationError;
 	
-	import ru.avangardonline.data.battle.world.BattleWorldElementData;
 	import ru.avangardonline.data.character.CharacterData;
 	import ru.avangardonline.serializers.txt.data.character.CharacterDataSerializer;
 
@@ -30,7 +30,7 @@ package ru.avangardonline.serializers.txt.data.battle.world {
 		//
 		//--------------------------------------------------------------------------
 
-		public static function deserialize(source:String, target:BattleWorldElementData=null):BattleWorldElementData {
+		public static function deserialize(source:String, target:Data=null):Data {
 			return CharacterDataSerializer.deserialize( source, target as CharacterData );
 		}
 

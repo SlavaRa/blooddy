@@ -24,8 +24,8 @@ package by.blooddy.code.css.selectors {
 		/**
 		 * Constructor
 		 */
-		public function PseudoSelector(value:String) {
-			super( value );
+		public function PseudoSelector(value:String, selector:AttributeSelector=null) {
+			super( value, selector );
 		}
 
 		//--------------------------------------------------------------------------
@@ -35,7 +35,7 @@ package by.blooddy.code.css.selectors {
 		//--------------------------------------------------------------------------
 
 		public function toString():String {
-			return ( this.selector || '' ) + ( this.value ? ':' + this.value : '' );
+			return ( this.value ? ':' + this.value : '' ) + ( this.selector || '' );
 		}
 
 	}

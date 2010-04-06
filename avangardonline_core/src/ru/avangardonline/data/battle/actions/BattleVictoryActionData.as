@@ -38,6 +38,10 @@ package ru.avangardonline.data.battle.actions {
 		//
 		//--------------------------------------------------------------------------
 
+		public override function isResult():Boolean {
+			return true;
+		}
+		
 		public override function toLocaleString():String {
 			return super.formatToString( 'startTime', 'elementID' );
 		}

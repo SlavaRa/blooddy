@@ -28,6 +28,8 @@ package ru.avangardonline.controllers.battle {
 	import ru.avangardonline.display.gfx.battle.world.BattleWorldView;
 	import ru.avangardonline.display.gfx.battle.world.BattleWorldViewFactory;
 	import ru.avangardonline.display.gui.battle.BattleResultView;
+	import ru.avangardonline.display.gui.battle.RunesView;
+	import by.blooddy.core.events.data.DataBaseEvent;
 
 	/**
 	 * @author					BlooDHounD
@@ -83,6 +85,16 @@ package ru.avangardonline.controllers.battle {
 		 */
 		private var _view:BattleWorldView;
 
+		/**
+		 * @private
+		 */
+		private const _leftPanel:RunesView = new RunesView( true );
+		
+		/**
+		 * @private
+		 */
+		private const _rightPanel:RunesView = new RunesView( false );
+		
 		/**
 		 * @private
 		 */
@@ -213,6 +225,8 @@ package ru.avangardonline.controllers.battle {
 
 			this._data = new BattleWorldData( this._time );
 			super.dataBase.addChild( this._data );
+			this._data.elements.addEventListener( DataBaseEvent.ADDED, this.handler_added );
+			this._data.elements.addEventListener( DataBaseEvent.REMOVED, this.handler_removed );
 
 			this._data.field.copyFrom( data );
 
@@ -227,6 +241,15 @@ package ru.avangardonline.controllers.battle {
 			this._view.transform.perspectiveProjection = projection;
 
 			super.container.addChild( this._view );
+			super.container.addChild( this._leftPanel );
+			super.container.addChild( this._rightPanel );
+			
+			this._leftPanel.x = 24;
+			this._leftPanel.y = 24;
+			
+			this._rightPanel.x = 682;
+			this._rightPanel.y = 24;
+			
 			//super.container.addEventListener( MouseEvent.MOUSE_MOVE, this.update3D );
 
 		}
@@ -237,8 +260,12 @@ package ru.avangardonline.controllers.battle {
 		private function exitBattle():void {
 			//super.container.removeEventListener( MouseEvent.MOUSE_MOVE, this.update3D );
 			if ( this._resultView ) this.closeBattleResult();
+			super.container.removeChild( this._rightPanel );
+			super.container.removeChild( this._leftPanel );
 			super.container.removeChild( this._view );
 			this._view = null;
+			this._data.elements.removeEventListener( DataBaseEvent.ADDED, this.handler_added );
+			this._data.elements.removeEventListener( DataBaseEvent.REMOVED, this.handler_removed );
 			super.dataBase.removeChild( this._data );
 			this._data = null;
 		}
@@ -326,6 +353,32 @@ package ru.avangardonline.controllers.battle {
 		 */
 		private function handler_continue(event:Event):void {
 			super.baseController.call( 'closeBattle' );
+		}
+
+		/**
+		 * @private
+		 */
+		private function handler_added(event:DataBaseEvent):void {
+			var data:HeroCharacterData = event.target as HeroCharacterData;
+			if ( data ) {
+				switch ( data.group ) {
+					case 1:		this._leftPanel.data = data as HeroCharacterData;	break;
+					case 2:		this._rightPanel.data = data as HeroCharacterData;	break;
+				}
+			}
+		}
+		
+		/**
+		 * @private
+		 */
+		private function handler_removed(event:DataBaseEvent):void {
+			var data:HeroCharacterData = event.target as HeroCharacterData;
+			if ( data ) {
+				switch ( data.group ) {
+					case 1:		this._leftPanel.data = null;	break;
+					case 2:		this._rightPanel.data = null;	break;
+				}
+			}
 		}
 		
 	}

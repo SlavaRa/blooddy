@@ -7,9 +7,7 @@
 package by.blooddy.code.css {
 
 	import by.blooddy.code.AbstractScanner;
-	import by.blooddy.code.Token;
 	import by.blooddy.code.utils.Char;
-	import by.blooddy.code.errors.ParserError;
 
 	/**
 	 * @author					BlooDHounD
@@ -35,14 +33,12 @@ package by.blooddy.code.css {
 
 		//--------------------------------------------------------------------------
 		//
-		//  Methods
+		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
 
-		public override function readToken():uint {
+		protected override function $readToken():uint {
 			var t:String;
-
-			this._prevPosition = this._position;
 
 			var c:uint = this.readCharCode();
 			switch ( c ) {
@@ -97,7 +93,11 @@ package by.blooddy.code.css {
 					break;
 
 				default:
-					if (
+					if ( ( c >= Char.ZERO && c <= Char.NINE ) || c == Char.DASH || c == Char.DOT ) {
+						this._position--;
+						t = this.readNumber();
+						if ( t != null ) return this.makeToken( CSSToken.NUMBER_LITERAL, t );
+					} else if (
 						( c >= Char.a && c <= Char.z ) ||
 						( c >= Char.A && c <= Char.Z ) ||
 						c == Char.DOLLAR ||

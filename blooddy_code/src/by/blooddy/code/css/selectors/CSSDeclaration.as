@@ -11,9 +11,9 @@ package by.blooddy.code.css.selectors {
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					14.03.2010 17:29:18
+	 * @created					28.03.2010 20:39:15
 	 */
-	public class TypeSelector extends AttributeSelector {
+	public dynamic class CSSDeclaration {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -24,10 +24,10 @@ package by.blooddy.code.css.selectors {
 		/**
 		 * Constructor
 		 */
-		public function TypeSelector(type:String) {
-			super( type );
+		public function CSSDeclaration() {
+			super();
 		}
-
+		
 	}
 	
 }

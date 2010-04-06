@@ -32,6 +32,12 @@ package by.blooddy.core.display {
 			super.addEventListener( Event.REMOVED_FROM_STAGE,	this.handler_removedFromStage,	false, int.MAX_VALUE, true );
 		}
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Includes
+		//
+		//--------------------------------------------------------------------------
+		
 		include "../../../../includes/implements_BaseDisplayObject.as";
 		
 	}

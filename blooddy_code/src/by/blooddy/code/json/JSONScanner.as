@@ -7,9 +7,8 @@
 package by.blooddy.code.json {
 	
 	import by.blooddy.code.AbstractScanner;
-	import by.blooddy.code.Token;
-	import by.blooddy.code.utils.Char;
 	import by.blooddy.code.errors.ParserError;
+	import by.blooddy.code.utils.Char;
 	
 	/**
 	 * @author					BlooDHounD
@@ -35,15 +34,13 @@ package by.blooddy.code.json {
 
 		//--------------------------------------------------------------------------
 		//
-		//  Methods
+		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
 		
-		public override function readToken():uint {
+		protected override function $readToken():uint {
 			var t:String;
 			
-			this._prevPosition = this._position;
-
 			do {
 				var c:uint = this.readCharCode();
 				switch ( c ) {
@@ -67,6 +64,13 @@ package by.blooddy.code.json {
 					case Char.RIGHT_BRACKET:	return this.makeToken( JSONToken.RIGHT_BRACKET, ']' );
 					case Char.COMMA:			return this.makeToken( JSONToken.COMMA, ',' );
 
+					case Char.SINGLE_QUOTE:
+					case Char.DOUBLE_QUOTE:
+						this._position--;
+						t = this.readString();
+						if ( t != null ) return this.makeToken( JSONToken.STRING_LITERAL, t );
+						break;
+
 					case Char.SLASH:
 						switch ( this.readCharCode() ) {
 							case Char.SLASH:
@@ -83,11 +87,7 @@ package by.blooddy.code.json {
 						break;
 
 					default:
-						if ( c == Char.SINGLE_QUOTE || c == Char.DOUBLE_QUOTE ) {
-							this._position--;
-							t = this.readString();
-							if ( t != null ) return this.makeToken( JSONToken.STRING_LITERAL, t );
-						} else if ( ( c >= Char.ZERO && c <= Char.NINE ) || c == Char.DASH || c == Char.DOT ) {
+						if ( ( c >= Char.ZERO && c <= Char.NINE ) || c == Char.DASH || c == Char.DOT ) {
 							this._position--;
 							t = this.readNumber();
 							if ( t != null ) return this.makeToken( JSONToken.NUMBER_LITERAL, t );

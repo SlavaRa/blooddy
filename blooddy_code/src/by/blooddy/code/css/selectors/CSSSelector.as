@@ -34,7 +34,17 @@ package by.blooddy.code.css.selectors {
 		//
 		//--------------------------------------------------------------------------
 
-		public var selector:CSSSelector;
+		public var selector:AttributeSelector;
+
+		//--------------------------------------------------------------------------
+		//
+		//  Methods
+		//
+		//--------------------------------------------------------------------------
+
+		public function toString():String {
+			return ( this.selector ? String( this.selector ) : '' );
+		}
 
 	}
 	

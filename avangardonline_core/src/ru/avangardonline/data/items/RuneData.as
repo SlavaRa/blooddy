@@ -4,17 +4,34 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.code.css.selectors {
+package ru.avangardonline.data.items {
+	
+	import by.blooddy.core.data.Data;
+	
+	import ru.avangardonline.data.IClonableData;
 	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					14.03.2010 18:14:06
+	 * @created					31.03.2010 23:31:48
 	 */
-	public class ChildSelector extends CSSSelector {
+	public class RuneData extends Data implements IClonableData {
+
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
 		
+		/**
+		 * Constructor
+		 */
+		public function RuneData() {
+			super();
+		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -22,20 +39,21 @@ package by.blooddy.code.css.selectors {
 		//--------------------------------------------------------------------------
 
 		/**
-		 * Constructor
+		 * @private
 		 */
-		public function ChildSelector(parent:CSSSelector) {
-			super();
-			this.parent = parent;
+		private var _type:uint;
+
+		public function get type():uint {
+			return this._type;
 		}
 
-		//--------------------------------------------------------------------------
-		//
-		//  Properties
-		//
-		//--------------------------------------------------------------------------
-
-		public var parent:CSSSelector;
+		/**
+		 * @private
+		 */
+		public function set type(value:uint):void {
+			if ( this._type == value ) return;
+			this._type = value;
+		}
 
 		//--------------------------------------------------------------------------
 		//
@@ -43,9 +61,19 @@ package by.blooddy.code.css.selectors {
 		//
 		//--------------------------------------------------------------------------
 
-		public override function toString():String {
-			return ( this.parent ? this.parent + '>' : '' ) + ( this.selector || '' );
+		public function clone():Data {
+			var result:RuneData = new RuneData();
+			result.copyFrom( this );
+			return result;
 		}
+
+		public function copyFrom(data:Data):void {
+			var target:RuneData = data as RuneData;
+			if ( !target ) throw new ArgumentError();
+			this.type = target._type;
+			super.name = target.name;
+		}
+
 
 	}
 	

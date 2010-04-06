@@ -15,7 +15,7 @@ package ru.avangardonline.events.data.character {
 	 * @langversion				3.0
 	 * @created					06.09.2009 13:41:56
 	 */
-	public class CharacterDataEvent extends DataBaseEvent {
+	public class HeroCharacterDataEvent extends DataBaseEvent {
 
 		//--------------------------------------------------------------------------
 		//
@@ -25,6 +25,10 @@ package ru.avangardonline.events.data.character {
 
 		public static const VICTORY:String = 'victory';
 
+		public static const LOSE:String = 'lose';
+		
+		public static const NORMALIZE:String = 'normalize';
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -34,7 +38,7 @@ package ru.avangardonline.events.data.character {
 		/**
 		 * Constructor
 		 */
-		public function CharacterDataEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
+		public function HeroCharacterDataEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super( type, bubbles, cancelable );
 		}
 

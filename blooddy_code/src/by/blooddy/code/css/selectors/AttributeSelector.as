@@ -24,9 +24,10 @@ package by.blooddy.code.css.selectors {
 		/**
 		 * Constructor
 		 */
-		public function AttributeSelector(value:String) {
+		public function AttributeSelector(value:String, selector:AttributeSelector=null) {
 			super();
 			this.value = value;
+			this.selector = selector;
 		}
 
 		//--------------------------------------------------------------------------

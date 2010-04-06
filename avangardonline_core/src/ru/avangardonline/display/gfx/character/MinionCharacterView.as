@@ -113,7 +113,7 @@ package ru.avangardonline.display.gfx.character {
 		}
 
 		protected override function getAnimationKey():String {
-			return String.fromCharCode( this._data.race, this._data.type, this.currentAnim.id );
+			return 'c' + String.fromCharCode( this._data.race, this._data.type, this.currentAnim.id );
 		}
 
 		//--------------------------------------------------------------------------
