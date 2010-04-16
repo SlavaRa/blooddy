@@ -29,7 +29,7 @@ package by.blooddy.core.controllers {
 		 */
 		public function AbstractController(controller:IBaseController!, sharedObjectKey:String=null) {
 			super();
-			this._baseConstroller = controller;
+			this._baseController = controller;
 			if ( sharedObjectKey ) {
 				this._sharedObject = controller.sharedObject[ sharedObjectKey ];
 				if ( !this._sharedObject ) this._sharedObject = controller.sharedObject[ sharedObjectKey ] = new Object();
@@ -51,13 +51,13 @@ package by.blooddy.core.controllers {
 		/**
 		 * @private
 		 */
-		private var _baseConstroller:IBaseController;
+		private var _baseController:IBaseController;
 
 		/**
 		 * @inheritDoc
 		 */
 		public function get baseController():IBaseController {
-			return this._baseConstroller;
+			return this._baseController;
 		}
 
 		//----------------------------------
@@ -68,7 +68,7 @@ package by.blooddy.core.controllers {
 		 * @inheritDoc
 		 */
 		public function get dataBase():DataBase {
-			return this._baseConstroller.dataBase;
+			return this._baseController.dataBase;
 		}
 
 		//----------------------------------

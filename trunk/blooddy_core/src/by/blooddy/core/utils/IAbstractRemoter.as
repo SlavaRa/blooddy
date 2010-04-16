@@ -30,7 +30,7 @@ package by.blooddy.core.utils {
 		 *
 		 * @keyword					iabstractremoter.call, call
 		 */
-		function call(commandName:String, ... arguments):*;
+		function call(commandName:String, ... parameters):*;
 
 	}
 

@@ -26,18 +26,6 @@ package by.blooddy.core.logging {
 
 		public static const DEBUG:uint = uint.MAX_VALUE;
 		
-		private static function getClassByType(type:uint):String {
-			switch ( type ) {
-				case INFO: 			return 'info';
-				case WARN: 			return 'warn';
-				case ERROR: 		return 'error';
-				case FATAL: 		return 'fatal';
-				case DEBUG: 		return 'debug';
-			}
-			
-			return null;
-		}
-
 		public function InfoLog(text:String, type:uint=0) {
 			super( text );
 			this._type = type;
@@ -49,8 +37,16 @@ package by.blooddy.core.logging {
 			return this._type;
 		}
 		
-		public function toHTMLString():String {
-			return '<span class="log_' + getClassByType(this._type) +'">' + super.text + '</span>';
+		public override function toHTMLString():String {
+			var result:String = this.toString();
+			switch ( this._type ) {
+				case INFO:	result = '<font color="#AAAAFF">' + result + '</font>';	break;
+				case WARN:	result = '<font color="#FFFF00">' + result + '</font>';	break;
+				case ERROR:	result = '<font color="#FF9900">' + result + '</font>';	break;
+				case FATAL:	result = '<font color="#FF0000">' + result + '</font>';	break;
+				case DEBUG:	result = '<font color="#CCCCCC">' + result + '</font>';	break;
+			}
+			return result;
 		}
 
 		/**

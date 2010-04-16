@@ -16,6 +16,7 @@ package by.blooddy.core.managers {
 	import flash.text.TextField;
 
 	import flash.events.EventDispatcher;
+	import flash.utils.Dictionary;
 
 	//--------------------------------------
 	//  Events
@@ -49,11 +50,44 @@ package by.blooddy.core.managers {
 
 		//--------------------------------------------------------------------------
 		//
-		//  Class methods
+		//  Class variables
 		//
 		//--------------------------------------------------------------------------
 
 		/**
+		 * @private
+		 */
+		private static var _privateCall:Boolean = false;
+
+		/**
+		 * @private
+		 */
+		private static const _HASH:Dictionary = new Dictionary( true );
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Class methods
+		//
+		//--------------------------------------------------------------------------
+
+		public static function getManager(container:InteractiveObject):KeyboardManager {
+			var manager:KeyboardManager = _HASH[ container ];
+			if ( !manager ) {
+				_privateCall = true;
+				_HASH[ container ] = manager = new KeyboardManager( container );
+				_privateCall = false;
+			}
+			return manager;
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Private class methods
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		 * @private
 		 * Преобразовывает нажатые клавиши в уникальный код.
 		 *  
 		 * @param	type				Тип евента.
@@ -67,15 +101,15 @@ package by.blooddy.core.managers {
 		 * 
 		 * @keyword						keyboardmanager.getkeyeventcode, getkeyeventcode
 		 */
-		public static function getKeyEventCode(type:String, keyCode:uint, keyLocation:uint=0, ctrlKey:Boolean=false, altKey:Boolean=false, shiftKey:Boolean=false):uint {
+		private static function getKeyEventCode(type:String, keyCode:uint, keyLocation:uint=0, ctrlKey:Boolean=false, altKey:Boolean=false, shiftKey:Boolean=false):uint {
 			var eventCode:uint =				keyCode;
-			if (shiftKey)						eventCode |= 1 << 8;
-			if (altKey)							eventCode |= 1 << 9;
-			if (ctrlKey)						eventCode |= 1 << 10;
-			switch (type) {
+			if ( shiftKey )						eventCode |= 1 << 8;
+			if ( altKey )						eventCode |= 1 << 9;
+			if ( ctrlKey )						eventCode |= 1 << 10;
+			switch ( type ) {
 				case KeyboardEvent.KEY_DOWN:	eventCode |= 1 << 11;	break;
 			}
-			switch (keyLocation) {
+			switch ( keyLocation ) {
 				case KeyLocation.NUM_PAD:		eventCode |= 1 << 12;	break;
 				case KeyLocation.LEFT:			eventCode |= 1 << 13;	break;
 				case KeyLocation.RIGHT:			eventCode |= 1 << 14;	break;
@@ -90,14 +124,15 @@ package by.blooddy.core.managers {
 		//--------------------------------------------------------------------------
 
 		/**
+		 * @private
 		 * Constructor
-		 * 
 		 * @param	control				Объект для слежки нажатий вяких кнопочек.
 		 */
 		public function KeyboardManager(control:InteractiveObject) {
 			super();
-			control.addEventListener(KeyboardEvent.KEY_DOWN, this.$dispatchEvent, false, int.MAX_VALUE);
-			control.addEventListener(KeyboardEvent.KEY_UP, this.$dispatchEvent, false, int.MAX_VALUE);
+			if ( !_privateCall ) throw new ArgumentError();
+			control.addEventListener( KeyboardEvent.KEY_DOWN, this.$dispatchEvent, false, int.MAX_VALUE );
+			control.addEventListener( KeyboardEvent.KEY_UP, this.$dispatchEvent, false, int.MAX_VALUE );
 		}
 
 		//--------------------------------------------------------------------------
@@ -124,7 +159,7 @@ package by.blooddy.core.managers {
 		 * Если надо транслировать KeyboardEvent, то делаем хук и транслируем 2 события.
 		 */
 		public override function dispatchEvent(event:Event):Boolean {
-			return this.$dispatchEvent(event);
+			return this.$dispatchEvent( event );
 		}
 
 		//--------------------------------------------------------------------------
@@ -152,8 +187,8 @@ package by.blooddy.core.managers {
 		 * @see							#addEventListener()
 		 */
 		public function addKeyboardEventListener(type:String, listener:Function, useCapture:Boolean=false, priority:int=0.0, useWeakReference:Boolean=false, keyCode:uint=0, keyLocation:uint=0, ctrlKey:Boolean=false, altKey:Boolean=false, shiftKey:Boolean=false):void {
-			var eventCode:String = getKeyEventCode(type, keyCode, keyLocation, ctrlKey, altKey, shiftKey).toString();
-			super.addEventListener(eventCode, listener, useCapture, priority, useWeakReference);
+			var eventCode:String = getKeyEventCode( type, keyCode, keyLocation, ctrlKey, altKey, shiftKey ).toString();
+			super.addEventListener( eventCode, listener, useCapture, priority, useWeakReference );
 		}
 
 		/**
@@ -172,8 +207,8 @@ package by.blooddy.core.managers {
 		 * @see							flash.events.EventDispatcher#removeEventListener()
 		 */
 		public function removeKeyboardEventListener(type:String, listener:Function, useCapture:Boolean=false, keyCode:uint=0, keyLocation:uint=0, ctrlKey:Boolean=false, altKey:Boolean=false, shiftKey:Boolean=false):void {
-			var eventCode:String = getKeyEventCode(type, keyCode, keyLocation, ctrlKey, altKey, shiftKey).toString();
-			super.removeEventListener(eventCode, listener, useCapture);
+			var eventCode:String = getKeyEventCode( type, keyCode, keyLocation, ctrlKey, altKey, shiftKey ).toString();
+			super.removeEventListener( eventCode, listener, useCapture );
 		}
 
 		//--------------------------------------------------------------------------
@@ -187,14 +222,14 @@ package by.blooddy.core.managers {
 		 * Если надо транслировать KeyboardEvent, то делаем хук и транслируем 2 события.
 		 */
 		private function $dispatchEvent(event:Event):Boolean {
-			if (event is KeyboardEvent) {
-				var e:KeyboardEvent = (event as KeyboardEvent);
-				var eventCode:uint = getKeyEventCode(e.type, e.keyCode, e.keyLocation, e.ctrlKey, e.altKey, e.shiftKey);
-				if (event.target is InteractiveObject && this._prev == eventCode) return true; // ну скока можно???
+			if ( event is KeyboardEvent ) {
+				var e:KeyboardEvent = event as KeyboardEvent;
+				var eventCode:uint = getKeyEventCode( e.type, e.keyCode, e.keyLocation, e.ctrlKey, e.altKey, e.shiftKey );
+				if ( event.target is InteractiveObject && this._prev == eventCode ) return true; // ну скока можно???
 				this._prev = eventCode;
-				return super.dispatchEvent( new KeyboardManagerEvent(eventCode.toString(), e.bubbles, e.cancelable, e.charCode) );
+				return super.dispatchEvent( new KeyboardManagerEvent( eventCode.toString(), e.bubbles, e.cancelable, e.charCode ) );
 			}
-			return super.dispatchEvent(event);
+			return super.dispatchEvent( event );
 		}
 
 	}
@@ -240,9 +275,9 @@ internal final class KeyboardManagerEvent extends KeyboardEvent {
 		 * Constructor
 	 */
 	public function KeyboardManagerEvent(type:String, bubbles:Boolean=true, cancelable:Boolean=false, charCode:uint=0) {
-		var eventCode:uint = parseInt(type);
+		var eventCode:uint = parseInt( type );
 		// конструкруируем
-		super(type, bubbles, cancelable, charCode,
+		super( type, bubbles, cancelable, charCode,
 			// keyCode
 			eventCode & 255,
 			// keyLocation
@@ -254,11 +289,11 @@ internal final class KeyboardManagerEvent extends KeyboardEvent {
 				)
 			),
 			// ctrlKey
-			Boolean(eventCode & 1 << 10),
+			Boolean( eventCode & 1 << 10 ),
 			// altKey
-			Boolean(eventCode & 1 << 9),
+			Boolean( eventCode & 1 << 9 ),
 			// shiftKey
-			Boolean(eventCode & 1 << 8)
+			Boolean( eventCode & 1 << 8 )
 		);
 		// сохроняем тип для переопределения
 		this._type = ( eventCode & 1 << 11 ? KeyboardEvent.KEY_DOWN : KeyboardEvent.KEY_UP );
@@ -293,7 +328,7 @@ internal final class KeyboardManagerEvent extends KeyboardEvent {
 	 * @private
 	 */
 	public override function clone():Event {
-		return new KeyboardManagerEvent(super.type, super.bubbles, super.cancelable, super.charCode);
+		return new KeyboardManagerEvent( super.type, super.bubbles, super.cancelable, super.charCode );
 	}
 
 }

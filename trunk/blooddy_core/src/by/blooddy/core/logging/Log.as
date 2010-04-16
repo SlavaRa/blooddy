@@ -54,6 +54,13 @@ package by.blooddy.core.logging {
 		/**
 		 * @private
 		 */
+		public function toHTMLString():String {
+			return this.toString();
+		}
+		
+		/**
+		 * @private
+		 */
 		public function toString():String {
 			return this.formatToString( 'time' );
 		}

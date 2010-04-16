@@ -8,6 +8,7 @@ package by.blooddy.core.controllers {
 
 	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
+	import flash.display.Stage;
 
 	/**
 	 * @author					BlooDHounD
@@ -33,7 +34,7 @@ package by.blooddy.core.controllers {
 			this._container.addEventListener( Event.ADDED_TO_STAGE,			this.handler_addedToStage,		false, int.MIN_VALUE, true );
 			this._container.addEventListener( Event.REMOVED_FROM_STAGE,		this.handler_removedFromStage,	false, int.MIN_VALUE, true );
 			if ( this._container.stage ) {
-				this._container.addEventListener( Event.FRAME_CONSTRUCTED,	this.handler_frameConstructed,	false, 0, true );
+				this._container.addEventListener( Event.FRAME_CONSTRUCTED,	this.handler_frameConstructed );
 			}
 		}
 

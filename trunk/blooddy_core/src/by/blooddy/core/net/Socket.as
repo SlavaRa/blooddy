@@ -152,6 +152,7 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		private function handler_close(event:Event):void {
+			this._hasError = true;
 			this.clear();
 		}
 

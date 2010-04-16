@@ -9,6 +9,7 @@ package by.blooddy.core.commands {
 	import by.blooddy.core.utils.ClassUtils;
 
 	import flash.utils.ByteArray;
+	import by.blooddy.core.utils.ObjectUtils;
 
 	/**
 	 * Класс для хранения комманды в виде обычного массива.
@@ -122,13 +123,8 @@ package by.blooddy.core.commands {
 		private static function arrayToString(arr:Array):String {
 			var result:Array = new Array();
 			var length:uint = arr.length;
-			var o:Object;
 			for ( var i:uint = 0; i<length; i++ ) {
-				o = arr[i];
-				if ( o is ByteArray ) result.push( '[' + ClassUtils.getClassName( o ) + ' length="' + ( o as ByteArray ).length + '"]' );
-				else if ( o is Array && !( o is Command ) ) result.push( '(' + arrayToString( o as Array ) + ')' );
-				else if ( o is String ) result.push( '"' + o + '"' );
-				else result.push( o );
+				result.push( ObjectUtils.toString( arr[ i ] ) );
 			}
 			return result.join( ',' );
 		}

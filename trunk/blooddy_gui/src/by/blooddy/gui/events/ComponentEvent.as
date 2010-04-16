@@ -1,55 +1,55 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  (C) 2009 BlooDHounD
+//  © 2010 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.utils {
-
-	import flash.utils.Dictionary;
-
+package by.blooddy.gui.events {
+	
+	import by.blooddy.gui.display.Component;
+	
+	import flash.events.Event;
+	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
-	 * @playerversion			Flash 9
+	 * @playerversion			Flash 10
 	 * @langversion				3.0
+	 * @created					08.04.2010 15:35:54
 	 */
-	public final class WeakRef {
+	public class ComponentEvent extends Event {
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Class methods
+		//
+		//--------------------------------------------------------------------------
+
+		public static const COMPONENT_CONSTRUCT:String = 'componentConstuct';
+
+		public static const COMPONENT_DESTRUCT:String = 'componentDestruct';
 
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
-		public function WeakRef(obj:Object) {
-			super();
-			//if ( !obj || obj is Number || obj is String || obj is Boolean ) throw new ArgumentError();
-			this._ref[ obj ] = true;
-		}
 
+		/**
+		 * Constructor.
+		 */
+		public function ComponentEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false, component:Component=null) {
+			super( type, bubbles, cancelable );
+			this.component = component;
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Variables
 		//
 		//--------------------------------------------------------------------------
-		
-		/**
-		 * @private
-		 */
-		private const _ref:Dictionary = new Dictionary ( true );
 
-		//--------------------------------------------------------------------------
-		//
-		//  Properties
-		//
-		//--------------------------------------------------------------------------
-		
-		public function get():* {
-			for ( var obj:* in this._ref ) {
-				return obj;
-			}
-		}
+		public var component:Component;
 
 		//--------------------------------------------------------------------------
 		//
@@ -57,20 +57,10 @@ package by.blooddy.core.utils {
 		//
 		//--------------------------------------------------------------------------
 
-		/**
-		 * @private
-		 */
-		public function valueOf():* {
-			return this.get();
-		}
-
-		/**
-		 * @private
-		 */
-		public function toString():String {
-			return String( this.get() ); // maybe null
+		public override function clone():Event {
+			return new ComponentEvent( super.type, super.bubbles, super.cancelable, this.component );
 		}
 
 	}
-
+	
 }

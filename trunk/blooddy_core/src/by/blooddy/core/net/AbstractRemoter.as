@@ -181,7 +181,7 @@ package by.blooddy.core.net {
 					return this.$callInputCommand( command );
 				} catch ( e:Error ) {
 					if ( this._logging ) {
-						this._logger.addLog( new InfoLog( ( e.toString() || e.getStackTrace() ), InfoLog.ERROR ) );
+						this._logger.addLog( new InfoLog( ( e.getStackTrace() || e.toString() ), InfoLog.ERROR ) );
 						trace( e.getStackTrace() || e.toString() );
 					}
 					if ( super.hasEventListener( AsyncErrorEvent.ASYNC_ERROR ) || !this._unassisted ) {

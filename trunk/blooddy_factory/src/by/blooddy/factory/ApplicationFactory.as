@@ -69,12 +69,12 @@ package by.blooddy.factory {
 
 			super.removeEventListener( Event.ADDED_TO_STAGE, this.handler_addedToStage );
 
-			this._stageAlign = super.stageAlign;
-			this._stageScaleMode = super.stageScaleMode;
+			this._stageAlign = super.stage.align;
+			this._stageScaleMode = super.stage.scaleMode;
 
-			super.stageAlign = StageAlign.TOP_LEFT;
-			super.stageScaleMode = StageScaleMode.NO_SCALE;
-			super.addEventListener( Event.RESIZE, this.handler_resize );
+			super.stage.align = StageAlign.TOP_LEFT;
+			super.stage.scaleMode = StageScaleMode.NO_SCALE;
+			super.stage.addEventListener( Event.RESIZE, this.handler_resize );
 
 			this._context = new LoaderContext( false, ApplicationDomain.currentDomain, SecurityDomain.currentDomain );
 
@@ -357,9 +357,9 @@ package by.blooddy.factory {
 		protected override function initialize():void {
 			if ( !this.loaded ) return;
 			clearTimeout( this._timeoutID );
-			super.stageAlign = this._stageAlign;
-			super.stageScaleMode = super.stageScaleMode;
-			super.removeEventListener( Event.RESIZE, this.handler_resize );
+			super.stage.align = this._stageAlign;
+			super.stage.scaleMode = this._stageScaleMode;
+			super.stage.removeEventListener( Event.RESIZE, this.handler_resize );
 			try {
 				// отошлём евент
 				this.onInitialize();
@@ -382,7 +382,7 @@ package by.blooddy.factory {
 		 */
 		private function updatePosition():void {
 			if ( !this._info ) return;
-			var p:Point = super.globalToLocal( new Point( super.stageWidth / 2, super.stageHeight / 2 ) );
+			var p:Point = super.globalToLocal( new Point( super.stage.stageWidth / 2, super.stage.stageHeight / 2 ) );
 			this._info.x = p.x;
 			this._info.y = p.y;
 		}

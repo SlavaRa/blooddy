@@ -2,6 +2,12 @@
 <flexLibProperties includeAllClasses="false" version="3">
   <includeClasses>
     <classEntry path="by.blooddy.gui.styles.StyleSheet"/>
+    <classEntry path="by.blooddy.gui.controller.ComponentController"/>
+    <classEntry path="by.blooddy.gui.display.Component"/>
+    <classEntry path="by.blooddy.gui.display.ComponentContainer"/>
+    <classEntry path="by.blooddy.gui.events.ComponentEvent"/>
+    <classEntry path="by.blooddy.gui.display.NativeComponentController"/>
+    <classEntry path="by.blooddy.gui.display.ComponentInfo"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
