@@ -7,7 +7,7 @@
 package by.blooddy.core.net.loading {
 
 	import by.blooddy.core.utils.enterFrameBroadcaster;
-	import by.blooddy.core.utils.nexframeCall;
+	import by.blooddy.core.utils.nextframeCall;
 	
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
@@ -238,7 +238,7 @@ package by.blooddy.core.net.loading {
 
 			this._toLoaders = true;
 			this._loaded = this._loaded && loader.loaded;
-			nexframeCall( this.updateComplete );
+			nextframeCall( this.updateComplete );
 		}
 
 		/**
@@ -290,7 +290,7 @@ package by.blooddy.core.net.loading {
 					break;
 				}
 			}
-			nexframeCall( this.updateComplete );
+			nextframeCall( this.updateComplete );
 		}
 
 		/**

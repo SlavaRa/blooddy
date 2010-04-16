@@ -41,6 +41,9 @@ package by.blooddy.core.logging.commands {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @private
+		 */
 		private var _command:Command;
 
 		public function get command():Command {
@@ -53,14 +56,15 @@ package by.blooddy.core.logging.commands {
 		//
 		//--------------------------------------------------------------------------
 
-		public function toHTMLString():String {
-			var d:Date = new Date( super.time );
-			var resut:String = DateUtils.timeToString( super.time, true, ":", true, true ) + "@ " + this._command;
+		public override function toHTMLString():String {
+			var result:String = this.toString();
 			if ( this._command is NetCommand ) {
-				resut = '<span class="' + ( this._command as NetCommand ).io + '">' + resut + '</span>';
+				switch ( ( this._command as NetCommand ).io ) {
+					case NetCommand.INPUT:	result = '<font color="#6666FF">' + result + '</font>';	break;
+					case NetCommand.OUTPUT:	result = '<font color="#66FF66">' + result + '</font>';	break;
+				}
 			}
-			return resut;
-			//return this.formatToString("time", "command");
+			return result;
 		}
 
 		public override function toString():String {

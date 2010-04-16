@@ -25,15 +25,6 @@ package by.blooddy.factory {
 	import flash.text.TextSnapshot;
 
 	//--------------------------------------
-	//  Events
-	//--------------------------------------
-
-	/**
-	 * @see		flash.display.Stage#resize 
-	 */
-	[Event( name="resize", type="flash.events.Event" )]
-	
-	//--------------------------------------
 	//  Excluded APIs
 	//--------------------------------------
 
@@ -128,7 +119,7 @@ package by.blooddy.factory {
 				throw new ReferenceError( '' );
 			} else if ( super.parent is Loader ) {
 				var c:Class = ( super.parent as Loader ).loaderInfo.applicationDomain.getDefinition( 'by.blooddy.factory::ApplicationFactoryLoader' ) as Class;
-				if ( c || !( super.parent.parent is c ) ) throw new ReferenceError( '' ); 
+				if ( !c || !( super.parent.parent is c ) ) throw new ReferenceError( '' ); 
 			} else if ( super.parent != super.stage ) {
 				throw new ReferenceError( '' );
 			}
@@ -160,64 +151,6 @@ package by.blooddy.factory {
 		 */
 		private var _rootClassName:String;
 
-		//----------------------------------
-		//  stageWidth
-		//----------------------------------
-
-		/**
-		 * @see		flash.display.Stage#stageWidth
-		 */
-		public final function get stageWidth():Number {
-			return super.stage.stageWidth;
-		}
-
-		//----------------------------------
-		//  stageHeight
-		//----------------------------------
-
-		/**
-		 * @see		flash.display.Stage#stageHeight
-		 */
-		public final function get stageHeight():Number {
-			return super.stage.stageHeight;
-		}
-
-		//----------------------------------
-		//  stageAlign
-		//----------------------------------
-		
-		/**
-		 * @see		flash.display.Stage#align
-		 */
-		public final function get stageAlign():String {
-			return super.stage.align;
-		}
-
-		/**
-		 * @private
-		 */
-		public final function set stageAlign(value:String):void {
-			super.stage.align = value;
-		}
-		
-		//----------------------------------
-		//  stageScaleMode
-		//----------------------------------
-		
-		/**
-		 * @see		flash.display.Stage#scaleMode
-		 */
-		public final function get stageScaleMode():String {
-			return super.stage.scaleMode;
-		}
-		
-		/**
-		 * @private
-		 */
-		public final function set stageScaleMode(value:String):void {
-			super.stage.scaleMode = value;
-		}
-		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
@@ -308,30 +241,6 @@ package by.blooddy.factory {
 		 */
 		public override final function set name(value:String):void {
 			throw new IllegalOperationError();
-		}
-
-		[Deprecated( message="свойство запрещено" )]
-		/**
-		 * @private
-		 */
-		public override final function get parent():DisplayObjectContainer {
-			return null;
-		}
-
-		[Deprecated( message="свойство запрещено" )]
-		/**
-		 * @private
-		 */
-		public override final function get root():DisplayObject {
-			return null;
-		}
-
-		[Deprecated( message="свойство запрещено" )]
-		/**
-		 * @private
-		 */
-		public override final function get stage():Stage {
-			return null;
 		}
 
 		//----------------------------------
@@ -461,7 +370,7 @@ package by.blooddy.factory {
 		 * @private
 		 */
 		public override final function get framesLoaded():int {
-			return 0;
+			return 1;
 		}
 
 		/**
@@ -475,7 +384,7 @@ package by.blooddy.factory {
 		 * @private
 		 */
 		public override final function get totalFrames():int {
-			return 0;
+			return 1;
 		}
 
 		//--------------------------------------------------------------------------
@@ -496,36 +405,6 @@ package by.blooddy.factory {
 			throw new IllegalOperationError();
 		}
 
-		public override function addEventListener(type:String, listener:Function, useCapture:Boolean=false, priority:int=0, useWeakReference:Boolean=false):void {
-			if ( type == Event.RESIZE ) {
-				super.stage.addEventListener( type, listener, useCapture, priority, useWeakReference );
-			} else {
-				super.addEventListener( type, listener, useCapture, priority, useWeakReference );
-			}
-		}
-		
-		public override function removeEventListener(type:String, listener:Function, useCapture:Boolean=false):void {
-			if ( type == Event.RESIZE ) {
-				super.stage.addEventListener( type, listener, useCapture );
-			} else {
-				super.addEventListener( type, listener, useCapture );
-			}
-		}
-
-		public override function hasEventListener(type:String):Boolean {
-			if ( type == Event.RESIZE ) {
-				return super.stage.hasEventListener( type );
-			}
-			return super.hasEventListener( type );
-		}
-
-		public override function willTrigger(type:String):Boolean {
-			if ( type == Event.RESIZE ) {
-				return super.stage.willTrigger( type );
-			}
-			return super.willTrigger( type );
-		}
-		
 		//----------------------------------
 		//  Sprite
 		//----------------------------------

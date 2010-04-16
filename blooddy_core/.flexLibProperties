@@ -191,7 +191,6 @@
     <classEntry path="by.blooddy.core.utils.net.Location"/>
     <classEntry path="by.blooddy.core.utils.net.URLUtils"/>
     <classEntry path="by.blooddy.core.utils.net.copyURLRequest"/>
-    <classEntry path="by.blooddy.core.utils.nexframeCall"/>
     <classEntry path="by.blooddy.core.utils.proxy.Proxy"/>
     <classEntry path="by.blooddy.core.utils.proxy.ProxyEventDispatcher"/>
     <classEntry path="by.blooddy.core.utils.proxy.ProxyObject"/>
@@ -211,6 +210,9 @@
     <classEntry path="by.blooddy.core.utils.xml.XMLUtils"/>
     <classEntry path="parseBoolean"/>
     <classEntry path="by.blooddy.core.logging.LogTracer"/>
+    <classEntry path="by.blooddy.core.utils.ObjectUtils"/>
+    <classEntry path="by.blooddy.core.utils.ClassAlias"/>
+    <classEntry path="by.blooddy.core.blooddy"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

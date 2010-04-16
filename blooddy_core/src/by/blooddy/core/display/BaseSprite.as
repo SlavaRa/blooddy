@@ -6,8 +6,12 @@
 
 package by.blooddy.core.display {
 
+	import by.blooddy.core.blooddy;
+	import by.blooddy.core.utils.ClassAlias;
+	
 	import flash.display.Sprite;
 
+	ClassAlias.registerNamespaceAlias( blooddy, BaseSprite );
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0

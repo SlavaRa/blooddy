@@ -30,6 +30,8 @@ package by.blooddy.factory {
 	import flash.ui.ContextMenu;
 	import flash.utils.getQualifiedClassName;
 	import flash.display.MovieClip;
+	import flash.system.Capabilities;
+	import flash.net.LocalConnection;
 
 	//--------------------------------------
 	//  Excluded APIs
@@ -139,9 +141,19 @@ package by.blooddy.factory {
 
 			super.addEventListener( Event.REMOVED_FROM_STAGE, this.handler_removedFromStage, false, int.MAX_VALUE );
 
+			const domain:String = (
+				Capabilities.playerType == 'Desktop' || Capabilities.playerType == 'StandAlone'
+				?	'localhost'
+				:	( new LocalConnection() ).domain
+			);
+			const URL:RegExp = ( domain == 'localhost' ? null : new RegExp( '^(?:(?!\\w+://)|https?://(?:www\\.)?' + domain.replace( /\./g, '\\.' ) + ')', 'i' ) );
+
 			this._loader = new LoaderAsset();
 			this._loader.contentLoaderInfo.addEventListener( Event.INIT, this.handler_loader_init );
-			this._loader.$load( new URLRequest( url ), new LoaderContext( false, ApplicationDomain.currentDomain, SecurityDomain.currentDomain ) );
+			this._loader.$load(
+				new URLRequest( url ),
+				new LoaderContext( false, ApplicationDomain.currentDomain, ( URL && URL.test( url ) ? SecurityDomain.currentDomain : null ) )
+			);
 			super.addChild( this._loader );
 
 		}

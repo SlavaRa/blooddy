@@ -14,7 +14,7 @@ package by.blooddy.core.external {
 	import by.blooddy.core.net.NetCommand;
 	import by.blooddy.core.net.connection.IConnection;
 	import by.blooddy.core.utils.copyObject;
-	import by.blooddy.core.utils.nexframeCall;
+	import by.blooddy.core.utils.nextframeCall;
 	import by.blooddy.core.utils.time.setTimeout;
 	
 	import flash.errors.IllegalOperationError;
@@ -90,7 +90,7 @@ package by.blooddy.core.external {
 				}
 				ExternalInterface.addCallback( _PROXY_METHOD, this.$call );
 			}
-			nexframeCall( this.init );
+			nextframeCall( this.init );
 		}
 
 		//--------------------------------------------------------------------------

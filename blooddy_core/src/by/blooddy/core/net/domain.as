@@ -17,13 +17,9 @@ package by.blooddy.core.net {
 	 * @created					Mar 12, 2010 6:00:18 PM
 	 */
 	public const domain:String = (
-		Capabilities.playerType == 'Desktop'
+		Capabilities.playerType == 'Desktop' || Capabilities.playerType == 'StandAlone'
 		?	'localhost'
-		:	(
-				Capabilities.playerType == 'StandAlone'
-				?	'localhost'
-				:	( new flash.net.LocalConnection() ).domain
-			)
+		:	( new flash.net.LocalConnection() ).domain
 	);
 
 }

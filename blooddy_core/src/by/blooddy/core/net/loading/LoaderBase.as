@@ -124,7 +124,7 @@ package by.blooddy.core.net.loading {
 		/**
 		 * @private
 		 */
-		$protected_load static const _HTTP_RESPONSE_STATUS:String = ( 'HTTP_RESPONSE_STATUS' in HTTPStatusEvent ? HTTPStatusEvent['HTTP_RESPONSE_STATUS'] : null );
+		$protected_load static const _HTTP_RESPONSE_STATUS:String = ( 'HTTP_RESPONSE_STATUS' in HTTPStatusEvent ? HTTPStatusEvent[ 'HTTP_RESPONSE_STATUS' ] : null );
 
 		/**
 		 * @private
