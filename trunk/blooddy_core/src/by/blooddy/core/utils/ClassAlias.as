@@ -55,34 +55,35 @@ package by.blooddy.core.utils {
 				throw new ArgumentError();
 			}
 			ns = ( ns ? ns + '::' : '' ) + ClassUtils.getClassName( c );
-			trace( 'register:', ns );
 			registerClassAlias( ns, c );
 			_HASH[ ns ] = new WeakRef( c );
 		}
 
 		public static function getClass(name:*):Class {
+			if ( name is QName ) {
+				name = name.toString();
+			} else if ( !( name is String ) ) {
+				throw new ArgumentError();
+			}
 			var result:Class;
 			if ( name ) {
-				name = name.toString();
-				if ( name ) {
-					if ( name in _HASH ) {
-						result = ( _HASH[ name ] as WeakRef ).get();
-						if ( !result ) {
-							delete _HASH[ name ];
+				if ( name in _HASH ) {
+					result = ( _HASH[ name ] as WeakRef ).get();
+					if ( !result ) {
+						delete _HASH[ name ];
+					}
+				}
+				if ( !result ) {
+					try {
+						result = getClassByAlias( name );
+					} catch ( e:Error ) {
+						try {
+							result = getDefinitionByName( name ) as Class;
+						} catch ( e:Error ) {
 						}
 					}
-					if ( !result ) {
-						try {
-							result = getClassByAlias( name );
-						} catch ( e:Error ) {
-							try {
-								result = getDefinitionByName( name ) as Class;
-							} catch ( e:Error ) {
-							}
-						}
-						if ( result ) {
-							_HASH[ name ] = new WeakRef( result );
-						}
+					if ( result ) {
+						_HASH[ name ] = new WeakRef( result );
 					}
 				}
 			}

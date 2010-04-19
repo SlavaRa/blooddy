@@ -4,16 +4,16 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.code.css.selectors {
+package by.blooddy.code.css.definition.values {
 	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					14.03.2010 17:17:05
+	 * @created					15.04.2010 1:47:30
 	 */
-	public class AttributeSelector {
+	public class CSSValue {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -24,22 +24,10 @@ package by.blooddy.code.css.selectors {
 		/**
 		 * Constructor
 		 */
-		public function AttributeSelector(value:String, selector:AttributeSelector=null) {
+		public function CSSValue() {
 			super();
-			this.value = value;
-			this.selector = selector;
 		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Properties
-		//
-		//--------------------------------------------------------------------------
-
-		public var selector:AttributeSelector
 		
-		public var value:String;
-
 	}
-
+	
 }

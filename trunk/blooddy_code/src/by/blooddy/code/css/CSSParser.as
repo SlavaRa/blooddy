@@ -6,18 +6,32 @@
 
 package by.blooddy.code.css {
 
-	import by.blooddy.code.css.selectors.AttributeSelector;
-	import by.blooddy.code.css.selectors.CSSDeclaration;
-	import by.blooddy.code.css.selectors.CSSSelector;
-	import by.blooddy.code.css.selectors.ChildSelector;
-	import by.blooddy.code.css.selectors.ClassSelector;
-	import by.blooddy.code.css.selectors.DescendantSelector;
-	import by.blooddy.code.css.selectors.IDSelector;
-	import by.blooddy.code.css.selectors.PseudoSelector;
-	import by.blooddy.code.css.selectors.TagSelector;
+	import by.blooddy.code.css.definition.CSSDeclaration;
+	import by.blooddy.code.css.definition.CSSDefinition;
+	import by.blooddy.code.css.definition.CSSRule;
+	import by.blooddy.code.css.definition.selectors.AttributeSelector;
+	import by.blooddy.code.css.definition.selectors.CSSSelector;
+	import by.blooddy.code.css.definition.selectors.ChildSelector;
+	import by.blooddy.code.css.definition.selectors.ClassSelector;
+	import by.blooddy.code.css.definition.selectors.DescendantSelector;
+	import by.blooddy.code.css.definition.selectors.IDSelector;
+	import by.blooddy.code.css.definition.selectors.PseudoSelector;
+	import by.blooddy.code.css.definition.selectors.TagSelector;
+	import by.blooddy.code.css.definition.values.BooleanValue;
+	import by.blooddy.code.css.definition.values.CSSValue;
+	import by.blooddy.code.css.definition.values.ColorValue;
+	import by.blooddy.code.css.definition.values.ComplexValue;
+	import by.blooddy.code.css.definition.values.IdentifierValue;
+	import by.blooddy.code.css.definition.values.NumberValue;
+	import by.blooddy.code.css.definition.values.PercentValue;
+	import by.blooddy.code.css.definition.values.StringValue;
+	import by.blooddy.code.css.definition.values.URLValue;
 	import by.blooddy.code.errors.ParserError;
+	import by.blooddy.code.utils.Char;
+	import by.blooddy.core.utils.StringUtils;
 	
 	import flash.events.EventDispatcher;
+	import flash.system.Capabilities;
 	
 	/**
 	 * @author					BlooDHounD
@@ -27,6 +41,42 @@ package by.blooddy.code.css {
 	 * @created					Mar 10, 2010 12:17:10 PM
 	 */
 	public class CSSParser extends EventDispatcher {
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Class variables
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private static const _ENY:RegExp = /./g;
+
+		/**
+		 * @private
+		 */
+		private static const _IN:Number = Capabilities.screenDPI;
+		
+		/**
+		 * @private
+		 */
+		private static const _CM:Number = _IN / 2.54;
+		
+		/**
+		 * @private
+		 */
+		private static const _MM:Number = _CM / 1e3;
+		
+		/**
+		 * @private
+		 */
+		private static const _PT:Number = _IN / 72;
+		
+		/**
+		 * @private
+		 */
+		private static const _PC:Number = _PT * 6;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -61,8 +111,16 @@ package by.blooddy.code.css {
 		public function parse(value:String):void {
 			this._scanner.writeSource( value );
 			var tok:uint;
+			var selectors:Vector.<CSSSelector>;
+			var declarations:Vector.<CSSDeclaration>;
+			var s:CSSSelector;
+			
+			var definition:CSSDefinition = new CSSDefinition();
+			var hash:Object = new Object();
+			var hash_rule:Object = new Object();
+			
 			do {
-				//try { // top-level обработка
+				try { // top-level обработка
 
 					tok = this.readToken();
 					switch ( tok ) {
@@ -72,7 +130,14 @@ package by.blooddy.code.css {
 							switch ( this._scanner.tokenText ) {
 								case 'import':
 									// url
-									this.readURL(); // result url
+									tok = this.readToken();
+									if ( tok == CSSToken.STRING_LITERAL ) {
+										this._scanner.tokenText; // result url
+									} else if ( tok == CSSToken.IDENTIFIER && this._scanner.tokenText == 'url' ) {
+										this.readURLEntity(); // result url
+									} else {
+										throw new ParserError();
+									}
 									// media
 									tok = this.readToken();
 									if ( tok == CSSToken.IDENTIFIER ) {
@@ -99,20 +164,31 @@ package by.blooddy.code.css {
 						case CSSToken.IDENTIFIER:
 						case CSSToken.COLON:
 							this._scanner.retreat();
-							var c:Vector.<CSSSelector> = this.readSelectors();
-							this.readDeclaration();
-							trace( c );
+							selectors = this.readSelectors();
+							declarations = this.readDeclarations();
+							if ( declarations.length > 0 ) {
+								for each ( s in selectors ) {
+									
+									definition.defaultMedia.rules.push(
+										new CSSRule( s, declarations )
+									);
+								}
+							}
 							break;
 						
+						case CSSToken.EOF:
+							break;
+
 						default:
 							throw new ParserError();
 							
 					}
 					
-				//} catch ( e:Error ) {
-				//	trace( e.getStackTrace() );
-				//}
-			} while ( tok == CSSToken.EOF );
+				} catch ( e:Error ) {
+				}
+			} while ( tok != CSSToken.EOF );
+			
+			trace( definition );
 		}
 
 		//--------------------------------------------------------------------------
@@ -142,46 +218,6 @@ package by.blooddy.code.css {
 			var tok:uint = this.readToken( ignoreWhite, ignoreComments );
 			if ( tok != kind ) throw new ParserError();
 			return tok;
-		}
-
-		/**
-		 * @private
-		 */
-		private function readURL():String {
-			var result:String;
-			var tok:uint = this.readToken();
-			if ( tok == CSSToken.STRING_LITERAL ) {
-				result = this._scanner.tokenText;
-			} else if ( tok == CSSToken.IDENTIFIER && this._scanner.tokenText == 'url' ) {
-				this.readFixToken( CSSToken.LEFT_PAREN, true, false );
-				tok = this.readToken( true, false );
-				if ( tok == CSSToken.STRING_LITERAL ) {
-					result = this._scanner.tokenText;
-				} else {
-					result = '';
-					do {
-						if ( tok == CSSToken.WHITESPACE || tok == CSSToken.RIGHT_PAREN || tok == CSSToken.EOF ) {
-							this._scanner.retreat();
-							break;
-						}
-						switch ( tok ) {
-							case CSSToken.STRING_LITERAL:
-								throw new ParserError();
-							case CSSToken.BLOCK_COMMENT:
-								result += '/*' + this._scanner.tokenText + '*/';
-								break;
-							default:
-								result += this._scanner.tokenText;
-								break;
-						}
-						tok = this._scanner.readToken();
-					} while ( true );
-				}
-				this.readFixToken( CSSToken.RIGHT_PAREN, true, false );
-			} else {
-				throw new ParserError();
-			}
-			return result;
 		}
 
 		/**
@@ -312,17 +348,32 @@ package by.blooddy.code.css {
 		/**
 		 * @private
 		 */
-		private function readDeclaration():CSSDeclaration {
+		private function readDeclarations():Vector.<CSSDeclaration> {
 			this.readFixToken( CSSToken.LEFT_BRACE );
-			var result:CSSDeclaration = new CSSDeclaration();
-			var tok:uint;
-			while ( true ) {
-				tok = this.readToken();
-				if ( tok == CSSToken.RIGHT_BRACE ) break;
+			var result:Vector.<CSSDeclaration> = new Vector.<CSSDeclaration>();
+			var name:String;
+			var values:Vector.<CSSValue>;
+			const hash:Object = new Object();
+			while ( this.readToken() != CSSToken.RIGHT_BRACE ) {
 				this._scanner.retreat();
-				this.readDeclarationName();
-				this.readFixToken( CSSToken.COLON );
-				this.readDeclarationValue();
+				try {
+					name = this.readDeclarationName();
+					this.readFixToken( CSSToken.COLON );
+					values = this.readDeclarationValues();
+					if ( values.length <= 0 ) throw new ParserError();
+					if ( name in hash ) {
+						hash[ name ].values = values;
+					} else {
+						result.push( new CSSDeclaration( name, values ) );
+					}
+				} catch ( e:Error ) { // пропускаем дкларацию
+					if ( this._scanner.tokenKind != CSSToken.RIGHT_BRACE && this._scanner.tokenKind != CSSToken.SEMI_COLON ) {
+						this._scanner.readTokenAsTo( CSSToken.UNKNOWN, Char.SEMI_COLON, Char.RIGHT_BRACE, Char.NEWLINE, Char.CARRIAGE_RETURN );
+						if ( this._scanner.readToken() != Char.SEMI_COLON ) {
+							this._scanner.retreat();
+						}
+					}
+				}
 			}
 			return result;
 		}
@@ -338,11 +389,13 @@ package by.blooddy.code.css {
 			do {
 				switch ( tok ) {
 					case CSSToken.DASH:
+						if ( u ) throw new ParserError();
 						u = true;
 						break;
 					case CSSToken.IDENTIFIER:
 						t = this._scanner.tokenText.toLowerCase();
 						result += ( u ? t.charAt( 0 ).toUpperCase() + t.substr( 1 ) : t );
+						u = false;
 						break;
 					default:
 						this._scanner.retreat();
@@ -351,14 +404,14 @@ package by.blooddy.code.css {
 			} while ( tok = this._scanner.readToken() );
 			return result;
 		}
-		
+
 		/**
 		 * @private
 		 */
-		private function readDeclarationValue():Array {
-			var result:Array = new Array();
-			var t:String;
+		private function readDeclarationValues():Vector.<CSSValue> {
+			var result:Vector.<CSSValue> = new Vector.<CSSValue>();
 			do {
+
 				switch ( this.readToken() ) {
 
 					case CSSToken.RIGHT_BRACE:
@@ -366,35 +419,235 @@ package by.blooddy.code.css {
 					case CSSToken.SEMI_COLON:
 						return result;
 
-					case CSSToken.STRING_LITERAL:
-						result.push( this._scanner.tokenText );
+					default:
+						this._scanner.retreat();
+						result.push( this.readDeclarationValue() );
 						break;
-					case CSSToken.IDENTIFIER:
-						t = this._scanner.tokenText;
-						switch ( t.toLowerCase() ) {
-							case 'true':	result.push( true );	break;
-							case 'false':	result.push( false );	break;
-							default:		result.push( t );		break;
-						}
-						break;
-					case CSSToken.NUMBER_LITERAL:
-						var n:Number = parseFloat( this._scanner.tokenText );
-						if ( n % 1 == 0 && n > int.MIN_VALUE ) {
-							if ( n < int.MAX_VALUE ) {
-								result.push( int( n ) );
-								break;
-							} else if ( n < uint.MAX_VALUE ) {
-								result.push( uint( n ) );
-								break;
-							}
-						}
-						result.push( n );
-						break;
+
 				}
+
 			} while ( true );
-			return result;
+			throw new ParserError();
+		}
+
+		/**
+		 * @private
+		 */
+		private function readDeclarationValue(complexAvailable:Boolean=true):CSSValue {
+				
+			switch ( this.readToken() ) {
+				
+				case CSSToken.STRING_LITERAL:
+					return new StringValue( this._scanner.tokenText );
+				
+				case CSSToken.NUMBER_LITERAL:
+					var v:Number = parseFloat( this._scanner.tokenText );
+					switch ( this._scanner.readToken() ) {
+						case CSSToken.PERCENT:
+							return new PercentValue( v );
+						case CSSToken.IDENTIFIER:
+							switch ( this._scanner.tokenText.toLowerCase() ) {
+								case 'px':				break;
+								case 'in':	v *= _IN;	break;
+								case 'cm':	v *= _CM;	break;
+								case 'mm':	v *= _MM;	break;
+								case 'pt':	v *= _PT;	break;
+								case 'pc':	v *= _PC;	break;
+								default:	throw new ParserError( 'единицы "' + this._scanner.tokenText + '" не поддерживаются' );
+							}
+							break;
+						default:
+							this._scanner.retreat();
+							break;
+					}
+					return new NumberValue( v );
+
+				case CSSToken.HASH:
+					this._scanner.retreat();
+					return new ColorValue( this.readColor() );
+				
+				case CSSToken.IDENTIFIER:
+					var t:String = this._scanner.tokenText.toLowerCase();
+					switch ( t ) {
+						case 'true':	return new BooleanValue( true );
+						case 'false':	return new BooleanValue( false );
+						default:
+							if ( this.readToken( true, false ) == CSSToken.LEFT_PAREN ) {
+								this._scanner.retreat();
+								switch ( t ) {
+									case 'url':		return new URLValue( this.readURLEntity() );
+									case 'rgb':		return new ColorValue( this.readRGBEntity() );
+									case 'rgba':	return new ColorValue( this.readRGBAEntity() );
+									case 'hsl':
+									case 'hsla':	throw new ParserError( 'TODO' );
+									default:
+										if ( complexAvailable ) {
+											return new ComplexValue( t, this.readComplexEntity() );
+										} else {
+											throw new ParserError();
+										}
+									
+								}
+							} else {
+								this._scanner.retreat();
+								return new IdentifierValue( t );
+							}
+							break;
+					}
+					break;
+				
+			}
+			
+			throw new ParserError();
 		}
 		
+		/**
+		 * @private
+		 */
+		private function readComplexEntity():Vector.<CSSValue> {
+			var result:Vector.<CSSValue> = new Vector.<CSSValue>();
+			this.readFixToken( CSSToken.LEFT_PAREN, true, false );
+			do {
+				
+				switch ( this.readToken( true, false ) ) {
+					
+					case CSSToken.RIGHT_PAREN:
+						return result;
+
+					default:
+						this._scanner.retreat();
+						result.push( this.readDeclarationValue( false ) );
+						switch ( this.readToken( true, false ) ) {
+							case CSSToken.COMMA:
+								break;
+							case CSSToken.RIGHT_PAREN:
+								return result;
+							default:
+								throw new ParserError();
+						}
+						break;
+					
+				}
+				
+			} while ( true );
+			throw new ParserError();
+		}
+		
+		/**
+		 * @private
+		 */
+		private function readColor():uint {
+			this.readFixToken( CSSToken.HASH );
+			this._scanner.readTokenAsWhile( CSSToken.STRING_LITERAL,
+				Char.ZERO, Char.ONE, Char.TWO, Char.THREE, Char.FOUR, Char.FIVE, Char.SIX, Char.SEVEN, Char.EIGHT, Char.NINE,
+				Char.a, Char.b, Char.c, Char.d, Char.e, Char.f,
+				Char.A, Char.B, Char.C, Char.D, Char.E, Char.F
+			);
+			var t:String = this._scanner.tokenText;
+			switch ( t.length ) {
+				case 3:
+				case 4:
+					t = t.replace( _ENY, '$&$&' );
+				case 6:
+				case 8:
+					break;
+				default:
+					throw new ParserError();
+			}
+			return parseInt( t, 16 ) | ( t.length <= 6 ? 0xFF000000 : 0 );
+		}
+
+		/**
+		 * @private
+		 */
+		private function readURLEntity():String {
+			var result:String;
+			this.readFixToken( CSSToken.LEFT_PAREN, true, false );
+			var tok:uint = this.readToken( true, false );
+			if ( tok == CSSToken.STRING_LITERAL ) {
+				result = this._scanner.tokenText;
+			} else {
+				this._scanner.retreat();
+				this._scanner.readTokenAsTo( CSSToken.STRING_LITERAL, Char.RIGHT_PAREN );
+				result = this._scanner.tokenText;
+			}
+			this.readFixToken( CSSToken.RIGHT_PAREN, true, false );
+			return StringUtils.trim( result );
+		}
+
+		/**
+		 * @private
+		 */
+		private function readRGBEntity():uint {
+			var arr:Array = this.readColorArr( 0xFF, 0xFF, 0xFF );
+			return	0xFF000000 |
+					( Math.round( arr[ 0 ] ) << 16 ) |
+					( Math.round( arr[ 1 ] ) << 8 ) |
+					  Math.round( arr[ 2 ] );
+		}
+
+		/**
+		 * @private
+		 */
+		private function readRGBAEntity():uint {
+			var arr:Array = this.readColorArr( 0xFF, 0xFF, 0xFF, 1 );
+			return	( ( arr[ 3 ] * 255 ) << 24 ) |
+					( Math.round( arr[ 0 ] ) << 16 ) |
+					( Math.round( arr[ 1 ] ) << 8 ) |
+					  Math.round( arr[ 2 ] );
+		}
+
+		/**
+		 * @private
+		 */
+		private function readColorArr(...values):Array {
+			this.readFixToken( CSSToken.LEFT_PAREN, true, false );
+			const l:uint = values.length;
+			var result:Array = new Array();
+			var v:Number;
+			var d:Number;
+			do {
+				d = values[ result.length ];
+				switch ( this.readToken( true, false ) ) {
+					case CSSToken.NUMBER_LITERAL:
+						v = parseFloat( this._scanner.tokenText );
+						if ( this._scanner.readToken() == CSSToken.PERCENT ) {
+							v = v / 100 * d;
+						} else {
+							this._scanner.retreat();
+						}
+						result.push( Math.min( Math.max( 0, v ), d ) );
+						switch ( this.readToken( true, false ) ) {
+							case CSSToken.COMMA:
+								break;
+							case CSSToken.RIGHT_PAREN:
+								if ( result.length < l ) {
+									result.push.apply(
+										result,
+										values.slice( result.length )
+									);
+								}
+								break;
+							default:
+								throw new ParserError();
+						}
+						break;
+					case CSSToken.COMMA:
+						result.push( d );
+						break;
+					case CSSToken.RIGHT_PAREN:
+						result.push.apply(
+							result,
+							values.slice( result.length )
+						);
+						break;
+					default:
+						throw new ParserError();
+				}
+			} while ( result.length < l );
+			return result;
+		}
+
 	}
 
 }

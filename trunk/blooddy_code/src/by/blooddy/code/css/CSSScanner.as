@@ -56,7 +56,7 @@ package by.blooddy.code.css {
 				case Char.LS:
 				case Char.PS:
 				case Char.BACKSPACE:
-				case Char.FORM_FEED:	return this.makeToken( CSSToken.WHITESPACE, ' ' );
+				case Char.FORM_FEED:	return this.makeToken( CSSToken.WHITESPACE, String.fromCharCode( c ) );
 					
 
 				case Char.COLON:		return this.makeToken( CSSToken.COLON, ':' );
@@ -67,9 +67,8 @@ package by.blooddy.code.css {
 				case Char.LEFT_ANGLE:	return this.makeToken( CSSToken.LEFT_ANGLE, '<' );
 				case Char.RIGHT_ANGLE:	return this.makeToken( CSSToken.RIGHT_ANGLE, '>' );
 				case Char.HASH:			return this.makeToken( CSSToken.HASH, '#' );
-				case Char.DOT:			return this.makeToken( CSSToken.DOT, '.' );
+				case Char.PERCENT:		return this.makeToken( CSSToken.PERCENT, '%' );
 				case Char.COMMA:		return this.makeToken( CSSToken.COMMA, ',' );
-				case Char.DASH:			return this.makeToken( CSSToken.DASH, '-' );
 				case Char.AT:			return this.makeToken( CSSToken.AT, '@' );
 				case Char.SEMI_COLON:	return this.makeToken( CSSToken.SEMI_COLON, ';' );
 
@@ -96,7 +95,15 @@ package by.blooddy.code.css {
 					if ( ( c >= Char.ZERO && c <= Char.NINE ) || c == Char.DASH || c == Char.DOT ) {
 						this._position--;
 						t = this.readNumber();
-						if ( t != null ) return this.makeToken( CSSToken.NUMBER_LITERAL, t );
+						if ( t == null ) {
+							this._position++;
+							switch ( c ) {
+								case Char.DASH:	return this.makeToken( CSSToken.DASH, '-' );
+								case Char.DOT:	return this.makeToken( CSSToken.DOT, '.' );
+							}
+						} else {
+							return this.makeToken( CSSToken.NUMBER_LITERAL, t );
+						}
 					} else if (
 						( c >= Char.a && c <= Char.z ) ||
 						( c >= Char.A && c <= Char.Z ) ||

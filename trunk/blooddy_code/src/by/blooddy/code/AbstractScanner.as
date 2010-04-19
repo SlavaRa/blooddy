@@ -111,6 +111,31 @@ package by.blooddy.code {
 			this._source = source;
 		}
 		
+		public final function readTokenAsTo(tok:uint, ...chars):uint {
+			this._prevPosition = this._position;
+			this._nextPosition = 0;
+			var c:uint;
+			var pos:uint = this._position;
+			while (
+				( c = this.readCharCode() ) != Char.EOS &&
+				chars.indexOf( c ) < 0
+			) {};
+			this._position--;
+			return this.makeToken( tok, this._source.substring( pos, this._position ) );
+			return tok;
+		}
+		
+		public final function readTokenAsWhile(tok:uint, ...chars):uint {
+			this._prevPosition = this._position;
+			this._nextPosition = 0;
+			var c:uint;
+			var pos:uint = this._position;
+			while ( chars.indexOf( this.readCharCode() ) >= 0 ) {};
+			this._position--;
+			return this.makeToken( tok, this._source.substring( pos, this._position ) );
+			return tok;
+		}
+		
 		public final function readToken():uint {
 			this._prevPosition = this._position;
 			if ( this._nextPosition > 0 ) {

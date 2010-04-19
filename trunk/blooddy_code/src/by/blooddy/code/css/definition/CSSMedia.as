@@ -4,38 +4,47 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.code.css.selectors {
+package by.blooddy.code.css.definition {
 	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					14.03.2010 18:14:06
+	 * @created					18.04.2010 18:39:09
 	 */
-	public class ChildSelector extends CSSSelector {
+	public class CSSMedia {
 		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-
+		
 		/**
 		 * Constructor
 		 */
-		public function ChildSelector(parent:CSSSelector) {
+		public function CSSMedia(name:String=null) {
 			super();
-			this.parent = parent;
+			this._name = name;
 		}
-
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
 
-		public var parent:CSSSelector;
+		/**
+		 * @private
+		 */
+		private var _name:String;
+
+		public function get name():String {
+			return this._name;
+		}
+
+		public const rules:Vector.<CSSRule> = new Vector.<CSSRule>();
 
 		//--------------------------------------------------------------------------
 		//
@@ -43,10 +52,11 @@ package by.blooddy.code.css.selectors {
 		//
 		//--------------------------------------------------------------------------
 
-		public override function toString():String {
-			return ( this.parent ? this.parent + '>' : '' ) + ( this.selector || '' );
+		public function toString():String {
+			var h:Boolean = ( this.name && this.name != 'screen' );
+			return ( h ? '@media ' + this.name + '{' : '' ) + this.rules.join( '' ) + ( h ? '}' : '' );
 		}
 
 	}
-	
+
 }
