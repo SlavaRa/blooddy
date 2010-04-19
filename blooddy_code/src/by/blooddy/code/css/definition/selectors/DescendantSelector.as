@@ -4,16 +4,16 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.code.css.selectors {
+package by.blooddy.code.css.definition.selectors {
 	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					14.03.2010 17:29:18
+	 * @created					14.03.2010 18:33:07
 	 */
-	public class TagSelector extends AttributeSelector {
+	public class DescendantSelector extends CSSSelector {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -24,9 +24,18 @@ package by.blooddy.code.css.selectors {
 		/**
 		 * Constructor
 		 */
-		public function TagSelector(type:String, selector:AttributeSelector=null) {
-			super( type, selector );
+		public function DescendantSelector(parent:CSSSelector) {
+			super();
+			this.parent = parent;
 		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Properties
+		//
+		//--------------------------------------------------------------------------
+		
+		public var parent:CSSSelector;
 
 		//--------------------------------------------------------------------------
 		//
@@ -34,8 +43,8 @@ package by.blooddy.code.css.selectors {
 		//
 		//--------------------------------------------------------------------------
 		
-		public function toString():String {
-			return ( this.value || '' ) + ( this.selector || '' );
+		public override function toString():String {
+			return ( this.parent ? this.parent + ' ' : '' ) + ( this.selector || '' );
 		}
 		
 	}

@@ -4,16 +4,16 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.code.css.selectors {
+package by.blooddy.code.css.definition.values {
 	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					14.03.2010 17:18:03
+	 * @created					15.04.2010 2:08:19
 	 */
-	public class IDSelector extends AttributeSelector {
+	public class StringValue extends CSSValue {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -24,9 +24,18 @@ package by.blooddy.code.css.selectors {
 		/**
 		 * Constructor
 		 */
-		public function IDSelector(id:String, selector:AttributeSelector=null) {
-			super( id, selector );
+		public function StringValue(value:String) {
+			super();
+			this.value = value;
 		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Properties
+		//
+		//--------------------------------------------------------------------------
+		
+		public var value:String;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -34,14 +43,14 @@ package by.blooddy.code.css.selectors {
 		//
 		//--------------------------------------------------------------------------
 		
-		public function toString():String {
-			if ( this.selector is TagSelector ) {
-				return ( this.selector.value || '' ) + ( this.value ? '#' + this.value : '' ) + ( this.selector.selector || '' );
-			} else {
-				return ( this.value ? '#' + this.value : '' ) + ( this.selector || '' );
-			}
+		public function valueOf():String {
+			return this.value;
 		}
-
+		
+		public function toString():String {
+			return '"' + this.value + '"'; // TODO: escape
+		}
+		
 	}
 	
 }

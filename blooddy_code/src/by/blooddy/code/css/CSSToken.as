@@ -14,7 +14,7 @@ package by.blooddy.code.css {
 	 * @created					Mar 10, 2010 12:23:35 PM
 	 */
 	public final class CSSToken {
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class variables
@@ -42,14 +42,15 @@ package by.blooddy.code.css {
 		public static const LEFT_ANGLE:uint =		i++;
 		public static const RIGHT_ANGLE:uint =		i++;
 		public static const HASH:uint =				i++;
+		public static const PERCENT:uint =			i++;
 		public static const DOT:uint =				i++;
 		public static const COMMA:uint =			i++;
 		public static const DASH:uint =				i++;
 		public static const AT:uint =				i++;
 		public static const SEMI_COLON:uint =		i++;
-		public static const IDENTIFIER:uint =		i++;
 		public static const NUMBER_LITERAL:uint =	i++;
 		public static const STRING_LITERAL:uint =	i++;
+		public static const IDENTIFIER:uint =		i++;
 		public static const BLOCK_COMMENT:uint =	i++;
 		public static const UNKNOWN:uint =			i++;
 

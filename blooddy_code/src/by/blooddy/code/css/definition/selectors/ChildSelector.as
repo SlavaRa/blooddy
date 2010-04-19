@@ -4,27 +4,27 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.code.css.selectors {
+package by.blooddy.code.css.definition.selectors {
 	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					14.03.2010 18:33:07
+	 * @created					14.03.2010 18:14:06
 	 */
-	public class DescendantSelector extends CSSSelector {
+	public class ChildSelector extends CSSSelector {
 		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * Constructor
 		 */
-		public function DescendantSelector(parent:CSSSelector) {
+		public function ChildSelector(parent:CSSSelector) {
 			super();
 			this.parent = parent;
 		}
@@ -34,7 +34,7 @@ package by.blooddy.code.css.selectors {
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public var parent:CSSSelector;
 
 		//--------------------------------------------------------------------------
@@ -42,11 +42,11 @@ package by.blooddy.code.css.selectors {
 		//  Methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public override function toString():String {
-			return ( this.parent ? this.parent + ' ' : '' ) + ( this.selector || '' );
+			return ( this.parent ? this.parent + '>' : '' ) + ( this.selector || '' );
 		}
-		
+
 	}
 	
 }

@@ -6,21 +6,34 @@
     <classEntry path="by.blooddy.code.css.CSSParser"/>
     <classEntry path="by.blooddy.code.css.CSSScanner"/>
     <classEntry path="by.blooddy.code.css.CSSToken"/>
-    <classEntry path="by.blooddy.code.css.selectors.AttributeSelector"/>
-    <classEntry path="by.blooddy.code.css.selectors.CSSSelector"/>
-    <classEntry path="by.blooddy.code.css.selectors.ChildSelector"/>
-    <classEntry path="by.blooddy.code.css.selectors.ClassSelector"/>
-    <classEntry path="by.blooddy.code.css.selectors.DescendantSelector"/>
-    <classEntry path="by.blooddy.code.css.selectors.IDSelector"/>
-    <classEntry path="by.blooddy.code.css.selectors.PseudoSelector"/>
-    <classEntry path="by.blooddy.code.css.selectors.TagSelector"/>
+    <classEntry path="by.blooddy.code.css.definition.selectors.AttributeSelector"/>
+    <classEntry path="by.blooddy.code.css.definition.selectors.CSSSelector"/>
+    <classEntry path="by.blooddy.code.css.definition.selectors.ChildSelector"/>
+    <classEntry path="by.blooddy.code.css.definition.selectors.ClassSelector"/>
+    <classEntry path="by.blooddy.code.css.definition.selectors.DescendantSelector"/>
+    <classEntry path="by.blooddy.code.css.definition.selectors.IDSelector"/>
+    <classEntry path="by.blooddy.code.css.definition.selectors.PseudoSelector"/>
+    <classEntry path="by.blooddy.code.css.definition.selectors.TagSelector"/>
     <classEntry path="by.blooddy.code.errors.ParserError"/>
     <classEntry path="by.blooddy.code.json.JSONParser"/>
     <classEntry path="by.blooddy.code.json.JSONScanner"/>
     <classEntry path="by.blooddy.code.json.JSONToken"/>
     <classEntry path="by.blooddy.code.utils.Char"/>
     <classEntry path="by.blooddy.code.json.JSON"/>
-    <classEntry path="by.blooddy.code.css.selectors.CSSDeclaration"/>
+    <classEntry path="by.blooddy.code.css.definition.values.CSSValue"/>
+    <classEntry path="by.blooddy.code.css.definition.values.ColorValue"/>
+    <classEntry path="by.blooddy.code.css.definition.values.BooleanValue"/>
+    <classEntry path="by.blooddy.code.css.definition.values.StringValue"/>
+    <classEntry path="by.blooddy.code.css.definition.values.NumberValue"/>
+    <classEntry path="by.blooddy.code.css.definition.values.URLValue"/>
+    <classEntry path="by.blooddy.code.css.definition.values.ComplexValue"/>
+    <classEntry path="by.blooddy.code.css.definition.values.IdentifierValue"/>
+    <classEntry path="by.blooddy.code.utils.CSSColors"/>
+    <classEntry path="by.blooddy.code.css.definition.values.PercentValue"/>
+    <classEntry path="by.blooddy.code.css.definition.CSSDeclaration"/>
+    <classEntry path="by.blooddy.code.css.definition.CSSRule"/>
+    <classEntry path="by.blooddy.code.css.definition.CSSMedia"/>
+    <classEntry path="by.blooddy.code.css.definition.CSSDefinition"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

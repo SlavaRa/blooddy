@@ -4,16 +4,16 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.code.css.selectors {
+package by.blooddy.code.css.definition.values {
 	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					14.03.2010 17:36:46
+	 * @created					15.04.2010 2:09:10
 	 */
-	public class PseudoSelector extends AttributeSelector {
+	public class NumberValue extends CSSValue {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -24,20 +24,33 @@ package by.blooddy.code.css.selectors {
 		/**
 		 * Constructor
 		 */
-		public function PseudoSelector(value:String, selector:AttributeSelector=null) {
-			super( value, selector );
+		public function NumberValue(value:Number) {
+			super();
+			this.value = value;
 		}
-
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Properties
+		//
+		//--------------------------------------------------------------------------
+		
+		public var value:Number;
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
 		//
 		//--------------------------------------------------------------------------
-
-		public function toString():String {
-			return ( this.value ? ':' + this.value : '' ) + ( this.selector || '' );
+		
+		public function valueOf():Number {
+			return this.value;
 		}
-
+		
+		public function toString():String {
+			return this.value.toString();
+		}
+		
 	}
 	
 }

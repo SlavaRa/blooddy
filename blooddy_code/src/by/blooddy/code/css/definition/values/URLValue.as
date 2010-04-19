@@ -4,16 +4,16 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.code.css.selectors {
+package by.blooddy.code.css.definition.values {
 	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					14.03.2010 5:32:46
+	 * @created					15.04.2010 2:17:43
 	 */
-	public class CSSSelector {
+	public class URLValue extends StringValue {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -24,28 +24,20 @@ package by.blooddy.code.css.selectors {
 		/**
 		 * Constructor
 		 */
-		public function CSSSelector() {
-			super();
+		public function URLValue(value:String) {
+			super( value );
 		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Properties
-		//
-		//--------------------------------------------------------------------------
-
-		public var selector:AttributeSelector;
-
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
 		//
 		//--------------------------------------------------------------------------
-
-		public function toString():String {
-			return ( this.selector ? String( this.selector ) : '' );
+		
+		public override function toString():String {
+			return 'url(' + super.toString() + ')';
 		}
-
+		
 	}
 	
 }

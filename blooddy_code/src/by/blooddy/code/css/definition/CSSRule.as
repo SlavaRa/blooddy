@@ -4,16 +4,18 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.code.css.selectors {
+package by.blooddy.code.css.definition {
+
+	import by.blooddy.code.css.definition.selectors.CSSSelector;
 	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					14.03.2010 17:30:21
+	 * @created					18.04.2010 6:03:15
 	 */
-	public class ClassSelector extends AttributeSelector {
+	public class CSSRule {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -24,18 +26,30 @@ package by.blooddy.code.css.selectors {
 		/**
 		 * Constructor
 		 */
-		public function ClassSelector(styleClass:String, selector:AttributeSelector=null) {
-			super( styleClass, selector );
+		public function CSSRule(selector:CSSSelector, declarations:Vector.<CSSDeclaration>) {
+			super();
+			this.selector = selector;
+			this.declarations = declarations;
 		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Properties
+		//
+		//--------------------------------------------------------------------------
+
+		public var selector:CSSSelector;
+
+		public var declarations:Vector.<CSSDeclaration>;
 
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public function toString():String {
-			return ( this.value ? '.' + this.value : '' ) + ( this.selector || '' );
+			return this.selector + '{' + this.declarations.join( ';' ) + '}';
 		}
 
 	}
