@@ -6,8 +6,17 @@
 
 package by.blooddy.core.display {
 	
+	import by.blooddy.core.blooddy;
+	import by.blooddy.core.utils.ClassAlias;
+
 	import flash.display.Shape;
-	
+
+	//--------------------------------------
+	//  Aliases
+	//--------------------------------------
+
+	ClassAlias.registerNamespaceAlias( blooddy, BaseShape );
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0

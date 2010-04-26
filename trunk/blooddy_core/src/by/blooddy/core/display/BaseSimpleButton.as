@@ -6,9 +6,18 @@
 
 package by.blooddy.core.display {
 	
+	import by.blooddy.core.blooddy;
+	import by.blooddy.core.utils.ClassAlias;
+	
 	import flash.display.DisplayObject;
 	import flash.display.SimpleButton;
 	
+	//--------------------------------------
+	//  Aliases
+	//--------------------------------------
+	
+	ClassAlias.registerNamespaceAlias( blooddy, BaseSimpleButton );
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0

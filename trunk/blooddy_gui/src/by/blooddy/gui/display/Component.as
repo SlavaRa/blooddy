@@ -6,22 +6,30 @@
 
 package by.blooddy.gui.display {
 	
+	import by.blooddy.core.blooddy;
 	import by.blooddy.core.display.resource.LoadableResourceSprite;
 	import by.blooddy.core.events.display.resource.ResourceEvent;
+	import by.blooddy.core.utils.ClassAlias;
 	import by.blooddy.gui.events.ComponentEvent;
 	
-	import flash.errors.IllegalOperationError;
-	import flash.utils.getQualifiedClassName;
-	import flash.events.Event;
 	import flash.display.DisplayObject;
+	import flash.errors.IllegalOperationError;
+	import flash.events.Event;
+	import flash.utils.getQualifiedClassName;
+
+	//--------------------------------------
+	//  Aliases
+	//--------------------------------------
 	
+	ClassAlias.registerNamespaceAlias( blooddy, Component );
+
 	//--------------------------------------
 	//  Events
 	//--------------------------------------
 	
 	[Event( name="componentConstuct", type="by.blooddy.gui.events.ComponentEvent" )]
 	[Event( name="componentDestruct", type="by.blooddy.gui.events.ComponentEvent" )]
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -52,6 +60,7 @@ package by.blooddy.gui.display {
 		 */
 		public function Component() {
 			super();
+			super.mouseEnabled = true;
 			trace( 'component: ' + getQualifiedClassName( this ) );
 			super.addEventListener( Event.ADDED_TO_STAGE, this.handler_addedToStage, false, int.MIN_VALUE, true );
 			super.addEventListener( Event.REMOVED_FROM_STAGE, this.handler_removedFromStage, false, int.MIN_VALUE, true );
@@ -109,7 +118,7 @@ package by.blooddy.gui.display {
 		//----------------------------------
 		//  container
 		//----------------------------------
-		
+
 		/**
 		 * @private
 		 */
@@ -119,6 +128,45 @@ package by.blooddy.gui.display {
 			return this._container;
 		}
 		
+		//----------------------------------
+		//  lock
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
+		private var _lock:Boolean = false;
+		
+		public function get lock():Boolean {
+			return this._lock;
+		}
+
+		public function set lock(value:Boolean):void {
+			if ( this._lock == value ) return;
+			this._lock = value;
+			if ( value ) {
+				if ( super.stage ) {
+					super.stage.addEventListener( Event.RESIZE, this.drawLock );
+					this.drawLock();
+				}
+			} else {
+				super.stage.removeEventListener( Event.RESIZE, this.drawLock );
+				super.graphics.clear();
+			}
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Methods
+		//
+		//--------------------------------------------------------------------------
+
+		public function close():void {
+			if ( this._container ) {
+				this._container.removeComponent( this._componentInfo );
+			}
+		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Namespace methods
@@ -135,6 +183,24 @@ package by.blooddy.gui.display {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Private methods
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private function drawLock(event:Event=null):void {
+			with ( super.graphics ) {
+				clear();
+				beginFill( 0xFF0000, 0 );
+				drawRect( 0, 0, super.stage.stageWidth, super.stage.stageHeight );
+				endFill();
+			}
+		}
+
+		//--------------------------------------------------------------------------
+		//
 		//  Event handlers
 		//
 		//--------------------------------------------------------------------------
@@ -146,6 +212,10 @@ package by.blooddy.gui.display {
 			var parent:DisplayObject = this;
 			while ( ( parent = parent.parent ) && !( parent is ComponentContainer ) ) {};
 			this._container = parent as ComponentContainer;
+			if ( this._lock ) {
+				super.stage.addEventListener( Event.RESIZE, this.drawLock );
+				this.drawLock();
+			}
 		}
 		
 		/**
@@ -153,6 +223,9 @@ package by.blooddy.gui.display {
 		 */
 		private function handler_removedFromStage(event:Event):void {
 			this._container = null;
+			if ( this._lock ) {
+				super.stage.removeEventListener( Event.RESIZE, this.drawLock );
+			}
 		}
 		
 		/**

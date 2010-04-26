@@ -6,8 +6,17 @@
 
 package by.blooddy.core.display {
 	
-	import flash.media.Video;
+	import by.blooddy.core.blooddy;
+	import by.blooddy.core.utils.ClassAlias;
 	
+	import flash.media.Video;
+
+	//--------------------------------------
+	//  Aliases
+	//--------------------------------------
+	
+	ClassAlias.registerNamespaceAlias( blooddy, BaseVideo );
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0

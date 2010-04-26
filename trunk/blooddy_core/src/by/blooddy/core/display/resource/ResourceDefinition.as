@@ -38,7 +38,6 @@ package by.blooddy.core.display.resource {
 		/**
 		 * @private
 		 */
-
 		public static function getHash(bundleName:String=null, resourceName:String=null):String {
 			return ( bundleName ? bundleName : '' ) + _SEPERATOR + ( resourceName ? resourceName : '' );
 		}

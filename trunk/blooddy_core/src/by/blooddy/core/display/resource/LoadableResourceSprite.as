@@ -56,13 +56,14 @@ package by.blooddy.core.display.resource {
 		//--------------------------------------------------------------------------
 
 		protected final function invalidate():void {
+
+			if ( !super.hasManager() ) return;
+
 			if ( this._loader ) {
 				this.clearLoader();
 			} else {
 				this.clear();
 			}
-
-			if ( !super.hasManager() ) return;
 
 			var resources:Array = this.getResourceBundles();
 			var loader:ILoadable;
@@ -121,7 +122,7 @@ package by.blooddy.core.display.resource {
 
 			} else {
 
-				this.render();
+				this.draw();
 
 			}
 		}
@@ -134,7 +135,7 @@ package by.blooddy.core.display.resource {
 			return true;
 		}
 		
-		protected function render():Boolean {
+		protected function draw():Boolean {
 			return true;
 		}
 
@@ -191,7 +192,7 @@ package by.blooddy.core.display.resource {
 		 */
 		private function handler_complete(event:Event):void {
 			this.clearLoader();
-			this.render();
+			this.draw();
 		}
 
 	}

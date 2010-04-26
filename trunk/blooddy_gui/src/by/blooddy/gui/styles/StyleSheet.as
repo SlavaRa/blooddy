@@ -6,10 +6,9 @@
 
 package by.blooddy.gui.styles {
 
-	import by.blooddy.core.errors.ParserError;
+	import by.blooddy.code.css.CSSParser;
 	
 	import flash.events.EventDispatcher;
-	import by.blooddy.code.css.CSSParser;
 	
 	/**
 	 * @author					BlooDHounD

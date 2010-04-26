@@ -7,6 +7,7 @@
 package by.blooddy.core.errors.display.resource {
 	
 	import by.blooddy.core.display.resource.ResourceDefinition;
+	import by.blooddy.core.utils.ClassUtils;
 	
 	/**
 	 * @author					BlooDHounD
@@ -28,7 +29,7 @@ package by.blooddy.core.errors.display.resource {
 		 */
 		public function ResourceError(message:String='', id:int=0, resources:Vector.<ResourceDefinition>=null) {
 			super( message, id );
-			this.name = 'ResourceError';
+			this.name = ClassUtils.getClassName( this );
 			if ( resources) {
 				this.resources = resources.slice();
 			}
@@ -49,7 +50,10 @@ package by.blooddy.core.errors.display.resource {
 		//--------------------------------------------------------------------------
 
 		public function toString():String {
-			return Error.prototype.toString.call( this ) + ( this.resources && this.resources.length > 0 ? ' (' + this.resources + ')': '' );
+			return	this.name +
+					( this.errorID ? ' #' + this.errorID : '' ) +
+					( this.message ? ': ' + this.message : '' ) +
+					( this.resources && this.resources.length > 0 ? ' (' + this.resources + ')' : '' );
 		}
 
 	}
