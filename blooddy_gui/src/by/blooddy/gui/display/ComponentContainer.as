@@ -9,10 +9,17 @@ package by.blooddy.gui.display {
 	import by.blooddy.core.controllers.IBaseController;
 	import by.blooddy.core.display.resource.MainResourceSprite;
 	import by.blooddy.core.errors.getErrorMessage;
+	import by.blooddy.core.events.net.loading.LoaderEvent;
+	import by.blooddy.core.net.loading.ILoadable;
+	import by.blooddy.gui.parser.ComponentParser;
 	
 	import flash.display.DisplayObject;
 	import flash.errors.IllegalOperationError;
+	import flash.events.Event;
+	import flash.events.IOErrorEvent;
+	import flash.events.SecurityErrorEvent;
 	import flash.system.Capabilities;
+	import flash.utils.Dictionary;
 
 	// TODO: handler_removed
 
@@ -66,7 +73,7 @@ package by.blooddy.gui.display {
 		/**
 		 * Constructor.
 		 */
-		public function ComponentContainer(baseController:IBaseController) {
+		public function ComponentContainer(baseController:IBaseController=null) {
 			super();
 			this._baseController = baseController;
 		}
@@ -82,6 +89,16 @@ package by.blooddy.gui.display {
 		 */
 		private var _components:Object = new Object();
 
+		/**
+		 * @private
+		 */
+		private var _source:Object = new Object();
+		
+		/**
+		 * @private
+		 */
+		private var _queue:Dictionary = new Dictionary();
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
@@ -104,7 +121,17 @@ package by.blooddy.gui.display {
 		//--------------------------------------------------------------------------
 
 		public function loadComponent(url:String, params:Object=null):void {
-			throw new IllegalOperationError();
+			var loader:ILoadable = super.loadResourceBundle( url );
+			if ( loader.loaded ) {
+				// TODO: inline
+			} else {
+				loader.addEventListener( Event.COMPLETE,					this.handler_loader_complete );
+				loader.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_loader_error );
+				loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_loader_error );
+				var asset:ComponentAsset = this._queue[ loader ];
+				if ( !asset ) this._queue[ loader ] = asset = new ComponentAsset( url );
+				asset.params.push( params );
+			}
 		}
 
 		public function removeComponent(info:ComponentInfo):ComponentInfo {
@@ -147,6 +174,76 @@ package by.blooddy.gui.display {
 				super.addChild( info.component );
 			}
 			
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Event handlers
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		 * @private
+		 */
+		private function handler_loader_complete(event:Event):void {
+			var asset:ComponentAsset = this._queue[ event.target ];
+			this.handler_loader_error( event );
+
+			var xml:XML = new XML( super.getResource( asset.url ) );
+			if ( xml ) {
+
+				var parser:ComponentParser = new ComponentParser();
+				parser.addEventListener( Event.COMPLETE,			this.handler_parser_complete );
+				parser.addEventListener( IOErrorEvent.IO_ERROR,		this.handler_parser_error );
+				parser.addEventListener( LoaderEvent.LOADER_INIT,	this.handler_loaderInit );
+				parser.parse( xml );
+
+			} else {
+
+				
+
+			}
+		}
+
+		/**
+		 * @private
+		 */
+		private function handler_loader_error(event:Event):void {
+			var loader:ILoadable = event.target as ILoadable;
+			loader.removeEventListener( Event.COMPLETE,						this.handler_loader_complete );
+			loader.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_loader_error );
+			loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_loader_error );
+			delete this._queue[ event.target ];
+		}
+
+		/**
+		 * @private
+		 */
+		private function handler_parser_complete(event:Event):void {
+			var parser:ComponentParser = event.target as ComponentParser;
+			var asset:ComponentAsset = this._queue[ event.target ];
+			this.handler_parser_error( event );
+			
+			
+			
+		}
+
+		/**
+		 * @private
+		 */
+		private function handler_parser_error(event:Event):void {
+			var parser:ComponentParser = event.target as ComponentParser;
+			parser.removeEventListener( Event.COMPLETE,				this.handler_parser_complete );
+			parser.removeEventListener( IOErrorEvent.IO_ERROR,		this.handler_parser_error );
+			parser.removeEventListener( LoaderEvent.LOADER_INIT,	this.handler_loaderInit );
+			delete this._queue[ event.target ];
+		}
+		
+		/**
+		 * @private
+		 */
+		private function handler_loaderInit(event:LoaderEvent):void {
+			super.dispatchEvent( new LoaderEvent( LoaderEvent.LOADER_INIT, true, false, event.loader ) );
 		}
 		
 		//--------------------------------------------------------------------------
@@ -220,4 +317,17 @@ package by.blooddy.gui.display {
 		
 	}
 	
+}
+
+internal final class ComponentAsset {
+
+	public function ComponentAsset(url:String) {
+		super();
+		this.url = url;
+	}
+
+	public var url:String;
+
+	public const params:Array = new Array();
+
 }

@@ -44,7 +44,9 @@ package by.blooddy.code.errors {
 		 * @private
 		 */
 		public function toString():String {
-			return this.name + ' #' + super.errorID + ': ' + super.message;
+			return	this.name +
+					( this.errorID ? ' #' + this.errorID : '' ) +
+					( this.message ? ': ' + this.message : '' );
 		}
 
 	}

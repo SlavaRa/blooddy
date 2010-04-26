@@ -6,11 +6,20 @@
 
 package by.blooddy.core.display.text {
 	
+	import by.blooddy.core.blooddy;
+	import by.blooddy.core.utils.ClassAlias;
+	
 	import flash.display.Loader;
 	import flash.display.LoaderInfo;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.text.TextField;
+
+	//--------------------------------------
+	//  Aliases
+	//--------------------------------------
+	
+	ClassAlias.registerNamespaceAlias( blooddy, BaseTextField );
 
 	/**
 	 * @author					BlooDHounD

@@ -42,6 +42,7 @@ package by.blooddy.core.utils {
 			} else if ( !( name is String ) ) {
 				throw new ArgumentError();
 			}
+//			trace( name );
 			registerClassAlias( name, c );
 			_HASH[ name ] = new WeakRef( c );
 		}
@@ -55,6 +56,7 @@ package by.blooddy.core.utils {
 				throw new ArgumentError();
 			}
 			ns = ( ns ? ns + '::' : '' ) + ClassUtils.getClassName( c );
+//			trace( ns );
 			registerClassAlias( ns, c );
 			_HASH[ ns ] = new WeakRef( c );
 		}
@@ -98,10 +100,14 @@ import by.blooddy.core.utils.ClassAlias;
 
 import flash.display.Bitmap;
 import flash.display.Shape;
+import flash.display.SimpleButton;
 import flash.display.Sprite;
+import flash.media.Video;
 import flash.text.TextField;
 
 ClassAlias.registerNamespaceAlias( AS3, Bitmap );
 ClassAlias.registerNamespaceAlias( AS3, Shape );
 ClassAlias.registerNamespaceAlias( AS3, Sprite );
 ClassAlias.registerNamespaceAlias( AS3, TextField );
+ClassAlias.registerNamespaceAlias( AS3, Video );
+ClassAlias.registerNamespaceAlias( AS3, SimpleButton );

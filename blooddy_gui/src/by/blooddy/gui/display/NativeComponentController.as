@@ -9,7 +9,9 @@ package by.blooddy.gui.display {
 	import by.blooddy.core.controllers.IBaseController;
 	import by.blooddy.core.controllers.IController;
 	import by.blooddy.core.data.DataBase;
+	import by.blooddy.core.errors.getErrorMessage;
 	import by.blooddy.core.utils.IAbstractRemoter;
+	import by.blooddy.gui.controller.ComponentController;
 	import by.blooddy.gui.events.ComponentEvent;
 	
 	import flash.events.Event;
@@ -24,7 +26,7 @@ package by.blooddy.gui.display {
 	 * @created					07.04.2010 20:14:57
 	 */
 	public class NativeComponentController extends EventDispatcher implements IController, IAbstractRemoter {
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Namespaces
@@ -46,6 +48,9 @@ package by.blooddy.gui.display {
 		 */
 		public function NativeComponentController() {
 			super();
+			if ( !( this is ComponentController ) ) {
+				throw new ArgumentError( getErrorMessage( 2012, this ), 2012 );
+			}
 		}
 		
 		//--------------------------------------------------------------------------

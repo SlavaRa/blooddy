@@ -12,6 +12,10 @@ package by.blooddy.core.net {
 	import flash.events.SecurityErrorEvent;
 	import flash.net.Socket;
 
+	//--------------------------------------
+	//  Events
+	//--------------------------------------
+	
 	[Event( name="open", type="flash.events.Event" )]
 
 	/**
@@ -161,14 +165,18 @@ package by.blooddy.core.net {
 		 */
 		private function handler_error(event:ErrorEvent):void {
 			if ( this._hasError ) {
+				// ошибка уже была. поэтому блокируем остальные
 				event.stopImmediatePropagation();
 			} else {
 				this._hasError = true;
 				this.clear();
+				// надо оптисаться, что бы не мешать вызову исключения
 				super.removeEventListener( event.type, this.handler_error );
 				if ( !super.hasEventListener( event.type ) ) {
+					// если подписчиков нету, диспатчим ошибку, что бы вывалился unhadled securityError
 					super.dispatchEvent( event );
 				}
+				// подписываемся обратно
 				super.addEventListener( event.type, this.handler_error, false, int.MAX_VALUE, true );
 			}
 		}
