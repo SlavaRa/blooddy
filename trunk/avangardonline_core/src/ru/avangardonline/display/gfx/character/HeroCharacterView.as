@@ -93,8 +93,8 @@ package ru.avangardonline.display.gfx.character {
 		//
 		//--------------------------------------------------------------------------
 
-		protected override function render():Boolean {
-			if ( !super.render() ) return false;
+		protected override function draw():Boolean {
+			if ( !super.draw() ) return false;
 			
 			this._nick = new TextField();
 			this._nick.width = 120;

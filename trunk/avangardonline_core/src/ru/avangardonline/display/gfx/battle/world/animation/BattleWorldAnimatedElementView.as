@@ -119,7 +119,7 @@ package ru.avangardonline.display.gfx.battle.world.animation {
 		/**
 		 * @private
 		 */
-		protected override function render():Boolean {
+		protected override function draw():Boolean {
 			if ( !super.stage || !this._currentAnim ) return false;
 			super.lockResourceBundle( this.getAnimationDefinition().bundleName );
 			this.$element = this.getAnimation();
