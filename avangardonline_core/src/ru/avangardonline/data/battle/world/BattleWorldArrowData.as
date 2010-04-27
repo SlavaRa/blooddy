@@ -9,7 +9,7 @@ package ru.avangardonline.data.battle.world {
 	import ru.avangardonline.events.data.battle.world.BattleWorldCoordinateDataEvent;
 	import ru.avangardonline.events.data.battle.world.BattleWorldDataEvent;
 	import ru.avangardonline.events.data.battle.world.BattleWorldTempElementEvent;
-	import by.blooddy.core.utils.nexframeCall;
+	import by.blooddy.core.utils.nextframeCall;
 
 	//--------------------------------------
 	//  Events
@@ -104,7 +104,7 @@ package ru.avangardonline.data.battle.world {
 				super.coord.setValues( owner.coord.x, owner.coord.y );
 				super.coord.moveTo( target.coord.x, target.coord.y, super.world.time.currentTime + 500 - 100 * Math.random() );
 			} else {
-				nexframeCall( this.destroy );
+				nextframeCall( this.destroy );
 			}
 		}
 

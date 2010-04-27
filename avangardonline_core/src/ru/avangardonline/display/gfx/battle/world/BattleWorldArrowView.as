@@ -68,7 +68,7 @@ package ru.avangardonline.display.gfx.battle.world {
 		/**
 		 * @private
 		 */
-		protected override function render():Boolean {
+		protected override function draw():Boolean {
 			this.$element = super.getDisplayObject( 'lib/display/world/arrow.swf', 'arrow' );
 			if ( this.$element ) {
 				super.addChild( this.$element );

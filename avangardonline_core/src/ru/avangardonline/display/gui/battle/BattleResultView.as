@@ -128,7 +128,7 @@ package ru.avangardonline.display.gui.battle {
 		/**
 		 * @private
 		 */
-		protected override function render():Boolean {
+		protected override function draw():Boolean {
 
 			this._element = super.getDisplayObject( 'lib/display/gui/battle_result.swf', 'result_' + this._type );
 			if ( this._element ) {

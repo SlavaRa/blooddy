@@ -73,7 +73,7 @@ package ru.avangardonline.display.gui.battle {
 			return new Array( this.getResourceBundle() );
 		}
 
-		protected override function render():Boolean {
+		protected override function draw():Boolean {
 			super.graphics.beginFill( 0x333333 );
 			super.graphics.drawRect( -17, -17, 34, 34 );
 			super.graphics.endFill();

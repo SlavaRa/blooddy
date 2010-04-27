@@ -105,7 +105,7 @@ package ru.avangardonline.display.gui.battle {
 		/**
 		 * @private
 		 */
-		protected override function render():Boolean {
+		protected override function draw():Boolean {
 			if ( !this._data ) return false;
 			for each ( var rune:RuneData in this._data.getRunes() ) {
 				this.addRune( rune );
