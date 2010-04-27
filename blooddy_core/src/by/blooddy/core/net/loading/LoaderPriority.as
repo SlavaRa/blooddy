@@ -18,8 +18,10 @@ package by.blooddy.core.net.loading {
 		
 		public static const PRELOADER:int =		HIGHEST -1;
 
-		public static const PRELOADING:int =	int.MIN_VALUE;
+		public static const PRELOADING:int =	LOWER + 1;
 
+		public static const LOWER:int =			int.MIN_VALUE;
+		
 	}
 
 }
