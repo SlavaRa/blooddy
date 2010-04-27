@@ -46,7 +46,7 @@ package by.blooddy.core.managers.resource {
 	 * 
 	 * @keyword					resourcemanager, resource, manager
 	 */
-	public final class ResourceManager extends EventDispatcher {
+	public final class ResourceManager extends EventDispatcher implements IResourceManger {
 
 		//--------------------------------------------------------------------------
 		//
@@ -148,7 +148,7 @@ package by.blooddy.core.managers.resource {
 		/**
 		 * @private
 		 */
-		private static function addLoaderQueue(asset:ResourceLoaderAsset, priority:int=0.0):void {
+		private static function addLoaderQueue(asset:ResourceLoaderAsset, priority:int):void {
 			if ( priority >= LoaderPriority.HIGHEST ) {
 				registerQueue( asset );
 				asset.$load();
@@ -256,7 +256,7 @@ package by.blooddy.core.managers.resource {
 		 * @keyword					resourcemanager.getobject, getobject
 		 */
 		public function getResource(bundleName:String, resourceName:String=null):* {
-			if ( !( bundleName in this._hash ) ) return null;
+			if ( !( bundleName in this._hash ) ) return undefined;
 			return ( this._hash[ bundleName ] as IResourceBundle ).getResource( resourceName );
 		}
 
@@ -382,7 +382,7 @@ package by.blooddy.core.managers.resource {
 		 * 
 		 * @keyword					resourcemanager.loadresourcebundle, loadresourcebundle
 		 */
-		public function loadResourceBundle(url:String, priority:uint=0):ILoadable {
+		public function loadResourceBundle(url:String, priority:int=0.0):ILoadable {
 
 			var asset:ResourceLoaderAsset;
 			if ( url in this._hash ) { // такой уже есть

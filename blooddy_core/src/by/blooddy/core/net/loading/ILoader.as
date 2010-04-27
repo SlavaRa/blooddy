@@ -26,7 +26,7 @@ package by.blooddy.core.net.loading {
 	 * @eventType			flash.events.HTTPStatusEvent.HTTP_RESPONSE_STATUS
 	 */
 	[Event( name="httpResponseStatus", type="flash.events.HTTPStatusEvent" )]
-	
+
 	[Event( name="init", type="flash.events.Event" )]
 	
 	[Event( name="unload", type="flash.events.Event" )]

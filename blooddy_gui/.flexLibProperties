@@ -9,6 +9,7 @@
     <classEntry path="by.blooddy.gui.display.NativeComponentController"/>
     <classEntry path="by.blooddy.gui.display.ComponentInfo"/>
     <classEntry path="by.blooddy.gui.parser.ComponentParser"/>
+    <classEntry path="by.blooddy.gui.parser.ComponentDefinition"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

@@ -33,6 +33,18 @@ package by.blooddy.code.css {
 	import flash.events.EventDispatcher;
 	import flash.system.Capabilities;
 	
+	//--------------------------------------
+	//  Implements events: ILoadable
+	//--------------------------------------
+
+	[Event( name="open", type="flash.events.Event" )]
+
+	[Event( name="complete", type="flash.events.Event" )]
+
+	[Event( name="ioError", type="flash.events.IOErrorEvent" )]
+
+	[Event( name="progress", type="flash.events.ProgressEvent" )]
+	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -104,11 +116,38 @@ package by.blooddy.code.css {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Properties
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private var _content:CSSDefinition;
+
+		public function get content():CSSDefinition {
+			return this._content;
+		}
+
+		/**
+		 * @private
+		 */
+		private var _errors:Vector.<Error>;
+		
+		public function get errors():Vector.<Error> {
+			return this._errors;
+		}
+
+		//--------------------------------------------------------------------------
+		//
 		//  Methods
 		//
 		//--------------------------------------------------------------------------
 
 		public function parse(value:String):void {
+			// сбрасываем значения
+			this._content = null;
+			this._errors = new Vector.<Error>();
 			this._scanner.writeSource( value );
 			var tok:uint;
 			var selectors:Vector.<CSSSelector>;
@@ -136,7 +175,7 @@ package by.blooddy.code.css {
 									} else if ( tok == CSSToken.IDENTIFIER && this._scanner.tokenText == 'url' ) {
 										this.readURLEntity(); // result url
 									} else {
-										throw new ParserError();
+										throw new ParserError( 'не найдено определение url' );
 									}
 									// media
 									tok = this.readToken();
@@ -154,7 +193,7 @@ package by.blooddy.code.css {
 									// TODO: read content
 									this.readFixToken( CSSToken.RIGHT_BRACE );
 								default:
-									throw new ParserError();
+									throw new ParserError( 'неизвестный типа injection' );
 							}
 							break;
 
@@ -168,7 +207,6 @@ package by.blooddy.code.css {
 							declarations = this.readDeclarations();
 							if ( declarations.length > 0 ) {
 								for each ( s in selectors ) {
-									
 									definition.defaultMedia.rules.push(
 										new CSSRule( s, declarations )
 									);
@@ -180,14 +218,15 @@ package by.blooddy.code.css {
 							break;
 
 						default:
-							throw new ParserError();
+							throw new ParserError( 'не известный тип токена' );
 							
 					}
 					
 				} catch ( e:Error ) {
+					this._errors.push( e );
 				}
 			} while ( tok != CSSToken.EOF );
-			
+			trace( errors );
 			trace( definition );
 		}
 
@@ -216,7 +255,7 @@ package by.blooddy.code.css {
 		 */
 		private function readFixToken(kind:uint, ignoreWhite:Boolean=true, ignoreComments:Boolean=true):uint {
 			var tok:uint = this.readToken( ignoreWhite, ignoreComments );
-			if ( tok != kind ) throw new ParserError();
+			if ( tok != kind ) throw new ParserError( 'ожидался токен "' + kind + '" вместо "' + tok + '"' );
 			return tok;
 		}
 
@@ -257,7 +296,7 @@ package by.blooddy.code.css {
 					this._scanner.retreat();
 					return this.readSelector( new DescendantSelector( child ) );
 			}
-			throw new ParserError();
+			throw new ParserError( 'неизвестный тип селектора' );
 		}
 
 		/**
@@ -360,13 +399,14 @@ package by.blooddy.code.css {
 					name = this.readDeclarationName();
 					this.readFixToken( CSSToken.COLON );
 					values = this.readDeclarationValues();
-					if ( values.length <= 0 ) throw new ParserError();
+					if ( values.length <= 0 ) throw new ParserError( 'нету значений для определения' );
 					if ( name in hash ) {
 						hash[ name ].values = values;
 					} else {
 						result.push( new CSSDeclaration( name, values ) );
 					}
 				} catch ( e:Error ) { // пропускаем дкларацию
+					this._errors.push( e );
 					if ( this._scanner.tokenKind != CSSToken.RIGHT_BRACE && this._scanner.tokenKind != CSSToken.SEMI_COLON ) {
 						this._scanner.readTokenAsTo( CSSToken.UNKNOWN, Char.SEMI_COLON, Char.RIGHT_BRACE, Char.NEWLINE, Char.CARRIAGE_RETURN );
 						if ( this._scanner.readToken() != Char.SEMI_COLON ) {
@@ -389,7 +429,7 @@ package by.blooddy.code.css {
 			do {
 				switch ( tok ) {
 					case CSSToken.DASH:
-						if ( u ) throw new ParserError();
+						if ( u ) throw new ParserError( 'двойной "-"' );
 						u = true;
 						break;
 					case CSSToken.IDENTIFIER:
@@ -484,7 +524,7 @@ package by.blooddy.code.css {
 										if ( complexAvailable ) {
 											return new ComplexValue( t, this.readComplexEntity() );
 										} else {
-											throw new ParserError();
+											throw new ParserError( 'ComplexValue не поддерживается' );
 										}
 									
 								}
@@ -498,7 +538,7 @@ package by.blooddy.code.css {
 				
 			}
 			
-			throw new ParserError();
+			throw new ParserError( 'неизвестный тип значения' );
 		}
 		
 		/**
@@ -523,7 +563,7 @@ package by.blooddy.code.css {
 							case CSSToken.RIGHT_PAREN:
 								return result;
 							default:
-								throw new ParserError();
+								throw new ParserError( 'ожидалось либо запятая либо скобка' );
 						}
 						break;
 					
@@ -552,7 +592,7 @@ package by.blooddy.code.css {
 				case 8:
 					break;
 				default:
-					throw new ParserError();
+					throw new ParserError( 'кривой цвет' );
 			}
 			return parseInt( t, 16 ) | ( t.length <= 6 ? 0xFF000000 : 0 );
 		}
@@ -629,7 +669,7 @@ package by.blooddy.code.css {
 								}
 								break;
 							default:
-								throw new ParserError();
+								throw new ParserError( 'ожидалось либо запятая, либо скобка' );
 						}
 						break;
 					case CSSToken.COMMA:
@@ -642,7 +682,7 @@ package by.blooddy.code.css {
 						);
 						break;
 					default:
-						throw new ParserError();
+						throw new ParserError( 'хз что пришло' );
 				}
 			} while ( result.length < l );
 			return result;
