@@ -31,7 +31,7 @@ package by.blooddy.core.managers.resource {
 	 * @langversion				3.0
 	 * @created					21.02.2010 3:46:27
 	 */
-	public final class ResourceManagerProxy {
+	public final class ResourceManagerProxy implements IResourceManger {
 
 		//--------------------------------------------------------------------------
 		//
@@ -154,8 +154,8 @@ package by.blooddy.core.managers.resource {
 			}
 		}
 
-		public function loadResourceBundle(bundleName:String, priority:int=0.0):ILoadable {
-			return this._manager.loadResourceBundle( bundleName, priority );
+		public function loadResourceBundle(url:String, priority:int=0.0):ILoadable {
+			return this._manager.loadResourceBundle( url, priority );
 		}
 
 		public function hasResource(bundleName:String, resourceName:String=null):Boolean {
@@ -164,8 +164,8 @@ package by.blooddy.core.managers.resource {
 			else return this._manager.hasResource( bundleName, resourceName );
 		}
 
-		public function getResource(bundleName:String, resourceName:String=null):Object {
-			var result:Object = this._manager.getResource( bundleName, resourceName );
+		public function getResource(bundleName:String, resourceName:String=null):* {
+			var result:* = this._manager.getResource( bundleName, resourceName );
 			switch ( typeof result ) {
 				case 'object':
 				case 'function':

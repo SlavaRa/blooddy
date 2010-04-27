@@ -12,6 +12,7 @@ package by.blooddy.gui.parser {
 	
 	import flash.events.EventDispatcher;
 	import by.blooddy.code.errors.ParserError;
+	import by.blooddy.core.utils.ClassAlias;
 	
 	//--------------------------------------
 	//  Implements events: ILoadable
@@ -33,10 +34,13 @@ package by.blooddy.gui.parser {
 
 		//--------------------------------------------------------------------------
 		//
-		//  Constructor
+		//  Class variables
 		//
 		//--------------------------------------------------------------------------
-		
+
+		/**
+		 * @private
+		 */
 		private static const _COMPONENT_NAME:QName = new QName( blooddy, 'component' );
 
 		//--------------------------------------------------------------------------
@@ -54,27 +58,67 @@ package by.blooddy.gui.parser {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Properties
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private var _content:ComponentDefinition;
+
+		public function get content():ComponentDefinition {
+			return this._content;
+		}
+		
+		//--------------------------------------------------------------------------
+		//
 		//  Methods
 		//
 		//--------------------------------------------------------------------------
 
 		public function parse(xml:XML):void {
 
-			trace( xml.toXMLString() );
+			this._content = null;
+
 			if ( xml.name() != _COMPONENT_NAME ) throw new ParserError();
 
+			this._content = new ComponentDefinition();
+			
 			var list:XMLList;
 			
+			// head
 			list = xml.blooddy::head;
 			if ( list.length() > 0 ) {
-				// head
-				trace( list[ 0 ].toXMLString() );
+				var list2:XMLList;
+				var list3:XMLList;
+				// meta
+				list2 = list.blooddy::meta;
+				if ( list2.length() ) {
+					var l:uint;
+					// name
+					list3 = list2.( @name.toLowerCase() == 'name' );
+					l = list3.length();
+					if ( l > 0 ) this._content.name = list3[ l - 1 ].@content.toString();
+					// controller
+					list3 = list2.( @name.toLowerCase() == 'controller' );
+					l = list3.length();
+					if ( l > 0 ) {
+						var controllerName:String = list3[ l - 1 ].@content.toString();
+						if ( controllerName ) {
+							this._content.controller = ClassAlias.getClass( controllerName );
+						}
+					}
+				}
+				list2 = list.blooddy::link;
+				trace( list2.toXMLString() );
 			}
+			// body
 			list = xml.blooddy::body;
 			if ( list.length() > 0 ) {
-				// head
-				trace( list[ 0 ].toXMLString() );
+				//trace( list[ 0 ].toXMLString() );
 			}
+
 		}
 		
 	}
