@@ -28,9 +28,17 @@ package by.blooddy.gui.parser {
 			super();
 		}
 
+		//--------------------------------------------------------------------------
+		//
+		//  Properties
+		//
+		//--------------------------------------------------------------------------
+		
 		public var name:String;
 
 		public var controller:Class;
+
+		public const preload:Vector.<String> = new Vector.<String>();
 
 	}
 

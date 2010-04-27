@@ -121,6 +121,7 @@ package by.blooddy.gui.display {
 		//--------------------------------------------------------------------------
 
 		public function loadComponent(url:String, params:Object=null):void {
+			if ( !super.hasManager() ) throw new ArgumentError();
 			var loader:ILoadable = super.loadResourceBundle( url );
 			if ( loader.loaded ) {
 				// TODO: inline
@@ -192,7 +193,7 @@ package by.blooddy.gui.display {
 			var xml:XML = new XML( super.getResource( asset.url ) );
 			if ( xml ) {
 
-				var parser:ComponentParser = new ComponentParser();
+				var parser:ComponentParser = new ComponentParser( super.$protected_rs::getResourceManager() );
 				parser.addEventListener( Event.COMPLETE,			this.handler_parser_complete );
 				parser.addEventListener( IOErrorEvent.IO_ERROR,		this.handler_parser_error );
 				parser.addEventListener( LoaderEvent.LOADER_INIT,	this.handler_loaderInit );

@@ -226,13 +226,14 @@ package by.blooddy.core.net.loading {
 		private function $addLoaderListener(loader:ILoadable):void {
 			if ( this._loaders.indexOf( loader ) >= 0 ) return; // проверим. может какой-то баран уже дабавил нас сюда.
 
+			// подписываем с минимальными приоритетом. мы контэйнер, и должны отработать последними
 			if ( !loader.loaded ) {
-				loader.addEventListener( Event.COMPLETE,					this.updateLoaded );
-				loader.addEventListener( ProgressEvent.PROGRESS,			this.toProgress );
-				loader.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_error );
-				loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error );
+				loader.addEventListener( Event.COMPLETE,					this.updateLoaded, false, int.MIN_VALUE );
+				loader.addEventListener( ProgressEvent.PROGRESS,			this.toProgress, false, int.MIN_VALUE );
+				loader.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_error, false, int.MIN_VALUE );
+				loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error, false, int.MIN_VALUE );
 			}
-			loader.addEventListener( Event.UNLOAD,							this.handler_error );
+			loader.addEventListener( Event.UNLOAD,							this.handler_error, false, int.MIN_VALUE );
 
 			this._loaders.push( loader );
 

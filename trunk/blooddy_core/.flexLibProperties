@@ -212,7 +212,7 @@
     <classEntry path="by.blooddy.core.utils.ObjectUtils"/>
     <classEntry path="by.blooddy.core.utils.ClassAlias"/>
     <classEntry path="by.blooddy.core.blooddy"/>
-    <classEntry path="by.blooddy.core.managers.resource.IResourceManger"/>
+    <classEntry path="by.blooddy.core.managers.resource.IResourceManager"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

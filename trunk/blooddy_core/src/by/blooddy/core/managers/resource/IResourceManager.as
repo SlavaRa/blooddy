@@ -15,7 +15,7 @@ package by.blooddy.core.managers.resource {
 	 * @langversion				3.0
 	 * @created					27.04.2010 1:08:39
 	 */
-	public interface IResourceManger {
+	public interface IResourceManager {
 
 		function loadResourceBundle(url:String, priority:int=0.0):ILoadable;
 

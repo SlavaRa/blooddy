@@ -28,6 +28,8 @@ package by.blooddy.code.css {
 	import by.blooddy.code.css.definition.values.URLValue;
 	import by.blooddy.code.errors.ParserError;
 	import by.blooddy.code.utils.Char;
+	import by.blooddy.core.managers.resource.IResourceManager;
+	import by.blooddy.core.managers.resource.ResourceManager;
 	import by.blooddy.core.utils.StringUtils;
 	
 	import flash.events.EventDispatcher;
@@ -41,9 +43,12 @@ package by.blooddy.code.css {
 
 	[Event( name="complete", type="flash.events.Event" )]
 
-	[Event( name="ioError", type="flash.events.IOErrorEvent" )]
+	/**
+	 * какая-то ошибка при исполнении.
+	 */
+	[Event( name="asyncError", type="flash.events.AsyncErrorEvent" )]	
 
-	[Event( name="progress", type="flash.events.ProgressEvent" )]
+	[Event( name="loaderInit", type="by.blooddy.core.events.net.loading.LoaderEvent" )]
 	
 	/**
 	 * @author					BlooDHounD
@@ -99,9 +104,9 @@ package by.blooddy.code.css {
 		/**
 		 * Constructor.
 		 */
-		public function CSSParser() {
+		public function CSSParser(manager:IResourceManager=null) {
 			super();
-		}
+			this._manager = manager || ResourceManager.manager;		}
 		
 		//--------------------------------------------------------------------------
 		//
@@ -109,6 +114,11 @@ package by.blooddy.code.css {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @private
+		 */
+		private var _manager:IResourceManager;
+		
 		/**
 		 * @private
 		 */

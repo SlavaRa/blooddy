@@ -31,7 +31,7 @@ package by.blooddy.core.managers.resource {
 	 * @langversion				3.0
 	 * @created					21.02.2010 3:46:27
 	 */
-	public final class ResourceManagerProxy implements IResourceManger {
+	public final class ResourceManagerProxy implements IResourceManager {
 
 		//--------------------------------------------------------------------------
 		//

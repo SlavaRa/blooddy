@@ -46,7 +46,7 @@ package by.blooddy.core.managers.resource {
 	 * 
 	 * @keyword					resourcemanager, resource, manager
 	 */
-	public final class ResourceManager extends EventDispatcher implements IResourceManger {
+	public final class ResourceManager extends EventDispatcher implements IResourceManager {
 
 		//--------------------------------------------------------------------------
 		//
@@ -507,6 +507,7 @@ import flash.utils.getTimer;
 //  Helper variables
 //
 ////////////////////////////////////////////////////////////////////////////////
+import flash.events.IOErrorEvent;
 
 /**
  * @private
@@ -611,7 +612,11 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 			url = baseURL + '/' + this._url;
 		}
 		super.loaderContext = new LoaderContext( new ApplicationDomain( ApplicationDomain.currentDomain ), ignoreSecurity );
-		super.load( new URLRequest( url ) );
+		try { // так как запуск отложен, то и ошибку надо генерировать в виде события
+			super.load( new URLRequest( url ) );
+		} catch ( e:Error ) {
+			super.dispatchEvent( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, e.toString() ) );
+		}
 	}
 
 	[Deprecated( message="метод запрещен", replacement="$load" )]

@@ -10,6 +10,7 @@
     <classEntry path="by.blooddy.gui.display.ComponentInfo"/>
     <classEntry path="by.blooddy.gui.parser.ComponentParser"/>
     <classEntry path="by.blooddy.gui.parser.ComponentDefinition"/>
+    <classEntry path="by.blooddy.gui.net.GUILoaderPriority"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
