@@ -34,6 +34,8 @@
     <classEntry path="by.blooddy.code.css.definition.CSSRule"/>
     <classEntry path="by.blooddy.code.css.definition.CSSMedia"/>
     <classEntry path="by.blooddy.code.css.definition.CSSDefinition"/>
+    <classEntry path="by.blooddy.code.AbstractParser"/>
+    <classEntry path="by.blooddy.code.net.AbstractLoadableParser"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

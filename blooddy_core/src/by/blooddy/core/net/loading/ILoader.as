@@ -14,6 +14,13 @@ package by.blooddy.core.net.loading {
 	//--------------------------------------
 
 	/**
+	 * Транслируется, когда начинается загрузка.
+	 * 
+	 * @eventType			flash.events.Event.OPEN
+	 */
+	[Event( name="open", type="flash.events.Event" )]
+	
+	/**
 	 * Транслируется, когда Flash Player может определить HTTP статус.
 	 * 
 	 * @eventType			flash.events.HTTPStatusEvent.HTTP_STATUS

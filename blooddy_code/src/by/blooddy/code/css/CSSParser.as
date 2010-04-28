@@ -60,7 +60,7 @@ package by.blooddy.code.css {
 	 * @langversion				3.0
 	 * @created					Mar 10, 2010 12:17:10 PM
 	 */
-	public class CSSParser extends EventDispatcher implements ILoadable {
+	public final class CSSParser extends EventDispatcher implements ILoadable {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -202,6 +202,11 @@ package by.blooddy.code.css {
 		//--------------------------------------------------------------------------
 
 		public function parse(value:String, manager:CSSManager=null):void {
+			trace( '===================' );
+			trace( value );
+			trace( '-------------------' );
+			
+			
 			this._manager = manager || CSSManager.getManager();
 			// сбрасываем значения
 			this._content = null;
