@@ -32,11 +32,6 @@ package by.blooddy.core.net.loading {
 	[Event( name="progress", type="flash.events.ProgressEvent" )]
 
 	/**
-	 * @inheritDoc
-	 */
-	[Event( name="ioError", type="flash.events.IOErrorEvent" )]
-
-	/**
 	 * Класс предназначен для мониторинга процесса загрузки
 	 * нескольких файлов одновременно.
 	 * 

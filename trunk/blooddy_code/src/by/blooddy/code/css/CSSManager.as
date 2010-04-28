@@ -77,6 +77,7 @@ package by.blooddy.code.css {
 		 */
 		public function CSSManager(manager:IResourceManager) {
 			super();
+			if ( !_privateCall ) throw new ArgumentError();
 			this._manager = manager;
 		}
 
@@ -119,9 +120,9 @@ package by.blooddy.code.css {
 			var result:CSSLoader = this._loaders[ url ];
 			if ( !result ) {
 				this._loaders[ url ] = result = new CSSLoader( this, this._manager, url );
-				result.addEventListener( Event.COMPLETE,					this.handler_complete );
-				result.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_error );
-				result.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error );
+				result.addEventListener( Event.COMPLETE,					this.handler_complete, false, int.MAX_VALUE );
+				result.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_complete, false, int.MAX_VALUE );
+				result.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_complete, false, int.MAX_VALUE );
 				result.addEventListener( LoaderEvent.LOADER_INIT,			super.dispatchEvent );
 			}
 			return result;
@@ -139,24 +140,12 @@ package by.blooddy.code.css {
 		private function handler_complete(event:Event):void {
 			var loader:CSSLoader = event.target as CSSLoader;
 			loader.removeEventListener( Event.COMPLETE,						this.handler_complete );
-			loader.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_error );
-			loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error );
+			loader.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_complete );
+			loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_complete );
 			loader.removeEventListener( LoaderEvent.LOADER_INIT,			super.dispatchEvent );
 			this._definitions[ loader.$url ] = loader.$content;
 		}
 
-		/**
-		 * @private
-		 */
-		private function handler_error(event:Event):void {
-			var loader:CSSLoader = event.target as CSSLoader;
-			loader.removeEventListener( Event.COMPLETE,						this.handler_complete );
-			loader.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_error );
-			loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error );
-			loader.removeEventListener( LoaderEvent.LOADER_INIT,			super.dispatchEvent );
-			this._definitions[ loader.$url ] = null;
-		}
-		
 	}
 	
 }
@@ -192,7 +181,6 @@ import flash.events.SecurityErrorEvent;
 //  Implements events
 //--------------------------------------
 
-[Event( name="open", type="flash.events.Event" )]
 [Event( name="progress", type="flash.events.ProgressEvent" )]
 [Event( name="complete", type="flash.events.Event" )]
 [Event( name="ioError", type="flash.events.IOErrorEvent" )]
@@ -214,10 +202,7 @@ internal final class CSSLoader extends EventDispatcher implements ILoadable {
 		this._cssManager = cssManager;
 		this._resourceManager = resourceManager;
 		this.$url = url;
-		this._loader = this._resourceManager.loadResourceBundle( url, LoaderPriority.HIGHEST );
-		this._loader.addEventListener( Event.COMPLETE,						this.handler_loader_complete );
-		this._loader.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_loader_error );
-		this._loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_loader_error );
+		this.createLoader();
 	}
 
 	//--------------------------------------------------------------------------
@@ -295,18 +280,39 @@ internal final class CSSLoader extends EventDispatcher implements ILoadable {
 
 	//--------------------------------------------------------------------------
 	//
-	//  Event handlers
+	//  Private methods
 	//
 	//--------------------------------------------------------------------------
 
 	/**
 	 * @private
 	 */
-	private function handler_loader_complete(event:Event):void {
+	private function createLoader():void {
+		this._loader = this._resourceManager.loadResourceBundle( this.$url, LoaderPriority.HIGHEST );
+		if ( this._loader.loaded ) {
+			this._loader = null;
+			this.createParser();
+		} else {
+			this._loader.addEventListener( Event.COMPLETE,						this.handler_loader_complete, false, int.MAX_VALUE );
+			this._loader.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_loader_error, false, int.MAX_VALUE );
+			this._loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_loader_error, false, int.MAX_VALUE );
+		}
+	}
+
+	/**
+	 * @private
+	 */
+	private function clearLoader():void {
 		this._loader.removeEventListener( Event.COMPLETE,						this.handler_loader_complete );
 		this._loader.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_loader_error );
 		this._loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_loader_error );
 		this._loader = null;
+	}
+
+	/**
+	 * @private
+	 */
+	private function createParser():void {
 		var data:String = this._resourceManager.getResource( this.$url ) as String;
 		if ( data ) {
 			this._parser = new CSSParser();
@@ -322,11 +328,32 @@ internal final class CSSLoader extends EventDispatcher implements ILoadable {
 	/**
 	 * @private
 	 */
+	private function clearParser():void {
+		this._parser.removeEventListener( Event.COMPLETE,			this.handler_parser_complete );
+		this._parser.removeEventListener( IOErrorEvent.IO_ERROR,	this.handler_parser_error );
+		this._parser.removeEventListener( LoaderEvent.LOADER_INIT,	super.dispatchEvent );
+		this._parser = null;
+	}
+	
+	//--------------------------------------------------------------------------
+	//
+	//  Event handlers
+	//
+	//--------------------------------------------------------------------------
+
+	/**
+	 * @private
+	 */
+	private function handler_loader_complete(event:Event):void {
+		this.clearLoader();
+		this.createParser();
+	}
+
+	/**
+	 * @private
+	 */
 	private function handler_loader_error(event:ErrorEvent):void {
-		this._loader.removeEventListener( Event.COMPLETE,						this.handler_loader_complete );
-		this._loader.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_loader_error );
-		this._loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_loader_error );
-		this._loader = null;
+		this.clearLoader();
 		super.dispatchEvent( event );
 	}
 
@@ -334,11 +361,8 @@ internal final class CSSLoader extends EventDispatcher implements ILoadable {
 	 * @private
 	 */
 	private function handler_parser_complete(event:Event):void {
-		this._parser.removeEventListener( Event.COMPLETE,			this.handler_parser_complete );
-		this._parser.removeEventListener( IOErrorEvent.IO_ERROR,	this.handler_parser_error );
-		this._parser.removeEventListener( LoaderEvent.LOADER_INIT,	super.dispatchEvent );
 		this.$content = this._parser.content;
-		this._parser = null;
+		this.clearParser();
 		if ( super.hasEventListener( ProgressEvent.PROGRESS ) ) {
 			super.dispatchEvent( new ProgressEvent( ProgressEvent.PROGRESS, false, false, this.bytesLoaded, this.bytesTotal ) );
 		}
@@ -349,10 +373,7 @@ internal final class CSSLoader extends EventDispatcher implements ILoadable {
 	 * @private
 	 */
 	private function handler_parser_error(event:ErrorEvent):void {
-		this._parser.removeEventListener( Event.COMPLETE,			this.handler_parser_complete );
-		this._parser.removeEventListener( IOErrorEvent.IO_ERROR,	this.handler_parser_error );
-		this._parser.removeEventListener( LoaderEvent.LOADER_INIT,	super.dispatchEvent );
-		this._parser = null;
+		this.clearParser();
 		super.dispatchEvent( event );
 	}
 	

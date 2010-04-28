@@ -11,13 +11,6 @@ package by.blooddy.core.net.loading {
 	//--------------------------------------
 
 	/**
-	 * Транслируется, когда начинается загрузка.
-	 * 
-	 * @eventType			flash.events.Event.OPEN
-	 */
-	[Event( name="open", type="flash.events.Event" )]
-	
-	/**
 	 * Транслируется, когда загрузка заканчивается.
 	 * 
 	 * @eventType			flash.events.Event.COMPLETE
@@ -47,7 +40,7 @@ package by.blooddy.core.net.loading {
 	 * @keyword					iloadable
 	 */
 	public interface ILoadable extends IProgressable {
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
@@ -60,7 +53,6 @@ package by.blooddy.core.net.loading {
 
 		/**
 		 * загрузился ли уже файл?
-		 * @copy			flash.net.URLLoader#loaded
 		 */
 		function get loaded():Boolean;
 
@@ -69,7 +61,6 @@ package by.blooddy.core.net.loading {
 		//----------------------------------
 
 		/**
-		 * сколько байт загружено?
 		 * @copy			flash.net.URLLoader#bytesLoaded
 		 */
 		function get bytesLoaded():uint;
@@ -79,7 +70,6 @@ package by.blooddy.core.net.loading {
 		//----------------------------------
 
 		/**
-		 * сколько байт всего?
 		 * @copy			flash.net.URLLoader#bytesTotal
 		 */
 		function get bytesTotal():uint;
