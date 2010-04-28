@@ -41,16 +41,6 @@ package by.blooddy.code {
 		/**
 		 * @private
 		 */
-		protected var _source:String;
-		
-		/**
-		 * @private
-		 */
-		protected var _position:uint;
-		
-		/**
-		 * @private
-		 */
 		protected var _prevPosition:uint;
 
 		/**
@@ -73,15 +63,21 @@ package by.blooddy.code {
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		protected var _source:String;
 		
+		public function get source():String {
+			return this._source;
+		}
+
 		/**
 		 * @private
 		 */
 		protected var _tokenKind:uint;
 
-		/**
-		 * @inhertDoc
-		 */
 		public final function get tokenKind():uint {
 			return this._tokenKind;
 		}
@@ -91,11 +87,18 @@ package by.blooddy.code {
 		 */
 		protected var _tokenText:String;
 		
-		/**
-		 * @inhertDoc
-		 */
 		public final function get tokenText():String {
 			return this._tokenText;
+		}
+
+		
+		/**
+		 * @private
+		 */
+		protected var _position:uint;
+		
+		public final function get position():uint {
+			return this._position;
 		}
 
 		//--------------------------------------------------------------------------
