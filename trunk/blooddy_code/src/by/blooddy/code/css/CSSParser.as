@@ -27,32 +27,19 @@ package by.blooddy.code.css {
 	import by.blooddy.code.css.definition.values.StringValue;
 	import by.blooddy.code.css.definition.values.URLValue;
 	import by.blooddy.code.errors.ParserError;
+	import by.blooddy.code.net.AbstractLoadableParser;
 	import by.blooddy.code.utils.Char;
-	import by.blooddy.core.managers.resource.IResourceManager;
-	import by.blooddy.core.managers.resource.ResourceManager;
 	import by.blooddy.core.net.loading.ILoadable;
 	import by.blooddy.core.utils.StringUtils;
 	
-	import flash.events.EventDispatcher;
 	import flash.system.Capabilities;
 	
 	//--------------------------------------
-	//  Implements events: ILoadable
+	//  Events
 	//--------------------------------------
 
 	[Event( name="open", type="flash.events.Event" )]
 
-	[Event( name="progress", type="flash.events.ProgressEvent" )]
-
-	[Event( name="complete", type="flash.events.Event" )]
-
-	/**
-	 * @inheritDoc
-	 */
-	[Event( name="ioError", type="flash.events.IOErrorEvent" )]
-	
-	[Event( name="loaderInit", type="by.blooddy.core.events.net.loading.LoaderEvent" )]
-	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -60,7 +47,7 @@ package by.blooddy.code.css {
 	 * @langversion				3.0
 	 * @created					Mar 10, 2010 12:17:10 PM
 	 */
-	public final class CSSParser extends EventDispatcher implements ILoadable {
+	public final class CSSParser extends AbstractLoadableParser {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -125,51 +112,7 @@ package by.blooddy.code.css {
 		/**
 		 * @private
 		 */
-		private var _loader:ILoadable;
-		
-		/**
-		 * @private
-		 */
 		private const _scanner:CSSScanner = new CSSScanner();
-
-		//--------------------------------------------------------------------------
-		//
-		//  Implements properties
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		public function get progress():Number {
-			return this.bytesLoaded / this.bytesTotal;
-		}
-
-		/**
-		 * @private
-		 */
-		private var _complete:Boolean = false;
-
-		/**
-		 * @private
-		 */
-		public function get complete():Boolean {
-			return this._complete && ( !this._loader || this._loader.complete );
-		}
-		
-		/**
-		 * @private
-		 */
-		public function get bytesLoaded():uint {
-			return this._scanner.position + ( this._loader ? this._loader.bytesLoaded : 0 );
-		}
-		
-		/**
-		 * @private
-		 */
-		public function get bytesTotal():uint {
-			return this._scanner.source.length + ( this._loader ? this._loader.bytesTotal : 0 );
-		}
 
 		//--------------------------------------------------------------------------
 		//
@@ -202,17 +145,19 @@ package by.blooddy.code.css {
 		//--------------------------------------------------------------------------
 
 		public function parse(value:String, manager:CSSManager=null):void {
-			trace( '===================' );
-			trace( value );
-			trace( '-------------------' );
-			
+			super.start();
 			
 			this._manager = manager || CSSManager.getManager();
 			// сбрасываем значения
 			this._content = null;
 			this._errors = new Vector.<Error>();
-			this._scanner.writeSource( value );
 
+			this._scanner.writeSource( value );
+			
+		}
+
+		protected override function onParse():Boolean {
+				
 			var tok:uint;
 			var selectors:Vector.<CSSSelector>;
 			var declarations:Vector.<CSSDeclaration>;
@@ -290,8 +235,17 @@ package by.blooddy.code.css {
 					this._errors.push( e );
 				}
 			} while ( tok != CSSToken.EOF );
-			trace( errors );
-			trace( definition );
+
+			if ( super.loaded ) {
+				this.onLoad();
+			}
+			
+			return true;
+		}
+
+		protected override function onLoad():void {
+			this._manager = null;
+			super.stop();
 		}
 
 		//--------------------------------------------------------------------------

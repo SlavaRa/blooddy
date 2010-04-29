@@ -19,6 +19,12 @@ package by.blooddy.core.utils {
 
 }
 
+//==============================================================================
+//
+//  Inner definitions
+//
+//==============================================================================
+
 import by.blooddy.core.utils.enterFrameBroadcaster;
 
 import flash.events.Event;
