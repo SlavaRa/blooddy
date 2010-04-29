@@ -6,6 +6,7 @@
 
 package by.blooddy.core.net.loading {
 
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.HTTPStatusEvent;
 	import flash.events.IOErrorEvent;
@@ -140,7 +141,7 @@ package by.blooddy.core.net.loading {
 							:	s
 						);
 					} catch ( e:Error ) {
-						super.handler_complete( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, e.toString() ) );
+						super.completeHandler( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, e.toString() ) );
 						return; // выходим :(
 					} finally {
 						bytes.clear();
@@ -156,7 +157,7 @@ package by.blooddy.core.net.loading {
 				super.dispatchEvent( new Event( Event.INIT ) );
 			}
 			super.updateProgress( bytes.length, bytes.length );
-			super.handler_complete( new Event( Event.COMPLETE ) );
+			super.completeHandler( new Event( Event.COMPLETE ) );
 		}
 
 		/**
@@ -192,7 +193,7 @@ package by.blooddy.core.net.loading {
 			if ( _HTTP_RESPONSE_STATUS ) {
 				result.addEventListener( _HTTP_RESPONSE_STATUS,			super.dispatchEvent );
 			}
-			result.addEventListener( ProgressEvent.PROGRESS,			super.handler_progress );
+			result.addEventListener( ProgressEvent.PROGRESS,			super.progressHandler );
 			result.addEventListener( Event.COMPLETE,					this.handler_stream_complete );
 			result.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_stream_error );
 			result.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_stream_error );
@@ -213,7 +214,7 @@ package by.blooddy.core.net.loading {
 				if ( _HTTP_RESPONSE_STATUS ) {
 					this._stream.removeEventListener( _HTTP_RESPONSE_STATUS,			super.dispatchEvent );
 				}
-				this._stream.removeEventListener( ProgressEvent.PROGRESS,				super.handler_progress );
+				this._stream.removeEventListener( ProgressEvent.PROGRESS,				super.progressHandler );
 				this._stream.removeEventListener( Event.COMPLETE,						this.handler_stream_complete );
 				this._stream.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_stream_error );
 				this._stream.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_stream_error );
@@ -240,9 +241,9 @@ package by.blooddy.core.net.loading {
 		/**
 		 * @private
 		 */
-		private function handler_stream_error(event:Event):void {
+		private function handler_stream_error(event:ErrorEvent):void {
 			this.clear_stream();
-			super.handler_complete( event );
+			super.completeHandler( event );
 		}
 		
 	}

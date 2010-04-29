@@ -6,24 +6,17 @@
 
 package by.blooddy.code {
 
-	import by.blooddy.core.net.loading.ILoadable;
+	import by.blooddy.core.net.loading.IProcessable;
 	import by.blooddy.core.utils.enterFrameBroadcaster;
 	
 	import flash.errors.IllegalOperationError;
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
-	import flash.events.IOErrorEvent;
-	import flash.events.ProgressEvent;
-	import flash.events.SecurityErrorEvent;
-	
-	//--------------------------------------
-	//  Implements events: ILoadable
-	//--------------------------------------
 
-	/**
-	 * @inheritDoc
-	 */
-	[Event( name="progress", type="flash.events.ProgressEvent" )]
+	//--------------------------------------
+	//  Implements events: IProcessable
+	//--------------------------------------
 
 	/**
 	 * @inheritDoc
@@ -33,12 +26,7 @@ package by.blooddy.code {
 	/**
 	 * @inheritDoc
 	 */
-	[Event( name="ioError", type="flash.events.IOErrorEvent" )]
-	
-	/**
-	 * @inheritDoc
-	 */
-	[Event( name="securityError", type="flash.events.SecurityErrorEvent" )]
+	[Event( name="error", type="flash.events.ErrorEvent" )]
 
 	//--------------------------------------
 	//  Events
@@ -53,7 +41,7 @@ package by.blooddy.code {
 	 * @langversion				3.0
 	 * @created					28.04.2010 17:15:33
 	 */
-	public class AbstractParser extends EventDispatcher implements ILoadable {
+	public class AbstractParser extends EventDispatcher implements IProcessable {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -69,9 +57,15 @@ package by.blooddy.code {
 		
 		/**
 		 * @private
+		 * статус загрузки. пауза
+		 */
+		private static const _STATE_PAUSE:uint =	_STATE_IDLE		+ 1;
+		
+		/**
+		 * @private
 		 * статус загрузки. прогресс
 		 */
-		private static const _STATE_PROGRESS:uint =	_STATE_IDLE		+ 1;
+		private static const _STATE_PROGRESS:uint =	_STATE_PAUSE	+ 1;
 		
 		/**
 		 * @private
@@ -116,52 +110,48 @@ package by.blooddy.code {
 		//--------------------------------------------------------------------------
 
 		/**
-		 * @private
-		 */
-		private var _progress:Number;
-		
-		/**
 		 * @inheritDoc
 		 */
-		public function get progress():Number {
-			return this._progress;
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get loaded():Boolean {
+		public function get complete():Boolean {
 			return this._state >= _STATE_COMPLETE;
 		}
 		
-		/**
-		 * @inheritDoc
-		 */
-		public function get bytesLoaded():uint {
-			return 0;
-		}
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get bytesTotal():uint {
-			return 0;
-		}
-
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
 		
-		protected final function $parse_prepare():void {
+		protected final function start():void {
 			if ( this._state != _STATE_IDLE ) throw new ArgumentError();
-			enterFrameBroadcaster.addEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameConstructed );
 			this._state = _STATE_PROGRESS;
+			enterFrameBroadcaster.addEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameConstructed );
 		}
 
-		protected virtual function $parse_action():Boolean {
+		protected final function activate():void {
+			this._state = _STATE_PROGRESS;
+			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
+		}
+		
+		protected final function deactivate():void {
+			this._state = _STATE_PAUSE;
+			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
+		}
+		
+		protected virtual function $action():Boolean {
 			throw new IllegalOperationError();
+		}
+
+		protected final function stop():void {
+			this.deactivate();
+			this._state = _STATE_COMPLETE;
+			super.dispatchEvent( new Event( Event.COMPLETE ) );
+		}
+		
+		protected final function throwError(e:Error):void {
+			this.deactivate();
+			this._state = _STATE_ERROR;
+			super.dispatchEvent( new ErrorEvent( ErrorEvent.ERROR, false, false, e.toString() ) );
 		}
 
 		//--------------------------------------------------------------------------
@@ -175,10 +165,12 @@ package by.blooddy.code {
 		 */
 		private function handler_frameConstructed(event:Event):void {
 			enterFrameBroadcaster.removeEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameConstructed );
-			if ( super.hasEventListener( Event.OPEN ) ) {
+			if ( this._state < _STATE_COMPLETE && super.hasEventListener( Event.OPEN ) ) {
 				super.dispatchEvent( new Event( Event.OPEN ) );
 			}
-			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
+			if ( this._state == _STATE_PROGRESS ) {
+				this.activate();
+			}
 		}
 		
 		/**
@@ -186,29 +178,11 @@ package by.blooddy.code {
 		 */
 		private function handler_enterFrame(event:Event):void {
 			try {
-				if ( this.$parse_action() ) {
-					this._state = _STATE_COMPLETE;
+				if ( this.$action() ) {
+					this.deactivate();
 				}
-				if ( this._state >= _STATE_COMPLETE ) {
-					this._progress = 1;
-				} else {
-					this._progress = this.bytesLoaded / this.bytesTotal;
-				}
-				if ( super.hasEventListener( ProgressEvent.PROGRESS ) ) {
-					super.dispatchEvent( new ProgressEvent( ProgressEvent.PROGRESS, false, false, this.bytesLoaded, this.bytesTotal ) );
-				}
-				if ( this.loaded ) { // это важно. если переопределён и тут херня, то не диспатчим
-					super.dispatchEvent( new Event( Event.COMPLETE ) );
-				}
-			} catch ( e:SecurityError ) {
-				this._state = _STATE_ERROR;
-				super.dispatchEvent( new SecurityErrorEvent( SecurityErrorEvent.SECURITY_ERROR, false, false, e.toString() ) );
 			} catch ( e:Error ) {
-				this._state = _STATE_ERROR;
-				super.dispatchEvent( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, e.toString() ) );
-			}
-			if ( this._state >= _STATE_COMPLETE ) {
-				enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
+				this.throwError( e );
 			}
 		}
 

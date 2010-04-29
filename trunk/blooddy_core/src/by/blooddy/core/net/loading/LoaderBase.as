@@ -35,6 +35,11 @@ package by.blooddy.core.net.loading {
 	/**
 	 * @inheritDoc
 	 */
+	[Event( name="error", type="flash.events.ErrorEvent" )]
+	
+	/**
+	 * @inheritDoc
+	 */
 	[Event( name="ioError", type="flash.events.IOErrorEvent" )]
 	
 	/**
@@ -277,13 +282,13 @@ package by.blooddy.core.net.loading {
 		}
 		
 		//----------------------------------
-		//  loaded
+		//  complete
 		//----------------------------------
 		
 		/**
 		 * @inheritDoc
 		 */
-		public function get loaded():Boolean {
+		public function get complete():Boolean {
 			return this._state >= _STATE_COMPLETE;
 		}
 		
@@ -433,6 +438,14 @@ package by.blooddy.core.net.loading {
 			//if ( this._id && NetMonitor.isActive() ) {
 			//	NetMonitor.monitorEvent( this._id, event );
 			//}
+			if ( event is ErrorEvent && event.type == ErrorEvent.ERROR ) {
+				if ( super.hasEventListener( ErrorEvent.ERROR ) ) {
+					var result:Boolean = super.dispatchEvent( new ErrorEvent( ErrorEvent.ERROR, false, false, ( event as ErrorEvent ).text ) );
+					if ( !super.hasEventListener( event.type ) ) {
+						return result;
+					}
+				}
+			}
 			return super.dispatchEvent( event );
 		}
 		
@@ -488,7 +501,7 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 * слушает прогресс, и обвноляет его, если _frameReady установлен в true.
 		 */
-		$protected_load function handler_progress(event:ProgressEvent):void {
+		$protected_load function progressHandler(event:ProgressEvent):void {
 			if ( !this._frameReady ) return;
 			this.updateProgress( event.bytesLoaded, event.bytesTotal );
 		}
@@ -496,7 +509,7 @@ package by.blooddy.core.net.loading {
 		/**
 		 * @private
 		 */
-		$protected_load function handler_complete(event:Event):void {
+		$protected_load function completeHandler(event:Event):void {
 			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
 			this._state = ( event is ErrorEvent ? _STATE_ERROR : _STATE_COMPLETE );
 			if ( this._id && NetMonitor.isActive() ) {
@@ -508,7 +521,7 @@ package by.blooddy.core.net.loading {
 			}
 			this.$dispatchEvent( event );
 		}
-		
+
 	}
-	
+
 }

@@ -7,6 +7,7 @@
 package by.blooddy.core.net.loading {
 
 	import flash.errors.IllegalOperationError;
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
@@ -171,7 +172,7 @@ package by.blooddy.core.net.loading {
 			var result:SoundAsset = new SoundAsset( this );
 			result.addEventListener( Event.OPEN,						super.dispatchEvent );
 			result.addEventListener( Event.ID3,							super.dispatchEvent );
-			result.addEventListener( ProgressEvent.PROGRESS,			this.handler_progress );
+			result.addEventListener( ProgressEvent.PROGRESS,			this.progressHandler );
 			result.addEventListener( Event.COMPLETE,					this.handler_sound_complete );
 			result.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_sound_error );
 			result.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_sound_error );
@@ -186,8 +187,8 @@ package by.blooddy.core.net.loading {
 			if ( this._sound ) {
 				this._sound.removeEventListener( Event.OPEN,						super.dispatchEvent );
 				this._sound.removeEventListener( Event.ID3,							super.dispatchEvent );
-				this._sound.removeEventListener( ProgressEvent.PROGRESS,			this.handler_progress );
-				this._sound.removeEventListener( ProgressEvent.PROGRESS,			super.handler_progress );
+				this._sound.removeEventListener( ProgressEvent.PROGRESS,			this.progressHandler );
+				this._sound.removeEventListener( ProgressEvent.PROGRESS,			super.progressHandler );
 				this._sound.removeEventListener( Event.COMPLETE,					this.handler_sound_complete );
 				this._sound.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_sound_error );
 				this._sound.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_sound_error );
@@ -223,12 +224,12 @@ package by.blooddy.core.net.loading {
 		//
 		//--------------------------------------------------------------------------
 
-		$protected_load override function handler_progress(event:ProgressEvent):void {
-			super.handler_progress( event );
+		$protected_load override function progressHandler(event:ProgressEvent):void {
+			super.progressHandler( event );
 			if ( this._sound.isBuffering && !this._sound.$inited ) {
 				this._sound.$inited = true;
-				this._sound.removeEventListener( ProgressEvent.PROGRESS,	this.handler_progress );
-				this._sound.addEventListener( ProgressEvent.PROGRESS,		super.handler_progress );
+				this._sound.removeEventListener( ProgressEvent.PROGRESS,	this.progressHandler );
+				this._sound.addEventListener( ProgressEvent.PROGRESS,		super.progressHandler );
 				if ( super.hasEventListener( Event.INIT ) ) {
 					super.dispatchEvent( new Event( Event.INIT ) );
 				}
@@ -246,15 +247,15 @@ package by.blooddy.core.net.loading {
 				this._sound.$inited = true;
 				super.dispatchEvent( new Event( Event.INIT ) );
 			}
-			super.handler_complete( event );
+			super.completeHandler( event );
 		}
 		
 		/**
 		 * @private
 		 */
-		private function handler_sound_error(event:Event):void {
+		private function handler_sound_error(event:ErrorEvent):void {
 			this.clear_sound();
-			super.handler_complete( event );
+			super.completeHandler( event );
 		}
 		
 	}

@@ -9,21 +9,14 @@ package by.blooddy.core.net.loading {
 	//--------------------------------------
 	//  Events
 	//--------------------------------------
-
-	/**
-	 * Транслируется, когда загрузка заканчивается.
-	 * 
-	 * @eventType			flash.events.Event.COMPLETE
-	 */
-	[Event( name="complete", type="flash.events.Event" )]
-
+	
 	/**
 	 * Ошибка.
 	 * 
 	 * @eventType			flash.events.IOErrorEvent.IO_ERROR
 	 */
 	[Event( name="ioError", type="flash.events.IOErrorEvent" )]
-
+	
 	/**
 	 * Секъюрная ошибка.
 	 * 
@@ -39,22 +32,13 @@ package by.blooddy.core.net.loading {
 	 * 
 	 * @keyword					iloadable
 	 */
-	public interface ILoadable extends IProgressable {
+	public interface ILoadable extends IProgressable, IProcessable {
 
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
-
-		//----------------------------------
-		//  loaded
-		//----------------------------------
-
-		/**
-		 * загрузился ли уже файл?
-		 */
-		function get loaded():Boolean;
 
 		//----------------------------------
 		//  bytesLoaded

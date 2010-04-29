@@ -1,51 +1,55 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  © 2007 BlooDHounD
+//  (C) 2010 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.net.loading {
-
+	
 	import flash.events.IEventDispatcher;
-
+	
 	//--------------------------------------
 	//  Events
 	//--------------------------------------
 	
 	/**
-	 * Транслиуется, когда приходят байты данных.
+	 * Транслируется, когда загрузка заканчивается.
 	 * 
-	 * @eventType			flash.events.ProgressEvent.PROGRESS
+	 * @eventType			flash.events.Event.COMPLETE
 	 */
-	[Event( name="progress", type="flash.events.ProgressEvent" )]
+	[Event( name="complete", type="flash.events.Event" )]
+	
+	/**
+	 * Ошибка.
+	 * 
+	 * @eventType			flash.events.ErrorEvent.ERROR
+	 */
+	[Event( name="error", type="flash.events.ErrorEvent" )]
 	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
-	 * @playerversion			Flash 9
+	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * 
-	 * @keyword					progress
+	 * @created					28.04.2010 23:49:48
 	 */
-	public interface IProgressable extends IEventDispatcher {
+	public interface IProcessable extends IEventDispatcher {
 
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
-
+		
 		//----------------------------------
-		//  progress
+		//  complete
 		//----------------------------------
-
+		
 		/**
-		 * Значение прогресса.
-		 * 
-		 * @keyword					progress.progress, progress
+		 * закончилась ли обработка
 		 */
-		function get progress():Number;
+		function get complete():Boolean;
 
 	}
-
+	
 }

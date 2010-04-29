@@ -11,10 +11,9 @@ package by.blooddy.core.managers.resource {
 	import by.blooddy.core.net.loading.LoaderPriority;
 	import by.blooddy.core.utils.enterFrameBroadcaster;
 	
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
-	import flash.events.IOErrorEvent;
-	import flash.events.SecurityErrorEvent;
 	import flash.net.URLRequest;
 	import flash.system.Capabilities;
 
@@ -189,8 +188,7 @@ package by.blooddy.core.managers.resource {
 		 */
 		private static function registerQueue(asset:ResourceLoaderAsset):void {
 			asset.addEventListener( Event.COMPLETE, queue_complete );
-			asset.addEventListener( IOErrorEvent.IO_ERROR, queue_complete );
-			asset.addEventListener( SecurityErrorEvent.SECURITY_ERROR, queue_complete );
+			asset.addEventListener( ErrorEvent.ERROR, queue_complete );
 		}
 
 		/**
@@ -198,8 +196,7 @@ package by.blooddy.core.managers.resource {
 		 */
 		private static function unregisterQueue(asset:ResourceLoaderAsset):void {
 			asset.removeEventListener( Event.COMPLETE, queue_complete );
-			asset.removeEventListener( IOErrorEvent.IO_ERROR, queue_complete );
-			asset.removeEventListener( SecurityErrorEvent.SECURITY_ERROR, queue_complete );
+			asset.removeEventListener( ErrorEvent.ERROR, queue_complete );
 		}
 
 		/**
@@ -277,7 +274,7 @@ package by.blooddy.core.managers.resource {
 		public function hasResourceBundle(bundleName:String):Boolean {
 			if ( !( bundleName in this._hash ) ) return false;
 			var loader:ILoadable = this._hash[ bundleName ] as ILoadable;
-			if ( loader && !loader.loaded ) return false;
+			if ( loader && !loader.complete ) return false;
 			return true;
 		}
 
@@ -292,7 +289,7 @@ package by.blooddy.core.managers.resource {
 		 */
 		public function getResourceBundle(bundleName:String):IResourceBundle {
 			var bundle:IResourceBundle = this._hash[ bundleName ] as IResourceBundle;
-			return ( bundle is ILoadable && !( bundle as ILoadable ).loaded ? null : bundle );
+			return ( bundle is ILoadable && !( bundle as ILoadable ).complete ? null : bundle );
 		}
 
 		public function getResourceBundles():Vector.<String> {
@@ -324,7 +321,7 @@ package by.blooddy.core.managers.resource {
 					if ( loader is ResourceLoaderAsset ) {
 						( loader as ResourceLoaderAsset ).managers[ this ] = true;
 					}
-					if ( loader.loaded ) {
+					if ( loader.complete ) {
 						if ( super.hasEventListener( ResourceBundleEvent.BUNDLE_ADDED ) ) {
 							super.dispatchEvent( new ResourceBundleEvent( ResourceBundleEvent.BUNDLE_ADDED, false, false, bundle ) );
 						}
@@ -350,13 +347,13 @@ package by.blooddy.core.managers.resource {
 				if ( loader ) {
 					this.unregisterLoadable( loader );
 					var asset:ResourceLoaderAsset = loader as ResourceLoaderAsset;
-					var loaded:Boolean = loader.loaded;
+					var complete:Boolean = loader.complete;
 					if ( asset ) { // если ассет, то помучаемся
 						delete asset.managers[ this ];
 						for each ( var has:Boolean in asset.managers ) break;
 						if ( !has ) {
 							delete _HASH[ bundleName ];
-							if ( loaded ) asset.$unload();
+							if ( complete ) asset.$unload();
 							else {
 								if ( asset.queue ) {
 									var i:int = _LOADING_QUEUE.indexOf( asset.queue );
@@ -366,7 +363,7 @@ package by.blooddy.core.managers.resource {
 							}
 						}
 					}
-					if ( loaded && super.hasEventListener( ResourceBundleEvent.BUNDLE_REMOVED ) ) {
+					if ( complete && super.hasEventListener( ResourceBundleEvent.BUNDLE_REMOVED ) ) {
 						super.dispatchEvent( new ResourceBundleEvent( ResourceBundleEvent.BUNDLE_REMOVED, false, false, bundle ) );
 					}
 				}
@@ -401,7 +398,7 @@ package by.blooddy.core.managers.resource {
 				asset.managers[ this ] = true;
 				this._hash[ url ] = asset;
 
-				if ( asset.loaded ) {
+				if ( asset.complete ) {
 					if ( super.hasEventListener( ResourceBundleEvent.BUNDLE_ADDED ) ) {
 						super.dispatchEvent( new ResourceBundleEvent( ResourceBundleEvent.BUNDLE_ADDED, false, false, asset ) );
 					}
@@ -412,7 +409,7 @@ package by.blooddy.core.managers.resource {
 			}
 
 			// изменился приоритет загрузки
-			if ( !asset.loaded ) {
+			if ( !asset.complete ) {
 				if ( asset.queue && asset.queue.priority < priority ) {
 					asset.queue.priority = priority;
 					_LOADING_QUEUE.sortOn( _SORT_FIELDS, _SORT_OPTIONS );
@@ -435,10 +432,9 @@ package by.blooddy.core.managers.resource {
 		 * Добавляем уже грузящийся объект
 		 */
 		private function registerLoadable(loader:ILoadable):void {
-			loader.addEventListener( Event.COMPLETE, this.handler_complete );
-			loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, this.handler_complete );
-			loader.addEventListener( IOErrorEvent.IO_ERROR, this.handler_complete );
-			loader.addEventListener( Event.UNLOAD, this.handler_unload );
+			loader.addEventListener( Event.COMPLETE,	this.handler_complete );
+			loader.addEventListener( ErrorEvent.ERROR,	this.handler_complete );
+			loader.addEventListener( Event.UNLOAD,		this.handler_unload );
 		}
 
 		/**
@@ -446,10 +442,9 @@ package by.blooddy.core.managers.resource {
 		 * Удаляем загружающайся объект
 		 */
 		private function unregisterLoadable(loader:ILoadable):void {
-			loader.removeEventListener( Event.COMPLETE, this.handler_complete );
-			loader.removeEventListener( IOErrorEvent.IO_ERROR, this.handler_complete );
-			loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR, this.handler_complete );
-			loader.removeEventListener( Event.UNLOAD, this.handler_unload );
+			loader.removeEventListener( Event.COMPLETE,		this.handler_complete );
+			loader.removeEventListener( ErrorEvent.ERROR,	this.handler_complete );
+			loader.removeEventListener( Event.UNLOAD,		this.handler_unload );
 		}
 
 		//--------------------------------------------------------------------------
@@ -495,19 +490,13 @@ import by.blooddy.core.utils.ClassUtils;
 import flash.display.BitmapData;
 import flash.errors.IllegalOperationError;
 import flash.events.Event;
+import flash.events.IOErrorEvent;
 import flash.media.Sound;
 import flash.net.URLRequest;
 import flash.system.ApplicationDomain;
 import flash.utils.ByteArray;
 import flash.utils.Dictionary;
 import flash.utils.getTimer;
-
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Helper variables
-//
-////////////////////////////////////////////////////////////////////////////////
-import flash.events.IOErrorEvent;
 
 /**
  * @private

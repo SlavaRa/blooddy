@@ -123,7 +123,7 @@ package by.blooddy.gui.display {
 		public function loadComponent(url:String, params:Object=null):void {
 			if ( !super.hasManager() ) throw new ArgumentError();
 			var loader:ILoadable = super.loadResourceBundle( url );
-			if ( loader.loaded ) {
+			if ( loader.complete ) {
 				// TODO: inline
 			} else {
 				loader.addEventListener( Event.COMPLETE,					this.handler_loader_complete );

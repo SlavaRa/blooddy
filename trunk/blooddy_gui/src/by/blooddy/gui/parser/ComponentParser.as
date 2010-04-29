@@ -142,7 +142,7 @@ package by.blooddy.gui.parser {
 
 		public function parse(xml:XML, manager:IResourceManager=null):void {
 
-			super.$parse_prepare();
+			super.start();
 
 			this._source = xml;
 			this._resourceManager = manager || ResourceManager.manager;
@@ -153,7 +153,7 @@ package by.blooddy.gui.parser {
 
 		}
 
-		protected override function $parse_action():Boolean {
+		protected override function $action():Boolean {
 			
 			if ( this._source.name() != _COMPONENT_NAME ) throw new ParserError();
 
