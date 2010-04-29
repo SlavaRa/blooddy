@@ -90,9 +90,9 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 */
 		private function handler_loaderInit(event:LoaderEvent):void {
-			var loaded:Boolean = super.loaded;
+			var complete:Boolean = super.complete;
 			super.addLoaderListener( event.loader );
-			if ( loaded && !super.loaded ) {
+			if ( complete && !super.complete ) {
 				this._running = true;
 				super.dispatchEvent( new LoaderEvent( LoaderEvent.LOADER_ENABLED, false, false, this ) );
 			}

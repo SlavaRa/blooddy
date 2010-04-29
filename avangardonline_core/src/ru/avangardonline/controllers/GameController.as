@@ -210,7 +210,7 @@ package ru.avangardonline.controllers {
 			this._loadedBattle = this._currentBattle;
 
 			loader = ResourceManager.manager.loadResourceBundle( this._loadedBattle );
-			if ( loader.loaded ) {
+			if ( loader.complete ) {
 				var txt:String = ResourceManager.manager.getResource( this._loadedBattle, null );
 				if ( !txt ) {
 					this.error( 'Произошла ошибка загрзуки боя.' );

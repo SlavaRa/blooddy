@@ -220,7 +220,7 @@ package by.blooddy.core.managers.resource {
 		/**
 		 */
 		public function getResources():Array {
-			if ( super.loaded && super.contentType == MIME.FLASH ) {
+			if ( super.complete && super.contentType == MIME.FLASH ) {
 				if ( !this._definitions ) {
 					if ( super.loaderInfo ) this._definitions = new DefinitionFinder( super.loaderInfo.bytes );
 				}

@@ -8,11 +8,12 @@ package by.blooddy.core.display.resource {
 
 	import by.blooddy.core.events.display.resource.ResourceEvent;
 	import by.blooddy.core.net.loading.ILoadable;
+	import by.blooddy.core.net.loading.IProcessable;
+	import by.blooddy.core.net.loading.IProgressable;
 	import by.blooddy.core.net.loading.LoaderDispatcher;
 	
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
-	import flash.events.IOErrorEvent;
-	import flash.events.SecurityErrorEvent;
 	
 	/**
 	 * @author					BlooDHounD
@@ -47,7 +48,7 @@ package by.blooddy.core.display.resource {
 		/**
 		 * @private
 		 */
-		private var _loader:ILoadable;
+		private var _loader:IProcessable;
 
 		//--------------------------------------------------------------------------
 		//
@@ -72,7 +73,7 @@ package by.blooddy.core.display.resource {
 
 					if ( resources[ 0 ] ) {
 						loader = super.loadResourceBundle( resources[ 0 ] );
-						if ( !loader.loaded ) {
+						if ( !loader.complete ) {
 							this._loader = loader;
 						}
 					}
@@ -84,7 +85,7 @@ package by.blooddy.core.display.resource {
 					for each ( var bundleName:String in resources ) {
 						if ( bundleName ) {
 							loader = super.loadResourceBundle( bundleName );
-							if ( !loader.loaded ) {
+							if ( !loader.complete ) {
 								if ( loaderDispatcher ) {
 				
 									loaderDispatcher.addLoaderListener( loader );
@@ -115,10 +116,11 @@ package by.blooddy.core.display.resource {
 
 				this._loader.addEventListener( Event.COMPLETE, this.handler_complete );
 				if ( !( this._loader is LoaderDispatcher ) ) {
-					this._loader.addEventListener( IOErrorEvent.IO_ERROR, this.handler_complete );
-					this._loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, this.handler_complete );
+					this._loader.addEventListener( ErrorEvent.ERROR, this.handler_complete );
 				}
-				this.preload( this._loader );
+				if ( this._loader is IProgressable ) {
+					this.preload( this._loader as IProgressable );
+				}
 
 			} else {
 
@@ -131,7 +133,7 @@ package by.blooddy.core.display.resource {
 			return null;
 		}
 
-		protected function preload(loader:ILoadable):Boolean {
+		protected function preload(loader:IProgressable):Boolean {
 			return true;
 		}
 		
@@ -156,8 +158,7 @@ package by.blooddy.core.display.resource {
 			if ( this._loader is LoaderDispatcher ) {
 				( this._loader as LoaderDispatcher ).close();
 			} else {
-				this._loader.removeEventListener( IOErrorEvent.IO_ERROR, this.handler_complete );
-				this._loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR, this.handler_complete );
+				this._loader.removeEventListener( ErrorEvent.ERROR, this.handler_complete );
 			}
 			this._loader.removeEventListener( Event.COMPLETE, this.handler_complete );
 			this._loader = null;

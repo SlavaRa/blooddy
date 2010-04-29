@@ -123,14 +123,13 @@ package by.blooddy.external.media {
 		public function loadAndPlay(uri:String, startTime:Number=0, loops:int=0, transform:Object=null, afterLoad:Boolean=false):uint {
 			var arr:Array = uri.split( '#', 2 );
 			var loader:ILoadable = this._manager.loadResourceBundle( arr[0], int.MAX_VALUE );
-			if ( !loader.loaded ) {
+			if ( !loader.complete ) {
 				if ( !afterLoad ) return 0;
 				var plays:Vector.<PlayAsset> = this._loaders[ loader ];
 				if ( !plays ) {
 					this._loaders[ loader ] = plays = new Vector.<PlayAsset>();
-					loader.addEventListener( Event.COMPLETE,					this.handler_complete );
-					loader.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_complete );
-					loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_complete );
+					loader.addEventListener( Event.COMPLETE,	this.handler_complete );
+					loader.addEventListener( ErrorEvent.ERROR,	this.handler_complete );
 				}
 				var asset:PlayAsset = new PlayAsset( loader, this._lastID++, uri, startTime, loops, getTransform( transform ) );
 				plays.push( asset );
@@ -159,9 +158,8 @@ package by.blooddy.external.media {
 				var plays:Vector.<PlayAsset> = this._loaders[ loader ];
 				if ( plays.length <= 1 ) {
 					delete this._loaders[ asset.loader ];
-					loader.removeEventListener( Event.COMPLETE,						this.handler_complete );
-					loader.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_complete );
-					loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_complete );
+					loader.removeEventListener( Event.COMPLETE,		this.handler_complete );
+					loader.removeEventListener( ErrorEvent.ERROR,	this.handler_complete );
 				} else {
 					var i:int = plays.indexOf( asset );
 					plays.splice( i, 1 );
@@ -227,9 +225,8 @@ package by.blooddy.external.media {
 		 */
 		private function handler_complete(event:Event):void {
 			var loader:ILoadable = event.target as ILoadable;
-			loader.removeEventListener( Event.COMPLETE,						this.handler_complete );
-			loader.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_complete );
-			loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_complete );
+			loader.removeEventListener( Event.COMPLETE,		this.handler_complete );
+			loader.removeEventListener( ErrorEvent.ERROR,	this.handler_complete );
 			var plays:Vector.<PlayAsset> = this._loaders[ loader ];
 			if ( plays ) {
 				var p:Boolean = !( event is ErrorEvent );

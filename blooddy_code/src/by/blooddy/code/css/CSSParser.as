@@ -148,13 +148,13 @@ package by.blooddy.code.css {
 		/**
 		 * @private
 		 */
-		private var _loaded:Boolean = false;
+		private var _complete:Boolean = false;
 
 		/**
 		 * @private
 		 */
-		public function get loaded():Boolean {
-			return this._loaded && ( !this._loader || this._loader.loaded );
+		public function get complete():Boolean {
+			return this._complete && ( !this._loader || this._loader.complete );
 		}
 		
 		/**

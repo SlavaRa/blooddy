@@ -42,7 +42,7 @@ package by.blooddy.core.net.loading {
 	 * 
 	 * @keyword					loaderdispatcher, loader, dispatcher
 	 */
-	public class LoaderDispatcher extends EventDispatcher implements ILoadable {
+	public class LoaderDispatcher extends EventDispatcher implements IProcessable, IProgressable {
 
 		//--------------------------------------------------------------------------
 		//
@@ -76,7 +76,7 @@ package by.blooddy.core.net.loading {
 		/**
 		 * @private
 		 */
-		private const _loaders:Vector.<ILoadable> = new Vector.<ILoadable>();
+		private const _loaders:Vector.<IProcessable> = new Vector.<IProcessable>();
 
 		//--------------------------------------------------------------------------
 		//
@@ -85,19 +85,19 @@ package by.blooddy.core.net.loading {
 		//--------------------------------------------------------------------------
 
 		//----------------------------------
-		//  loaded
+		//  complete
 		//----------------------------------
 
 		/**
 		 * @private
 		 */
-		private var _loaded:Boolean = true;
+		private var _complete:Boolean = true;
 
 		/**
-		 * @copy					by.blooddy.core.net.ILoadable#loaded
+		 * @inheritDoc
 		 */
-		public function get loaded():Boolean {
-			return this._loaded;
+		public function get complete():Boolean {
+			return this._complete;
 		}
 
 		//----------------------------------
@@ -110,7 +110,7 @@ package by.blooddy.core.net.loading {
 		private var _bytesLoaded:uint = 0;
 
 		/**
-		 * @copy					by.blooddy.core.net.ILoadable#bytesLoaded
+		 * @inheritDoc
 		 */
 		public function get bytesLoaded():uint {
 			return this._bytesLoaded;
@@ -126,7 +126,7 @@ package by.blooddy.core.net.loading {
 		private var _bytesTotal:uint = 0;
 
 		/**
-		 * @copy					by.blooddy.core.net.ILoadable#bytesTotal
+		 * @inheritDoc
 		 */
 		public function get bytesTotal():uint {
 			return this._bytesTotal;
@@ -175,6 +175,9 @@ package by.blooddy.core.net.loading {
 		 */
 		private var _progress:Number = 1;
 
+		/**
+		 * @inheritDoc
+		 */
 		public function get progress():Number {
 			return this._progress;
 		}
@@ -185,15 +188,15 @@ package by.blooddy.core.net.loading {
 		//
 		//--------------------------------------------------------------------------
 
-		public function addLoaderListener(loader:ILoadable):void {
+		public function addLoaderListener(loader:IProcessable):void {
 			this.$addLoaderListener( loader );
 		}
 
-		public function removeLoaderListener(loader:ILoadable):void {
+		public function removeLoaderListener(loader:IProcessable):void {
 			this.$removeLoaderListener( loader );
 		}
 
-		public function hasLoaderListener(loader:ILoadable):Boolean {
+		public function hasLoaderListener(loader:IProcessable):Boolean {
 			return ( this._loaders.indexOf( loader ) >= 0 );
 		}
 		
@@ -218,33 +221,35 @@ package by.blooddy.core.net.loading {
 		/**
 		 * @private
 		 */
-		private function $addLoaderListener(loader:ILoadable):void {
+		private function $addLoaderListener(loader:IProcessable):void {
 			if ( this._loaders.indexOf( loader ) >= 0 ) return; // проверим. может какой-то баран уже дабавил нас сюда.
 
 			// подписываем с минимальными приоритетом. мы контэйнер, и должны отработать последними
-			if ( !loader.loaded ) {
-				loader.addEventListener( Event.COMPLETE,					this.updateLoaded, false, int.MIN_VALUE );
-				loader.addEventListener( ProgressEvent.PROGRESS,			this.toProgress, false, int.MIN_VALUE );
-				loader.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_error, false, int.MIN_VALUE );
-				loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error, false, int.MIN_VALUE );
+			if ( !loader.complete ) {
+				loader.addEventListener( Event.COMPLETE,						this.updateLoaded, false, int.MIN_VALUE );
+				loader.addEventListener( ErrorEvent.ERROR,						this.handler_error, false, int.MIN_VALUE );
+				if ( loader is ILoadable ) {
+					loader.addEventListener( ProgressEvent.PROGRESS,			this.toProgress, false, int.MIN_VALUE );
+				}
 			}
-			loader.addEventListener( Event.UNLOAD,							this.handler_error, false, int.MIN_VALUE );
+			if ( loader is ILoader ) {
+				loader.addEventListener( Event.UNLOAD,							this.handler_error, false, int.MIN_VALUE );
+			}
 
 			this._loaders.push( loader );
 
 			this._toLoaders = true;
-			this._loaded = this._loaded && loader.loaded;
+			this._complete = this._complete && loader.complete;
 			nextframeCall( this.updateComplete );
 		}
 
 		/**
 		 * @private
 		 */
-		private function $removeLoaderListener(loader:ILoadable, update:Boolean=true):void {
+		private function $removeLoaderListener(loader:IProcessable, update:Boolean=true):void {
 			loader.removeEventListener( Event.COMPLETE,						this.updateLoaded );
 			loader.removeEventListener( ProgressEvent.PROGRESS,				this.toProgress );
-			loader.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_error );
-			loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error );
+			loader.removeEventListener( ErrorEvent.ERROR,					this.handler_error );
 			loader.removeEventListener( Event.UNLOAD,						this.handler_error );
 
 			var index:int = this._loaders.lastIndexOf( loader );
@@ -270,7 +275,7 @@ package by.blooddy.core.net.loading {
 			this._loadersTotal = arr.length;
 			var loaded:uint = 0;
 			for each ( var loader:ILoadable in arr ) {
-				if ( loader.loaded ) loaded++;
+				if ( loader.complete ) loaded++;
 			}
 			this._loadersLoaded = loaded;
 		}
@@ -279,10 +284,10 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 */
 		private function updateLoaded(event:Event=null):void {
-			this._loaded = true;
+			this._complete = true;
 			for each ( var loader:ILoadable in this._loaders ) {
-				if ( !loader.loaded ) {
-					this._loaded = false;
+				if ( !loader.complete ) {
+					this._complete = false;
 					break;
 				}
 			}
@@ -328,7 +333,7 @@ package by.blooddy.core.net.loading {
 		 */
 		private function updateComplete():void {
 			this.toProgress();
-			if ( !this._loaded ) return;
+			if ( !this._complete ) return;
 			// загрузилось всё. чистимся и вызываемся.
 			var loader:ILoadable;
 			while ( this._loaders.length > 0 ) {

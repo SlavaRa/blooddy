@@ -179,7 +179,7 @@ package by.blooddy.core.display.resource {
 			if ( !this._manager ) throw new ArgumentError();
 			var loader:ILoadable = this._manager.loadResourceBundle( bundleName, priority );
 			// диспатчим событие о том что началась загрузка
-			if ( !loader.loaded ) super.dispatchEvent( new LoaderEvent( LoaderEvent.LOADER_INIT, true, false, loader ) );
+			if ( !loader.complete ) super.dispatchEvent( new LoaderEvent( LoaderEvent.LOADER_INIT, true, false, loader ) );
 			return loader;
 		}
 

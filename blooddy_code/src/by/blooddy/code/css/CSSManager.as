@@ -260,8 +260,8 @@ internal final class CSSLoader extends EventDispatcher implements ILoadable {
 	/**
 	 * @private
 	 */
-	public function get loaded():Boolean {
-		return this._parser && this._parser.loaded;
+	public function get complete():Boolean {
+		return this._parser && this._parser.complete;
 	}
 
 	/**
@@ -289,7 +289,7 @@ internal final class CSSLoader extends EventDispatcher implements ILoadable {
 	 */
 	private function createLoader():void {
 		this._loader = this._resourceManager.loadResourceBundle( this.$url, LoaderPriority.HIGHEST );
-		if ( this._loader.loaded ) {
+		if ( this._loader.complete ) {
 			this._loader = null;
 			this.createParser();
 		} else {

@@ -274,7 +274,7 @@ package by.blooddy.core.net.loading {
 						super.dispatchEvent( new Event( Event.INIT ) );
 					}
 					super.updateProgress( bytesTotal, bytesTotal );
-					super.handler_complete( new Event( Event.COMPLETE ) );
+					super.completeHandler( new Event( Event.COMPLETE ) );
 					break;
 				
 				default:
@@ -295,7 +295,7 @@ package by.blooddy.core.net.loading {
 						super.dispatchEvent( new Event( Event.INIT ) );
 					}
 					super.updateProgress( bytesTotal, bytesTotal );
-					super.handler_complete( new Event( Event.COMPLETE ) );
+					super.completeHandler( new Event( Event.COMPLETE ) );
 					break;
 				
 			}
@@ -338,7 +338,7 @@ package by.blooddy.core.net.loading {
 			if ( progress ) { // если беда с доменами, то пытаемся выебнуться
 				result.addEventListener( ProgressEvent.PROGRESS,		this.handler_stream_init_progress );
 			} else {
-				result.addEventListener( ProgressEvent.PROGRESS,		super.handler_progress );
+				result.addEventListener( ProgressEvent.PROGRESS,		super.progressHandler );
 			}
 			result.addEventListener( Event.COMPLETE,					this.handler_stream_init_complete );
 			result.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_common_error );
@@ -356,7 +356,7 @@ package by.blooddy.core.net.loading {
 				result.addEventListener( Event.OPEN,					super.dispatchEvent );
 			}
 			result.addEventListener( HTTPStatusEvent.HTTP_STATUS,		super.dispatchEvent );
-			result.addEventListener( ProgressEvent.PROGRESS,			super.handler_progress );
+			result.addEventListener( ProgressEvent.PROGRESS,			super.progressHandler );
 			result.addEventListener( Event.INIT,						this.handler_loader_init );
 			result.addEventListener( Event.COMPLETE,					this.handler_common_complete );
 			if ( url ) { // если загрущик инитиализатор, то загрузка идёт по урлу
@@ -388,7 +388,7 @@ package by.blooddy.core.net.loading {
 				result.addEventListener( Event.OPEN,					super.dispatchEvent );
 			}
 			result.addEventListener( HTTPStatusEvent.HTTP_STATUS,		super.dispatchEvent );
-			result.addEventListener( ProgressEvent.PROGRESS,			super.handler_progress );
+			result.addEventListener( ProgressEvent.PROGRESS,			super.progressHandler );
 			result.addEventListener( Event.INIT,						this.handler_sound_init );
 			result.addEventListener( Event.COMPLETE,					this.handler_common_complete );
 			result.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_common_error );
@@ -408,7 +408,7 @@ package by.blooddy.core.net.loading {
 					this._stream.removeEventListener( _HTTP_RESPONSE_STATUS,			super.dispatchEvent );
 				}
 				this._stream.removeEventListener( ProgressEvent.PROGRESS,				this.handler_stream_init_progress );
-				this._stream.removeEventListener( ProgressEvent.PROGRESS,				super.handler_progress );
+				this._stream.removeEventListener( ProgressEvent.PROGRESS,				super.progressHandler );
 				this._stream.removeEventListener( Event.COMPLETE,						this.handler_stream_init_complete );
 				this._stream.removeEventListener( Event.COMPLETE,						this.handler_stream_complete );
 				this._stream.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_common_error );
@@ -429,14 +429,14 @@ package by.blooddy.core.net.loading {
 			if ( this._loader ) {
 				this._loader.removeEventListener( Event.OPEN,							super.dispatchEvent );
 				this._loader.removeEventListener( HTTPStatusEvent.HTTP_STATUS,			super.dispatchEvent );
-				this._loader.removeEventListener( ProgressEvent.PROGRESS,				super.handler_progress );
+				this._loader.removeEventListener( ProgressEvent.PROGRESS,				super.progressHandler );
 				this._loader.removeEventListener( Event.INIT,							this.handler_loader_init );
 				this._loader.removeEventListener( Event.COMPLETE,						this.handler_common_complete );
 				this._loader.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_loader_url_ioError );
 				this._loader.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_loader_input_ioError );
 				this._loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_common_error );
 				this._loaderInfo = null;
-				if ( this._loader.loaded ) {
+				if ( this._loader.complete ) {
 					this._loader._unload();
 				} else {
 					this._loader._close();
@@ -454,12 +454,12 @@ package by.blooddy.core.net.loading {
 			if ( this._sound ) {
 				this._sound.removeEventListener( Event.OPEN,						super.dispatchEvent );
 				this._sound.removeEventListener( HTTPStatusEvent.HTTP_STATUS,		super.dispatchEvent );
-				this._sound.removeEventListener( ProgressEvent.PROGRESS,			super.handler_progress );
+				this._sound.removeEventListener( ProgressEvent.PROGRESS,			super.progressHandler );
 				this._sound.removeEventListener( Event.INIT,						this.handler_sound_init );
 				this._sound.removeEventListener( Event.COMPLETE,					this.handler_common_complete );
 				this._sound.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_common_error );
 				this._sound.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_common_error );
-				if ( this._sound.loaded ) {
+				if ( this._sound.complete ) {
 					this._sound.unload();
 				} else {
 					this._sound._close();
@@ -496,7 +496,7 @@ package by.blooddy.core.net.loading {
 		private function handler_common_complete(event:Event):void {
 			var bytesTotal:uint = ( event.target as LoaderBase ).bytesTotal;
 			super.updateProgress( bytesTotal, bytesTotal );
-			super.handler_complete( event );
+			super.completeHandler( event );
 		}
 		
 		/**
@@ -504,7 +504,7 @@ package by.blooddy.core.net.loading {
 		 */
 		private function handler_common_error(event:ErrorEvent):void {
 			this.clear_asset();
-			super.handler_complete( event );
+			super.completeHandler( event );
 		}
 		
 		//----------------------------------
@@ -548,14 +548,14 @@ package by.blooddy.core.net.loading {
 						// усё. стало всё попроще
 						this._stream.removeEventListener( ProgressEvent.PROGRESS,	this.handler_stream_init_progress );
 						this._stream.removeEventListener( Event.COMPLETE,			this.handler_stream_init_complete );
-						this._stream.addEventListener( ProgressEvent.PROGRESS,		super.handler_progress );
+						this._stream.addEventListener( ProgressEvent.PROGRESS,		super.progressHandler );
 						this._stream.addEventListener( Event.COMPLETE,				this.handler_stream_complete );
 						break;
 
 				}
 
 			}
-			super.handler_progress( event );
+			super.progressHandler( event );
 		}
 
 		/**
@@ -601,7 +601,7 @@ package by.blooddy.core.net.loading {
 
 				default:
 					// усё. пипец
-					super.handler_complete( event );
+					super.completeHandler( event );
 					break;
 			}
 		}
@@ -647,7 +647,7 @@ package by.blooddy.core.net.loading {
 				super.dispatchEvent( new Event( Event.INIT ) );
 			}
 			super.updateProgress( bytesTotal, bytesTotal );
-			super.handler_complete( event );
+			super.completeHandler( event );
 		}
 
 		//----------------------------------
@@ -679,7 +679,7 @@ package by.blooddy.core.net.loading {
 				this._stream = this.create_stream( false, !_URL || _URL.test( this._request.url ) );
 				this._stream.load( this._request );
 			} else {
-				super.handler_complete( event );
+				super.completeHandler( event );
 			}
 		}
 
@@ -709,9 +709,9 @@ package by.blooddy.core.net.loading {
 					super.dispatchEvent( new Event( Event.INIT ) );
 				}
 				super.updateProgress( bytesTotal, bytesTotal );
-				super.handler_complete( new Event( Event.COMPLETE ) );
+				super.completeHandler( new Event( Event.COMPLETE ) );
 			} else {
-				super.handler_complete( event );
+				super.completeHandler( event );
 			}
 		}
 

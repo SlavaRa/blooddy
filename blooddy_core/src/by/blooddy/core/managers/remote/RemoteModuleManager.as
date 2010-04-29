@@ -10,9 +10,9 @@ package by.blooddy.core.managers.remote {
 	import by.blooddy.core.net.MIME;
 	import by.blooddy.core.net.loading.LoaderContext;
 	
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
-	import flash.events.IOErrorEvent;
 	import flash.net.URLRequest;
 	import flash.system.ApplicationDomain;
 	import flash.utils.ByteArray;
@@ -67,18 +67,18 @@ package by.blooddy.core.managers.remote {
 	
 		public function load(request:URLRequest, applicationDomain:ApplicationDomain=null):void {
 			var loader:ModuleLoader = new ModuleLoader();
-			loader.addEventListener( Event.COMPLETE, this.handler_complete );
-			loader.addEventListener( Event.INIT, this.handler_init );
-			loader.addEventListener( IOErrorEvent.IO_ERROR, this.handler_error );
+			loader.addEventListener( Event.COMPLETE,	this.handler_complete );
+			loader.addEventListener( Event.INIT,		this.handler_init );
+			loader.addEventListener( ErrorEvent.ERROR,	this.handler_error );
 			loader.loaderContext = new LoaderContext( applicationDomain || new ApplicationDomain( this._applicationDomain ) );
 			loader.load( request );
 		}
 	
 		public function loadBytes(bytes:ByteArray, applicationDomain:ApplicationDomain=null):void {
 			var loader:ModuleLoader = new ModuleLoader();
-			loader.addEventListener( Event.COMPLETE, this.handler_complete );
-			loader.addEventListener( Event.INIT, this.handler_init );
-			loader.addEventListener( IOErrorEvent.IO_ERROR, this.handler_error );
+			loader.addEventListener( Event.COMPLETE,	this.handler_complete );
+			loader.addEventListener( Event.INIT,		this.handler_init );
+			loader.addEventListener( ErrorEvent.ERROR,	this.handler_error );
 			loader.loaderContext = new LoaderContext( applicationDomain || new ApplicationDomain( this._applicationDomain ) );
 			loader.loadBytes( bytes );
 		}
@@ -117,31 +117,26 @@ package by.blooddy.core.managers.remote {
 		private function handler_init(event:Event):void {
 			var loader:ModuleLoader = event.target as ModuleLoader;
 			loader.removeEventListener( Event.INIT, this.handler_init );
-			if ( loader.contentType != MIME.FLASH || !( loader.content is IRemoteModule ) ) {
-				loader.removeEventListener( Event.COMPLETE, this.handler_complete );
-				loader.removeEventListener( IOErrorEvent.IO_ERROR, this.handler_error );
+			if ( loader.contentType != MIME.FLASH || !( loader.content is IRemoteModule ) && loader.id ) {
+				loader.removeEventListener( Event.COMPLETE,		this.handler_complete );
+				loader.removeEventListener( ErrorEvent.ERROR,	this.handler_error );
 				loader.close();
-				loader.unload();
 			}
 		}
 	
 		private function handler_complete(event:Event):void {
 			var loader:ModuleLoader = event.target as ModuleLoader;
-			loader.removeEventListener( Event.COMPLETE, this.handler_complete );
-			loader.removeEventListener( IOErrorEvent.IO_ERROR, this.handler_error );
-			if ( loader && loader.id ) {
-				this._loaders.push( loader );
-				super.dispatchEvent( new RemoteModuleEvent( RemoteModuleEvent.INIT, false, false, loader.id ) );
-			} else {
-				loader.unload();
-			}
+			loader.removeEventListener( Event.COMPLETE,		this.handler_complete );
+			loader.removeEventListener( ErrorEvent.ERROR,	this.handler_error );
+			this._loaders.push( loader );
+			super.dispatchEvent( new RemoteModuleEvent( RemoteModuleEvent.INIT, false, false, loader.id ) );
 		}
 	
-		private function handler_error(event:IOErrorEvent):void {
+		private function handler_error(event:ErrorEvent):void {
 			var loader:ModuleLoader = event.target as ModuleLoader;
 			loader.removeEventListener( Event.COMPLETE, this.handler_complete );
 			loader.removeEventListener( Event.INIT, this.handler_init );
-			loader.removeEventListener( IOErrorEvent.IO_ERROR, this.handler_error );
+			loader.removeEventListener( ErrorEvent.ERROR, this.handler_error );
 		}
 
 	}

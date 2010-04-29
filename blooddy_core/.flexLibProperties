@@ -213,6 +213,7 @@
     <classEntry path="by.blooddy.core.utils.ClassAlias"/>
     <classEntry path="by.blooddy.core.blooddy"/>
     <classEntry path="by.blooddy.core.managers.resource.IResourceManager"/>
+    <classEntry path="by.blooddy.core.net.loading.IProcessable"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

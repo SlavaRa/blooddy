@@ -31,9 +31,9 @@ package by.blooddy.core.net.loading {
 		//  Namespaces
 		//
 		//--------------------------------------------------------------------------
-		
+
 		use namespace $protected_load;
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -65,7 +65,7 @@ package by.blooddy.core.net.loading {
 		 * буфер загруженных данных
 		 */
 		private var _input:IDataInput;
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
@@ -80,7 +80,7 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 */
 		private var _connected:Boolean = false;
-		
+
 		/**
 		 * @copy				flash.net.URLStream#connected
 		 */
@@ -126,9 +126,9 @@ package by.blooddy.core.net.loading {
 				super.dispatchEvent( new Event( Event.INIT ) );
 			}
 			super.updateProgress( bytes.length, bytes.length );
-			this.handler_complete( new Event( Event.COMPLETE ) );
+			this.completeHandler( new Event( Event.COMPLETE ) );
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -145,7 +145,7 @@ package by.blooddy.core.net.loading {
 		//  Private methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 * создаёт URLStream для загрузки
@@ -157,10 +157,10 @@ package by.blooddy.core.net.loading {
 			if ( _HTTP_RESPONSE_STATUS ) {
 				result.addEventListener( _HTTP_RESPONSE_STATUS,			super.dispatchEvent );
 			}
-			result.addEventListener( ProgressEvent.PROGRESS,			this.handler_progress );
-			result.addEventListener( Event.COMPLETE,					this.handler_complete );
-			result.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_complete );
-			result.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_complete );
+			result.addEventListener( ProgressEvent.PROGRESS,			this.progressHandler );
+			result.addEventListener( Event.COMPLETE,					this.completeHandler );
+			result.addEventListener( IOErrorEvent.IO_ERROR,				this.completeHandler );
+			result.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.completeHandler );
 			return result;
 		}
 
@@ -175,11 +175,11 @@ package by.blooddy.core.net.loading {
 				if ( _HTTP_RESPONSE_STATUS ) {
 					this._stream.removeEventListener( _HTTP_RESPONSE_STATUS,			super.dispatchEvent );
 				}
-				this._stream.removeEventListener( ProgressEvent.PROGRESS,				this.handler_progress );
-				this._stream.removeEventListener( ProgressEvent.PROGRESS,				super.handler_progress );
-				this._stream.removeEventListener( Event.COMPLETE,						this.handler_complete );
-				this._stream.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_complete );
-				this._stream.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_complete );
+				this._stream.removeEventListener( ProgressEvent.PROGRESS,				this.progressHandler );
+				this._stream.removeEventListener( ProgressEvent.PROGRESS,				super.progressHandler );
+				this._stream.removeEventListener( Event.COMPLETE,						this.completeHandler );
+				this._stream.removeEventListener( IOErrorEvent.IO_ERROR,				this.completeHandler );
+				this._stream.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.completeHandler );
 				try {
 					this._stream.close();
 				} catch ( e:Error ) {
@@ -187,7 +187,7 @@ package by.blooddy.core.net.loading {
 				this._stream = null;
 			}
 		}
-		
+
 		/**
 		 * @private
 		 * очищает буфер
@@ -200,7 +200,7 @@ package by.blooddy.core.net.loading {
 				this._input = null;
 			}
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Event handlers
@@ -210,21 +210,21 @@ package by.blooddy.core.net.loading {
 		/**
 		 * @private
 		 */
-		$protected_load override function handler_progress(event:ProgressEvent):void {
-			super.handler_progress( event );
+		$protected_load override function progressHandler(event:ProgressEvent):void {
+			super.progressHandler( event );
 			if ( super.hasEventListener( Event.INIT ) ) {
 				super.dispatchEvent( new Event( Event.INIT ) );
 			}
-			this._stream.removeEventListener( ProgressEvent.PROGRESS,	this.handler_progress );
-			this._stream.addEventListener( ProgressEvent.PROGRESS,		super.handler_progress );
+			this._stream.removeEventListener( ProgressEvent.PROGRESS,	this.progressHandler );
+			this._stream.addEventListener( ProgressEvent.PROGRESS,		super.progressHandler );
 		}
-		
+
 		/**
 		 * @private
 		 */
-		$protected_load override function handler_complete(event:Event):void {
+		$protected_load override function completeHandler(event:Event):void {
 			this._connected = false;
-			super.handler_complete( event );
+			super.completeHandler( event );
 		}
 
 		//--------------------------------------------------------------------------
@@ -232,54 +232,54 @@ package by.blooddy.core.net.loading {
 		//  Implements properties: IDataInput
 		//
 		//--------------------------------------------------------------------------
-		
+
 		//----------------------------------
 		//  bytesAvailable
 		//----------------------------------
-		
+
 		/**
 		 * @inheritDoc
 		 */
 		public function get bytesAvailable():uint {
 			return this._input.bytesAvailable;
 		}
-		
+
 		//----------------------------------
 		//  endian
 		//----------------------------------
-		
+
 		/**
 		 * @inheritDoc
 		 */
 		public function get endian():String {
 			return this._input.endian;
 		}
-		
+
 		/**
 		 * @private
 		 */
 		public function set endian(value:String):void {
 			this._input.endian = value;
 		}
-		
+
 		//----------------------------------
 		//  objectEncoding
 		//----------------------------------
-		
+
 		/**
 		 * @inheritDoc
 		 */
 		public function get objectEncoding():uint {
 			return this._input.objectEncoding;
 		}
-		
+
 		/**
 		 * @private
 		 */
 		public function set objectEncoding(value:uint):void {
 			this._input.objectEncoding = value;
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Implements methods: IDataInput

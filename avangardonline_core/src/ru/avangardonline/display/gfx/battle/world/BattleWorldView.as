@@ -147,7 +147,7 @@ package ru.avangardonline.display.gfx.battle.world {
 			if ( !super.stage ) return false;
 
 			var loader:ILoadable = super.loadResourceBundle( 'lib/display/world/bg' + this._data.field.type + '.jpg' );
-			if ( !loader.loaded ) {
+			if ( !loader.complete ) {
 				loader.addEventListener( Event.COMPLETE, this.handler_complete );
 				loader.addEventListener( IOErrorEvent.IO_ERROR, this.handler_complete );
 				loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, this.handler_complete );
