@@ -141,7 +141,7 @@
     <classEntry path="by.blooddy.core.net.loading.Loader"/>
     <classEntry path="by.blooddy.core.net.loading.LoaderBase"/>
     <classEntry path="by.blooddy.core.net.loading.LoaderContext"/>
-    <classEntry path="by.blooddy.core.net.loading.LoaderDispatcher"/>
+    <classEntry path="by.blooddy.core.net.loading.ProgressDispatcher"/>
     <classEntry path="by.blooddy.core.net.loading.LoaderListener"/>
     <classEntry path="by.blooddy.core.net.loading.LoaderPriority"/>
     <classEntry path="by.blooddy.core.net.loading.SoundLoader"/>
@@ -214,6 +214,7 @@
     <classEntry path="by.blooddy.core.blooddy"/>
     <classEntry path="by.blooddy.core.managers.resource.IResourceManager"/>
     <classEntry path="by.blooddy.core.net.loading.IProcessable"/>
+    <classEntry path="by.blooddy.core.events.net.loading.LoaderListenerEvent"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

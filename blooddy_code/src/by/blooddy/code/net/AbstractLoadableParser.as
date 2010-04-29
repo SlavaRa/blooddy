@@ -7,20 +7,11 @@
 package by.blooddy.code.net {
 	
 	import by.blooddy.code.AbstractParser;
-	import by.blooddy.core.net.loading.ILoadable;
-	import by.blooddy.core.net.loading.LoaderDispatcher;
-	
-	import flash.events.Event;
-	import flash.events.IOErrorEvent;
-	import flash.events.SecurityErrorEvent;
 	import by.blooddy.core.net.loading.IProcessable;
+	import by.blooddy.core.net.loading.ProgressDispatcher;
+	
 	import flash.events.ErrorEvent;
-	
-	//--------------------------------------
-	//  Events
-	//--------------------------------------
-	
-	[Event( name="loaderInit", type="by.blooddy.core.events.net.loading.LoaderEvent" )]
+	import flash.events.Event;
 	
 	/**
 	 * @author					BlooDHounD
@@ -61,8 +52,8 @@ package by.blooddy.code.net {
 		//
 		//--------------------------------------------------------------------------
 		
-		public override function get complete():Boolean {
-			return !this._loader && super.complete;
+		protected function get loaded():Boolean {
+			return !this._loader;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -71,19 +62,23 @@ package by.blooddy.code.net {
 		//
 		//--------------------------------------------------------------------------
 
+		protected function onLoad():void {
+		}
+
 		protected final function addLoader(loader:IProcessable):void {
 			if ( loader.complete ) return;
-			var loaderDispatcher:LoaderDispatcher = this._loader as LoaderDispatcher;
+			var loaderDispatcher:ProgressDispatcher = this._loader as ProgressDispatcher;
 			if ( loaderDispatcher ) {
-				loaderDispatcher.addLoaderListener( loader );
+				loaderDispatcher.addProcess( loader );
 			} else if ( this._loader ) {
 				this._loader.removeEventListener( Event.COMPLETE,	this.handler_complete );
 				this._loader.removeEventListener( ErrorEvent.ERROR,	this.handler_complete );
-				loaderDispatcher = new LoaderDispatcher();
-				loaderDispatcher.addLoaderListener( this._loader );
-				loaderDispatcher.addLoaderListener( loader );
+				loaderDispatcher = new ProgressDispatcher();
+				loaderDispatcher.addProcess( this._loader );
+				loaderDispatcher.addProcess( loader );
 				this._loader = loaderDispatcher;
 				this._loader.addEventListener( Event.COMPLETE,		this.handler_complete, false, int.MIN_VALUE );
+				this._loader.addEventListener( ErrorEvent.ERROR,	this.handler_complete, false, int.MIN_VALUE );
 			} else {
 				this._loader = loader;
 				this._loader.addEventListener( Event.COMPLETE,		this.handler_complete, false, int.MIN_VALUE );
@@ -101,13 +96,10 @@ package by.blooddy.code.net {
 		 * @private
 		 */
 		private function handler_complete(event:Event):void {
-			this._loader.removeEventListener( Event.COMPLETE,						this.handler_complete );
-			this._loader.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_complete );
-			this._loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_complete );
+			this._loader.removeEventListener( Event.COMPLETE,		this.handler_complete );
+			this._loader.removeEventListener( ErrorEvent.ERROR,		this.handler_complete );
 			this._loader = null;
-			if ( super.complete ) {
-				super.dispatchEvent( new Event( Event.COMPLETE ) );
-			}
+			this.onLoad();
 		}
 
 	}

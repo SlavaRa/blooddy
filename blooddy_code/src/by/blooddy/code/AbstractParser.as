@@ -28,12 +28,6 @@ package by.blooddy.code {
 	 */
 	[Event( name="error", type="flash.events.ErrorEvent" )]
 
-	//--------------------------------------
-	//  Events
-	//--------------------------------------
-
-	[Event( name="open", type="flash.events.Event" )]
-
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -129,16 +123,18 @@ package by.blooddy.code {
 		}
 
 		protected final function activate():void {
+			if ( this._state != _STATE_PAUSE ) return;
 			this._state = _STATE_PROGRESS;
 			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
 		}
 		
 		protected final function deactivate():void {
+			if ( this._state != _STATE_PROGRESS ) return;
 			this._state = _STATE_PAUSE;
 			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
 		}
 		
-		protected virtual function $action():Boolean {
+		protected virtual function onParse():Boolean {
 			throw new IllegalOperationError();
 		}
 
@@ -169,7 +165,8 @@ package by.blooddy.code {
 				super.dispatchEvent( new Event( Event.OPEN ) );
 			}
 			if ( this._state == _STATE_PROGRESS ) {
-				this.activate();
+				enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
+				this.handler_enterFrame( event );
 			}
 		}
 		
@@ -178,7 +175,7 @@ package by.blooddy.code {
 		 */
 		private function handler_enterFrame(event:Event):void {
 			try {
-				if ( this.$action() ) {
+				if ( this.onParse() ) {
 					this.deactivate();
 				}
 			} catch ( e:Error ) {

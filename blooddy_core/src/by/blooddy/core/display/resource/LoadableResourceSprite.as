@@ -10,7 +10,7 @@ package by.blooddy.core.display.resource {
 	import by.blooddy.core.net.loading.ILoadable;
 	import by.blooddy.core.net.loading.IProcessable;
 	import by.blooddy.core.net.loading.IProgressable;
-	import by.blooddy.core.net.loading.LoaderDispatcher;
+	import by.blooddy.core.net.loading.ProgressDispatcher;
 	
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
@@ -80,7 +80,7 @@ package by.blooddy.core.display.resource {
 					
 				} else {
 	
-					var loaderDispatcher:LoaderDispatcher;
+					var loaderDispatcher:ProgressDispatcher;
 	
 					for each ( var bundleName:String in resources ) {
 						if ( bundleName ) {
@@ -88,15 +88,15 @@ package by.blooddy.core.display.resource {
 							if ( !loader.complete ) {
 								if ( loaderDispatcher ) {
 				
-									loaderDispatcher.addLoaderListener( loader );
+									loaderDispatcher.addProcess( loader );
 				
 								} else if ( this._loader ) {
 				
 									if ( this._loader !== loader ) {
 		
-										loaderDispatcher = new LoaderDispatcher();
-										loaderDispatcher.addLoaderListener( this._loader );
-										loaderDispatcher.addLoaderListener( loader );
+										loaderDispatcher = new ProgressDispatcher();
+										loaderDispatcher.addProcess( this._loader );
+										loaderDispatcher.addProcess( loader );
 										this._loader = loaderDispatcher;
 				
 									}
@@ -115,7 +115,7 @@ package by.blooddy.core.display.resource {
 			if ( this._loader ) {
 
 				this._loader.addEventListener( Event.COMPLETE, this.handler_complete );
-				if ( !( this._loader is LoaderDispatcher ) ) {
+				if ( !( this._loader is ProgressDispatcher ) ) {
 					this._loader.addEventListener( ErrorEvent.ERROR, this.handler_complete );
 				}
 				if ( this._loader is IProgressable ) {
@@ -155,8 +155,8 @@ package by.blooddy.core.display.resource {
 		 * @private
 		 */
 		private function clearLoader():void {
-			if ( this._loader is LoaderDispatcher ) {
-				( this._loader as LoaderDispatcher ).close();
+			if ( this._loader is ProgressDispatcher ) {
+				( this._loader as ProgressDispatcher ).close();
 			} else {
 				this._loader.removeEventListener( ErrorEvent.ERROR, this.handler_complete );
 			}

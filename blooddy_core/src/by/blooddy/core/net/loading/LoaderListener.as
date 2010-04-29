@@ -7,6 +7,7 @@
 package by.blooddy.core.net.loading {
 
 	import by.blooddy.core.events.net.loading.LoaderEvent;
+	import by.blooddy.core.events.net.loading.LoaderListenerEvent;
 	
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
@@ -15,8 +16,8 @@ package by.blooddy.core.net.loading {
 	//  Events
 	//--------------------------------------
 
-	[Event( name="loaderEnabled", type="by.blooddy.core.events.net.loading.LoaderEvent" )]
-	[Event( name="loaderDisabled", type="by.blooddy.core.events.net.loading.LoaderEvent" )]
+	[Event( name="loaderEnabled", type="by.blooddy.core.events.net.loading.LoaderListenerEvent" )]
+	[Event( name="loaderDisabled", type="by.blooddy.core.events.net.loading.LoaderListenerEvent" )]
 
 	/**
 	 * @author					BlooDHounD
@@ -24,7 +25,7 @@ package by.blooddy.core.net.loading {
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
 	 */
-	public class LoaderListener extends LoaderDispatcher {
+	public class LoaderListener extends ProgressDispatcher {
 
 		//--------------------------------------------------------------------------
 		//
@@ -38,7 +39,7 @@ package by.blooddy.core.net.loading {
 		public function LoaderListener(target:IEventDispatcher) {
 			super();
 			this._target = target;
-			target.addEventListener( LoaderEvent.LOADER_INIT, this.handler_loaderInit );
+			target.addEventListener( LoaderEvent.LOADER_INIT, this.handler_loaderInit, false, int.MAX_VALUE, true );
 			super.addEventListener( Event.COMPLETE, this.handler_complete, false, int.MAX_VALUE, true );
 		}
 
@@ -91,10 +92,10 @@ package by.blooddy.core.net.loading {
 		 */
 		private function handler_loaderInit(event:LoaderEvent):void {
 			var complete:Boolean = super.complete;
-			super.addLoaderListener( event.loader );
+			super.addProcess( event.loader );
 			if ( complete && !super.complete ) {
 				this._running = true;
-				super.dispatchEvent( new LoaderEvent( LoaderEvent.LOADER_ENABLED, false, false, this ) );
+				super.dispatchEvent( new LoaderListenerEvent( LoaderListenerEvent.LOADER_ENABLED, false, false ) );
 			}
 		}
 
@@ -103,7 +104,7 @@ package by.blooddy.core.net.loading {
 		 */
 		private function handler_complete(event:Event):void {
 			this._running = false;
-			super.dispatchEvent( new LoaderEvent( LoaderEvent.LOADER_DISABLED, false, false, this ) );
+			super.dispatchEvent( new LoaderListenerEvent( LoaderListenerEvent.LOADER_DISABLED, false, false ) );
 		}
 
 	}

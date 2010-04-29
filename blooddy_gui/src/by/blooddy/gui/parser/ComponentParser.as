@@ -11,36 +11,24 @@ package by.blooddy.gui.parser {
 	import by.blooddy.code.errors.ParserError;
 	import by.blooddy.code.net.AbstractLoadableParser;
 	import by.blooddy.core.blooddy;
-	import by.blooddy.core.events.net.loading.LoaderEvent;
 	import by.blooddy.core.managers.resource.IResourceManager;
 	import by.blooddy.core.managers.resource.ResourceManager;
 	import by.blooddy.core.net.MIME;
-	import by.blooddy.core.net.loading.ILoadable;
-	import by.blooddy.core.net.loading.LoaderDispatcher;
+	import by.blooddy.core.net.loading.IProcessable;
 	
-	import flash.events.AsyncErrorEvent;
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
-	import flash.events.IOErrorEvent;
-	import flash.events.SecurityErrorEvent;
 	import flash.utils.Dictionary;
+	import by.blooddy.core.events.net.loading.LoaderEvent;
 
 	//--------------------------------------
-	//  Implements events: ILoadable
+	//  Events
 	//--------------------------------------
-
+	
 	[Event( name="open", type="flash.events.Event" )]
 
-	[Event( name="progress", type="flash.events.ProgressEvent" )]
-
-	[Event( name="complete", type="flash.events.Event" )]
-
-	/**
-	 * какая-то ошибка при исполнении.
-	 */
-	[Event( name="asyncError", type="flash.events.AsyncErrorEvent" )]	
-
 	[Event( name="loaderInit", type="by.blooddy.core.events.net.loading.LoaderEvent" )]
-
+	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -98,11 +86,6 @@ package by.blooddy.gui.parser {
 		/**
 		 * @private
 		 */
-		private var _loader:ILoadable;
-		
-		/**
-		 * @private
-		 */
 		private const _list:Vector.<StyleAsset> = new Vector.<StyleAsset>();
 		
 		/**
@@ -145,6 +128,7 @@ package by.blooddy.gui.parser {
 			super.start();
 
 			this._source = xml;
+
 			this._resourceManager = manager || ResourceManager.manager;
 			this._cssManager = CSSManager.getManager( manager );
 
@@ -153,7 +137,13 @@ package by.blooddy.gui.parser {
 
 		}
 
-		protected override function $action():Boolean {
+		//--------------------------------------------------------------------------
+		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
+		
+		protected override function onParse():Boolean {
 			
 			if ( this._source.name() != _COMPONENT_NAME ) throw new ParserError();
 
@@ -173,9 +163,8 @@ package by.blooddy.gui.parser {
 				var type:String;
 
 				var asset:StyleAsset;
-				var loader:ILoadable;
+				var loader:IProcessable;
 				var parser:CSSParser;
-//				var loaderDispatcher:LoaderDispatcher;
 				
 				var hash:Object = new Object();
 				
@@ -212,9 +201,9 @@ package by.blooddy.gui.parser {
 												asset.definition = this._cssManager.getDefinition( href );
 											} else {
 												loader = this._cssManager.loadDefinition( href );
-												loader.addEventListener( Event.COMPLETE,					this.handler_loader_complete );
-												loader.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_loader_complete );
-												loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_loader_complete );
+												loader.addEventListener( Event.COMPLETE,			this.handler_loader_complete );
+												loader.addEventListener( ErrorEvent.ERROR,			this.handler_loader_complete );
+												loader.addEventListener( LoaderEvent.LOADER_INIT,	super.dispatchEvent );
 												this._hash[ loader ] = asset;
 												super.addLoader( loader );
 											}
@@ -235,8 +224,9 @@ package by.blooddy.gui.parser {
 						case 'style':
 							asset = new StyleAsset();
 							parser = new CSSParser();
-							parser.addEventListener( Event.COMPLETE,		this.handler_parser_complete );
-							parser.addEventListener( IOErrorEvent.IO_ERROR,	this.handler_parser_complete );
+							parser.addEventListener( Event.COMPLETE,			this.handler_parser_complete );
+							parser.addEventListener( ErrorEvent.ERROR,			this.handler_parser_complete );
+							parser.addEventListener( LoaderEvent.LOADER_INIT,	super.dispatchEvent );
 							parser.parse( x.text().toString(), this._cssManager );
 							this._hash[ parser ] = asset;
 							this._list.push( asset );
@@ -244,23 +234,8 @@ package by.blooddy.gui.parser {
 							break;
 
 					}
-//					if ( loader ) {
-//
-//						if ( loaderDispatcher ) {
-//							loaderDispatcher.addLoaderListener( loader );
-//						} else if ( this._loader ) {
-//							loaderDispatcher = new LoaderDispatcher();
-//							loaderDispatcher.addLoaderListener( this._loader );
-//							loaderDispatcher.addLoaderListener( loader );
-//							this._loader = loaderDispatcher;
-//						} else {
-//							this._loader = loader;
-//						}
-//						loader = null;
-//
-//					}
 					
-					trace( x.toXMLString() );
+					//trace( x.toXMLString() );
 				}
 
 			}
@@ -270,13 +245,21 @@ package by.blooddy.gui.parser {
 				//trace( list[ 0 ].toXMLString() );
 			}
 
-			if ( this._loader ) {
-				
-			} else {
-				
+			// если всё загружено, то конец
+			if ( super.loaded ) {
+				this.onLoad();
 			}
 
 			return true;
+		}
+
+		protected override function onLoad():void {
+			this._source = null;
+			
+			this._resourceManager = null;
+			this._cssManager = null;
+			
+			super.stop();
 		}
 
 		//--------------------------------------------------------------------------
@@ -289,10 +272,10 @@ package by.blooddy.gui.parser {
 		 * @private
 		 */
 		private function handler_loader_complete(event:Event):void {
-			var loader:ILoadable = event.target as ILoadable;
-			loader.removeEventListener( Event.COMPLETE,						this.handler_loader_complete );
-			loader.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_loader_complete );
-			loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_loader_complete );
+			var loader:IProcessable = event.target as IProcessable;
+			loader.removeEventListener( Event.COMPLETE,				this.handler_loader_complete );
+			loader.removeEventListener( ErrorEvent.ERROR,			this.handler_loader_complete );
+			loader.removeEventListener( LoaderEvent.LOADER_INIT,	super.dispatchEvent );
 			var asset:StyleAsset = this._hash[ loader ];
 			asset.definition = this._cssManager.getDefinition( asset.href );
 			delete this._hash[ loader ];
@@ -303,8 +286,9 @@ package by.blooddy.gui.parser {
 		 */
 		private function handler_parser_complete(event:Event):void {
 			var parser:CSSParser = event.target as CSSParser;
-			parser.removeEventListener( Event.COMPLETE,			this.handler_loader_complete );
-			parser.removeEventListener( IOErrorEvent.IO_ERROR,	this.handler_loader_complete );
+			parser.removeEventListener( Event.COMPLETE,				this.handler_loader_complete );
+			parser.removeEventListener( ErrorEvent.ERROR,			this.handler_loader_complete );
+			parser.removeEventListener( LoaderEvent.LOADER_INIT,	super.dispatchEvent );
 			var asset:StyleAsset = this._hash[ parser ];
 			asset.definition = parser.content;
 			delete this._hash[ parser ];
@@ -322,7 +306,6 @@ package by.blooddy.gui.parser {
 
 import by.blooddy.code.css.CSSParser;
 import by.blooddy.code.css.definition.CSSDefinition;
-import by.blooddy.core.net.loading.ILoadable;
 
 ////////////////////////////////////////////////////////////////////////////////
 //

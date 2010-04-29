@@ -438,7 +438,7 @@ package by.blooddy.core.net.loading {
 			//if ( this._id && NetMonitor.isActive() ) {
 			//	NetMonitor.monitorEvent( this._id, event );
 			//}
-			if ( event is ErrorEvent && event.type == ErrorEvent.ERROR ) {
+			if ( event is ErrorEvent && event.type != ErrorEvent.ERROR ) {
 				if ( super.hasEventListener( ErrorEvent.ERROR ) ) {
 					var result:Boolean = super.dispatchEvent( new ErrorEvent( ErrorEvent.ERROR, false, false, ( event as ErrorEvent ).text ) );
 					if ( !super.hasEventListener( event.type ) ) {
