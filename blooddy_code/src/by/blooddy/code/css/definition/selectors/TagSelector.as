@@ -67,8 +67,7 @@ package by.blooddy.code.css.definition.selectors {
 			if ( this.value in _HASH ) {
 				s = _HASH[ this.value ];
 			} else {
-				var i:TypeInfo = TypeInfo.getInfo( ClassAlias.getClass( this.value ) );
-				_HASH[ this.value ] = s = 1 + i.getSuperclasses().length + i.getInterfaces().length;
+				_HASH[ this.value ] = s = 1 + TypeInfo.getInfo( ClassAlias.getClass( this.value ) ).getTypes().length;
 			}
 			if ( this.selector ) {
 				var result:uint = this.selector.getSpecificity();
