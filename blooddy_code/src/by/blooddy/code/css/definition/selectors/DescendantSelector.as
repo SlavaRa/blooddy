@@ -43,8 +43,16 @@ package by.blooddy.code.css.definition.selectors {
 		//
 		//--------------------------------------------------------------------------
 		
+		public override function getSpecificity():uint {
+			var p:uint = this.parent.getSpecificity();
+			var s:uint = this.selector.getSpecificity()
+			return	( ( (   p                >> 24 ) + (   s                >> 24 ) ) << 24 ) |
+					( ( ( ( p & 0x00FFFF00 ) >>  8 ) + ( ( s & 0x00FFFF00 ) >>  8 ) ) <<  8 ) |
+					  ( (   p & 0x000000FF         ) + (   s & 0x000000FF         ) )         ;
+		}
+		
 		public override function toString():String {
-			return ( this.parent ? this.parent + ' ' : '' ) + ( this.selector || '' );
+			return this.parent + ' ' + this.selector;
 		}
 		
 	}

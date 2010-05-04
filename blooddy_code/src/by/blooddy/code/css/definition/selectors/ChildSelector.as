@@ -13,7 +13,7 @@ package by.blooddy.code.css.definition.selectors {
 	 * @langversion				3.0
 	 * @created					14.03.2010 18:14:06
 	 */
-	public class ChildSelector extends CSSSelector {
+	public class ChildSelector extends DescendantSelector {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -25,17 +25,8 @@ package by.blooddy.code.css.definition.selectors {
 		 * Constructor
 		 */
 		public function ChildSelector(parent:CSSSelector) {
-			super();
-			this.parent = parent;
+			super( parent );
 		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Properties
-		//
-		//--------------------------------------------------------------------------
-
-		public var parent:CSSSelector;
 
 		//--------------------------------------------------------------------------
 		//
@@ -44,7 +35,7 @@ package by.blooddy.code.css.definition.selectors {
 		//--------------------------------------------------------------------------
 
 		public override function toString():String {
-			return ( this.parent ? this.parent + '>' : '' ) + ( this.selector || '' );
+			return this.parent + '>' + this.selector;
 		}
 
 	}

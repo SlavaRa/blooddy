@@ -239,7 +239,7 @@ package by.blooddy.code.css {
 			if ( super.loaded ) {
 				this.onLoad();
 			}
-			
+			trace( definition );
 			return true;
 		}
 
@@ -282,9 +282,12 @@ package by.blooddy.code.css {
 		 */
 		private function readSelectors():Vector.<CSSSelector> {
 			var result:Vector.<CSSSelector> = new Vector.<CSSSelector>();
-			var tok:uint;
+			var s:CSSSelector;
 			do {
-				result.push( this.readSelector( new CSSSelector() ) );
+				s = this.readSelector( new CSSSelector() );
+				trace( s );
+				trace( s.getSpecificity().toString( 16 ) );
+				result.push( s );
 			} while ( this.readToken() == CSSToken.COMMA );
 			this._scanner.retreat();
 			return result;

@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.code.css.definition.selectors {
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -14,13 +14,13 @@ package by.blooddy.code.css.definition.selectors {
 	 * @created					14.03.2010 17:36:46
 	 */
 	public class PseudoSelector extends AttributeSelector {
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * Constructor
 		 */
@@ -34,8 +34,19 @@ package by.blooddy.code.css.definition.selectors {
 		//
 		//--------------------------------------------------------------------------
 
-		public function toString():String {
-			return ( this.value ? ':' + this.value : '' ) + ( this.selector || '' );
+		/*
+		 *       __
+		 * AABBBBCC
+		 */
+		public override function getSpecificity():uint {
+			if ( this.selector ) {
+				return this.selector.getSpecificity() + 1;
+			}
+			return 0x00000001;
+		}
+
+		public override function toString():String {
+			return ':' + this.value + ( this.selector || '' );
 		}
 
 	}

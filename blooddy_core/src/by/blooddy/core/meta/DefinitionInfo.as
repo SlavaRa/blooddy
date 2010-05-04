@@ -35,13 +35,13 @@ package by.blooddy.core.meta {
 		 */
 		private static const _DESCRIPTION:QName = new QName( ns_rdf, 'Description' )
 
-		//--------------------------------------------------------------------------
-		//
-		//  Namespaces
-		//
-		//--------------------------------------------------------------------------
-
 		use namespace $protected_info;
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Class methods
+		//
+		//--------------------------------------------------------------------------
 
 		protected static function getName(x:XML):QName {
 			return new QName( x.@uri.toString(), x.@name.toString() );

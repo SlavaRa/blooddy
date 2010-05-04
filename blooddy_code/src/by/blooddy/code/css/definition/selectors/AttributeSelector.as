@@ -13,7 +13,7 @@ package by.blooddy.code.css.definition.selectors {
 	 * @langversion				3.0
 	 * @created					14.03.2010 17:17:05
 	 */
-	public class AttributeSelector {
+	public class AttributeSelector implements ISelector {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -39,6 +39,28 @@ package by.blooddy.code.css.definition.selectors {
 		public var selector:AttributeSelector
 		
 		public var value:String;
+
+		//--------------------------------------------------------------------------
+		//
+		//  Methods
+		//
+		//--------------------------------------------------------------------------
+
+		public function contains(selector:AttributeSelector):Boolean {
+			return	( this as Object ).constructor === ( selector as Object ).constructor &&
+					this.value == selector.value && (
+						!selector.selector ||
+						( this.selector && this.selector.contains( selector ) )
+					);
+		}
+
+		public function getSpecificity():uint {
+			return ( this.selector ? this.selector.getSpecificity() : 0 );
+		}
+
+		public function toString():String {
+			return ( this.selector ? this.selector.toString() : '' );
+		}
 
 	}
 

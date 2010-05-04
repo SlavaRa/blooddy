@@ -36,6 +36,7 @@
     <classEntry path="by.blooddy.code.css.definition.CSSDefinition"/>
     <classEntry path="by.blooddy.code.AbstractParser"/>
     <classEntry path="by.blooddy.code.net.AbstractLoadableParser"/>
+    <classEntry path="by.blooddy.code.css.definition.selectors.ISelector"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

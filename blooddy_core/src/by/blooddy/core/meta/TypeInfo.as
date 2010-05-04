@@ -107,7 +107,21 @@ package by.blooddy.core.meta {
 		//--------------------------------------------------------------------------
 
 		//----------------------------------
-		//  superClasses
+		//  types
+		//----------------------------------
+		
+		/**
+		 * @private
+		 */
+		private const _types_hash:Object = new Object();
+		
+		/**
+		 * @private
+		 */
+		private var _types_list:Vector.<QName>;
+		
+		//----------------------------------
+		//  superclasses
 		//----------------------------------
 
 		/**
@@ -123,7 +137,7 @@ package by.blooddy.core.meta {
 		//----------------------------------
 		//  interfaces
 		//----------------------------------
-		
+
 		/**
 		 * @private
 		 */
@@ -192,6 +206,20 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @private
+		 */
+		private var _target:Class;
+
+		/**
+		 * @private
+		 */
+		private var _targetPrototype:Object;
+		
+		public function get target():Class {
+			return this._target;
+		}
+
 		public function get parent():TypeInfo {
 			return this._parent as TypeInfo;
 		}
@@ -221,59 +249,100 @@ package by.blooddy.core.meta {
 		//--------------------------------------------------------------------------
 
 		//----------------------------------
-		//  superClasses
+		//  types
+		//----------------------------------
+		
+		public function hasType(o:*):Boolean {
+			if ( o is Class ) {
+				return o.prototype.isPrototypeOf( this._targetPrototype );
+			} else if ( o is TypeInfo ) {
+				return ( o as TypeInfo )._targetPrototype.isPrototypeOf( this._targetPrototype );
+			} else {
+				var n:String;
+				if ( o is QName ) {
+					n = o.toString();
+				} else if ( o is String ) {
+					n = o;
+					// нормализуем
+					if ( n.lastIndexOf( '::' ) < 0 ) {
+						var i:int = n.lastIndexOf( '.' );
+						if ( i > 0 ) {
+							n = n.substr( 0, i ) + '::' + n.substr( i + 1 );
+						}
+					}
+				} else {
+					throw new ArgumentError();
+				}
+				return n in this._types_hash;
+			}
+		}
+		
+		public function getTypes():Vector.<QName> {
+			return this._types_list.slice();
+		}
+		
+		//----------------------------------
+		//  superclasses
 		//----------------------------------
 		
 		public function hasSuperclass(o:*):Boolean {
-			var n:String;
 			if ( o is Class ) {
-				n = getQualifiedClassName( o );
-			} else if ( o is QName ) {
-				n = o.toString();
-			} else if ( o is String ) {
-				n = o;
-				// нормализуем
-				if ( n.lastIndexOf( '::' ) < 0 ) {
-					var i:int = n.lastIndexOf( '.' );
-					if ( i > 0 ) {
-						n = n.substr( 0, i ) + '::' + n.substr( i + 1 );
-					}
-				}
+				return o.prototype.isPrototypeOf( this._targetPrototype );
+			} else if ( o is TypeInfo ) {
+				return ( o as TypeInfo )._targetPrototype.isPrototypeOf( this._targetPrototype );
 			} else {
-				throw new ArgumentError();
+				var n:String;
+				if ( o is QName ) {
+					n = o.toString();
+				} else if ( o is String ) {
+					n = o;
+					// нормализуем
+					if ( n.lastIndexOf( '::' ) < 0 ) {
+						var i:int = n.lastIndexOf( '.' );
+						if ( i > 0 ) {
+							n = n.substr( 0, i ) + '::' + n.substr( i + 1 );
+						}
+					}
+				} else {
+					throw new ArgumentError();
+				}
+				return n in this._superclasses_hash;
 			}
-			return n in this._superclasses_hash;
 		}
 		
 		public function getSuperclasses():Vector.<QName> {
 			return this._superclasses_list.slice();
 		}
-		
+
 		//----------------------------------
 		//  interfaces
 		//----------------------------------
-		
+
 		public function hasInterface(o:*):Boolean {
-			var n:String;
 			if ( o is Class ) {
-				n = getQualifiedClassName( o );
-			} else if ( o is QName ) {
-				n = o.toString();
-			} else if ( o is String ) {
-				n = o;
-				// нормализуем
-				if ( n.lastIndexOf( '::' ) < 0 ) {
-					var i:int = n.lastIndexOf( '.' );
-					if ( i > 0 ) {
-						n = n.substr( 0, i ) + '::' + n.substr( i + 1 );
-					}
-				}
+				return o.prototype.isPrototypeOf( this._targetPrototype );
+			} else if ( o is TypeInfo ) {
+				return ( o as TypeInfo )._targetPrototype.isPrototypeOf( this._targetPrototype );
 			} else {
-				throw new ArgumentError();
+				var n:String;
+				if ( o is QName ) {
+					n = o.toString();
+				} else if ( o is String ) {
+					n = o;
+					// нормализуем
+					if ( n.lastIndexOf( '::' ) < 0 ) {
+						var i:int = n.lastIndexOf( '.' );
+						if ( i > 0 ) {
+							n = n.substr( 0, i ) + '::' + n.substr( i + 1 );
+						}
+					}
+				} else {
+					throw new ArgumentError();
+				}
+				return n in this._interfaces_hash;
 			}
-			return n in this._interfaces_hash;
 		}
-		
+
 		public function getInterfaces(all:Boolean=true):Vector.<QName> {
 			if ( all ) {
 				return this._interfaces_list.slice();
@@ -281,7 +350,7 @@ package by.blooddy.core.meta {
 				return this._interfaces_list_local.slice();
 			}
 		}
-		
+
 		//----------------------------------
 		//  members
 		//----------------------------------
@@ -432,6 +501,8 @@ package by.blooddy.core.meta {
 		 * @private
 		 */
 		private function parseClass(c:Class):void {
+			this._target = c;
+			this._targetPrototype = c.prototype;
 			this.parseXML( describeType( c ) );
 		}
 
@@ -452,6 +523,7 @@ package by.blooddy.core.meta {
 			list = xml.extendsClass;
 			for each ( x in list ) {
 				n = x.@type.toString();
+				this._types_hash[ n ] = true;
 				this._superclasses_hash[ n ] = true;
 				this._superclasses_list.push( parseType( n ) );
 			}
@@ -474,16 +546,18 @@ package by.blooddy.core.meta {
 			// interfaces
 			// собираем список интерфейсов на основании списка нашего папы
 			list = xml.implementsInterface;
-			this._interfaces_list = ( parent ? parent._interfaces_list.slice() : new Vector.<QName>() ); // копируем 
 			for each ( x in list ) {
 				n = x.@type.toString();
 				if ( parent && !( n in parent._interfaces_hash ) ) { // добавляем только недостающие
 					q = parseType( n );
 					this._interfaces_list_local.push( q );
-					this._interfaces_list.push( q );
 				}
+				this._types_hash[ n ] = true;
 				this._interfaces_hash[ n ] = true;
 			}
+			this._interfaces_list = ( parent ? parent._interfaces_list.concat( this._interfaces_list_local ) : this._interfaces_list_local ); // копируем
+			// types
+			this._types_list = this._superclasses_list.concat( this._interfaces_list );
 			// metadata
 			// запускаем дефолтный парсер
 			super.parseXML( xml );
