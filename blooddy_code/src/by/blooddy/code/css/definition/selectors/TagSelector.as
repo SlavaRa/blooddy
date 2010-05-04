@@ -48,13 +48,13 @@ package by.blooddy.code.css.definition.selectors {
 		//
 		//--------------------------------------------------------------------------
 
-		public override function contains(selector:AttributeSelector):Boolean {
-			return	selector is TagSelector && (
-						this.value == selector.value ||
-						TypeInfo.getInfo( ClassAlias.getClass( this.value ) ).hasType( ClassAlias.getClass( this.value ) )
+		public override function contains(target:AttributeSelector):Boolean {
+			return	target is TagSelector && (
+						this.value == target.value ||
+						TypeInfo.getInfo( ClassAlias.getClass( this.value ) ).hasType( ClassAlias.getClass( target.value ) )
 					) && (
-						!selector.selector ||
-						( this.selector && this.selector.contains( selector ) )
+						!target.selector ||
+						( this.selector && this.selector.contains( target.selector ) )
 					);
 		}
 

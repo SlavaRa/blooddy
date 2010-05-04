@@ -46,11 +46,11 @@ package by.blooddy.code.css.definition.selectors {
 		//
 		//--------------------------------------------------------------------------
 
-		public function contains(selector:AttributeSelector):Boolean {
-			return	( this as Object ).constructor === ( selector as Object ).constructor &&
-					this.value == selector.value && (
-						!selector.selector ||
-						( this.selector && this.selector.contains( selector ) )
+		public function contains(target:AttributeSelector):Boolean {
+			return	( this as Object ).constructor === ( target as Object ).constructor &&
+					this.value == target.value && (
+						!target.selector ||
+						( this.selector && this.selector.contains( target.selector ) )
 					);
 		}
 
