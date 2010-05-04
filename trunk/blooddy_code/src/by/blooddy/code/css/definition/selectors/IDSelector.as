@@ -33,12 +33,25 @@ package by.blooddy.code.css.definition.selectors {
 		//  Methods
 		//
 		//--------------------------------------------------------------------------
-		
-		public function toString():String {
+
+		/*
+		 * __
+		 * AABBBBCC
+		 */
+		public override function getSpecificity():uint {
+			if ( this.selector ) {
+				var result:uint = this.selector.getSpecificity();
+				var v:uint = ( ( result & 0xFF000000 ) >> 24 ) + 1;
+				return ( result & 0x00FFFFFF ) | ( v << 24 );
+			}
+			return 0x01000000;
+		}
+
+		public override function toString():String {
 			if ( this.selector is TagSelector ) {
-				return ( this.selector.value || '' ) + ( this.value ? '#' + this.value : '' ) + ( this.selector.selector || '' );
+				return this.selector.value + '#' + this.value + ( this.selector.selector || '' );
 			} else {
-				return ( this.value ? '#' + this.value : '' ) + ( this.selector || '' );
+				return '#' + this.value + ( this.selector || '' );
 			}
 		}
 

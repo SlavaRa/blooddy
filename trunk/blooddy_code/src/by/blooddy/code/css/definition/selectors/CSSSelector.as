@@ -13,7 +13,7 @@ package by.blooddy.code.css.definition.selectors {
 	 * @langversion				3.0
 	 * @created					14.03.2010 5:32:46
 	 */
-	public class CSSSelector {
+	public class CSSSelector implements ISelector {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -42,8 +42,12 @@ package by.blooddy.code.css.definition.selectors {
 		//
 		//--------------------------------------------------------------------------
 
+		public function getSpecificity():uint {
+			return this.selector.getSpecificity();
+		}
+
 		public function toString():String {
-			return ( this.selector ? String( this.selector ) : '' );
+			return this.selector.toString();
 		}
 
 	}
