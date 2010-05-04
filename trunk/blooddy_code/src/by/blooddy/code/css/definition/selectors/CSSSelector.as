@@ -42,6 +42,11 @@ package by.blooddy.code.css.definition.selectors {
 		//
 		//--------------------------------------------------------------------------
 
+		public function contains(target:CSSSelector):Boolean {
+			return	( this as Object ).constructor === ( target as Object ).constructor &&
+					this.selector.contains( target.selector );
+		}
+
 		public function getSpecificity():uint {
 			return this.selector.getSpecificity();
 		}

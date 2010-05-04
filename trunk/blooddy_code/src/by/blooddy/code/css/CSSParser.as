@@ -282,12 +282,8 @@ package by.blooddy.code.css {
 		 */
 		private function readSelectors():Vector.<CSSSelector> {
 			var result:Vector.<CSSSelector> = new Vector.<CSSSelector>();
-			var s:CSSSelector;
 			do {
-				s = this.readSelector( new CSSSelector() );
-				trace( s );
-				trace( s.getSpecificity().toString( 16 ) );
-				result.push( s );
+				result.push( this.readSelector( new CSSSelector() ) );
 			} while ( this.readToken() == CSSToken.COMMA );
 			this._scanner.retreat();
 			return result;

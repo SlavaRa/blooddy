@@ -8,7 +8,9 @@ package by.blooddy.core.utils {
 
 	import flash.net.getClassByAlias;
 	import flash.net.registerClassAlias;
+	import flash.system.ApplicationDomain;
 	import flash.utils.getDefinitionByName;
+	import flash.utils.getQualifiedClassName;
 
 	/**
 	 * @author					BlooDHounD
@@ -18,6 +20,57 @@ package by.blooddy.core.utils {
 	 * @created					16.04.2010 18:04:54
 	 */
 	public final class ClassAlias {
+	
+		//--------------------------------------------------------------------------
+		//
+		//  Class initialization
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private static function registerBuiltinAliases():void {
+			const classes:Array = new Array(
+				'flash.display::DisplayObject',
+					'flash.display::AVM1Movie',
+					'flash.display::Bitmap',
+					'flash.display::InteractiveObject',
+						'flash.display::DisplayObjectContainer',
+							'flash.display::Loader',
+							'flash.display::Sprite',
+								'flash.display::MovieClip',
+								'flash.html::HTMLLoader',
+							'flash.display::Stage',
+							'flash.text.engine::TextLine',
+						'flash.display::SimpleButton',
+						'flash.text::TextField',
+					'flash.display::MorphShape',
+					'flash.display::Shape',
+					'flash.text::StaticText',
+					'flash.media::Video'
+			);
+			const app:ApplicationDomain = ApplicationDomain.currentDomain;
+			var c:Class;
+			var r:WeakRef;
+			var ns:String = AS3 + '::';
+			for each ( var n:String in classes ) {
+				if ( app.hasDefinition( n ) ) {
+					c = app.getDefinition( n ) as Class;
+					if ( c ) {
+						r = new WeakRef( c );
+						n = ClassUtils.cutClassName( n );
+						if ( c ) {
+							registerClassAlias( n, c );
+							_HASH[ n ] = r;
+							registerClassAlias( ns + n, c );
+							_HASH[ ns ] = r;
+						}
+					}
+				}
+			}
+		}
+		registerBuiltinAliases();
 
 		//--------------------------------------------------------------------------
 		//
@@ -36,31 +89,6 @@ package by.blooddy.core.utils {
 		//
 		//--------------------------------------------------------------------------
 		
-		public static function registerQNameAlias(name:*, c:Class):void {
-			if ( name is QName ) {
-				name = name.toString();
-			} else if ( !( name is String ) ) {
-				throw new ArgumentError();
-			}
-//			trace( name );
-			registerClassAlias( name, c );
-			_HASH[ name ] = new WeakRef( c );
-		}
-
-		public static function registerNamespaceAlias(ns:*, c:Class):void {
-			if ( ns is Namespace ) {
-				ns = ( ns as Namespace ).uri;
-			} else if ( ns is QName ) {
-				ns = ( ns as QName ).uri;
-			} else if ( !( ns is String ) ) {
-				throw new ArgumentError();
-			}
-			ns = ( ns ? ns + '::' : '' ) + ClassUtils.getClassName( c );
-//			trace( ns );
-			registerClassAlias( ns, c );
-			_HASH[ ns ] = new WeakRef( c );
-		}
-
 		public static function getClass(name:*):Class {
 			if ( name is QName ) {
 				name = name.toString();
@@ -91,23 +119,47 @@ package by.blooddy.core.utils {
 			}
 			return result;
 		}
+		
+		public static function registerAlias(c:Class):void {
+			$registerClassAlias( ClassUtils.getClassName( c ), c );
+		}
+		
+		public static function registerQNameAlias(name:*, c:Class):void {
+			if ( name is QName ) {
+				name = name.toString();
+			} else if ( !( name is String ) ) {
+				throw new ArgumentError();
+			}
+			$registerClassAlias( name, c );
+		}
+
+		public static function registerNamespaceAlias(ns:*, c:Class):void {
+			if ( ns is Namespace ) {
+				ns = ( ns as Namespace ).uri;
+			} else if ( ns is QName ) {
+				ns = ( ns as QName ).uri;
+			} else if ( !( ns is String ) ) {
+				throw new ArgumentError();
+			}
+			ns = ( ns ? ns + '::' : '' ) + ClassUtils.getClassName( c );
+			$registerClassAlias( ns, c );
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Private class methods
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private static function $registerClassAlias(name:String, c:Class):void {
+			if ( name in _HASH && ( _HASH[ name ] as WeakRef ).get() === c ) return;
+			registerClassAlias( name, c );
+			_HASH[ name ] = new WeakRef( c );
+		}
 
 	}
-	
+
 }
-
-import by.blooddy.core.utils.ClassAlias;
-
-import flash.display.Bitmap;
-import flash.display.Shape;
-import flash.display.SimpleButton;
-import flash.display.Sprite;
-import flash.media.Video;
-import flash.text.TextField;
-
-ClassAlias.registerNamespaceAlias( AS3, Bitmap );
-ClassAlias.registerNamespaceAlias( AS3, Shape );
-ClassAlias.registerNamespaceAlias( AS3, Sprite );
-ClassAlias.registerNamespaceAlias( AS3, TextField );
-ClassAlias.registerNamespaceAlias( AS3, Video );
-ClassAlias.registerNamespaceAlias( AS3, SimpleButton );

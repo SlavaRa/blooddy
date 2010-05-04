@@ -285,8 +285,8 @@ internal final class CSSLoader extends EventDispatcher implements IProcessable {
 		var data:String = this._resourceManager.getResource( this.$url ) as String;
 		if ( data ) {
 			this._parser = new CSSParser();
-			this._parser.addEventListener( Event.COMPLETE,		this.handler_loader_complete );
-			this._parser.addEventListener( ErrorEvent.ERROR,	this.handler_loader_error );
+			this._parser.addEventListener( Event.COMPLETE,		this.handler_parser_complete );
+			this._parser.addEventListener( ErrorEvent.ERROR,	this.handler_parser_error );
 			this._parser.addEventListener( LoaderEvent.LOADER_INIT,	super.dispatchEvent );
 			this._parser.parse( data, this._cssManager );
 		} else {
