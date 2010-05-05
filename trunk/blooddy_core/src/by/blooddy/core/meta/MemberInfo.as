@@ -92,7 +92,7 @@ package by.blooddy.core.meta {
 
 		$protected_info override function parseXML(xml:XML):void {
 			super.parseXML( xml );
-			this._name = getName( xml );
+			this._name = parseName( xml );
 		}
 
 	}
