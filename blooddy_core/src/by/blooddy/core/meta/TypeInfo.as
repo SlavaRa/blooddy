@@ -12,7 +12,6 @@ package by.blooddy.core.meta {
 	import flash.utils.Dictionary;
 	import flash.utils.describeType;
 	import flash.utils.getDefinitionByName;
-	import flash.utils.getQualifiedClassName;
 	
 	/**
 	 * @author					BlooDHounD
@@ -113,12 +112,12 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		private const _types_hash:Object = new Object();
+		private const _hash_types:Object = new Object();
 		
 		/**
 		 * @private
 		 */
-		private var _types_list:Vector.<QName>;
+		private var _list_types:Vector.<QName>;
 		
 		//----------------------------------
 		//  superclasses
@@ -127,12 +126,12 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		private const _superclasses_hash:Object = new Object();
+		private const _hash_superclasses:Object = new Object();
 		
 		/**
 		 * @private
 		 */
-		private const _superclasses_list:Vector.<QName> = new Vector.<QName>();
+		private const _list_superclasses:Vector.<QName> = new Vector.<QName>();
 		
 		//----------------------------------
 		//  interfaces
@@ -141,17 +140,17 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		private const _interfaces_hash:Object = new Object();
+		private const _hash_interfaces:Object = new Object();
 		
 		/**
 		 * @private
 		 */
-		private var _interfaces_list:Vector.<QName>;
+		private var _list_interfaces:Vector.<QName>;
 		
 		/**
 		 * @private
 		 */
-		private const _interfaces_list_local:Vector.<QName> = new Vector.<QName>();
+		private const _list_interfaces_local:Vector.<QName> = new Vector.<QName>();
 		
 		//----------------------------------
 		//  members
@@ -160,17 +159,17 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		private const _members_hash:Object = new Object();
+		private const _hash_members:Object = new Object();
 		
 		/**
 		 * @private
 		 */
-		private var _members_list:Vector.<MemberInfo>;
+		private var _list_members:Vector.<MemberInfo>;
 		
 		/**
 		 * @private
 		 */
-		private const _members_list_local:Vector.<MemberInfo> = new Vector.<MemberInfo>();
+		private const _list_members_local:Vector.<MemberInfo> = new Vector.<MemberInfo>();
 		
 		//----------------------------------
 		//  properties
@@ -179,12 +178,12 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		private var _properties_list:Vector.<PropertyInfo>;
+		private var _list_properties:Vector.<PropertyInfo>;
 		
 		/**
 		 * @private
 		 */
-		private const _properties_list_local:Vector.<PropertyInfo> = new Vector.<PropertyInfo>();
+		private const _list_properties_local:Vector.<PropertyInfo> = new Vector.<PropertyInfo>();
 		
 		//----------------------------------
 		//  methods
@@ -193,12 +192,12 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		private var _methods_list:Vector.<MethodInfo>;
+		private var _list_methods:Vector.<MethodInfo>;
 		
 		/**
 		 * @private
 		 */
-		private const _methods_list_local:Vector.<MethodInfo> = new Vector.<MethodInfo>();
+		private const _list_methods_local:Vector.<MethodInfo> = new Vector.<MethodInfo>();
 		
 		//--------------------------------------------------------------------------
 		//
@@ -273,12 +272,12 @@ package by.blooddy.core.meta {
 				} else {
 					throw new ArgumentError();
 				}
-				return n in this._types_hash;
+				return n in this._hash_types;
 			}
 		}
 		
 		public function getTypes():Vector.<QName> {
-			return this._types_list.slice();
+			return this._list_types.slice();
 		}
 		
 		//----------------------------------
@@ -306,12 +305,12 @@ package by.blooddy.core.meta {
 				} else {
 					throw new ArgumentError();
 				}
-				return n in this._superclasses_hash;
+				return n in this._hash_superclasses;
 			}
 		}
 		
 		public function getSuperclasses():Vector.<QName> {
-			return this._superclasses_list.slice();
+			return this._list_superclasses.slice();
 		}
 
 		//----------------------------------
@@ -339,15 +338,15 @@ package by.blooddy.core.meta {
 				} else {
 					throw new ArgumentError();
 				}
-				return n in this._interfaces_hash;
+				return n in this._hash_interfaces;
 			}
 		}
 
 		public function getInterfaces(all:Boolean=true):Vector.<QName> {
 			if ( all ) {
-				return this._interfaces_list.slice();
+				return this._list_interfaces.slice();
 			} else {
-				return this._interfaces_list_local.slice();
+				return this._list_interfaces_local.slice();
 			}
 		}
 
@@ -356,20 +355,20 @@ package by.blooddy.core.meta {
 		//----------------------------------
 
 		public function hasMember(name:*):Boolean {
-			return String( name ) in this._members_hash;
+			return String( name ) in this._hash_members;
 		}
 
 		public function getMembers(all:Boolean=true):Vector.<MemberInfo> {
 			if ( all ) {
-				return this._members_list.slice();
+				return this._list_members.slice();
 			} else {
-				return this._members_list_local.slice();
+				return this._list_members_local.slice();
 			}
 		}
 
 		public function getMember(name:*):MemberInfo {
 			if ( !name ) throw new ArgumentError();
-			return this._members_hash[ String( name ) ];
+			return this._hash_members[ String( name ) ];
 		}
 		
 		//----------------------------------
@@ -378,9 +377,9 @@ package by.blooddy.core.meta {
 		
 		public function getProperties(all:Boolean=true):Vector.<PropertyInfo> {
 			if ( all ) {
-				return this._properties_list.slice();
+				return this._list_properties.slice();
 			} else {
-				return this._properties_list_local.slice();
+				return this._list_properties_local.slice();
 			}
 		}
 		
@@ -390,9 +389,9 @@ package by.blooddy.core.meta {
 		
 		public function getMethods(all:Boolean=true):Vector.<MethodInfo> {
 			if ( all ) {
-				return this._methods_list.slice();
+				return this._list_methods.slice();
 			} else {
-				return this._methods_list_local.slice();
+				return this._list_methods_local.slice();
 			}
 		}
 
@@ -426,7 +425,7 @@ package by.blooddy.core.meta {
 			}
 
 			// superClasses
-			l = this._superclasses_list.length;
+			l = this._list_superclasses.length;
 			if ( l > 0 ) {
 				resource = <extendsClass />
 				resource.setNamespace( ns_as3 );
@@ -437,7 +436,7 @@ package by.blooddy.core.meta {
 				for ( i=0; i<l; i++ ) {
 					x = <li />
 					x.setNamespace( ns_rdf );
-					x.@ns_rdf::resource = '#' + encodeURI( this._superclasses_list[ i ].toString() );
+					x.@ns_rdf::resource = '#' + encodeURI( this._list_superclasses[ i ].toString() );
 
 					seq.appendChild( x );
 				}
@@ -448,7 +447,7 @@ package by.blooddy.core.meta {
 			}
 
 			// interfaces
-			l = this._interfaces_list_local.length;
+			l = this._list_interfaces_local.length;
 			if ( l > 0 ) {
 				resource = <implementsInterface />
 				resource.setNamespace( ns_as3 );
@@ -459,7 +458,7 @@ package by.blooddy.core.meta {
 				for ( i=0; i<l; i++ ) {
 					x = <li />
 					x.setNamespace( ns_rdf );
-					x.@ns_rdf::resource = '#' + encodeURI( this._interfaces_list_local[ i ].toString() );
+					x.@ns_rdf::resource = '#' + encodeURI( this._list_interfaces_local[ i ].toString() );
 					
 					seq.appendChild( x );
 				}
@@ -478,11 +477,11 @@ package by.blooddy.core.meta {
 			}
 
 			// properties
-			if ( this._members_list_local.length > 0 ) {
+			if ( this._list_members_local.length > 0 ) {
 				resource = <members />
 				resource.setNamespace( ns_as3 );
 				resource.@ns_rdf::parseType = 'Collection';
-				for each ( var m:MemberInfo in this._members_list_local ) {
+				for each ( var m:MemberInfo in this._list_members_local ) {
 					resource.appendChild( m.toXML() );
 				}
 				xml.appendChild( resource );
@@ -513,67 +512,101 @@ package by.blooddy.core.meta {
 		//--------------------------------------------------------------------------
 
 		$protected_info override function parseXML(xml:XML):void {
+
 			xml = xml.factory[ 0 ]; // дергаем factory
+
+			// name
 			this._name = parseType( xml.@type.toString() ); // выдёргиваем имя
+
 			var list:XMLList, x:XML;
 			var n:String;
-			var q:QName;
+			var i:int;
+
 			// superclasses
 			// собираем суперклассы
 			list = xml.extendsClass;
 			for each ( x in list ) {
 				n = x.@type.toString();
-				this._types_hash[ n ] = true;
-				this._superclasses_hash[ n ] = true;
-				this._superclasses_list.push( parseType( n ) );
+				this._hash_types[ n ] = true;
+				this._hash_superclasses[ n ] = true;
+				this._list_superclasses.push( parseType( n ) );
 			}
+
 			// parent
 			// надо найти нашего папу
 			var parent:TypeInfo;
-			if ( this._superclasses_list.length > 0 ) {
+			if ( this._list_superclasses.length > 0 ) {
 				var o:Class;
-				var i:uint = 0;
+				i = 0;
 				do {
 					try {
-						o = getDefinitionByName( this._superclasses_list[ i ].toString() ) as Class;
+						o = getDefinitionByName( this._list_superclasses[ i ].toString() ) as Class;
 					} catch ( e:Error ) { // промежуточный класс может быть неоступен из области видимости, мы его проустим
 					}
-				} while ( !o && ++i < this._superclasses_list.length );
+				} while ( !o && ++i < this._list_superclasses.length );
 				if ( o ) {
 					this._parent = parent = getInfo( o ); // папочка найден
 				}
 			}
+
 			// interfaces
 			// собираем список интерфейсов на основании списка нашего папы
 			list = xml.implementsInterface;
-			for each ( x in list ) {
-				n = x.@type.toString();
-				if ( parent && !( n in parent._interfaces_hash ) ) { // добавляем только недостающие
-					q = parseType( n );
-					this._interfaces_list_local.push( q );
+			if ( parent ) {
+				for each ( x in list ) {
+					n = x.@type.toString();
+					if ( !( n in parent._hash_interfaces ) ) { // добавляем только недостающие
+						this._list_interfaces_local.push( parseType( n ) );
+					}
+					this._hash_types[ n ] = true;
+					this._hash_interfaces[ n ] = true;
 				}
-				this._types_hash[ n ] = true;
-				this._interfaces_hash[ n ] = true;
+			} else {
+				for each ( x in list ) {
+					n = x.@type.toString();
+					this._list_interfaces_local.push( parseType( n ) );
+					this._hash_types[ n ] = true;
+					this._hash_interfaces[ n ] = true;
+				}
 			}
-			this._interfaces_list = ( parent ? parent._interfaces_list.concat( this._interfaces_list_local ) : this._interfaces_list_local ); // копируем
+			this._list_interfaces = (
+				parent
+				?	( this._list_interfaces_local.length <= 0
+					?	parent._list_interfaces
+					:	( parent._list_interfaces.length <= 0
+						?	this._list_interfaces_local
+						:	this._list_interfaces_local.concat( parent._list_interfaces )
+						)
+					)
+				:	this._list_interfaces_local
+			);
+
 			// types
-			this._types_list = this._superclasses_list.concat( this._interfaces_list );
+			this._list_types = (
+				this._list_interfaces.length <= 0
+				?	this._list_superclasses
+				:	( this._list_superclasses.length <= 0
+					?	this._list_interfaces
+					:	this._list_interfaces.concat( this._list_superclasses )
+					)
+			);
+
 			// metadata
 			// запускаем дефолтный парсер
 			super.parseXML( xml );
+
 			// members
 			// надо распарсить всех наших многочленов
 			var name:String = this._name.toString();
 			var dn:String;
-			this._members_list = ( parent ? parent._members_list.slice() : new Vector.<MemberInfo>() ); // копируем список
+
 			// properties
-			this._properties_list = ( parent ? parent._properties_list.slice() : new Vector.<PropertyInfo>() ); // копируем список
 			var p:PropertyInfo, pp:PropertyInfo;
 			list = xml.variable + xml.constant + xml.accessor; // выдёргиваем все свойства
 			for each ( x in list ) {
-				n = getName( x ).toString();
-				if ( parent && n in parent._members_hash ) { // ищем свойство у родителя
-					pp = parent._members_hash[ n ] as PropertyInfo;
+				n = parseName( x ).toString();
+				if ( parent && n in parent._hash_members ) { // ищем свойство у родителя
+					pp = parent._hash_members[ n ] as PropertyInfo;
 				} else {
 					pp = null;
 				}
@@ -590,21 +623,37 @@ package by.blooddy.core.meta {
 					p = pp;
 				}
 				if ( p !== pp ) { // добавляем только наши свойства
-					this._members_list_local.push ( p );
-					this._members_list.push( p );
-					this._properties_list_local.push( p );
-					this._properties_list.push( p );
+					if ( pp ) {
+						if ( !this._list_properties ) {
+							this._list_properties = parent._list_properties.slice();
+							this._list_members = parent._list_members.slice();
+						}
+						i = this._list_properties.lastIndexOf( pp );
+						this._list_properties.splice( i, 1 );
+						i = this._list_members.lastIndexOf( pp );
+						this._list_members.splice( i, 1 );
+					}
+					this._list_properties_local.push( p );
+					this._list_members_local.push( p );
 				}
-				this._members_hash[ n ] = p;
+				this._hash_members[ n ] = p;
 			}
+			this._list_properties = (
+				this._list_properties
+				?	this._list_properties_local.concat( this._list_properties )
+				:	( parent && parent._list_properties.length > 0
+					?	this._list_properties_local.concat( parent._list_properties )
+					:	this._list_properties_local
+					)
+			);
+
 			// methods
-			this._methods_list = ( parent ? parent._methods_list.slice() : new Vector.<MethodInfo>() ); // копируем список
 			var m:MethodInfo, mm:MethodInfo;
 			list = xml.method;
 			for each ( x in list ) {
-				n = getName( x ).toString();
-				if ( parent && n in parent._members_hash ) { // ищем метод у папы
-					mm = parent._members_hash[ n ] as MethodInfo;
+				n = parseName( x ).toString();
+				if ( parent && n in parent._hash_members ) { // ищем метод у папы
+					mm = parent._hash_members[ n ] as MethodInfo;
 				} else {
 					mm = null;
 				}
@@ -621,19 +670,45 @@ package by.blooddy.core.meta {
 					m = mm;
 				}
 				if ( m !== mm ) { // добавляем в списки только наших
-					this._members_list_local.push ( m );
-					this._members_list.push( m );
-					this._methods_list_local.push( m );
-					this._methods_list.push( m );
+					if ( mm ) {
+						if ( !this._list_methods ) this._list_methods = parent._list_methods.slice();
+						i = this._list_methods.lastIndexOf( mm );
+						this._list_methods.splice( i, 1 );
+						if ( !this._list_members ) this._list_members = parent._list_members.slice();
+						i = this._list_members.lastIndexOf( mm );
+						this._list_members.splice( i, 1 );
+					}
+					this._list_methods_local.push( m );
+					this._list_members_local.push( m );
 				}
-				this._members_hash[ n ] = m;
+				this._hash_members[ n ] = m;
 			}
+			this._list_methods = (
+				this._list_methods
+				?	this._list_methods_local.concat( this._list_methods )
+				:	( parent && parent._list_methods.length > 0
+					?	this._list_methods_local.concat( parent._list_methods )
+					:	this._list_methods_local
+					)
+			);
+
+			// members
+			this._list_members = (
+				this._list_members
+					?	this._list_members_local.concat( this._list_members )
+					:	( parent && parent._list_members.length > 0
+						?	this._list_members_local.concat( parent._list_members )
+						:	this._list_members_local
+						)
+			);
+
 			// constructor
 			// распишем конструктор
 			list = xml.constructor;
 			if ( list.length() > 0 ) {
 				this._constructor.parseXML( list[ 0 ] );
 			}
+
 			// source
 			list = xml.metadata.( @name == '__go_to_definition_help' );
 			if ( list.length() > 0 ) {
@@ -642,6 +717,7 @@ package by.blooddy.core.meta {
 					this._source = list[ 0 ].@value.toString();
 				}
 			}
+
 		}
 
 	}

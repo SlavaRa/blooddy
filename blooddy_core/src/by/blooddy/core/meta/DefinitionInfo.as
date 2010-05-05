@@ -43,7 +43,7 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 
-		protected static function getName(x:XML):QName {
+		protected static function parseName(x:XML):QName {
 			return new QName( x.@uri.toString(), x.@name.toString() );
 		}
 
