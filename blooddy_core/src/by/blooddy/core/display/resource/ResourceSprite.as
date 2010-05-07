@@ -176,7 +176,7 @@ package by.blooddy.core.display.resource {
 		}
 		
 		protected final function loadResourceBundle(bundleName:String, priority:int=0.0):ILoadable {
-			if ( !this._manager ) throw new ArgumentError();
+			if ( !this._manager ) throw new ArgumentError( 'спрайт не имеет связи с ResourceManager' );
 			var loader:ILoadable = this._manager.loadResourceBundle( bundleName, priority );
 			// диспатчим событие о том что началась загрузка
 			if ( !loader.complete ) super.dispatchEvent( new LoaderEvent( LoaderEvent.LOADER_INIT, true, false, loader ) );
@@ -189,7 +189,7 @@ package by.blooddy.core.display.resource {
 		}
 
 		protected final function getResource(bundleName:String, resourceName:String=null):Object {
-			if ( !this._manager ) throw new ArgumentError();
+			if ( !this._manager ) throw new ArgumentError( 'спрайт не имеет связи с ResourceManager' );
 			var result:Object = this._manager.getResource( bundleName, resourceName );
 			switch ( typeof result ) {
 				case 'object':
@@ -201,7 +201,7 @@ package by.blooddy.core.display.resource {
 		}
 
 		protected final function getDisplayObject(bundleName:String, resourceName:String=null):DisplayObject {
-			if ( !this._manager ) throw new ArgumentError();
+			if ( !this._manager ) throw new ArgumentError( 'спрайт не имеет связи с ResourceManager' );
 			var result:DisplayObject = this._manager.getDisplayObject( bundleName, resourceName );
 			if ( result ) {
 				if ( !resourceName ) resourceName = '';
@@ -211,7 +211,7 @@ package by.blooddy.core.display.resource {
 		}
 
 		protected final function getSound(bundleName:String, resourceName:String=null):Sound {
-			if ( !this._manager ) throw new ArgumentError();
+			if ( !this._manager ) throw new ArgumentError( 'спрайт не имеет связи с ResourceManager' );
 			var result:Sound = this._manager.getSound( bundleName, resourceName );
 			if ( result ) {
 				if ( !resourceName ) resourceName = '';
@@ -221,9 +221,9 @@ package by.blooddy.core.display.resource {
 		}
 
 		protected final function trashResource(resource:Object, time:uint=3*60*1E3):void {
-			if ( !this._manager ) throw new ArgumentError();
+			if ( !this._manager ) throw new ArgumentError( 'спрайт не имеет связи с ResourceManager' );
 			var def:ResourceLinker = this._resources[ resource ];
-			if ( !def ) throw new ArgumentError( '' );
+			if ( !def ) throw new ArgumentError( 'неизвестный ресурс' );
 			def.count--;
 			if ( !def.count ) {
 				delete this._resources[ resource ];
@@ -232,7 +232,7 @@ package by.blooddy.core.display.resource {
 		}
 
 		protected final function lockResourceBundle(bundleName:String):void {
-			if ( !this._manager ) throw new ArgumentError();
+			if ( !this._manager ) throw new ArgumentError( 'спрайт не имеет связи с ResourceManager' );
 			var lockers:Dictionary = this._lockers[ bundleName ];
 			if ( !lockers ) {
 				this._lockers[ bundleName ] = lockers = new Dictionary( true );
@@ -242,7 +242,7 @@ package by.blooddy.core.display.resource {
 		}
 
 		protected final function unlockResourceBundle(bundleName:String):void {
-			if ( !this._manager ) throw new ArgumentError();
+			if ( !this._manager ) throw new ArgumentError( 'спрайт не имеет связи с ResourceManager' );
 			var lockers:Dictionary = this._lockers[ bundleName ];
 			if ( lockers ) {
 				delete lockers[ this ];

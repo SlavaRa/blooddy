@@ -41,6 +41,7 @@ package by.blooddy.core.events.display.resource {
 		public function ResourceErrorEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false, text:String='', resources:Vector.<ResourceDefinition>=null) {
 			super( type, bubbles, cancelable, text );
 			this.resources = resources;
+			trace( resources.join( '\n' ) );
 		}
 
 		//--------------------------------------------------------------------------

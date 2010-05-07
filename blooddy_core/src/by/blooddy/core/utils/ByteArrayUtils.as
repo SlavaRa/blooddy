@@ -48,7 +48,7 @@ package by.blooddy.core.utils {
 			return arr.join(separator);
 		}
 
-		public static function stringFromBytes(s:String, separator:String=''):ByteArray {
+		public static function bytesFromString(s:String, separator:String=''):ByteArray {
 			var bytes:ByteArray = new ByteArray();
 			var arr:Array, l:uint, i:uint;
 			if ( separator ) {
