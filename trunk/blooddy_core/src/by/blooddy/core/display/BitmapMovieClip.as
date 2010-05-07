@@ -85,10 +85,10 @@ package by.blooddy.core.display {
 				var obj:DisplayObject = bitmap as DisplayObject;
 				var bounds:Rectangle = obj.getBounds( obj );
 				if ( bounds.width > 0 && bounds.height > 0 ) {
-					bmp = new BitmapData( bounds.width + 2, bounds.height + 2, true, 0x000000 );
-					bmp.draw( obj, new Matrix( 1, 0, 0, 1, -bounds.left + 1, -bounds.top + 1  ) );
-					x = bounds.left - 1;
-					y = bounds.top - 1;
+					bmp = new BitmapData( Math.ceil( bounds.width + 2 ), Math.ceil( bounds.height + 2 ), true, 0x000000 );
+					bmp.draw( obj, new Matrix( 1, 0, 0, 1, Math.ceil( -bounds.left + 1 ), Math.ceil( -bounds.top + 1 ) ) );
+					x = Math.floor( bounds.left - 1 );
+					y = Math.floor( bounds.top - 1 );
 				} else {
 					bmp = _EMPTY;
 				}
@@ -122,7 +122,7 @@ package by.blooddy.core.display {
 					result.smoothing = smoothing;
 				} else {
 					var mc:MovieClip = bitmap as MovieClip;
-					result = new BitmapMovieClip();
+					result = new BitmapMovieClip( pixelSnapping, smoothing );
 					const l:uint = mc.totalFrames;
 					for ( var i:uint = 0; i<l; i++ ) {
 						mc.gotoAndStop( i + 1 );
@@ -362,7 +362,7 @@ package by.blooddy.core.display {
 				bmp = this._list.pop().bmp;
 				if ( bmp !== _EMPTY ) bmp.dispose();
 			}
-			this.stop();
+			super.stop();
 		}
 
 		//--------------------------------------------------------------------------

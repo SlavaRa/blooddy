@@ -33,11 +33,11 @@ package by.blooddy.code.css.definition.selectors {
 		//  Methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public override function toString():String {
 			return this.parent + ' ' + this.selector;
 		}
-		
+
 		public override function contains(target:CSSSelector):Boolean {
 			if ( this.selector.contains( target.selector ) ) {
 				if ( target is ChildSelector ) {
@@ -56,7 +56,7 @@ package by.blooddy.code.css.definition.selectors {
 			}
 			return true;
 		}
-		
+
 	}
 	
 }
