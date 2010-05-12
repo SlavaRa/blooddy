@@ -4,16 +4,16 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.code.css.definition {
+package by.blooddy.code.css.definition.values {
 	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					18.04.2010 18:39:09
+	 * @created					07.05.2010 0:50:17
 	 */
-	public class CSSMedia {
+	public class CollectionValue extends CSSValue {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -24,10 +24,9 @@ package by.blooddy.code.css.definition {
 		/**
 		 * Constructor
 		 */
-		public function CSSMedia(rules:Vector.<CSSRule>, name:String=null) {
+		public function CollectionValue(values:Vector.<CSSValue>) {
 			super();
-			this.rules = rules;
-			this.name = name;
+			this.values = values;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -35,22 +34,23 @@ package by.blooddy.code.css.definition {
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
-
-		public var name:String;
-
-		public var rules:Vector.<CSSRule>;
-
+		
+		public var values:Vector.<CSSValue>;
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
 		//
 		//--------------------------------------------------------------------------
-
-		public function toString():String {
-			var h:Boolean = ( this.name && this.name != 'all' );
-			return ( h ? '@media ' + this.name + '{' : '' ) + this.rules.join( '' ) + ( h ? '}' : '' );
+		
+		public function valueOf():Vector.<CSSValue> {
+			return this.values;
 		}
-
+		
+		public function toString():String {
+			return this.values.join( ' ' );
+		}
+		
 	}
-
+	
 }

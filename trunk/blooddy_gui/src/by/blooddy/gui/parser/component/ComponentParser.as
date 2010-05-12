@@ -4,22 +4,28 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.gui.parser {
+package by.blooddy.gui.parser.component {
 
 	import by.blooddy.code.css.CSSManager;
 	import by.blooddy.code.css.CSSParser;
+	import by.blooddy.code.css.definition.CSSMedia;
+	import by.blooddy.code.css.definition.CSSRule;
+	import by.blooddy.code.css.definition.values.CSSValue;
+	import by.blooddy.code.css.definition.values.CollectionValue;
+	import by.blooddy.code.css.definition.values.ComplexValue;
 	import by.blooddy.code.errors.ParserError;
 	import by.blooddy.code.net.AbstractLoadableParser;
 	import by.blooddy.core.blooddy;
+	import by.blooddy.core.events.net.loading.LoaderEvent;
 	import by.blooddy.core.managers.resource.IResourceManager;
 	import by.blooddy.core.managers.resource.ResourceManager;
 	import by.blooddy.core.net.MIME;
 	import by.blooddy.core.net.loading.IProcessable;
+	import by.blooddy.gui.parser.css.ComplexValueFactory;
 	
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.utils.Dictionary;
-	import by.blooddy.core.events.net.loading.LoaderEvent;
 
 	//--------------------------------------
 	//  Events
@@ -131,6 +137,7 @@ package by.blooddy.gui.parser {
 
 			this._resourceManager = manager || ResourceManager.manager;
 			this._cssManager = CSSManager.getManager( manager );
+			this._cssManager.addEventListener( LoaderEvent.LOADER_INIT, trace );
 
 			this._content = null;
 			this._errors = new Vector.<Error>();
@@ -161,11 +168,13 @@ package by.blooddy.gui.parser {
 				var href:String;
 				var rel:String;
 				var type:String;
+				var mediaName:String;
 
 				var asset:StyleAsset;
 				var loader:IProcessable;
 				var parser:CSSParser;
 				
+				var key:String;
 				var hash:Object = new Object();
 				
 				for each ( var x:XML in list ) {
@@ -191,23 +200,27 @@ package by.blooddy.gui.parser {
 								}
 								switch ( rel ) {
 									case 'stylesheet':
-										if ( href in hash ) {
-											asset = hash[ href ];
+										mediaName = x.@media.toString();
+										key = mediaName + '\x00' + href;
+										if ( key in hash ) {
+											asset = hash[ key ];
 											i = this._list.lastIndexOf( asset );
 											if ( i >= 0 ) this._list.splice( i, 1 );
 										} else {
 											asset = new StyleAsset( href );
+											if ( mediaName ) {
+												asset.mediaName = mediaName;
+											}
 											if ( this._cssManager.hasDefinition( href ) ) {
-												asset.definition = this._cssManager.getDefinition( href );
+												asset.medias = this._cssManager.getDefinition( href );
 											} else {
 												loader = this._cssManager.loadDefinition( href );
-												loader.addEventListener( Event.COMPLETE,			this.handler_loader_complete );
-												loader.addEventListener( ErrorEvent.ERROR,			this.handler_loader_complete );
-												loader.addEventListener( LoaderEvent.LOADER_INIT,	super.dispatchEvent );
+												loader.addEventListener( Event.COMPLETE,	this.handler_loader_complete );
+												loader.addEventListener( ErrorEvent.ERROR,	this.handler_loader_complete );
 												this._hash[ loader ] = asset;
 												super.addLoader( loader );
 											}
-											hash[ href ] = asset;
+											hash[ key ] = asset;
 										}
 										this._list.push( asset );
 										break;
@@ -222,20 +235,22 @@ package by.blooddy.gui.parser {
 							break;
 
 						case 'style':
-							asset = new StyleAsset();
-							parser = new CSSParser();
-							parser.addEventListener( Event.COMPLETE,			this.handler_parser_complete );
-							parser.addEventListener( ErrorEvent.ERROR,			this.handler_parser_complete );
-							parser.addEventListener( LoaderEvent.LOADER_INIT,	super.dispatchEvent );
-							parser.parse( x.text().toString(), this._cssManager );
-							this._hash[ parser ] = asset;
-							this._list.push( asset );
-							super.addLoader( parser );
+							type = x.@type.toString().toLowerCase();
+							if ( !type || type == MIME.CSS ) {
+								mediaName = x.@media.toString();
+								asset = new StyleAsset();
+								if ( mediaName ) asset.mediaName = mediaName;
+								parser = new CSSParser();
+								parser.addEventListener( Event.COMPLETE,	this.handler_parser_complete );
+								parser.addEventListener( ErrorEvent.ERROR,	this.handler_parser_complete );
+								parser.parse( x.text().toString(), this._cssManager );
+								this._hash[ parser ] = asset;
+								this._list.push( asset );
+								super.addLoader( parser );
+							}
 							break;
 
 					}
-					
-					//trace( x.toXMLString() );
 				}
 
 			}
@@ -255,10 +270,41 @@ package by.blooddy.gui.parser {
 
 		protected override function onLoad():void {
 			this._source = null;
-			
-			this._resourceManager = null;
+
+			this._cssManager.removeEventListener( LoaderEvent.LOADER_INIT, super.dispatchEvent );
 			this._cssManager = null;
-			
+			this._resourceManager = null;
+
+			var asset:StyleAsset;
+			var media:CSSMedia;
+			var rule:CSSRule;
+			var n:String;
+			var i:uint, l:uint;
+			var values:Vector.<CSSValue>;
+			var value:CSSValue;
+			for each ( asset in this._list ) {
+				for each ( media in asset.medias ) {
+					for each ( rule in media.rules ) {
+						for ( n in rule.declarations ) {
+							value = rule.declarations[ n ];
+							if ( value is ComplexValue ) {
+								rule.declarations[ n ] = ComplexValueFactory.getValue( value as ComplexValue );
+							} else if ( value is CollectionValue ) {
+								values = ( value as CollectionValue ).values;
+								l = values.length;
+								for ( i=0; i<l; i++ ) {
+									value = values[ i ];
+									if ( value is ComplexValue ) {
+										values[ i ] = ComplexValueFactory.getValue( value as ComplexValue );
+									}
+								}
+							}
+						}
+					}
+				}
+				trace( asset.medias );
+			}
+
 			super.stop();
 		}
 
@@ -273,11 +319,10 @@ package by.blooddy.gui.parser {
 		 */
 		private function handler_loader_complete(event:Event):void {
 			var loader:IProcessable = event.target as IProcessable;
-			loader.removeEventListener( Event.COMPLETE,				this.handler_loader_complete );
-			loader.removeEventListener( ErrorEvent.ERROR,			this.handler_loader_complete );
-			loader.removeEventListener( LoaderEvent.LOADER_INIT,	super.dispatchEvent );
+			loader.removeEventListener( Event.COMPLETE,		this.handler_loader_complete );
+			loader.removeEventListener( ErrorEvent.ERROR,	this.handler_loader_complete );
 			var asset:StyleAsset = this._hash[ loader ];
-			asset.definition = this._cssManager.getDefinition( asset.href );
+			asset.medias = this._cssManager.getDefinition( asset.href );
 			delete this._hash[ loader ];
 		}
 
@@ -286,16 +331,15 @@ package by.blooddy.gui.parser {
 		 */
 		private function handler_parser_complete(event:Event):void {
 			var parser:CSSParser = event.target as CSSParser;
-			parser.removeEventListener( Event.COMPLETE,				this.handler_loader_complete );
-			parser.removeEventListener( ErrorEvent.ERROR,			this.handler_loader_complete );
-			parser.removeEventListener( LoaderEvent.LOADER_INIT,	super.dispatchEvent );
+			parser.removeEventListener( Event.COMPLETE,		this.handler_loader_complete );
+			parser.removeEventListener( ErrorEvent.ERROR,	this.handler_loader_complete );
 			var asset:StyleAsset = this._hash[ parser ];
-			asset.definition = parser.content;
+			asset.medias = parser.content;
 			delete this._hash[ parser ];
 		}
-		
+
 	}
-	
+
 }
 
 //==============================================================================
@@ -305,7 +349,8 @@ package by.blooddy.gui.parser {
 //==============================================================================
 
 import by.blooddy.code.css.CSSParser;
-import by.blooddy.code.css.definition.CSSDefinition;
+import by.blooddy.code.css.definition.CSSMedia;
+import by.blooddy.core.net.loading.ILoadable;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -325,6 +370,10 @@ internal final class StyleAsset {
 
 	public var href:String;
 
-	public var definition:CSSDefinition;
+	public var medias:Vector.<CSSMedia>;
+
+	public var mediaName:String;
+
+	public var loader:ILoadable;
 
 }

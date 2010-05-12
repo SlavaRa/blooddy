@@ -12,6 +12,7 @@ package by.blooddy.core.meta {
 	import flash.utils.Dictionary;
 	import flash.utils.describeType;
 	import flash.utils.getDefinitionByName;
+	import flash.system.Capabilities;
 	
 	/**
 	 * @author					BlooDHounD
@@ -709,12 +710,14 @@ package by.blooddy.core.meta {
 				this._constructor.parseXML( list[ 0 ] );
 			}
 
-			// source
-			list = xml.metadata.( @name == '__go_to_definition_help' );
-			if ( list.length() > 0 ) {
-				list = list[ 0 ].arg.( @key == 'file' );
+			if ( Capabilities.isDebugger ) {
+				// source
+				list = xml.metadata.( @name == '__go_to_definition_help' );
 				if ( list.length() > 0 ) {
-					this._source = list[ 0 ].@value.toString();
+					list = list[ 0 ].arg.( @key == 'file' );
+					if ( list.length() > 0 ) {
+						this._source = list[ 0 ].@value.toString();
+					}
 				}
 			}
 

@@ -6,8 +6,7 @@
 
 package by.blooddy.code.css {
 
-	import by.blooddy.code.css.definition.CSSDeclaration;
-	import by.blooddy.code.css.definition.CSSDefinition;
+	import by.blooddy.code.css.definition.CSSMedia;
 	import by.blooddy.code.css.definition.CSSRule;
 	import by.blooddy.code.css.definition.selectors.AttributeSelector;
 	import by.blooddy.code.css.definition.selectors.CSSSelector;
@@ -19,6 +18,7 @@ package by.blooddy.code.css {
 	import by.blooddy.code.css.definition.selectors.TagSelector;
 	import by.blooddy.code.css.definition.values.BooleanValue;
 	import by.blooddy.code.css.definition.values.CSSValue;
+	import by.blooddy.code.css.definition.values.CollectionValue;
 	import by.blooddy.code.css.definition.values.ColorValue;
 	import by.blooddy.code.css.definition.values.ComplexValue;
 	import by.blooddy.code.css.definition.values.IdentifierValue;
@@ -29,10 +29,15 @@ package by.blooddy.code.css {
 	import by.blooddy.code.errors.ParserError;
 	import by.blooddy.code.net.AbstractLoadableParser;
 	import by.blooddy.code.utils.Char;
-	import by.blooddy.core.net.loading.ILoadable;
+	import by.blooddy.core.net.loading.IProcessable;
 	import by.blooddy.core.utils.StringUtils;
 	
+	import flash.events.ErrorEvent;
+	import flash.events.Event;
 	import flash.system.Capabilities;
+	import flash.utils.Dictionary;
+	import flash.errors.IOError;
+	import by.blooddy.code.css.definition.values.ArrayValue;
 	
 	//--------------------------------------
 	//  Events
@@ -114,6 +119,11 @@ package by.blooddy.code.css {
 		 */
 		private const _scanner:CSSScanner = new CSSScanner();
 
+		/**
+		 * @private
+		 */
+		private const _list:Vector.<ImportAsset> = new Vector.<ImportAsset>();
+
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
@@ -123,10 +133,10 @@ package by.blooddy.code.css {
 		/**
 		 * @private
 		 */
-		private var _content:CSSDefinition;
+		private var _content:Vector.<CSSMedia>;
 
-		public function get content():CSSDefinition {
-			return this._content;
+		public function get content():Vector.<CSSMedia> {
+			return ( this._content ? this._content.slice() : null );
 		}
 
 		/**
@@ -157,16 +167,24 @@ package by.blooddy.code.css {
 		}
 
 		protected override function onParse():Boolean {
-				
+
+			this._content = new Vector.<CSSMedia>();
+			
 			var tok:uint;
+
 			var selectors:Vector.<CSSSelector>;
-			var declarations:Vector.<CSSDeclaration>;
+			var names:Vector.<String>;
+			var rules:Vector.<CSSRule>;
+			var declarations:Object;
+
 			var s:CSSSelector;
-			
-			var definition:CSSDefinition = new CSSDefinition();
-			var hash:Object = new Object();
-			var hash_rule:Object = new Object();
-			
+			var v:CSSValue;
+			var n:String;
+			var i:int;
+
+			var loader:IProcessable;
+			var asset:ImportAsset;
+
 			do {
 				try { // top-level обработка
 
@@ -177,30 +195,58 @@ package by.blooddy.code.css {
 							tok = this.readFixToken( CSSToken.IDENTIFIER, false );
 							switch ( this._scanner.tokenText ) {
 								case 'import':
+									if ( rules ) {
+										this._content.push( new CSSMedia( rules ) );
+										rules = null;
+									}
+									asset = new ImportAsset();
 									// url
 									tok = this.readToken();
 									if ( tok == CSSToken.STRING_LITERAL ) {
-										this._scanner.tokenText; // result url
+										asset.url = this._scanner.tokenText;
 									} else if ( tok == CSSToken.IDENTIFIER && this._scanner.tokenText == 'url' ) {
-										this.readURLEntity(); // result url
+										asset.url = this.readURLEntity();
 									} else {
 										throw new ParserError( 'не найдено определение url' );
 									}
 									// media
 									tok = this.readToken();
 									if ( tok == CSSToken.IDENTIFIER ) {
-										this._scanner.tokenText; // result media
+										this._scanner.retreat();
+										asset.names = this.readMediaNames(); // result media
 									} else {
 										this._scanner.retreat();
 									}
 									this.readFixToken( CSSToken.SEMI_COLON );
+									asset.index = this._content.length;
+									if ( asset.url ) {
+										if ( !this._manager.hasDefinition( asset.url ) ) {
+											super.addLoader(
+												this._manager.loadDefinition( asset.url )
+											);
+										}
+										this._list.push( asset );
+									} else {
+										throw new IOError();
+									}
 									break;
 								case 'media':
-									tok = this.readFixToken( CSSToken.IDENTIFIER );
-									this._scanner.tokenText; // result media
-									this.readFixToken( CSSToken.LEFT_BRACE );
-									// TODO: read content
-									this.readFixToken( CSSToken.RIGHT_BRACE );
+									if ( rules ) {
+										this._content.push( new CSSMedia( rules ) );
+										rules = null;
+									}
+									names = this.readMediaNames();
+									rules = this.readMediaEntity();
+									i = names.indexOf( 'all' );
+									if ( i >= 0 ) {
+										this._content.push( new CSSMedia( rules, 'all' ) );
+									} else {
+										for each ( n in names ) {
+											this._content.push( new CSSMedia( rules, n ) );
+										}
+									}
+									rules = null;
+									break;
 								default:
 									throw new ParserError( 'неизвестный типа injection' );
 							}
@@ -214,12 +260,12 @@ package by.blooddy.code.css {
 							this._scanner.retreat();
 							selectors = this.readSelectors();
 							declarations = this.readDeclarations();
-							if ( declarations.length > 0 ) {
+							for each ( v in declarations ) { // это проверка на существовани элементов
+								if ( !rules ) rules = new Vector.<CSSRule>();
 								for each ( s in selectors ) {
-									definition.defaultMedia.rules.push(
-										new CSSRule( s, declarations )
-									);
+									rules.push( new CSSRule( s, declarations ) );
 								}
+								break;
 							}
 							break;
 						
@@ -228,24 +274,60 @@ package by.blooddy.code.css {
 
 						default:
 							throw new ParserError( 'не известный тип токена' );
-							
+
 					}
-					
+
 				} catch ( e:Error ) {
 					this._errors.push( e );
 				}
 			} while ( tok != CSSToken.EOF );
 
+			if ( rules ) {
+				this._content.push( new CSSMedia( rules ) );
+			}
+
 			if ( super.loaded ) {
 				this.onLoad();
 			}
-			trace( definition );
 			return true;
 		}
 
 		protected override function onLoad():void {
+
+			var media:CSSMedia;
+			var n:String;
+			var arr:Array;
+			var asset:ImportAsset;
+
+			while ( this._list.length ) {
+				asset = this._list.pop();
+				arr = new Array();
+				for each ( media in this._manager.getDefinition( asset.url ) ) {
+					if ( !media.name && asset.names && asset.names.length > 0 ) {
+						if ( asset.names.indexOf( 'all' ) >= 0 ) {
+							arr.push( new CSSMedia( media.rules, 'all' ) );
+						} else {
+							for each ( n in asset.names ) {
+								arr.push( new CSSMedia( media.rules, n ) );
+							}
+						}
+					} else {
+						arr.push( media );
+					}
+				}
+				if ( arr.length > 0 ) {
+					arr.unshift( asset.index, 0 );
+					this._content.splice.apply( this._content, arr );
+				}
+			}
 			this._manager = null;
-			super.stop();
+
+			if ( this._content && this._content.length >= 0 ) {
+				super.stop();
+			} else {
+				this._content = null;
+				this.throwError( new IOError() );
+			}
 		}
 
 		//--------------------------------------------------------------------------
@@ -275,6 +357,74 @@ package by.blooddy.code.css {
 			var tok:uint = this.readToken( ignoreWhite, ignoreComments );
 			if ( tok != kind ) throw new ParserError( 'ожидался токен "' + kind + '" вместо "' + tok + '"' );
 			return tok;
+		}
+
+		/**
+		 * @private
+		 */
+		private function readMediaNames():Vector.<String> {
+			var result:Vector.<String> = new Vector.<String>();
+			var tok:uint;
+			do {
+				tok = this.readFixToken( CSSToken.IDENTIFIER );
+				result.push( this._scanner.tokenText ); // result media
+				tok = this.readToken();
+			} while ( tok == CSSToken.COMMA );
+			this._scanner.retreat();
+			return result;
+		}
+
+		/**
+		 * @private
+		 */
+		private function readMediaEntity():Vector.<CSSRule> {
+			this.readFixToken( CSSToken.LEFT_BRACE );
+
+			var result:Vector.<CSSRule> = new Vector.<CSSRule>();
+
+			var tok:uint;
+			var selectors:Vector.<CSSSelector>;
+			var declarations:Object;
+			var s:CSSSelector;
+			var v:CSSValue;
+
+			do {
+				try {
+					
+					tok = this.readToken();
+					switch ( tok ) {
+						
+						// начало селектора
+						case CSSToken.HASH:
+						case CSSToken.DOT:
+						case CSSToken.IDENTIFIER:
+						case CSSToken.COLON:
+							this._scanner.retreat();
+							selectors = this.readSelectors();
+							declarations = this.readDeclarations();
+							for each ( v in declarations ) {
+								for each ( s in selectors ) {
+									result.push(
+										new CSSRule( s, declarations )
+									);
+								}
+								break;
+							}
+							break;
+						
+						case CSSToken.RIGHT_BRACE:
+							break;
+
+						default:
+							throw new ParserError( 'не известный тип токена' );
+							
+					}
+					
+				} catch ( e:Error ) {
+					this._errors.push( e );
+				}
+			} while ( tok != CSSToken.RIGHT_BRACE );			
+			return result;
 		}
 
 		/**
@@ -404,24 +554,16 @@ package by.blooddy.code.css {
 		/**
 		 * @private
 		 */
-		private function readDeclarations():Vector.<CSSDeclaration> {
+		private function readDeclarations():Object {
 			this.readFixToken( CSSToken.LEFT_BRACE );
-			var result:Vector.<CSSDeclaration> = new Vector.<CSSDeclaration>();
+			var result:Object = new Object();
 			var name:String;
-			var values:Vector.<CSSValue>;
-			const hash:Object = new Object();
 			while ( this.readToken() != CSSToken.RIGHT_BRACE ) {
 				this._scanner.retreat();
 				try {
 					name = this.readDeclarationName();
 					this.readFixToken( CSSToken.COLON );
-					values = this.readDeclarationValues();
-					if ( values.length <= 0 ) throw new ParserError( 'нету значений для определения' );
-					if ( name in hash ) {
-						hash[ name ].values = values;
-					} else {
-						result.push( new CSSDeclaration( name, values ) );
-					}
+					result[ name ] = this.readDeclarationValue();
 				} catch ( e:Error ) { // пропускаем дкларацию
 					this._errors.push( e );
 					if ( this._scanner.tokenKind != CSSToken.RIGHT_BRACE && this._scanner.tokenKind != CSSToken.SEMI_COLON ) {
@@ -465,7 +607,7 @@ package by.blooddy.code.css {
 		/**
 		 * @private
 		 */
-		private function readDeclarationValues():Vector.<CSSValue> {
+		private function readDeclarationValue():CSSValue {
 			var result:Vector.<CSSValue> = new Vector.<CSSValue>();
 			do {
 
@@ -474,11 +616,16 @@ package by.blooddy.code.css {
 					case CSSToken.RIGHT_BRACE:
 						this._scanner.retreat();
 					case CSSToken.SEMI_COLON:
-						return result;
+						if ( result.length == 0 ) {
+							throw new ParserError( 'нету значений для определения' );
+						} else if ( result.length == 1 ) {
+							return result[ 0 ];
+						}
+						return new CollectionValue( result );
 
 					default:
 						this._scanner.retreat();
-						result.push( this.readDeclarationValue() );
+						result.push( this.readValue() );
 						break;
 
 				}
@@ -490,7 +637,7 @@ package by.blooddy.code.css {
 		/**
 		 * @private
 		 */
-		private function readDeclarationValue(complexAvailable:Boolean=true):CSSValue {
+		private function readValue(complexAvailable:Boolean=true):CSSValue {
 				
 			switch ( this.readToken() ) {
 				
@@ -549,10 +696,11 @@ package by.blooddy.code.css {
 								this._scanner.retreat();
 								return new IdentifierValue( t );
 							}
-							break;
 					}
-					break;
-				
+
+				case CSSToken.LEFT_BRACKET:
+					this._scanner.retreat();
+					return new ArrayValue( this.readArray() );
 			}
 			
 			throw new ParserError( 'неизвестный тип значения' );
@@ -573,11 +721,43 @@ package by.blooddy.code.css {
 
 					default:
 						this._scanner.retreat();
-						result.push( this.readDeclarationValue( false ) );
+						result.push( this.readValue( false ) );
 						switch ( this.readToken( true, false ) ) {
 							case CSSToken.COMMA:
 								break;
 							case CSSToken.RIGHT_PAREN:
+								return result;
+							default:
+								throw new ParserError( 'ожидалось либо запятая либо скобка' );
+						}
+						break;
+					
+				}
+				
+			} while ( true );
+			throw new ParserError();
+		}
+		
+		/**
+		 * @private
+		 */
+		private function readArray():Array {
+			var result:Array = new Array();
+			this.readFixToken( CSSToken.LEFT_BRACKET, true, false );
+			do {
+				
+				switch ( this.readToken( true, false ) ) {
+					
+					case CSSToken.RIGHT_BRACKET:
+						return result;
+						
+					default:
+						this._scanner.retreat();
+						result.push( this.readValue( false ) );
+						switch ( this.readToken( true, false ) ) {
+							case CSSToken.COMMA:
+								break;
+							case CSSToken.RIGHT_BRACKET:
 								return result;
 							default:
 								throw new ParserError( 'ожидалось либо запятая либо скобка' );
@@ -706,5 +886,34 @@ package by.blooddy.code.css {
 		}
 
 	}
+
+}
+
+//==============================================================================
+//
+//  Inner definitions
+//
+//==============================================================================
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Helper class: ImportAsset
+//
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ */
+internal final class ImportAsset {
+
+	public function ImportAsset() {
+		super();
+	}
+
+	public var url:String;
+
+	public var names:Vector.<String>;
+
+	public var index:uint;
 
 }

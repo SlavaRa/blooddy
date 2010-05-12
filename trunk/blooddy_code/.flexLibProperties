@@ -30,13 +30,12 @@
     <classEntry path="by.blooddy.code.css.definition.values.IdentifierValue"/>
     <classEntry path="by.blooddy.code.utils.CSSColors"/>
     <classEntry path="by.blooddy.code.css.definition.values.PercentValue"/>
-    <classEntry path="by.blooddy.code.css.definition.CSSDeclaration"/>
     <classEntry path="by.blooddy.code.css.definition.CSSRule"/>
-    <classEntry path="by.blooddy.code.css.definition.CSSMedia"/>
-    <classEntry path="by.blooddy.code.css.definition.CSSDefinition"/>
     <classEntry path="by.blooddy.code.AbstractParser"/>
     <classEntry path="by.blooddy.code.net.AbstractLoadableParser"/>
     <classEntry path="by.blooddy.code.css.definition.selectors.ISelector"/>
+    <classEntry path="by.blooddy.code.css.definition.values.CollectionValue"/>
+    <classEntry path="by.blooddy.code.css.definition.values.ArrayValue"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

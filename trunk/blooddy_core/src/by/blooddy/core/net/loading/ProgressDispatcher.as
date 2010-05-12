@@ -219,7 +219,9 @@ package by.blooddy.core.net.loading {
 			var loader:ILoadable;
 			for each ( var process:IProcessable in this._processes ) {
 				loader = process as ILoadable;
-				if ( loader && loader.bytesTotal > 0 ) {
+				if ( process.complete ) {
+					progress++;
+				} else if ( loader && loader.bytesTotal > 0 ) {
 					loaded += loader.bytesLoaded;
 					total += loader.bytesTotal;
 					j++;
@@ -228,8 +230,6 @@ package by.blooddy.core.net.loading {
 					if ( isFinite( p ) ) {
 						progress += p;
 					}
-				} else if ( process.complete ) {
-					progress++;
 				}
 				i++;
 			}

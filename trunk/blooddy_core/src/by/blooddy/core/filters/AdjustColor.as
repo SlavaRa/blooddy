@@ -1,9 +1,21 @@
+////////////////////////////////////////////////////////////////////////////////
+//
+//  © 2008 BlooDHounD
+//
+////////////////////////////////////////////////////////////////////////////////
+
 package by.blooddy.core.filters {
 
 	import by.blooddy.core.utils.MathUtils;
 	
 	import flash.filters.ColorMatrixFilter;
 
+	/**
+	 * @author					BlooDHounD
+	 * @version					1.0
+	 * @playerversion			Flash 10
+	 * @langversion				3.0
+	 */
 	public class AdjustColor {
 	
 		// constant for contrast calculations:

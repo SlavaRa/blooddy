@@ -8,9 +8,14 @@
     <classEntry path="by.blooddy.gui.events.ComponentEvent"/>
     <classEntry path="by.blooddy.gui.display.NativeComponentController"/>
     <classEntry path="by.blooddy.gui.display.ComponentInfo"/>
-    <classEntry path="by.blooddy.gui.parser.ComponentParser"/>
-    <classEntry path="by.blooddy.gui.parser.ComponentDefinition"/>
+    <classEntry path="by.blooddy.gui.parser.component.ComponentParser"/>
+    <classEntry path="by.blooddy.gui.parser.component.ComponentDefinition"/>
     <classEntry path="by.blooddy.gui.net.GUILoaderPriority"/>
+    <classEntry path="by.blooddy.gui.parser.css.values.MatrixValue"/>
+    <classEntry path="by.blooddy.gui.parser.css.values.RectValue"/>
+    <classEntry path="by.blooddy.gui.parser.css.values.BitmapFilterValue"/>
+    <classEntry path="by.blooddy.gui.parser.css.ComplexValueFactory"/>
+    <classEntry path="by.blooddy.gui.parser.css.CSSTypes"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
