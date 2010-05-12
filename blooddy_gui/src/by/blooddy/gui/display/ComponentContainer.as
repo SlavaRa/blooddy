@@ -11,7 +11,7 @@ package by.blooddy.gui.display {
 	import by.blooddy.core.errors.getErrorMessage;
 	import by.blooddy.core.events.net.loading.LoaderEvent;
 	import by.blooddy.core.net.loading.ILoadable;
-	import by.blooddy.gui.parser.ComponentParser;
+	import by.blooddy.gui.parser.component.ComponentParser;
 	
 	import flash.display.DisplayObject;
 	import flash.errors.IllegalOperationError;
@@ -62,7 +62,9 @@ package by.blooddy.gui.display {
 		 * @private
 		 */
 		private static const $ns_component:Namespace = Component[ '$internal_c' ];
-		
+
+		use namespace $protected_rs;
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -191,7 +193,7 @@ package by.blooddy.gui.display {
 			var xml:XML = new XML( super.getResource( asset.url ) );
 			if ( xml ) {
 
-				var parser:ComponentParser = new ComponentParser( super.$protected_rs::getResourceManager() );
+				var parser:ComponentParser = new ComponentParser( super.getResourceManager() );
 				parser.addEventListener( Event.COMPLETE,			this.handler_parser_complete );
 				parser.addEventListener( ErrorEvent.ERROR,			this.handler_parser_error );
 				parser.addEventListener( LoaderEvent.LOADER_INIT,	this.handler_loaderInit );

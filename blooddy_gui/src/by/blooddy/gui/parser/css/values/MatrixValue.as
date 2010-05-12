@@ -4,45 +4,21 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.code.css.definition {
-
+package by.blooddy.gui.parser.css.values {
+	
 	import by.blooddy.code.css.definition.values.CSSValue;
+	
+	import flash.geom.Matrix;
 	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					18.04.2010 5:37:11
+	 * @created					09.05.2010 16:10:28
 	 */
-	public class CSSDeclaration {
+	public class MatrixValue extends CSSValue {
 		
-		//--------------------------------------------------------------------------
-		//
-		//  Private class methods
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		private static function convertName(name:String):String {
-			var result:String = '';
-			const l:uint = name.length;
-			var c:String, c2:String;
-			var j:uint = 0;
-			for ( var i:uint = 0; i<l; i++ ) {
-				c = name.charAt( i );
-				c2 = c.toLowerCase();
-				if ( c2 != c ) {
-					result += name.substring( j, i ) + '-' + c2;
-					j = i + 1;
-				}
-			}
-			result += name.substr( j );
-			return result;
-		}
-
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -52,10 +28,9 @@ package by.blooddy.code.css.definition {
 		/**
 		 * Constructor
 		 */
-		public function CSSDeclaration(name:String, values:Vector.<CSSValue>) {
+		public function MatrixValue(value:Matrix) {
 			super();
-			this.name = name;
-			this.values = values;
+			this.value = value;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -64,9 +39,7 @@ package by.blooddy.code.css.definition {
 		//
 		//--------------------------------------------------------------------------
 
-		public var name:String;
-
-		public var values:Vector.<CSSValue>;
+		public var value:Matrix;
 
 		//--------------------------------------------------------------------------
 		//
@@ -74,8 +47,19 @@ package by.blooddy.code.css.definition {
 		//
 		//--------------------------------------------------------------------------
 
+		public function valueOf():Matrix {
+			return this.value;
+		}
+
 		public function toString():String {
-			return convertName( this.name ) + ':' + this.values.join( ' ' );
+			return 'matrix(' +
+				this.value.a +
+				this.value.b +
+				this.value.c +
+				this.value.d +
+				this.value.tx +
+				this.value.ty +
+			')';
 		}
 
 	}

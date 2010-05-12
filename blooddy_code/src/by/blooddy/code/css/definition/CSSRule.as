@@ -19,6 +19,32 @@ package by.blooddy.code.css.definition {
 		
 		//--------------------------------------------------------------------------
 		//
+		//  Private class methods
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		 * @private
+		 */
+		private static function convertName(name:String):String {
+			var result:String = '';
+			const l:uint = name.length;
+			var c:String, c2:String;
+			var j:uint = 0;
+			for ( var i:uint = 0; i<l; i++ ) {
+				c = name.charAt( i );
+				c2 = c.toLowerCase();
+				if ( c2 != c ) {
+					result += name.substring( j, i ) + '-' + c2;
+					j = i + 1;
+				}
+			}
+			result += name.substr( j );
+			return result;
+		}
+		
+		//--------------------------------------------------------------------------
+		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
@@ -26,7 +52,7 @@ package by.blooddy.code.css.definition {
 		/**
 		 * Constructor
 		 */
-		public function CSSRule(selector:CSSSelector, declarations:Vector.<CSSDeclaration>) {
+		public function CSSRule(selector:CSSSelector, declarations:Object) {
 			super();
 			this.selector = selector;
 			this.declarations = declarations;
@@ -40,7 +66,7 @@ package by.blooddy.code.css.definition {
 
 		public var selector:CSSSelector;
 
-		public var declarations:Vector.<CSSDeclaration>;
+		public var declarations:Object;
 
 		//--------------------------------------------------------------------------
 		//
@@ -49,7 +75,11 @@ package by.blooddy.code.css.definition {
 		//--------------------------------------------------------------------------
 
 		public function toString():String {
-			return this.selector + '{' + this.declarations.join( ';' ) + '}';
+			var arr:Vector.<String> = new Vector.<String>();
+			for ( var n:String in this.declarations ) {
+				arr.push( convertName( n ) + ':' + this.declarations[ n ] );
+			}
+			return this.selector + '{' + arr.join( ';' ) + '}';
 		}
 
 	}

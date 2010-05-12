@@ -13,7 +13,7 @@ package by.blooddy.code.css.definition.values {
 	 * @langversion				3.0
 	 * @created					15.04.2010 2:29:37
 	 */
-	public class ComplexValue extends CSSValue {
+	public class ComplexValue extends CollectionValue {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -25,9 +25,8 @@ package by.blooddy.code.css.definition.values {
 		 * Constructor
 		 */
 		public function ComplexValue(name:String, values:Vector.<CSSValue>) {
-			super();
+			super( values );
 			this.name = name;
-			this.values = values;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -38,19 +37,18 @@ package by.blooddy.code.css.definition.values {
 		
 		public var name:String;
 
-		public var values:Vector.<CSSValue>;
-
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
 		//
 		//--------------------------------------------------------------------------
 		
-		public function valueOf():Vector.<CSSValue> {
-			return this.values;
-		}
-		
-		public function toString():String {
+		public override function toString():String {
+			for each ( var v:CSSValue in this.values ) {
+				if ( v is CollectionValue ) {
+					throw new ArgumentError();
+				}
+			}
 			return this.name + '(' + this.values.join( ',' ) + ')';
 		}
 		

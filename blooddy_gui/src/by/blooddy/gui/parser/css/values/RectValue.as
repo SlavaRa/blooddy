@@ -4,50 +4,62 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.code.css.definition {
+package by.blooddy.gui.parser.css.values {
+	
+	import by.blooddy.code.css.definition.values.CSSValue;
+	
+	import flash.geom.Rectangle;
 	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					18.04.2010 19:13:16
+	 * @created					09.05.2010 16:52:21
 	 */
-	public class CSSDefinition {
+	public class RectValue extends CSSValue {
 		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-
+		
 		/**
 		 * Constructor
 		 */
-		public function CSSDefinition() {
+		public function RectValue(value:Rectangle) {
 			super();
+			this.value = value;
 		}
-
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
 		
-		public const defaultMedia:CSSMedia = new CSSMedia();
-
-		public var medias:Vector.<CSSMedia>;
-
+		public var value:Rectangle;
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
 		//
 		//--------------------------------------------------------------------------
-
-		public function toString():String {
-			return this.defaultMedia + ( this.medias ? this.medias.join( '' ) : '' );
+		
+		public function valueOf():Rectangle {
+			return this.value;
 		}
-
+		
+		public function toString():String {
+			return 'rect(' +
+				this.value.x +
+				this.value.y +
+				this.value.width +
+				this.value.height +
+			')';
+		}
+		
 	}
 	
 }

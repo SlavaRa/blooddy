@@ -41,6 +41,8 @@ package by.blooddy.code.css {
 		public static const RIGHT_PAREN:uint =		i++;
 		public static const LEFT_ANGLE:uint =		i++;
 		public static const RIGHT_ANGLE:uint =		i++;
+		public static const LEFT_BRACKET:uint =		i++;
+		public static const RIGHT_BRACKET:uint =	i++;
 		public static const HASH:uint =				i++;
 		public static const PERCENT:uint =			i++;
 		public static const DOT:uint =				i++;

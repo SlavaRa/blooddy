@@ -27,7 +27,7 @@ package by.blooddy.code.css.definition.values {
 		public function CSSValue() {
 			super();
 		}
-		
+
 	}
 	
 }
