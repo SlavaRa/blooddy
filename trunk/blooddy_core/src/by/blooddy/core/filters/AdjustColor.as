@@ -18,8 +18,17 @@ package by.blooddy.core.filters {
 	 */
 	public class AdjustColor {
 	
-		// constant for contrast calculations:
-		private static const DELTA_INDEX:Array = [
+		//--------------------------------------------------------------------------
+		//
+		//  Class variables
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		 * @private
+		 * constant for contrast calculations
+		 */
+		private static const DELTA_INDEX:Array = new Array(
 			0,    0.01, 0.02, 0.04, 0.05, 0.06, 0.07, 0.08, 0.1,  0.11,
 			0.12, 0.14, 0.15, 0.16, 0.17, 0.18, 0.20, 0.21, 0.22, 0.24,
 			0.25, 0.27, 0.28, 0.30, 0.32, 0.34, 0.36, 0.38, 0.40, 0.42,
@@ -31,39 +40,41 @@ package by.blooddy.core.filters {
 			4.0,  4.3,  4.7,  4.9,  5.0,  5.5,  6.0,  6.5,  6.8,  7.0,
 			7.3,  7.5,  7.8,  8.0,  8.4,  8.7,  9.0,  9.4,  9.6,  9.8, 
 			10.0
-		];
+		);
 
-		// identity matrix constant:
-		private static const IDENTITY_MATRIX:Array = [
+		/**
+		 * @private
+		 * identity matrix constant
+		 */
+		private static const IDENTITY_MATRIX:Array = new Array(
 			1,	0,	0,	0,	0,
 			0,	1,	0,	0,	0,
 			0,	0,	1,	0,	0,
 			0,	0,	0,	1,	0,
 			0,	0,	0,	0,	1
-		];
+		);
 
-		// multiplies one matrix against another:
-		private static function multiplyMatrix(m1:Array, m2:Array):Array {
-			var tmp:Array;
-			var i:uint, j:uint, k:uint, value:Number;
-			var result:Array = new Array();
-			for (i=0;i<5;i++) {
-				tmp = m1.slice(i*5, (i+1)*5);
-				for (j=0; j<5; j++) {
-					value = 0;
-					for (k=0; k<5; k++) {
-						value += m2[j+k*5] * tmp[k];
-					}
-					result[j+i*5] = value;
-				}
-			}
-			return result;
-		}
-
+		/**
+		 * @private
+		 */
 		private static const LUM_R:Number = 0.212671;
+
+		/**
+		 * @private
+		 */
 		private static const LUM_G:Number = 0.715160;
+
+		/**
+		 * @private
+		 */
 		private static const LUM_B:Number = 0.072169;
 	
+		//--------------------------------------------------------------------------
+		//
+		//  Methods
+		//
+		//--------------------------------------------------------------------------
+
 		public static function getFilter(hue:Number=0, saturation:Number=0, brightness:Number=0, contrast:Number=0, color32:uint=0x00000000):ColorMatrixFilter {
 			var m:Array = IDENTITY_MATRIX.slice();
 			var value:Number, x:Number;
@@ -73,16 +84,16 @@ package by.blooddy.core.filters {
 				while ( hue < -Math.PI )	hue += Math.PI * 2;
 
 				if ( hue ) {
-					var cos:Number = Math.cos( hue );
-					var sin:Number = Math.sin( hue );
+					const cos:Number = Math.cos( hue );
+					const sin:Number = Math.sin( hue );
 					m = multiplyMatrix(
 						m,
 						new Array(
-							LUM_R+cos*(1-LUM_R)+sin*(-LUM_R),	LUM_G+cos*( -LUM_G)+sin*(-LUM_G),	LUM_B+cos*( -LUM_B)+sin*(1-LUM_B),	0,		0,
-							LUM_R+cos*( -LUM_R)+sin*(0.143),	LUM_G+cos*(1-LUM_G)+sin*(0.140),	LUM_B+cos*( -LUM_B)+sin*( -0.283),	0,		0,
-							LUM_R+cos*( -LUM_R)+sin*(LUM_R-1),	LUM_G+cos*( -LUM_G)+sin*(LUM_G),	LUM_B+cos*(1-LUM_B)+sin*(  LUM_B),	0,		0,
-							0,									0,									0,									1,		0,
-							0,									0,									0,									0,		1
+							LUM_R + cos * ( 1 - LUM_R ) + sin * ( - LUM_R ),	LUM_G + cos * (   - LUM_G ) + sin * ( -LUM_G ),	LUM_B + cos * (   - LUM_B ) + sin * ( 1 - LUM_B ),	0,		0,
+							LUM_R + cos * (   - LUM_R ) + sin * ( 0.143 ),		LUM_G + cos * ( 1 - LUM_G ) + sin * ( 0.140 ),	LUM_B + cos * (   - LUM_B ) + sin * ( - 0.283 ),	0,		0,
+							LUM_R + cos * (   - LUM_R ) + sin * ( LUM_R - 1 ),	LUM_G + cos * (   - LUM_G ) + sin * ( LUM_G ),	LUM_B + cos * ( 1 - LUM_B ) + sin * (  LUM_B ),		0,		0,
+							0,													0,												0,													1,		0,
+							0,													0,												0,													0,		1
 						)
 					);
 				}
@@ -95,9 +106,9 @@ package by.blooddy.core.filters {
 
 				x = 1 + ( saturation > 0 ? 3 : 1 ) * saturation;
 
-				var lumR:Number = 0.3086 * ( 1 - x );
-				var lumG:Number = 0.6094 * ( 1 - x );
-				var lumB:Number = 0.0820 * ( 1 - x );
+				const lumR:Number = 0.3086 * ( 1 - x );
+				const lumG:Number = 0.6094 * ( 1 - x );
+				const lumB:Number = 0.0820 * ( 1 - x );
 
 				m = multiplyMatrix(
 					m,
@@ -144,23 +155,23 @@ package by.blooddy.core.filters {
 				m = multiplyMatrix(
 					m,
 					new Array(
-						x/127,	0,		0,		0,		(127-x)/2,
-						0,		x/127,	0,		0,		(127-x)/2,
-						0,		0,		x/127,	0,		(127-x)/2,
-						0,		0,		0,		1,		0,
-						0,		0,		0,		0,		1
+						x / 127,	0,			0,			0,		( 127 - x ) / 2,
+						0,			x / 127,	0,			0,		( 127 - x ) / 2,
+						0,			0,			x / 127,	0,		( 127 - x ) / 2,
+						0,			0,			0,			1,		0,
+						0,			0,			0,			0,		1
 					)
 				);
 			}
 
 			if ( color32 > 0x00FFFFFF ) {
 
-				var a:Number = ( ( color32 >> 24 ) & 0xFF ) / 0xFF;
-				var r:Number = ( ( color32 >> 16 ) & 0xFF ) / 0xFF;
-				var g:Number = ( ( color32 >> 8  ) & 0xFF ) / 0xFF;
-				var b:Number = ( ( color32       ) & 0xFF ) / 0xFF;
+				const a:Number = ( ( color32 >> 24 ) & 0xFF ) / 0xFF;
+				const r:Number = ( ( color32 >> 16 ) & 0xFF ) / 0xFF;
+				const g:Number = ( ( color32 >> 8  ) & 0xFF ) / 0xFF;
+				const b:Number = ( ( color32       ) & 0xFF ) / 0xFF;
 
-				var inv_a:Number = 1 - a;
+				const inv_a:Number = 1 - a;
 
   				m = multiplyMatrix(
 					new Array(
@@ -178,6 +189,33 @@ package by.blooddy.core.filters {
 
 		}
 
+		//--------------------------------------------------------------------------
+		//
+		//  Private class methods
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		 * @private
+		 * multiplies one matrix against another
+		 */
+		private static function multiplyMatrix(m1:Array, m2:Array):Array {
+			var tmp:Array;
+			var i:uint, j:uint, k:uint, value:Number;
+			var result:Array = new Array();
+			for ( i=0; i<5; i++ ) {
+				tmp = m1.slice( i * 5, ( i + 1 ) * 5 );
+				for ( j=0; j<5; j++ ) {
+					value = 0;
+					for ( k=0; k<5; k++ ) {
+						value += m2[ j + k * 5 ] * tmp[ k ];
+					}
+					result[ j + i * 5 ] = value;
+				}
+			}
+			return result;
+		}
+		
 	}
 
 }

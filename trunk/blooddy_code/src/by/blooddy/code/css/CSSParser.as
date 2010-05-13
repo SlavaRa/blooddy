@@ -16,6 +16,7 @@ package by.blooddy.code.css {
 	import by.blooddy.code.css.definition.selectors.IDSelector;
 	import by.blooddy.code.css.definition.selectors.PseudoSelector;
 	import by.blooddy.code.css.definition.selectors.TagSelector;
+	import by.blooddy.code.css.definition.values.ArrayValue;
 	import by.blooddy.code.css.definition.values.BooleanValue;
 	import by.blooddy.code.css.definition.values.CSSValue;
 	import by.blooddy.code.css.definition.values.CollectionValue;
@@ -32,12 +33,9 @@ package by.blooddy.code.css {
 	import by.blooddy.core.net.loading.IProcessable;
 	import by.blooddy.core.utils.StringUtils;
 	
-	import flash.events.ErrorEvent;
+	import flash.errors.IOError;
 	import flash.events.Event;
 	import flash.system.Capabilities;
-	import flash.utils.Dictionary;
-	import flash.errors.IOError;
-	import by.blooddy.code.css.definition.values.ArrayValue;
 	
 	//--------------------------------------
 	//  Events
@@ -122,7 +120,7 @@ package by.blooddy.code.css {
 		/**
 		 * @private
 		 */
-		private const _list:Vector.<ImportAsset> = new Vector.<ImportAsset>();
+		private const _assets:Vector.<ImportAsset> = new Vector.<ImportAsset>();
 
 		//--------------------------------------------------------------------------
 		//
@@ -225,7 +223,7 @@ package by.blooddy.code.css {
 												this._manager.loadDefinition( asset.url )
 											);
 										}
-										this._list.push( asset );
+										this._assets.push( asset );
 									} else {
 										throw new IOError();
 									}
@@ -299,8 +297,8 @@ package by.blooddy.code.css {
 			var arr:Array;
 			var asset:ImportAsset;
 
-			while ( this._list.length ) {
-				asset = this._list.pop();
+			while ( this._assets.length ) {
+				asset = this._assets.pop();
 				arr = new Array();
 				for each ( media in this._manager.getDefinition( asset.url ) ) {
 					if ( !media.name && asset.names && asset.names.length > 0 ) {
@@ -323,6 +321,23 @@ package by.blooddy.code.css {
 			this._manager = null;
 
 			if ( this._content && this._content.length >= 0 ) {
+				var l:uint = this._content.length - 1;
+				var m:CSSMedia;
+				var m1:CSSMedia;
+				while ( l-- ) {
+					m = this._content[ l ];
+					m1 = this._content[ l + 1 ];
+					if ( m.name == m1.name ) {
+						this._content.splice(
+							l,
+							2,
+							new CSSMedia(
+								m.rules.concat( m1.rules ),
+								m.name
+							)
+						);
+					}
+				}
 				super.stop();
 			} else {
 				this._content = null;
