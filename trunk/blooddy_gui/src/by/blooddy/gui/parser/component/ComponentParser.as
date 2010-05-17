@@ -10,9 +10,6 @@ package by.blooddy.gui.parser.component {
 	import by.blooddy.code.css.CSSParser;
 	import by.blooddy.code.css.definition.CSSMedia;
 	import by.blooddy.code.css.definition.CSSRule;
-	import by.blooddy.code.css.definition.values.CSSValue;
-	import by.blooddy.code.css.definition.values.CollectionValue;
-	import by.blooddy.code.css.definition.values.ComplexValue;
 	import by.blooddy.code.errors.ParserError;
 	import by.blooddy.code.net.AbstractLoadableParser;
 	import by.blooddy.core.blooddy;
@@ -20,11 +17,13 @@ package by.blooddy.gui.parser.component {
 	import by.blooddy.core.managers.resource.IResourceManager;
 	import by.blooddy.core.managers.resource.ResourceManager;
 	import by.blooddy.core.net.MIME;
+	import by.blooddy.core.net.domain;
 	import by.blooddy.core.net.loading.IProcessable;
-	import by.blooddy.gui.parser.css.ComplexValueFactory;
+	import by.blooddy.gui.parser.css.CSSOptimizer;
 	
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
+	import flash.system.Capabilities;
 	import flash.utils.Dictionary;
 
 	//--------------------------------------
@@ -215,8 +214,8 @@ package by.blooddy.gui.parser.component {
 												asset.medias = this._cssManager.getDefinition( href );
 											} else {
 												loader = this._cssManager.loadDefinition( href );
-												loader.addEventListener( Event.COMPLETE,	this.handler_loader_complete );
-												loader.addEventListener( ErrorEvent.ERROR,	this.handler_loader_complete );
+												loader.addEventListener( Event.COMPLETE,	this.handler_parser_complete );
+												loader.addEventListener( ErrorEvent.ERROR,	this.handler_parser_complete );
 												this._hash[ loader ] = asset;
 												super.addLoader( loader );
 											}
@@ -277,33 +276,33 @@ package by.blooddy.gui.parser.component {
 
 			var asset:StyleAsset;
 			var media:CSSMedia;
-			var rule:CSSRule;
-			var n:String;
-			var i:uint, l:uint;
-			var values:Vector.<CSSValue>;
-			var value:CSSValue;
+
+			var medias:Vector.<CSSMedia> = new Vector.<CSSMedia>();
 			for each ( asset in this._list ) {
 				for each ( media in asset.medias ) {
-					for each ( rule in media.rules ) {
-						for ( n in rule.declarations ) {
-							value = rule.declarations[ n ];
-							if ( value is ComplexValue ) {
-								rule.declarations[ n ] = ComplexValueFactory.getValue( value as ComplexValue );
-							} else if ( value is CollectionValue ) {
-								values = ( value as CollectionValue ).values;
-								l = values.length;
-								for ( i=0; i<l; i++ ) {
-									value = values[ i ];
-									if ( value is ComplexValue ) {
-										values[ i ] = ComplexValueFactory.getValue( value as ComplexValue );
-									}
-								}
-							}
-						}
-					}
+					medias.push( media );
 				}
-				trace( asset.medias );
 			}
+
+			var mediaNames:Vector.<String> = new Vector.<String>();
+			mediaNames.push( 'screen' );
+			mediaNames.push( Capabilities.playerType == 'Desktop' ? 'air' : 'flash' );
+			mediaNames.push( domain == 'localhost' ? 'local' : 'remote' );
+			if ( Capabilities.os.indexOf( 'Windows' ) == 0 ) {
+				mediaNames.push( 'win' );
+			} else {
+				mediaNames.push( 'nix' );
+				if ( Capabilities.os.indexOf( 'Linux' ) == 0 ) {
+					mediaNames.push( 'linux' );
+				} else if ( Capabilities.os.indexOf( 'Mac' ) == 0 ) {
+					mediaNames.push( 'mac' );
+				}
+			}
+			if ( Capabilities.isDebugger ) {
+				mediaNames.push( 'debug' );
+			}
+
+			var rules:Vector.<CSSRule> = CSSOptimizer.optimize( medias, mediaNames );
 
 			super.stop();
 		}
@@ -317,24 +316,22 @@ package by.blooddy.gui.parser.component {
 		/**
 		 * @private
 		 */
-		private function handler_loader_complete(event:Event):void {
-			var loader:IProcessable = event.target as IProcessable;
-			loader.removeEventListener( Event.COMPLETE,		this.handler_loader_complete );
-			loader.removeEventListener( ErrorEvent.ERROR,	this.handler_loader_complete );
-			var asset:StyleAsset = this._hash[ loader ];
-			asset.medias = this._cssManager.getDefinition( asset.href );
-			delete this._hash[ loader ];
-		}
-
-		/**
-		 * @private
-		 */
 		private function handler_parser_complete(event:Event):void {
-			var parser:CSSParser = event.target as CSSParser;
-			parser.removeEventListener( Event.COMPLETE,		this.handler_loader_complete );
-			parser.removeEventListener( ErrorEvent.ERROR,	this.handler_loader_complete );
+			var parser:IProcessable = event.target as IProcessable;
+			parser.removeEventListener( Event.COMPLETE,		this.handler_parser_complete );
+			parser.removeEventListener( ErrorEvent.ERROR,	this.handler_parser_complete );
 			var asset:StyleAsset = this._hash[ parser ];
-			asset.medias = parser.content;
+			asset.medias = this._cssManager.getDefinition( asset.href );
+			if ( asset.mediaName ) {
+				var media:CSSMedia;
+				var l:uint = asset.medias.length;
+				for ( var i:uint = 0; i<l; i++ ) {
+					media = asset.medias[ i ];
+					if ( !media.name ) {
+						asset.medias[ i ] = new CSSMedia( media.rules, asset.mediaName );
+					}
+				}
+			}
 			delete this._hash[ parser ];
 		}
 

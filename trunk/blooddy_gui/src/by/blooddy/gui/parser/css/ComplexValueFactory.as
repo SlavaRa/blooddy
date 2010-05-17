@@ -13,7 +13,10 @@ package by.blooddy.gui.parser.css {
 	import by.blooddy.code.css.definition.values.ComplexValue;
 	import by.blooddy.code.css.definition.values.NumberValue;
 	import by.blooddy.code.css.definition.values.StringValue;
+	import by.blooddy.core.filters.AdjustColor;
+	import by.blooddy.gui.parser.css.values.BitmapFilterValue;
 	import by.blooddy.gui.parser.css.values.MatrixValue;
+	import by.blooddy.gui.parser.css.values.RectValue;
 	
 	import flash.filters.BevelFilter;
 	import flash.filters.BitmapFilter;
@@ -25,8 +28,6 @@ package by.blooddy.gui.parser.css {
 	import flash.filters.GradientGlowFilter;
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
-	import by.blooddy.gui.parser.css.values.BitmapFilterValue;
-	import by.blooddy.core.filters.AdjustColor;
 	
 	/**
 	 * @author					BlooDHounD
@@ -213,34 +214,37 @@ package by.blooddy.gui.parser.css {
 							}
 						}
 					}
-					return new MatrixValue( m );
+					return new RectValue( r );
 				case 'filter':
 					if ( vv[ 0 ] is StringValue ) {
 						var n:String = ( vv[ 0 ] as StringValue ).value;
 						var h:Vector.<ValueAsset> = _HASH[ n ];
-						var f:Object = getObject( n );
-						var s:ValueAsset;
-						var l1:uint = vv.length;
-						var l2:uint = h.length;
-						var i1:uint, i2:uint;
-						var k:uint = 0;
-						var v:CSSValue;
-						for ( i1 = 1; i1<l1 && k<l2; i1++ ) {
-							v = vv[ i1 ];
-							for ( i2=k; i2<l2; i2++ ) {
-								s = h[ i2 ];
-								if (
-									s.type === ( v as Object ).constructor ||
-									s.type.prototype.isPrototypeOf( ( v as Object ).constructor.prototype )
-								) {
-									f[ s.name ] = v;
-									k = i2 + 1;
-									break;
+						if ( h ) {
+							var f:Object = getObject( n );
+							var s:ValueAsset;
+							var l1:uint = vv.length;
+							var l2:uint = h.length;
+							var i1:uint, i2:uint;
+							var k:uint = 0;
+							var v:CSSValue;
+							for ( i1 = 1; i1<l1 && k<l2; i1++ ) {
+								v = vv[ i1 ];
+								for ( i2=k; i2<l2; i2++ ) {
+									s = h[ i2 ];
+									if (
+										v is s.type
+//										s.type === ( v as Object ).constructor ||
+//										s.type.prototype.isPrototypeOf( ( v as Object ).constructor.prototype )
+									) {
+										f[ s.name ] = v;
+										k = i2 + 1;
+										break;
+									}
 								}
 							}
+							if ( n == 'adjustColor' ) f = AdjustColor.getFilter.apply( null, f as Array );
+							if ( f ) return new BitmapFilterValue( f as BitmapFilter );
 						}
-						if ( n == 'adjustColor' ) f = AdjustColor.getFilter.apply( null, f as Array );
-						if ( f ) return new BitmapFilterValue( f as BitmapFilter );
 					}
 			}
 			return value;

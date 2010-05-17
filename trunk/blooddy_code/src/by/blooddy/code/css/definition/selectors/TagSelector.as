@@ -59,8 +59,8 @@ package by.blooddy.code.css.definition.selectors {
 		}
 
 		/*
-		 *   ____
-		 * AABBBBCC
+		 *   ___
+		 * AABBBCCC
 		 */
 		public override function getSpecificity():uint {
 			var s:uint;
@@ -70,11 +70,9 @@ package by.blooddy.code.css.definition.selectors {
 				_HASH[ this.value ] = s = 1 + TypeInfo.getInfo( ClassAlias.getClass( this.value ) ).getTypes().length;
 			}
 			if ( this.selector ) {
-				var result:uint = this.selector.getSpecificity();
-				var v:uint = ( ( result & 0x00FFFF00 ) >> 8 ) + s;
-				return ( result & 0xFF0000FF ) | ( v << 8 );
+				return this.selector.getSpecificity() + s;
 			}
-			return s << 8;
+			return s;
 		}
 
 		public override function toString():String {

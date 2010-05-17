@@ -36,7 +36,7 @@ package by.blooddy.code.css.definition.selectors {
 
 		/*
 		 * __
-		 * AABBBBCC
+		 * AABBBCCC
 		 */
 		public override function getSpecificity():uint {
 			if ( this.selector ) {

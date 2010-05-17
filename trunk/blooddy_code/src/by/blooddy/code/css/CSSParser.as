@@ -318,8 +318,9 @@ package by.blooddy.code.css {
 					this._content.splice.apply( this._content, arr );
 				}
 			}
-			this._manager = null;
 
+			this._manager = null;
+			
 			if ( this._content && this._content.length >= 0 ) {
 				var l:uint = this._content.length - 1;
 				var m:CSSMedia;
@@ -382,7 +383,7 @@ package by.blooddy.code.css {
 			var tok:uint;
 			do {
 				tok = this.readFixToken( CSSToken.IDENTIFIER );
-				result.push( this._scanner.tokenText ); // result media
+				result.push( this._scanner.tokenText.toLowerCase() ); // result media
 				tok = this.readToken();
 			} while ( tok == CSSToken.COMMA );
 			this._scanner.retreat();

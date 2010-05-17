@@ -18,6 +18,7 @@ package by.blooddy.gui.parser.css.values {
 	import flash.filters.GlowFilter;
 	import flash.filters.GradientBevelFilter;
 	import flash.filters.GradientGlowFilter;
+	import flash.filters.ColorMatrixFilter;
 	
 	/**
 	 * @author					BlooDHounD
@@ -145,6 +146,11 @@ package by.blooddy.gui.parser.css.values {
 						f7.quality,
 						f7.type,
 						f7.knockout
+					);
+				case filter is ColorMatrixFilter:
+					return new Array(
+						'colorMatrix',
+						new ArrayValue( ( filter as ColorMatrixFilter ).matrix )
 					);
 			}
 			throw new ArgumentError();
