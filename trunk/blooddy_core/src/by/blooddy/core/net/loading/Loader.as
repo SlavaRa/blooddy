@@ -420,6 +420,7 @@ package by.blooddy.core.net.loading {
 //==============================================================================
 
 import by.blooddy.core.errors.getErrorMessage;
+import by.blooddy.core.utils.time.setTimeout;
 
 import flash.display.DisplayObject;
 import flash.display.Loader;
@@ -463,8 +464,22 @@ internal final class LoaderAsset extends flash.display.Loader {
 	/**
 	 * @private
 	 */
-	private static var _gcCallTime:uint = getTimer();
-	
+	private static var _lastLoader:LoaderAsset;
+
+	//--------------------------------------------------------------------------
+	//
+	//  Private class methods
+	//
+	//--------------------------------------------------------------------------
+
+	/**
+	 * @private
+	 */
+	private static function do$unload():void {
+		_lastLoader.$unloadAndStop( true );
+		_lastLoader = null;
+	}
+
 	//--------------------------------------------------------------------------
 	//
 	//  Constructor
@@ -574,13 +589,12 @@ internal final class LoaderAsset extends flash.display.Loader {
 	 * @private
 	 */
 	internal function $unload():void {
-		var time:uint = getTimer();
-		if ( _gcCallTime < time + _GC_CALL_TIMEOUT ) {
-			_gcCallTime = time;
-			super.unloadAndStop( true );
+		if ( _lastLoader ) {
+			_lastLoader.$unloadAndStop( false );
 		} else {
-			super.unloadAndStop( false );
+			setTimeout( do$unload, _GC_CALL_TIMEOUT );
 		}
+		_lastLoader = this;
 	}
 
 	/**
@@ -588,6 +602,10 @@ internal final class LoaderAsset extends flash.display.Loader {
 	 */
 	public override function unloadAndStop(gc:Boolean=true):void {
 		this._target.unload();
+	}
+
+	private function $unloadAndStop(gc:Boolean=true):void {
+		super.unloadAndStop( gc );
 	}
 
 	/**
