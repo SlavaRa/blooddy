@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flexLibProperties includeAllClasses="false" version="3">
   <includeClasses>
-    <classEntry path="by.blooddy.gui.styles.StyleSheet"/>
     <classEntry path="by.blooddy.gui.controller.ComponentController"/>
     <classEntry path="by.blooddy.gui.display.Component"/>
     <classEntry path="by.blooddy.gui.display.ComponentContainer"/>
@@ -16,6 +15,8 @@
     <classEntry path="by.blooddy.gui.parser.css.values.BitmapFilterValue"/>
     <classEntry path="by.blooddy.gui.parser.css.ComplexValueFactory"/>
     <classEntry path="by.blooddy.gui.parser.css.CSSTypes"/>
+    <classEntry path="by.blooddy.gui.parser.css.CSSOptimizer"/>
+    <classEntry path="by.blooddy.gui.styles.StyleApplyer"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

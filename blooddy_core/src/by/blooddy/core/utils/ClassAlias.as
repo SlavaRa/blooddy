@@ -60,12 +60,10 @@ package by.blooddy.core.utils {
 					if ( c ) {
 						r = new WeakRef( c );
 						n = ClassUtils.cutClassName( n );
-						if ( c ) {
-							registerClassAlias( n, c );
-							_HASH[ n ] = r;
-							registerClassAlias( ns + n, c );
-							_HASH[ ns ] = r;
-						}
+						registerClassAlias( n, c );
+						_HASH[ n ] = r;
+						registerClassAlias( ns + n, c );
+						_HASH[ ns ] = r;
 					}
 				}
 			}

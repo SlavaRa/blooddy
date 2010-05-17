@@ -35,14 +35,14 @@ package by.blooddy.code.css.definition.selectors {
 		//--------------------------------------------------------------------------
 
 		/*
-		 *   ____
-		 * AABBBBCC
+		 *   ___
+		 * AABBBCCC
 		 */
 		public override function getSpecificity():uint {
 			if ( this.selector ) {
 				var result:uint = this.selector.getSpecificity();
-				var v:uint = ( ( result & 0x00FFFF00 ) >> 8 ) + 1;
-				return ( result & 0xFF0000FF ) | ( v << 8 );
+				var v:uint = ( ( result & 0x00FFF000 ) >> 12 ) + 1;
+				return ( result & 0xFF000FFF ) | ( v << 12 );
 			}
 			return 0x00000100;
 		}
