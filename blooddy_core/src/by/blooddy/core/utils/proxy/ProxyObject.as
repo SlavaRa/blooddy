@@ -93,8 +93,8 @@ package by.blooddy.core.utils.proxy {
 		//--------------------------------------------------------------------------
 
 		flash_proxy override function getProperty(name:*):* {
-			if ( !name || super.flash_proxy::hasProperty(name) ) {
-				return super.flash_proxy::getProperty(name);
+			if ( !name || super.hasProperty( name ) ) {
+				return super.getProperty( name );
 			} else if ( name in this._hash ) return this._hash[ name ]; // FIXED: развлетление хэшей!
 			else if ( name in this._target ) {
 				var value:* = this._target[name];
@@ -110,14 +110,14 @@ package by.blooddy.core.utils.proxy {
 					this._hash[ name ] = new ProxyObject( value, this, name );
 					return this._hash[ name ];
 				} else {
-					return super.flash_proxy::getProperty(name);
+					return super.getProperty( name );
 				}
 			}
 			return null;
 		}
 
 		flash_proxy override function hasProperty(name:*):Boolean {
-			return ( name in this._target || name in this._hash || super.flash_proxy::hasProperty(name) );
+			return ( name in this._target || name in this._hash || super.hasProperty(name) );
 		}
 
 		flash_proxy override function deleteProperty(name:*):Boolean {
@@ -142,9 +142,9 @@ package by.blooddy.core.utils.proxy {
 
 		flash_proxy override function setProperty(name:*, value:*):void {
 			if ( this._target[ name ] === value ) return;
-			if ( this.flash_proxy::hasProperty( name ) ) {
+			if ( this.hasProperty( name ) ) {
 				this._lock = true;
-				this.flash_proxy::deleteProperty( name );
+				this.deleteProperty( name );
 				this._lock = false;
 			}
 			if ( value != null ) {
@@ -184,9 +184,9 @@ package by.blooddy.core.utils.proxy {
 
 		protected function captureUpdate(...propertyPath):Boolean {
 			var name:* = propertyPath[0];
-			if ( this.flash_proxy::hasProperty( name ) ) {
+			if ( this.hasProperty( name ) ) {
 				if ( propertyPath.length > 1 ) {
-					var value:* = this.flash_proxy::getProperty( name );
+					var value:* = this.getProperty( name );
 					if ( value is ProxyObject ) {
 						propertyPath.shift();
 						( value as ProxyObject ).captureUpdate.apply( value, propertyPath );
@@ -194,7 +194,7 @@ package by.blooddy.core.utils.proxy {
 						throw new ArgumentError();
 					}
 				} else { // последний элемент
-					this.flash_proxy::setProperty( name, this._target[ name ] );
+					this.setProperty( name, this._target[ name ] );
 				}
 			}
 			return false;
