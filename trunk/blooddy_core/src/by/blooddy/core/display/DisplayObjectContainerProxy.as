@@ -8,9 +8,9 @@ package by.blooddy.core.display {
 	
 	import by.blooddy.core.utils.proxy.Proxy;
 	
-	import flash.utils.flash_proxy;
-	import flash.display.DisplayObjectContainer;
 	import flash.display.DisplayObject;
+	import flash.display.DisplayObjectContainer;
+	import flash.utils.flash_proxy;
 	
 	use namespace flash_proxy;
 	
@@ -23,6 +23,35 @@ package by.blooddy.core.display {
 	 */
 	public dynamic class DisplayObjectContainerProxy extends Proxy {
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Private class methods
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private static function getChildByName(container:DisplayObjectContainer, name:String):DisplayObject {
+			var result:DisplayObject;
+			var c:DisplayObjectContainer;
+			var i:uint;
+			var l:uint = container.numChildren;
+			var v:Vector.<uint> = new Vector.<uint>( l );
+			for ( i=0; i<l; i++ ) {
+				v[ i ] = i;
+			}
+			for ( i=0; i<l; i++ ) {
+				c = container.getChildAt( v.splice( Math.round( Math.random() * ( v.length - 1 ) ), 1 )[ 0 ] ) as DisplayObjectContainer;
+				if ( c && c.numChildren > 0 ) {
+					result = c.getChildByName( name );
+					if ( !result ) result = getChildByName( c, name );
+					if ( result ) return result;
+				}
+			}
+			return result;
+		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -50,6 +79,16 @@ package by.blooddy.core.display {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Methods
+		//
+		//--------------------------------------------------------------------------
+
+		public function valueOf():DisplayObjectContainer {
+			return this._container;
+		}
+
+		//--------------------------------------------------------------------------
+		//
 		//  flash_proxy methods
 		//
 		//--------------------------------------------------------------------------
@@ -74,23 +113,29 @@ package by.blooddy.core.display {
 			}
 		}
 
-		flash_proxy override function getDescendants(name:*):* {
-			if ( !super.isAttribute( name ) ) {
+		flash_proxy override function setProperty(name:*, value:*):void {
+			if ( super.isAttribute( name ) ) {
+				this._container[ name ] = value;
 			}
-			return super.getDescendants( name );
+			super.setProperty( name, value );
 		}
 
-		//--------------------------------------------------------------------------
-		//
-		//  Private methods
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		private function getChild(parent:DisplayObjectContainer):DisplayObject {
-			return null;
+		flash_proxy override function getDescendants(name:*):* {
+			if ( !super.isAttribute( name ) ) {
+				if ( name is QName ) name = name.toString();
+				else if ( ( !name is String ) ) throw new ArgumentError();
+				var result:DisplayObject;
+				if ( this._container.name == name ) {
+					result = this._container;
+				} else if ( this._container.numChildren > 0 ) {
+					result = this._container.getChildByName( name );
+					if ( !result ) {
+						result = getChildByName( this._container, name );
+					}
+				}
+				return result;
+			}
+			return super.getDescendants( name );
 		}
 
 	}

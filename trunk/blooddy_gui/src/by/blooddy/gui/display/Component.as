@@ -16,6 +16,7 @@ package by.blooddy.gui.display {
 	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
 	import flash.utils.getQualifiedClassName;
+	import by.blooddy.core.display.DisplayObjectContainerProxy;
 
 	//--------------------------------------
 	//  Aliases
@@ -85,6 +86,10 @@ package by.blooddy.gui.display {
 		//
 		//--------------------------------------------------------------------------
 
+		//----------------------------------
+		//  constructed
+		//----------------------------------
+		
 		/**
 		 * @private
 		 */
@@ -102,6 +107,20 @@ package by.blooddy.gui.display {
 			}
 		}
 
+		//----------------------------------
+		//  proxy
+		//----------------------------------
+		
+		/**
+		 * @private
+		 */
+		private var _proxy:DisplayObjectContainerProxy;
+		
+		public function get proxy():DisplayObjectContainerProxy {
+			if ( !this._proxy ) this._proxy = new DisplayObjectContainerProxy( this );
+			return this._proxy;
+		}
+		
 		//----------------------------------
 		//  componentInfo
 		//----------------------------------
