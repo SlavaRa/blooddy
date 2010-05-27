@@ -60,11 +60,12 @@ package by.blooddy.core.net {
 				return super.flash_proxy::getProperty( name );
 			} else {
 				var n:String = name.toString();
-				var result:* = this._hash[ name ];
+				var result:* = this._hash[ n ];
 				if ( result == null ) {
 					var app:AbstractClient = this;
-					this._hash[ name ] = result = function(...rest):* {
-						return app.dispatchCommand( name, rest );
+					this._hash[ n ] = result = function(...rest):* {
+						rest.unshift( n );
+						return app.flash_proxy::callProperty.apply( null, rest );
 					};
 				}
 				return result;
@@ -79,21 +80,8 @@ package by.blooddy.core.net {
 				rest.unshift( name );
 				return super.flash_proxy::callProperty.apply( this, rest );
 			} else {
-				return this.dispatchCommand( name, rest );
+				return super.dispatchEvent( new CommandEvent( CommandEvent.COMMAND, false, false, new Command( name.toString(), rest ) ) );
 			}
-		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Private methods
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		private function dispatchCommand(name:*, args:Array=null):Boolean {
-			return super.dispatchEvent( new CommandEvent( CommandEvent.COMMAND, false, false, new Command( name.toString(), args ) ) );
 		}
 
 	}

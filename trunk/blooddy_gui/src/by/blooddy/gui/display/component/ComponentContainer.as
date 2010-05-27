@@ -4,7 +4,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.gui.display {
+package by.blooddy.gui.display.component {
 	
 	import by.blooddy.core.controllers.IBaseController;
 	import by.blooddy.core.display.resource.MainResourceSprite;

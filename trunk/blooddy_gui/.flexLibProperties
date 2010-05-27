@@ -2,11 +2,11 @@
 <flexLibProperties includeAllClasses="false" version="3">
   <includeClasses>
     <classEntry path="by.blooddy.gui.controller.ComponentController"/>
-    <classEntry path="by.blooddy.gui.display.Component"/>
-    <classEntry path="by.blooddy.gui.display.ComponentContainer"/>
+    <classEntry path="by.blooddy.gui.display.component.Component"/>
+    <classEntry path="by.blooddy.gui.display.component.ComponentContainer"/>
     <classEntry path="by.blooddy.gui.events.ComponentEvent"/>
-    <classEntry path="by.blooddy.gui.display.NativeComponentController"/>
-    <classEntry path="by.blooddy.gui.display.ComponentInfo"/>
+    <classEntry path="by.blooddy.gui.display.component.NativeComponentController"/>
+    <classEntry path="by.blooddy.gui.display.component.ComponentInfo"/>
     <classEntry path="by.blooddy.gui.parser.component.ComponentParser"/>
     <classEntry path="by.blooddy.gui.parser.component.ComponentDefinition"/>
     <classEntry path="by.blooddy.gui.net.GUILoaderPriority"/>
@@ -14,9 +14,13 @@
     <classEntry path="by.blooddy.gui.parser.css.values.RectValue"/>
     <classEntry path="by.blooddy.gui.parser.css.values.BitmapFilterValue"/>
     <classEntry path="by.blooddy.gui.parser.css.ComplexValueFactory"/>
-    <classEntry path="by.blooddy.gui.parser.css.CSSTypes"/>
     <classEntry path="by.blooddy.gui.parser.css.CSSOptimizer"/>
-    <classEntry path="by.blooddy.gui.styles.StyleApplyer"/>
+    <classEntry path="by.blooddy.gui.style.StyleApplyer"/>
+    <classEntry path="by.blooddy.gui.style.IStyleable"/>
+    <classEntry path="by.blooddy.gui.events.StyleEvent"/>
+    <classEntry path="by.blooddy.gui.display.state.IStatable"/>
+    <classEntry path="by.blooddy.gui.events.StateEvent"/>
+    <classEntry path="by.blooddy.gui.style.meta.StyleInfo"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

@@ -4,7 +4,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.gui.display {
+package by.blooddy.gui.display.component {
 
 	import by.blooddy.gui.controller.ComponentController;
 	

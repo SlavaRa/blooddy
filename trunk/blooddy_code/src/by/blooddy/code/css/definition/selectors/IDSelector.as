@@ -13,7 +13,7 @@ package by.blooddy.code.css.definition.selectors {
 	 * @langversion				3.0
 	 * @created					14.03.2010 17:18:03
 	 */
-	public class IDSelector extends AttributeSelector {
+	public class IDSelector extends TextAttributeSelector {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -49,7 +49,7 @@ package by.blooddy.code.css.definition.selectors {
 
 		public override function toString():String {
 			if ( this.selector is TagSelector ) {
-				return this.selector.value + '#' + this.value + ( this.selector.selector || '' );
+				return ( this.selector as TagSelector ).value + '#' + this.value + ( this.selector.selector || '' );
 			} else {
 				return '#' + this.value + ( this.selector || '' );
 			}

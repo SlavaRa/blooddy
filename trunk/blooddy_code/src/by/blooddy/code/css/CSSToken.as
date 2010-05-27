@@ -48,6 +48,7 @@ package by.blooddy.code.css {
 		public static const DOT:uint =				i++;
 		public static const COMMA:uint =			i++;
 		public static const DASH:uint =				i++;
+		public static const BAR:uint =				i++;
 		public static const AT:uint =				i++;
 		public static const SEMI_COLON:uint =		i++;
 		public static const NUMBER_LITERAL:uint =	i++;

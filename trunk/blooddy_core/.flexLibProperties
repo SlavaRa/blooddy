@@ -216,6 +216,7 @@
     <classEntry path="by.blooddy.core.net.loading.IProcessable"/>
     <classEntry path="by.blooddy.core.events.net.loading.LoaderListenerEvent"/>
     <classEntry path="by.blooddy.core.display.DisplayObjectContainerProxy"/>
+    <classEntry path="by.blooddy.core.net.connection.LocalConnection"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

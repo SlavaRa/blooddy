@@ -4,9 +4,10 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.gui.display {
+package by.blooddy.gui.display.component {
 	
 	import by.blooddy.core.blooddy;
+	import by.blooddy.core.display.DisplayObjectContainerProxy;
 	import by.blooddy.core.display.resource.LoadableResourceSprite;
 	import by.blooddy.core.events.display.resource.ResourceEvent;
 	import by.blooddy.core.utils.ClassAlias;
@@ -16,7 +17,6 @@ package by.blooddy.gui.display {
 	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
 	import flash.utils.getQualifiedClassName;
-	import by.blooddy.core.display.DisplayObjectContainerProxy;
 
 	//--------------------------------------
 	//  Aliases

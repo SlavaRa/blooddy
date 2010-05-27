@@ -13,7 +13,7 @@ package by.blooddy.code.css.definition.selectors {
 	 * @langversion				3.0
 	 * @created					14.03.2010 17:30:21
 	 */
-	public class ClassSelector extends AttributeSelector {
+	public class ClassSelector extends TextAttributeSelector {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -26,6 +26,7 @@ package by.blooddy.code.css.definition.selectors {
 		 */
 		public function ClassSelector(styleClass:String, selector:AttributeSelector=null) {
 			super( styleClass, selector );
+			this.selector = selector;
 		}
 
 		//--------------------------------------------------------------------------
@@ -34,8 +35,7 @@ package by.blooddy.code.css.definition.selectors {
 		//
 		//--------------------------------------------------------------------------
 
-		/*
-		 *   ___
+		/*   ___
 		 * AABBBCCC
 		 */
 		public override function getSpecificity():uint {
