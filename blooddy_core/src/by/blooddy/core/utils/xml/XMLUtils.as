@@ -17,8 +17,8 @@ package by.blooddy.core.utils.xml {
 	public final class XMLUtils {
 
 		public static function parseToString(xml:XML):String {
-			if ( !xml )	return '';
-			return xml.toString();
+			if ( !xml )	return null;
+			return xml.toString() || null;
 		}
 
 		public static function parseToDate(xml:XML):Date {
@@ -44,7 +44,7 @@ package by.blooddy.core.utils.xml {
 			return parseToDate( list.length() > 0 ? list[0] : null );
 		}
 
-		public static function parseListToInt(list:XMLList):uint {
+		public static function parseListToInt(list:XMLList):int {
 			return parseToInt( list.length() > 0 ? list[0] : null );
 		}
 
