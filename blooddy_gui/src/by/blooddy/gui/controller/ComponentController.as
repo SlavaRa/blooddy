@@ -6,7 +6,7 @@
 
 package by.blooddy.gui.controller {
 	
-	import by.blooddy.gui.display.NativeComponentController;
+	import by.blooddy.gui.display.component.NativeComponentController;
 	
 	/**
 	 * @author					BlooDHounD

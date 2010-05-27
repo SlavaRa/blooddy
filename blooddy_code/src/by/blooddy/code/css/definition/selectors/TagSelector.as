@@ -6,9 +6,6 @@
 
 package by.blooddy.code.css.definition.selectors {
 
-	import by.blooddy.core.utils.ClassAlias;
-	import by.blooddy.core.meta.TypeInfo;
-
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -20,27 +17,25 @@ package by.blooddy.code.css.definition.selectors {
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Class variables
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		private static const _HASH:Object = new Object();
-
-		//--------------------------------------------------------------------------
-		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * Constructor
 		 */
-		public function TagSelector(type:String, selector:AttributeSelector=null) {
-			super( type, selector );
+		public function TagSelector(tag:QName, selector:AttributeSelector=null) {
+			super( selector );
+			this.value = tag;
 		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Properties
+		//
+		//--------------------------------------------------------------------------
+
+		public var value:QName;
 
 		//--------------------------------------------------------------------------
 		//
@@ -48,31 +43,14 @@ package by.blooddy.code.css.definition.selectors {
 		//
 		//--------------------------------------------------------------------------
 
-		public override function contains(target:AttributeSelector):Boolean {
-			return	target is TagSelector && (
-						this.value == target.value ||
-						TypeInfo.getInfo( ClassAlias.getClass( this.value ) ).hasType( ClassAlias.getClass( target.value ) )
-					) && (
-						!target.selector ||
-						( this.selector && this.selector.contains( target.selector ) )
-					);
-		}
-
-		/*
-		 *   ___
+		/*      ___
 		 * AABBBCCC
 		 */
 		public override function getSpecificity():uint {
-			var s:uint;
-			if ( this.value in _HASH ) {
-				s = _HASH[ this.value ];
-			} else {
-				_HASH[ this.value ] = s = 1 + TypeInfo.getInfo( ClassAlias.getClass( this.value ) ).getTypes().length;
-			}
 			if ( this.selector ) {
-				return this.selector.getSpecificity() + s;
+				return this.selector.getSpecificity() + 1;
 			}
-			return s;
+			return 1;
 		}
 
 		public override function toString():String {

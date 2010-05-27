@@ -1,12 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  © 2010 BlooDHounD
+//  (C) 2010 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.gui.events {
 	
-	import by.blooddy.gui.display.component.Component;
+	import by.blooddy.core.utils.ClassUtils;
 	
 	import flash.events.Event;
 	
@@ -15,19 +15,17 @@ package by.blooddy.gui.events {
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					08.04.2010 15:35:54
+	 * @created					22.05.2010 1:28:04
 	 */
-	public class ComponentEvent extends Event {
+	public class StyleEvent extends Event {
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Class methods
+		//  Constants
 		//
 		//--------------------------------------------------------------------------
 
-		public static const COMPONENT_CONSTRUCT:String = 'componentConstuct';
-
-		public static const COMPONENT_DESTRUCT:String = 'componentDestruct';
+		public static const STYLE_CHANGE:String = 'styleChange';
 
 		//--------------------------------------------------------------------------
 		//
@@ -36,20 +34,11 @@ package by.blooddy.gui.events {
 		//--------------------------------------------------------------------------
 
 		/**
-		 * Constructor.
+		 * Constructor
 		 */
-		public function ComponentEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false, component:Component=null) {
+		public function StyleEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super( type, bubbles, cancelable );
-			this.component = component;
 		}
-		
-		//--------------------------------------------------------------------------
-		//
-		//  Variables
-		//
-		//--------------------------------------------------------------------------
-
-		public var component:Component;
 
 		//--------------------------------------------------------------------------
 		//
@@ -58,9 +47,13 @@ package by.blooddy.gui.events {
 		//--------------------------------------------------------------------------
 
 		public override function clone():Event {
-			return new ComponentEvent( super.type, super.bubbles, super.cancelable, this.component );
+			return new StyleEvent( super.type, super.bubbles, super.cancelable );
+		}
+
+		public override function toString():String {
+			return super.formatToString( ClassUtils.getClassName( this ), 'type', 'bubbles', 'cancelable' );
 		}
 
 	}
-	
+
 }

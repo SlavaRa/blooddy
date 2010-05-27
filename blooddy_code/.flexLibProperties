@@ -36,6 +36,7 @@
     <classEntry path="by.blooddy.code.css.definition.selectors.ISelector"/>
     <classEntry path="by.blooddy.code.css.definition.values.CollectionValue"/>
     <classEntry path="by.blooddy.code.css.definition.values.ArrayValue"/>
+    <classEntry path="by.blooddy.code.css.definition.selectors.TextAttributeSelector"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

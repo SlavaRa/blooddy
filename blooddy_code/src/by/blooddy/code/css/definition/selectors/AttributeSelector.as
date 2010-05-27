@@ -14,19 +14,18 @@ package by.blooddy.code.css.definition.selectors {
 	 * @created					14.03.2010 17:17:05
 	 */
 	public class AttributeSelector implements ISelector {
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * Constructor
 		 */
-		public function AttributeSelector(value:String, selector:AttributeSelector=null) {
+		public function AttributeSelector(selector:AttributeSelector=null) {
 			super();
-			this.value = value;
 			this.selector = selector;
 		}
 
@@ -38,8 +37,6 @@ package by.blooddy.code.css.definition.selectors {
 
 		public var selector:AttributeSelector
 		
-		public var value:String;
-
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
@@ -47,8 +44,7 @@ package by.blooddy.code.css.definition.selectors {
 		//--------------------------------------------------------------------------
 
 		public function contains(target:AttributeSelector):Boolean {
-			return	( this as Object ).constructor === ( target as Object ).constructor &&
-					this.value == target.value && (
+			return	( this as Object ).constructor === ( target as Object ).constructor && (
 						!target.selector ||
 						( this.selector && this.selector.contains( target.selector ) )
 					);

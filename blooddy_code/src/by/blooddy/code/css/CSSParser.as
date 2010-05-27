@@ -122,6 +122,16 @@ package by.blooddy.code.css {
 		 */
 		private const _assets:Vector.<ImportAsset> = new Vector.<ImportAsset>();
 
+		/**
+		 * @private
+		 */
+		private const _nss:Object = new Object();
+		
+		/**
+		 * @private
+		 */
+		private var _ns:String = '';
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
@@ -178,6 +188,7 @@ package by.blooddy.code.css {
 			var s:CSSSelector;
 			var v:CSSValue;
 			var n:String;
+			var ns:String;
 			var i:int;
 
 			var loader:IProcessable;
@@ -191,7 +202,37 @@ package by.blooddy.code.css {
 
 						case CSSToken.AT:
 							tok = this.readFixToken( CSSToken.IDENTIFIER, false );
-							switch ( this._scanner.tokenText ) {
+							switch ( this._scanner.tokenText.toLowerCase() ) {
+								case 'namespace':
+									tok = this.readToken();
+									n = null;
+									if ( tok == CSSToken.IDENTIFIER ) {
+										if ( this._scanner.tokenText == 'url' ) {
+											if ( this._scanner.readToken() == CSSToken.LEFT_PAREN ) {
+												this._scanner.retreat();
+											} else {
+												this._scanner.retreat();
+												n = this._scanner.tokenText;
+											}
+										} else {
+											n = this._scanner.tokenText;
+										}
+										tok = this.readToken();
+									}
+									if ( tok == CSSToken.STRING_LITERAL ) {
+										ns = this._scanner.tokenText;
+									} else if ( tok == CSSToken.IDENTIFIER && this._scanner.tokenText == 'url' ) {
+										ns = this.readURLEntity();
+									} else {
+										throw new ParserError( 'ожидались url ли индификатор' );
+									}
+									this.readFixToken( CSSToken.SEMI_COLON );
+									if ( n ) {
+										this._nss[ n ] = ns;
+									} else {
+										this._ns = ns;
+									}
+									break;
 								case 'import':
 									if ( rules ) {
 										this._content.push( new CSSMedia( rules ) );
@@ -255,6 +296,7 @@ package by.blooddy.code.css {
 						case CSSToken.DOT:
 						case CSSToken.IDENTIFIER:
 						case CSSToken.COLON:
+						case CSSToken.BAR:
 							this._scanner.retreat();
 							selectors = this.readSelectors();
 							declarations = this.readDeclarations();
@@ -415,6 +457,7 @@ package by.blooddy.code.css {
 						case CSSToken.DOT:
 						case CSSToken.IDENTIFIER:
 						case CSSToken.COLON:
+						case CSSToken.BAR:
 							this._scanner.retreat();
 							selectors = this.readSelectors();
 							declarations = this.readDeclarations();
@@ -488,7 +531,21 @@ package by.blooddy.code.css {
 		private function readAttributeSelector():AttributeSelector {
 			switch ( this.readToken() ) {
 				case CSSToken.IDENTIFIER:
-					return this.readSelectorAfterTag( new TagSelector( this._scanner.tokenText ) );
+					var n:String = this._scanner.tokenText;
+					if ( this._scanner.readToken() == CSSToken.BAR ) {
+						if ( !( n in this._nss ) ) {
+							throw new ParserError( 'неведомый namespace' );
+						}
+						n = this._nss[ n ];
+						this.readFixToken( CSSToken.IDENTIFIER, false, false );
+					} else {
+						this._scanner.retreat();
+						n = this._ns;
+					}
+					return this.readSelectorAfterTag( new TagSelector( ( new QName( n, this._scanner.tokenText ) ) ) );
+				case CSSToken.BAR:
+					this.readFixToken( CSSToken.IDENTIFIER, false, false );
+					return this.readSelectorAfterTag( new TagSelector( new QName( this._scanner.tokenText ) ) );
 				case CSSToken.HASH:
 					this.readFixToken( CSSToken.IDENTIFIER, false, false );
 					return new IDSelector( this._scanner.tokenText, this.readSelectorAfterID() );
@@ -692,7 +749,7 @@ package by.blooddy.code.css {
 						case 'true':	return new BooleanValue( true );
 						case 'false':	return new BooleanValue( false );
 						default:
-							if ( this.readToken( true, false ) == CSSToken.LEFT_PAREN ) {
+							if ( this._scanner.readToken() == CSSToken.LEFT_PAREN ) {
 								this._scanner.retreat();
 								switch ( t ) {
 									case 'url':		return new URLValue( this.readURLEntity() );
@@ -727,7 +784,7 @@ package by.blooddy.code.css {
 		 */
 		private function readComplexEntity():Vector.<CSSValue> {
 			var result:Vector.<CSSValue> = new Vector.<CSSValue>();
-			this.readFixToken( CSSToken.LEFT_PAREN, true, false );
+			this.readFixToken( CSSToken.LEFT_PAREN, false, false );
 			do {
 				
 				switch ( this.readToken( true, false ) ) {
@@ -815,7 +872,7 @@ package by.blooddy.code.css {
 		 */
 		private function readURLEntity():String {
 			var result:String;
-			this.readFixToken( CSSToken.LEFT_PAREN, true, false );
+			this.readFixToken( CSSToken.LEFT_PAREN, false, false );
 			var tok:uint = this.readToken( true, false );
 			if ( tok == CSSToken.STRING_LITERAL ) {
 				result = this._scanner.tokenText;
@@ -854,7 +911,7 @@ package by.blooddy.code.css {
 		 * @private
 		 */
 		private function readColorArr(...values):Array {
-			this.readFixToken( CSSToken.LEFT_PAREN, true, false );
+			this.readFixToken( CSSToken.LEFT_PAREN, false, false );
 			const l:uint = values.length;
 			var result:Array = new Array();
 			var v:Number;

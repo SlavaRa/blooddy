@@ -69,6 +69,7 @@ package by.blooddy.code.css {
 				case Char.HASH:			return this.makeToken( CSSToken.HASH, '#' );
 				case Char.PERCENT:		return this.makeToken( CSSToken.PERCENT, '%' );
 				case Char.COMMA:		return this.makeToken( CSSToken.COMMA, ',' );
+				case Char.BAR:			return this.makeToken( CSSToken.BAR, '|' );
 				case Char.AT:			return this.makeToken( CSSToken.AT, '@' );
 				case Char.SEMI_COLON:	return this.makeToken( CSSToken.SEMI_COLON, ';' );
 

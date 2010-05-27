@@ -4,18 +4,16 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.gui.parser.component {
-
-	import by.blooddy.gui.style.StyleApplyer;
+package by.blooddy.code.css.definition.selectors {
 	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					26.04.2010 22:44:55
+	 * @created					22.05.2010 0:48:12
 	 */
-	public class ComponentDefinition {
+	public class TextAttributeSelector extends AttributeSelector {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -26,8 +24,9 @@ package by.blooddy.gui.parser.component {
 		/**
 		 * Constructor
 		 */
-		public function ComponentDefinition() {
-			super();
+		public function TextAttributeSelector(value:String, selector:AttributeSelector=null) {
+			super( selector );
+			this.value = value;
 		}
 
 		//--------------------------------------------------------------------------
@@ -35,15 +34,23 @@ package by.blooddy.gui.parser.component {
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
+
+		public var value:String;
+
+		//--------------------------------------------------------------------------
+		//
+		//  Methods
+		//
+		//--------------------------------------------------------------------------
 		
-		public var name:String;
-
-		public var controller:Class;
-
-		public const preload:Vector.<String> = new Vector.<String>();
-
-		public var applyer:StyleApplyer;
+		public override function contains(target:AttributeSelector):Boolean {
+			return (
+				target is AttributeSelector &&
+				this.value == ( target as TextAttributeSelector ).value &&
+				super.contains( target )
+			);
+		}
 		
 	}
-
+	
 }

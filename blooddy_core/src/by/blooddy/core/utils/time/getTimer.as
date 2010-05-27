@@ -29,4 +29,4 @@ import flash.utils.getTimer;
 /**
  * @private
  */
-internal const startTime:Number = ( new Date() ).getTime() - flash.utils.getTimer();
+internal const startTime:Number = ( new Date() ).getTime() - getTimer();
