@@ -164,7 +164,9 @@ package by.blooddy.gui.display.component {
 			
 			// TODO: перенести
 			info.component.$ns_component::init( info, info.name );
-			info.controller.$ns_controller::init( info, this._baseController );
+			if ( info.controller ) {
+				info.controller.$ns_controller::init( info, this._baseController );
+			}
 			
 			if ( info.name in this._components ) {
 				if ( this._components[ info.name ] !== info ) {
@@ -312,9 +314,9 @@ package by.blooddy.gui.display.component {
 			if ( !Capabilities.isDebugger ) throw new IllegalOperationError( getErrorMessage( 2071, this, 'contains' ), 2071 );
 			return false;
 		}
-		
+
 	}
-	
+
 }
 
 //==============================================================================

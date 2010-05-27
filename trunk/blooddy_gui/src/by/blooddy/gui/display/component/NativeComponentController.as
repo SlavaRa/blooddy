@@ -169,7 +169,7 @@ package by.blooddy.gui.display.component {
 				this._sharedObject = controller.sharedObject[ 'component_' + info.name ];
 			}
 			if ( !this._sharedObject ) controller.sharedObject[ 'component_' + info.name ] = this._sharedObject = new Object();
-			
+
 			info.component.addEventListener( ComponentEvent.COMPONENT_CONSTRUCT, this.handler_componentConstruct, false, int.MAX_VALUE, true );
 			info.component.addEventListener( ComponentEvent.COMPONENT_DESTRUCT, this.handler_componentDestruct, false, int.MAX_VALUE, true );
 			if ( info.component.constructed ) {

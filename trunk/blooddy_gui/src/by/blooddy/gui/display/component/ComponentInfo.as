@@ -6,6 +6,7 @@
 
 package by.blooddy.gui.display.component {
 
+	import by.blooddy.core.display.DisplayObjectContainerProxy;
 	import by.blooddy.gui.controller.ComponentController;
 	
 	/**
@@ -64,6 +65,20 @@ package by.blooddy.gui.display.component {
 		
 		public function get component():Component {
 			return this._component;
+		}
+		
+		//----------------------------------
+		//  proxy
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
+		private var _proxy:DisplayObjectContainerProxy;
+		
+		public function get proxy():DisplayObjectContainerProxy {
+			if ( !this._proxy ) this._proxy = this._component.proxy;
+			return this._proxy;
 		}
 		
 		//----------------------------------
