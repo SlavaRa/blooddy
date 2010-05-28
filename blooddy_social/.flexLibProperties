@@ -6,7 +6,6 @@
     <classEntry path="by.blooddy.social.my_mail_ru.MoimirAPI"/>
     <classEntry path="by.blooddy.social.vkontakte_ru.VkontakteAPI"/>
     <classEntry path="by.blooddy.social.data.SocialUserData"/>
-    <classEntry path="by.blooddy.social.events.SocialAPIEvent"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

@@ -19,7 +19,7 @@ package by.blooddy.core.net {
 	public const domain:String = (
 		Capabilities.playerType == 'Desktop' || Capabilities.playerType == 'StandAlone'
 		?	'localhost'
-		:	( new flash.net.LocalConnection() ).domain
+		:	( new LocalConnection() ).domain
 	);
 
 }

@@ -8,7 +8,6 @@ package by.blooddy.social {
 	
 	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.net.AbstractRemoter;
-	import by.blooddy.social.events.SocialAPIEvent;
 	
 	import flash.errors.IllegalOperationError;
 	
@@ -77,19 +76,19 @@ package by.blooddy.social {
 		}
 
 		social function showInstallBox():void {
-			super.dispatchEvent( new SocialAPIEvent( SocialAPIEvent.SHOW_INSTALL_BOX ) );
+			super.$callInputCommand( new Command( 'showInstallBox' ) );
 		}
 
-		social function showSettingsBox(settings:uint = 0):void {
-			super.dispatchEvent( new SocialAPIEvent( SocialAPIEvent.SHOW_SETTINGS_BOX ) );
+		social function showSettingsBox(settings:uint=0):void {
+			super.$callInputCommand( new Command( 'showSettingsBox', [ settings ] ) );
 		}
 
 		social function showInviteBox(excludeIDs:Array=null):void {
-			super.dispatchEvent( new SocialAPIEvent( SocialAPIEvent.SHOW_INVITE_BOX ) );
+			super.$callInputCommand( new Command( 'showInviteBox', [ excludeIDs ] ) );
 		}
 
 		social function showPaymentBox(votes:uint=0):void {
-			super.dispatchEvent( new SocialAPIEvent( SocialAPIEvent.SHOW_PAYMENT_BOX ) );
+			super.$callInputCommand( new Command( 'showPaymentBox', [ votes ] ) );
 		}
 
 	}

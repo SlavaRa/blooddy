@@ -113,7 +113,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private var _logging:Boolean = true;
+		private var _logging:Boolean = false;
 
 		/**
 		 * @inheritDoc
