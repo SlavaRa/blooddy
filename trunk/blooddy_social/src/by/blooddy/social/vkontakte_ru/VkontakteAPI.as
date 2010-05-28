@@ -8,6 +8,7 @@ package by.blooddy.social.vkontakte_ru {
 	
 	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.net.MIME;
+	import by.blooddy.core.net.connection.LocalConnection;
 	import by.blooddy.core.net.loading.URLLoader;
 	import by.blooddy.core.utils.crypto.MD5;
 	import by.blooddy.core.utils.time.setTimeout;
@@ -15,8 +16,12 @@ package by.blooddy.social.vkontakte_ru {
 	import by.blooddy.social.SocialAPI;
 	import by.blooddy.social.data.SocialUserData;
 	
+	import flash.events.AsyncErrorEvent;
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
+	import flash.events.IEventDispatcher;
+	import flash.events.SecurityErrorEvent;
+	import flash.events.StatusEvent;
 	import flash.net.URLLoaderDataFormat;
 	import flash.net.URLRequest;
 	import flash.net.URLVariables;
@@ -60,18 +65,43 @@ package by.blooddy.social.vkontakte_ru {
 		/**
 		 * Constructor.
 		 */
-		public function VkontakteAPI(appID:String, viewerID:String, secretKey:String=null) {
+		public function VkontakteAPI(appID:String, viewerID:String, secretKey:String=null, connectionName:String=null, wrapper:Object=null) {
 			super();
 
-			this._methods[ 'getProfiles' ] = this.responseUsers;
-			this._methods[ 'isAppUser' ] = this.responseIsAppUser;
-			this._methods[ 'getAppFriends' ] = this.responseGetAppFriends;
-			this._methods[ 'getUserBalance' ] = this.responseGetUserBalance;
-			
+			this._responders[ 'getProfiles' ] =		this.responseUsers;
+			this._responders[ 'isAppUser' ] =		this.responseIsAppUser;
+			this._responders[ 'getAppFriends' ] =	this.responseGetAppFriends;
+			this._responders[ 'getUserBalance' ] =	this.responseGetUserBalance;
+
 			this._appID = appID;
 			this._viewerID = viewerID;
 			this._secretKey = secretKey;
 
+			if ( // если есть враппер, то используем его
+				wrapper &&
+				'external' in wrapper &&
+				wrapper is IEventDispatcher &&
+				'showInstallBox' in wrapper &&
+				'showSettingsBox' in wrapper &&
+				'showInviteBox' in wrapper &&
+				'showPaymentBox' in wrapper
+			) {
+
+				this._wrapper = wrapper.external;
+
+			} else if ( connectionName ) { // если нету, то используем LocalConnection
+
+				this._connection = new LocalConnection();
+				this._connection.client = {};
+				this._connection.addEventListener( AsyncErrorEvent.ASYNC_ERROR,			this.handler_asyncError, false, 0, true );
+				this._connection.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_securityError, false, 0, true );
+				this._connection.addEventListener( StatusEvent.STATUS,					this.handler_status, false, 0, true );
+				this._connection.allowDomain( '*' );
+				this._connection.targetName = '_in_' + connectionName;
+				this._connection.open( '_out_' + connectionName );
+				this._connection.call( 'initConnection' );
+
+			}
 		}
 		
 		//--------------------------------------------------------------------------
@@ -80,10 +110,31 @@ package by.blooddy.social.vkontakte_ru {
 		//
 		//--------------------------------------------------------------------------
 		
+		
 		/**
 		 * @private
 		 */
-		private const _methods:Object = new Object();
+		private var _wrapper:Object;
+		
+		/**
+		 * @private
+		 */
+		private var _connection:LocalConnection;
+
+		/**
+		 * @private
+		 */
+		private var _inited:Boolean = false;
+
+		/**
+		 * @private
+		 */
+		private var _cache:Vector.<Array>;
+		
+		/**
+		 * @private
+		 */
+		private const _responders:Object = new Object();
 		
 		/**
 		 * @private
@@ -155,6 +206,22 @@ package by.blooddy.social.vkontakte_ru {
 			this.request( 'getUserBalance' );
 		}
 
+		social override function showInstallBox():void {
+			this.$call( 'showInstallBox' );
+		}
+
+		social override function showSettingsBox(settings:uint=0):void {
+			this.$call( 'showSettingsBox', settings );
+		}
+		
+		social override function showInviteBox(excludeIDs:Array=null):void {
+			this.$call( 'showInviteBox', excludeIDs );
+		}
+		
+		social override function showPaymentBox(votes:uint=0):void {
+			this.$call( 'showPaymentBox', votes );
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Response methods
@@ -165,7 +232,6 @@ package by.blooddy.social.vkontakte_ru {
 		 * @private
 		 */
 		private function responseUsers(xml:XML=null):void {
-			
 			var response:Command;
 			
 			if ( xml.name().toString() == 'error' ) {
@@ -177,7 +243,6 @@ package by.blooddy.social.vkontakte_ru {
 				
 				response = new Command( 'responseUsers' );
 				var list:XMLList = xml.user;
-				
 				for each ( var user:XML in list ) {
 					var data:SocialUserData = new SocialUserData( XMLUtils.parseListToString( user.uid ) );
 					data.firstName =		XMLUtils.parseListToString( user.first_name );
@@ -214,19 +279,20 @@ package by.blooddy.social.vkontakte_ru {
 		 * @private
 		 */
 		private function responseIsAppUser(xml:XML=null):void {
-			
 			var response:Command;
-			
+
 			if ( xml.name().toString() == 'error' ) {
-				
+
 				response = new Command( 'responseIsAppUserError' );
 				response.push( XMLUtils.parseListToInt( xml.error_code ) );
-				
+
 			} else {
+
 				response = new Command( 'responseIsAppUser' );
 				response.push( XMLUtils.parseToBoolean( xml ) );
+
 			}
-			
+
 			super.$invokeCallInputCommand( response, false );
 		}
 		
@@ -234,7 +300,6 @@ package by.blooddy.social.vkontakte_ru {
 		 * @private
 		 */
 		private function responseGetAppFriends(xml:XML=null):void {
-			
 			var response:Command;
 			
 			if ( xml.name().toString() == 'error' ) {
@@ -243,12 +308,13 @@ package by.blooddy.social.vkontakte_ru {
 				response.push( XMLUtils.parseListToInt( xml.error_code ) );
 				
 			} else {
+
 				response = new Command( 'responseGetAppFriends' );
 				var list:XMLList = xml.uid;
-				
 				for each ( var uid:XML in list ) {
 					response.push( XMLUtils.parseToString( uid ) );
 				}
+
 			}
 			
 			super.$invokeCallInputCommand( response, false );
@@ -259,17 +325,19 @@ package by.blooddy.social.vkontakte_ru {
 		 */
 		private function responseGetUserBalance(xml:XML=null):void {
 			var response:Command;
-			
+
 			if ( xml.name().toString() == 'error' ) {
-				
+
 				response = new Command( 'responseGetUserBalanceError' );
 				response.push( XMLUtils.parseListToInt( xml.error_code ) );
-				
+
 			} else {
+
 				response = new Command( 'responseGetUserBalance' );
 				response.push( XMLUtils.parseListToInt( xml.balance ) );
+
 			}
-			
+
 			super.$invokeCallInputCommand( response, false );
 		}
 		
@@ -309,7 +377,7 @@ package by.blooddy.social.vkontakte_ru {
 			vars.sig = MD5.hash( this._viewerID + data + this._secretKey );
 
 			var asset:RequestAsset = new RequestAsset();
-			asset.handler = this._methods[ method ];
+			asset.response = this._responders[ method ];
 			asset.vars = vars;
 
 			this._requestHash[ data ] = request;
@@ -317,7 +385,7 @@ package by.blooddy.social.vkontakte_ru {
 			this.requestMethod( data );
 			
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -331,6 +399,39 @@ package by.blooddy.social.vkontakte_ru {
 			loader.addEventListener( Event.COMPLETE,	this.handler_complete );
 			loader.addEventListener( ErrorEvent.ERROR,	this.handler_complete );
 			this._loadersHash[ loader ] = data;
+		}
+
+		/**
+		 * @private
+		 */
+		private function $call(commandName:String, ...parameters):void {
+			parameters.unshift( commandName );
+			if ( this._wrapper ) {
+				this._wrapper[ commandName ].apply( this._wrapper, parameters );
+			} else if ( this._connection ) {
+				if ( this._inited ) {
+					this._connection.call.apply( null, parameters );
+				} else {
+					if ( !this._cache ) this._cache = new Vector.<Array>();
+					this._cache.push( parameters );
+				}
+			} else {
+				super.$callInputCommand( new Command( commandName, parameters ) );
+			}
+		}
+
+		/**
+		 * @private
+		 */
+		private function initConnection():void {
+			this._connection.removeEventListener( StatusEvent.STATUS, this.handler_status );
+			this._inited = true;
+			if ( this._cache ) {
+				while ( this._cache.length > 0 ) {
+					this._connection.call.apply( null, this._cache.shift() );
+				}
+				this._cache = null;
+			}
 		}
 
 		//--------------------------------------------------------------------------
@@ -363,10 +464,41 @@ package by.blooddy.social.vkontakte_ru {
 			} else {
 				var asset:RequestAsset = this._requestHash[ data ];
 				delete this._requestHash[ data ];
-				asset.handler( xml );
+				asset.response( xml );
 			}
 		}
 
+		/**
+		 * @private
+		 */
+		private function handler_asyncError(event:AsyncErrorEvent):void {
+			// ignore
+		}
+
+		/**
+		 * @private
+		 */
+		private function handler_securityError(event:SecurityErrorEvent):void {
+			if ( this._connection.connected ) {
+				this._connection.close();
+			}
+			this._connection.targetName = null;
+			this._connection.removeEventListener( StatusEvent.STATUS,					this.handler_status );
+			this._connection.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_securityError );
+			this._connection.removeEventListener( AsyncErrorEvent.ASYNC_ERROR,			this.handler_asyncError );
+			this._connection = null;
+			this._cache = null;
+		}
+
+		/**
+		 * @private
+		 */
+		private function handler_status(event:StatusEvent):void {
+			if ( event.level == 'status' ) {
+				this.initConnection();
+			}
+		}
+		
 	}
 	
 }
@@ -390,6 +522,6 @@ internal final class RequestAsset {
 	
 	public var vars:URLVariables;
 	
-	public var handler:Function;
+	public var response:Function;
 	
 }

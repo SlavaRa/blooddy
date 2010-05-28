@@ -10,7 +10,6 @@ package by.blooddy.core.net.connection {
 	import by.blooddy.core.net.AbstractRemoter;
 	
 	import flash.errors.IOError;
-	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.events.StatusEvent;
 	import flash.net.LocalConnection;
@@ -19,15 +18,9 @@ package by.blooddy.core.net.connection {
 	//  Events
 	//--------------------------------------
 	
-	/**
-	 * @inheritDoc
-	 */
-	[Event( name="ioError", type="flash.events.IOErrorEvent" )]		
-	
-	/**
-	 * @inheritDoc
-	 */
 	[Event( name="securityError", type="flash.events.SecurityErrorEvent" )]	
+	
+	[Event( name="status", type="flash.events.StatusEvent" )]	
 	
 	/**
 	 * @author					BlooDHounD
@@ -52,7 +45,7 @@ package by.blooddy.core.net.connection {
 			this._targetName = targetName;
 			this._connection.client = new Client( this );
 			this._connection.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	super.dispatchEvent, false, 0, true );
-			this._connection.addEventListener( StatusEvent.STATUS,					this.handler_status, false, 0, true );
+			this._connection.addEventListener( StatusEvent.STATUS,					super.dispatchEvent, false, 0, true );
 		}
 
 		//--------------------------------------------------------------------------
@@ -142,10 +135,27 @@ package by.blooddy.core.net.connection {
 			this._connected = false;
 		}
 
-		public override function call(commandName:String, ...parameters):* {
+		public function allowDomain(...parameters):void {
+			this._connection.allowDomain.apply( null, parameters );
+		}
+
+		public function allowInsecureDomain(...parameters):void {
+			this._connection.allowInsecureDomain.apply( null, parameters );
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		protected override function $callOutputCommand(command:Command):* {
 			if ( !this._targetName ) throw new IOError();
-			parameters.unshift( this._targetName, commandName );
-			this._connection.send.apply( this, parameters );
+			command.unshift( this._targetName, command.name );
+			this._connection.send.apply( this, command );
 		}
 
 		//--------------------------------------------------------------------------
@@ -154,28 +164,22 @@ package by.blooddy.core.net.connection {
 		//
 		//--------------------------------------------------------------------------
 
-		$private function $callInputCommand(command:Command):void {
-			super.$callInputCommand( command );
-		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Event handlers
-		//
-		//--------------------------------------------------------------------------
-
 		/**
 		 * @private
 		 */
-		private function handler_status(event:StatusEvent):void {
-			if ( event.level == 'error' ) {
-				super.dispatchEvent( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, event.code ) );
-			}
+		$private function $invokeCallInputCommand(command:Command):* {
+			return super.$invokeCallInputCommand( command );
 		}
-		
+
 	}
 	
 }
+
+//==============================================================================
+//
+//  Inner definitions
+//
+//==============================================================================
 
 import by.blooddy.core.commands.Command;
 import by.blooddy.core.net.connection.LocalConnection;
@@ -187,6 +191,9 @@ use namespace flash_proxy;
 
 internal namespace $private;
 
+/**
+ * @private
+ */
 internal final dynamic class Client extends Proxy {
 
 	//--------------------------------------------------------------------------
@@ -238,7 +245,7 @@ internal final dynamic class Client extends Proxy {
 		if ( result == null ) {
 			var app:Client = this;
 			this._hash[ n ] = result = function(...rest):* {
-				return app._target.$private::$callInputCommand( new Command( n, rest ) );
+				return app._target.$private::$invokeCallInputCommand( new Command( n, rest ) );
 			};
 		}
 		return result;
@@ -248,7 +255,7 @@ internal final dynamic class Client extends Proxy {
 	 * @private
 	 */
 	flash_proxy override function callProperty(name:*, ...parameters):* {
-		this._target.$private::$callInputCommand( new Command( name, parameters ) );
+		this._target.$private::$invokeCallInputCommand( new Command( name, parameters ) );
 	}
 
 }
