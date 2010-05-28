@@ -216,10 +216,10 @@ package by.blooddy.core.utils.crypto {
 			a += int( func( b, c, d ) ) + x + t;
 			return NumberUtils.rol( a, s ) +  b;
 		}
-		private static function FF(a:uint, b:uint, c:uint, d:uint, x:uint, s:uint, t:uint):uint	{ return transform(F, a, b, c, d, x, s, t) }
-		private static function GG(a:uint, b:uint, c:uint, d:uint, x:uint, s:uint, t:uint):uint	{ return transform(G, a, b, c, d, x, s, t) }
-		private static function HH(a:uint, b:uint, c:uint, d:uint, x:uint, s:uint, t:uint):uint	{ return transform(H, a, b, c, d, x, s, t) }
-		private static function II(a:uint, b:uint, c:uint, d:uint, x:uint, s:uint, t:uint):uint	{ return transform(I, a, b, c, d, x, s, t) }
+		private static function FF(a:uint, b:uint, c:uint, d:uint, x:uint, s:uint, t:uint):uint	{ return transform( F, a, b, c, d, x, s, t ) }
+		private static function GG(a:uint, b:uint, c:uint, d:uint, x:uint, s:uint, t:uint):uint	{ return transform( G, a, b, c, d, x, s, t ) }
+		private static function HH(a:uint, b:uint, c:uint, d:uint, x:uint, s:uint, t:uint):uint	{ return transform( H, a, b, c, d, x, s, t ) }
+		private static function II(a:uint, b:uint, c:uint, d:uint, x:uint, s:uint, t:uint):uint	{ return transform( I, a, b, c, d, x, s, t ) }
 		
 	}
 
