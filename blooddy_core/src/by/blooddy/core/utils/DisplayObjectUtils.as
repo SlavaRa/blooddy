@@ -113,8 +113,7 @@ package by.blooddy.core.utils {
 		public static function toString(obj:DisplayObject):String {
 			var arr:Array = new Array();
 			do {
-				if ( obj.name )	arr.unshift( obj.name );
-				else			arr.unshift( obj.toString() );
+				arr.unshift( '[' + ClassUtils.getClassName( obj ) + ( obj.name ? ' name="' + obj.name + '"' : '' ) + ']' );
 			} while( obj = obj.parent );
 			return arr.join( '.' );
 		}

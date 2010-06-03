@@ -223,7 +223,7 @@ package by.blooddy.gui.parser.component {
 										}
 										this._list.push( asset );
 										break;
-									case 'preload':
+									case 'prefetch':
 									case '':
 										if ( this._content.preload.indexOf( href ) < 0 ) {
 											this._content.preload.push( href );
