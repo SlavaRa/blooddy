@@ -7,7 +7,7 @@
 
 	<externs>
 		<symbol>by.blooddy.crypto._MD5.TMP</symbol>
-		<!--symbol>by.blooddy.crypto._Base64.TMP</symbol-->
+		<symbol>by.blooddy.crypto._Base64.TMP</symbol>
 	</externs>
 
 </flex-config>
