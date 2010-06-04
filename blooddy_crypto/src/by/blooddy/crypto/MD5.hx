@@ -3,11 +3,10 @@ package by.blooddy.crypto;
 import flash.Lib;
 import flash.Memory;
 import flash.utils.ByteArray;
-import flash.utils.Endian;
 
 /**
- * ...
- * @author BlooDHounD
+ * @author	BlooDHounD
+ * @version	2.0
  */
 class MD5 {
 
@@ -42,14 +41,14 @@ class MD5 {
 	 * @keyword					md5.hash, hash
 	 */
 	public static function hashBytes(data:ByteArray):String {
-		return Lib.hash( data );
+		return TMP.hash( data );
 	}
 }
 
 /**
  * @private
  */
-private class Lib {
+private class TMP {
 
 	//--------------------------------------------------------------------------
 	//
@@ -84,22 +83,22 @@ private class Lib {
 	//
 	//--------------------------------------------------------------------------
 
-	public static function hash(bytes:ByteArray):String {
+	public static inline function hash(bytes:ByteArray):String {
 
 		var len:UInt = bytes.length;
 
 		var i:UInt = len * 8;
 		var l:UInt = ( ( ( ( i + 64 ) >>> 9 ) << 4 ) + 14 ) * 4 + 4;
 
-		if ( l < 1024 ) {
+		if ( l + 20 < 1024 ) {
 			bytes.length = 1024;
 		} else {
-			bytes.length = l;
+			bytes.length = l + 20;
 		}
 		Memory.select( bytes );
 
 		Memory.setI32( ( i >> 5 ) * 4, Memory.getI32( ( i >> 5 ) * 4 ) | ( 0x80 << ( i % 32 ) ) );
-		Memory.setI32( ( ( ( ( i + 64 ) >>> 9 ) << 4 ) + 14 ) * 4, i );
+		Memory.setI32( l - 4, i );
 
 		var a:Int =  1732584193;
 		var b:Int = -271733879;
@@ -192,11 +191,24 @@ private class Lib {
 
 			i += 64;
 
-		} while ( i <= l );
+		} while ( i < l );
 
+		Memory.setI32( l +  4, a );
+		Memory.setI32( l +  8, b );
+		Memory.setI32( l + 12, c );
+		Memory.setI32( l + 16, d );
+
+		var hexChars:String = '0123456789abcdef';
+		var result:String = '';
+		for ( i in l + 4...l + 20 ) {
+			a = Memory.getByte( i );
+			result +=	hexChars.charAt( ( a >> 4 ) & 0xF ) +
+						hexChars.charAt(   a        & 0xF ) ;
+		}
+		
 		bytes.length = len;
 
-		return rhex(a) + rhex(b) + rhex(c) + rhex(d);
+		return result;
 	}
 
 	//--------------------------------------------------------------------------
@@ -205,35 +217,45 @@ private class Lib {
 	//
 	//--------------------------------------------------------------------------
 
-	private static inline function rhex( num ){
-		var str = "";
-		var hex_chr = "0123456789abcdef";
-		for( j in 0...4 ){
-			str += hex_chr.charAt((num >> (j * 8 + 4)) & 0x0F) +
-						 hex_chr.charAt((num >> (j * 8)) & 0x0F);
-		}
-		return str;
-	}
-
+	/**
+	 * @private
+	 * rotation is separate from addition to prevent recomputation
+	 */
 	private static inline function rol(num:Int, cnt:Int):Int {
 		return ( num << cnt ) | ( num >>> ( 32 - cnt ) );
 	}
 
+	/**
+	 * @private
+	 * transformations for round 1
+	 */
 	private static inline function FF(a:Int, b:Int, c:Int, d:Int, x:Int, s:Int, t:Int):Int {
 		a += ( ( b & c ) | ( ( ~b ) & d ) ) + x + t;
 		return rol( a, s ) +  b;
 	}
 
+	/**
+	 * @private
+	 * transformations for round 2
+	 */
 	private static inline function GG(a:Int, b:Int, c:Int, d:Int, x:Int, s:Int, t:Int):Int {
 		a += ( ( b & d ) | ( c & ( ~d ) ) ) + x + t;
 		return rol( a, s ) +  b;
 	}
 
+	/**
+	 * @private
+	 * transformations for round 3
+	 */
 	private static inline function HH(a:Int, b:Int, c:Int, d:Int, x:Int, s:Int, t:Int):Int {
 		a += ( b ^ c ^ d ) + x + t;
 		return rol( a, s ) +  b;
 	}
 
+	/**
+	 * @private
+	 * transformations for round 4
+	 */
 	private static inline function II(a:Int, b:Int, c:Int, d:Int, x:Int, s:Int, t:Int):Int {
 		a += ( c ^ ( b | ( ~d ) ) ) + x + t;
 		return rol( a, s ) +  b;
