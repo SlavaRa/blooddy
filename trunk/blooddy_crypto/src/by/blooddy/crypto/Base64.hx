@@ -37,6 +37,7 @@ private class TMP {
 		var resultLength:UInt = Std.int( len / 3 ) * 4 + ( rest > 0 ? 4 : 0 );
 		bytes.length += resultLength + ( insertNewLines ? Std.int( resultLength / 76 ) : 0 );
 
+		if ( bytes.length < 1024 ) bytes.length = 1024;
 		Memory.select( bytes );
 
 		var i:UInt = 0;
@@ -53,7 +54,7 @@ private class TMP {
 				Memory.getByte( len + (   chunk >>> 18          ) )       |
 				Memory.getByte( len + ( ( chunk >>> 12 ) & 0x3F ) ) <<  8 |
 				Memory.getByte( len + ( ( chunk >>> 6  ) & 0x3F ) ) << 16 |
-				Memory.getByte( len + (   chunk          & 0x3F ) ) << 24 
+				Memory.getByte( len + (   chunk          & 0x3F ) ) << 24
 			);
 			j += 4;
 
