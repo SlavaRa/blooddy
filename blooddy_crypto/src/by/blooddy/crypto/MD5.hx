@@ -1,6 +1,5 @@
 package by.blooddy.crypto;
 
-import flash.Lib;
 import flash.Memory;
 import flash.utils.ByteArray;
 
@@ -86,6 +85,7 @@ private class TMP {
 	public static inline function hash(bytes:ByteArray):String {
 
 		var len:UInt = bytes.length;
+		var pos:UInt = bytes.position;
 
 		var i:UInt = len * 8;
 		var bytesLength:UInt = ( ( ( ( i + 64 ) >>> 9 ) << 4 ) + 15 ) * 4;
@@ -215,6 +215,7 @@ private class TMP {
 		var result:String = bytes.readUTFBytes( 32 );
 
 		bytes.length = len;
+		bytes.position = pos;
 
 		return result;
 	}

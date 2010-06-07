@@ -9,6 +9,7 @@ class Main {
 	static function main() {
 		MD5;
 		Base64;
+		CRC32;
 	}
 	
 }
