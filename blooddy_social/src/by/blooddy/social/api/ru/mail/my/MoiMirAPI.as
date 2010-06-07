@@ -9,9 +9,9 @@ package by.blooddy.social.api.ru.mail.my {
 	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.net.MIME;
 	import by.blooddy.core.net.loading.URLLoader;
-	import by.blooddy.core.utils.crypto.MD5;
 	import by.blooddy.core.utils.time.setTimeout;
 	import by.blooddy.core.utils.xml.XMLUtils;
+	import by.blooddy.crypto.MD5;
 	import by.blooddy.social.api.SocialAPI;
 	import by.blooddy.social.commands.InputSocialAPICommands;
 	import by.blooddy.social.commands.OutputSocialAPICommands;

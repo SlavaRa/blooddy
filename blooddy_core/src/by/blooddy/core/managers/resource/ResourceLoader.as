@@ -11,8 +11,8 @@ package by.blooddy.core.managers.resource {
 	import by.blooddy.core.net.loading.LoaderContext;
 	import by.blooddy.core.utils.ClassUtils;
 	import by.blooddy.core.utils.DefinitionFinder;
-	import by.blooddy.core.utils.crypto.MD5;
 	import by.blooddy.core.utils.dispose;
+	import by.blooddy.crypto.MD5;
 	
 	import flash.display.BitmapData;
 	import flash.media.Sound;
