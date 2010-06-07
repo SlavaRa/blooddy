@@ -7,6 +7,7 @@
 package by.blooddy.core.utils.crypto {
 
 	import by.blooddy.core.net.domain;
+	import by.blooddy.crypto.MD5;
 	
 	/**
 	 * @author					BlooDHounD

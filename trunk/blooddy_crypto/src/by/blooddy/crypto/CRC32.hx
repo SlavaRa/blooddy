@@ -10,14 +10,6 @@ import flash.utils.ByteArray;
 class CRC32 {
 
 	public static function hash(bytes:ByteArray):UInt {
-		return TMP.hash( bytes );
-	}
-
-}
-
-private class TMP {
-
-	public static inline function hash(bytes:ByteArray):UInt {
 
 		var len:UInt = bytes.length;
 		var pos:UInt = bytes.position;
@@ -44,14 +36,14 @@ private class TMP {
 		c = 0xFFFFFFFF;
 
 		for ( i in 0...len ) {
-			c = Memory.getI32( len + ( ( c ^ Memory.getByte( i ) ) & 0xFF ) * 4 ) ^ ( c >>> 8 );
+			c = Memory.getI32( len + ( ( ( c ^ Memory.getByte( i ) ) & 0xFF ) << 2 ) ) ^ ( c >>> 8 );
 		}
 
 		bytes.length = len;
 		bytes.position = pos;
 
 		return c ^ 0xFFFFFFFF;
-		
+
 	}
-	
+
 }

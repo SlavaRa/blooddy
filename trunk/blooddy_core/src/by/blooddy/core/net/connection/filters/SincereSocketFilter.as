@@ -8,8 +8,8 @@ package by.blooddy.core.net.connection.filters {
 
 	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.net.NetCommand;
-	import by.blooddy.core.utils.crypto.MD5;
 	import by.blooddy.core.utils.xml.IXMLable;
+	import by.blooddy.crypto.MD5;
 	
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
