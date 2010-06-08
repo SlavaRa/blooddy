@@ -1,6 +1,12 @@
+////////////////////////////////////////////////////////////////////////////////
+//
+//  © 2010 BlooDHounD
+//
+////////////////////////////////////////////////////////////////////////////////
+
 package by.blooddy.crypto;
 
-import flash.Memory;
+import by.blooddy.system.Memory;
 import flash.utils.ByteArray;
 
 /**
@@ -10,40 +16,54 @@ import flash.utils.ByteArray;
 class CRC32 {
 
 	public static function hash(bytes:ByteArray):UInt {
+		return TMP.hash( bytes );
+	}
+
+}
+
+/**
+ * @private
+ */
+private class TMP {
+
+	public static inline function hash(bytes:ByteArray):UInt {
 
 		var len:UInt = bytes.length;
 		var pos:UInt = bytes.position;
+		var mem:ByteArray = Memory.memory;
 
 		bytes.length += 256 * 4;
 
-		Memory.select( bytes );
+		Memory.memory = bytes;
 
-		var i:UInt;
-		var j:UInt;
 		var c:UInt;
-		for ( i in 0...256 ) {
+		var j:UInt;
+		var i:UInt = 0;
+		do {
 			c = i;
-			for ( j in 0...8 ) {
+			j = 0;
+			do {
 				if ( c & 1 == 1 ) {
 					c = 0xEDB88320 ^ ( c >>> 1 );
 				} else {
 					c >>>= 1;
 				}
-			}
+			} while ( ++j < 8 );
 			Memory.setI32( len + i * 4, c );
-		}
+		} while ( ++i < 256 );
 
 		c = 0xFFFFFFFF;
 
-		for ( i in 0...len ) {
-			c = Memory.getI32( len + ( ( ( c ^ Memory.getByte( i ) ) & 0xFF ) << 2 ) ) ^ ( c >>> 8 );
+		i = 0;
+		while ( i < len ) {
+			c = Memory.getI32( len + ( ( ( c ^ Memory.getByte( i++ ) ) & 0xFF ) << 2 ) ) ^ ( c >>> 8 );
 		}
 
 		bytes.length = len;
 		bytes.position = pos;
+		Memory.memory = mem;
 
 		return c ^ 0xFFFFFFFF;
-
 	}
 
 }

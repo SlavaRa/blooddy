@@ -19,7 +19,7 @@
   <build>
     <option directives="" />
     <option flashStrict="False" />
-    <option mainClass="by.blooddy.crypto.Main" />
+    <option mainClass="Main" />
     <option forcetraces="False" />
     <option additional="" />
   </build>
@@ -29,7 +29,7 @@
   </haxelib>
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>
-    <compile path="src\by\blooddy\crypto\Main.hx" />
+    <compile path="src\Main.hx" />
   </compileTargets>
   <!-- Assets to embed into the output SWF -->
   <library>

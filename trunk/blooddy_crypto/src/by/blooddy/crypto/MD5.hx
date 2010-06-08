@@ -1,6 +1,12 @@
+////////////////////////////////////////////////////////////////////////////////
+//
+//  © 2010 BlooDHounD
+//
+////////////////////////////////////////////////////////////////////////////////
+
 package by.blooddy.crypto;
 
-import flash.Memory;
+import by.blooddy.system.Memory;
 import flash.utils.ByteArray;
 
 /**
@@ -86,6 +92,7 @@ private class TMP {
 
 		var len:UInt = bytes.length;
 		var pos:UInt = bytes.position;
+		var mem:ByteArray = Memory.memory;
 
 		var i:UInt = len * 8;
 		var bytesLength:UInt = ( ( ( ( i + 64 ) >>> 9 ) << 4 ) + 15 ) * 4;
@@ -95,7 +102,7 @@ private class TMP {
 		bytes.length += 16 + 32;
 
 		if ( bytes.length < 1024 ) bytes.length = 1024;
-		Memory.select( bytes );
+		Memory.memory = bytes;
 
 		Memory.setI32( ( i >> 5 ) * 4, Memory.getI32( ( i >> 5 ) * 4 ) | ( 0x80 << ( i % 32 ) ) );
 		Memory.setI32( bytesLength - 4, i );
@@ -214,6 +221,7 @@ private class TMP {
 
 		var result:String = bytes.readUTFBytes( 32 );
 
+		Memory.memory = mem;
 		bytes.length = len;
 		bytes.position = pos;
 
