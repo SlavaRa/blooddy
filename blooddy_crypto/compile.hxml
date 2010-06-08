@@ -1,5 +1,5 @@
 -cp src
--main by.blooddy.crypto.Main
+-main Main
 -swf libs/blooddy_crypto.swc
 -swf-version 10
 -D fdb

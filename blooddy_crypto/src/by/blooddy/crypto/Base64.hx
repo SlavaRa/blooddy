@@ -1,7 +1,13 @@
+////////////////////////////////////////////////////////////////////////////////
+//
+//  © 2010 BlooDHounD
+//
+////////////////////////////////////////////////////////////////////////////////
+
 package by.blooddy.crypto;
 
+import by.blooddy.system.Memory;
 import flash.Error;
-import flash.Memory;
 import flash.utils.ByteArray;
 
 /**
@@ -29,6 +35,7 @@ private class TMP {
 
 		var len:UInt = bytes.length;
 		var pos:UInt = bytes.position;
+		var mem:ByteArray = Memory.memory;
 
 		var rest:UInt = len % 3;
 		var bytesLength:UInt = len - 3;
@@ -40,7 +47,7 @@ private class TMP {
 		bytes.length += resultLength + ( insertNewLines ? Std.int( resultLength / 76 ) : 0 );
 
 		if ( bytes.length < 1024 ) bytes.length = 1024;
-		Memory.select( bytes );
+		Memory.memory = bytes;
 
 		var i:UInt = 0;
 		var j:UInt = len + 64;
@@ -94,6 +101,7 @@ private class TMP {
 
 		bytes.length = len;
 		bytes.position = pos;
+		Memory.memory = mem;
 		
 		return result;
 
@@ -102,6 +110,7 @@ private class TMP {
 	public static inline function decode(str:String):ByteArray {
 
 		var len:UInt = Std.int( str.length * 0.75 );
+		var mem:ByteArray = Memory.memory;
 
 		var bytes:ByteArray = new ByteArray();
 		bytes.position = len;
@@ -111,7 +120,7 @@ private class TMP {
 		var bytesLength:UInt = bytes.length - 4;
 
 		if ( bytes.length < 1024 ) bytes.length = 1024;
-		Memory.select( bytes );
+		Memory.memory = bytes;
 
 		var i:UInt = len + 128;
 		var j:UInt = 0;
@@ -159,6 +168,7 @@ private class TMP {
 
 		bytes.length = j;
 		bytes.position = 0;
+		Memory.memory = mem;
 		
 		return bytes;
 	}
