@@ -22,37 +22,43 @@ class JPEGTableHelper {
 	//--------------------------------------------------------------------------
 
 	/**
-	 *	  1:	YTable		[1]{64}
-	 *	 65:	UVTable		[1]{64}
-	 *	130:	fdtbl_Y		[8]{64}
-	 *	642:	fdtbl_UV	[8]{64}
+	 *	   1:	YTable						[1]{64}
+	 *	  65:	UVTable						[1]{64}
+	 *	 130:	fdtbl_Y						[8]{64}
+	 *	 642:	fdtbl_UV					[8]{64}
+	 * 	1154:
 	 */
 	public static function createQuantTable(?quality:UInt=60):ByteArray {
 		return TMP.createQuantTables( quality );
 	}
 
 	/**
-	 *	  0:	0
-	 *	  1:	std_dc_luminance_nrcodes	[1]{16}
-	 *	 17:	std_dc_luminance_values		[1]{12}
-	 *	 29:	0
-	 *	 30:	std_ac_luminance_nrcodes	[1]{16}
-	 *	 47:	std_ac_luminance_values		[1]{162}
-	 *	209:	0
-	 *	210:	std_dc_chrominance_nrcodes	[1]{16}
-	 *	226:	std_dc_chrominance_values	[1]{12}
-	 *	238:	0
-	 *	239:	std_ac_chrominance_nrcodes	[1]{16}
-	 *	254:	std_ac_chrominance_values	[1]{162}
-	 *	416:	YDC_HT						[1,3]{12}
-	 *	452:	YAC_HT						[1,3]{162}
-	 *	938:	UVDC_HT						[1,3]{12}
-	 *	974:	UVAC_HT						[1,3]{162}
+	 *	   0:	0							[1]{1}
+	 *	   1:	std_dc_luminance_nrcodes	[1]{16}
+	 *	  17:	std_dc_luminance_values		[1]{12}
+	 *	  29:	0							[1]{1}
+	 *	  30:	std_ac_luminance_nrcodes	[1]{16}
+	 *	  47:	std_ac_luminance_values		[1]{162}
+	 *	 208:	0							[1]{1}
+	 *	 209:	std_dc_chrominance_nrcodes	[1]{16}
+	 *	 225:	std_dc_chrominance_values	[1]{12}
+	 *	 237:	0							[1]{1}
+	 *	 238:	std_ac_chrominance_nrcodes	[1]{16}
+	 *	 254:	std_ac_chrominance_values	[1]{162}
+	 *	 416:	YDC_HT						[1,2]{12}
+	 *	 452:	YAC_HT						[1,2]{251}
+	 *	1205:	UVDC_HT						[1,2]{12}
+	 *	1241:	UVAC_HT						[1,2]{251}
+	 *	1994:
 	 */
 	public static function createHuffmanTable():ByteArray {
 		return TMP.createHuffmanTable();
 	}
 
+	/**
+	 *	     0:	cat							[1,2]{65534}
+	 *	196605:
+	 */
 	public static function createCategoryTable():ByteArray {
 		return TMP.createCategoryTable();
 	}
@@ -66,19 +72,11 @@ private class TMP {
 
 	//--------------------------------------------------------------------------
 	//
-	//  Class variables
-	//
-	//--------------------------------------------------------------------------
-
-	private static inline var O:UInt = 65 + 65 + 512 + 512;
-
-	//--------------------------------------------------------------------------
-	//
 	//  Class methods
 	//
 	//--------------------------------------------------------------------------
 
-	public inline static function createQuantTables(quality:UInt):ByteArray {
+	public static inline function createQuantTables(quality:UInt):ByteArray {
 
 		var sf:UInt = quality < 50 ? Std.int( 5000 / quality ) : Std.int( 200 - ( quality << 1 ) );
 
@@ -93,7 +91,7 @@ private class TMP {
 		bytes.writeUTFBytes( '\x11\x12\x18\x2f\x63\x63\x63\x63\x12\x15\x1a\x42\x63\x63\x63\x63\x18\x1a\x38\x63\x63\x63\x63\x63\x2f\x42\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63\x63' );
 
 		// ZigZag
-		bytes.position = O;
+		bytes.position = 1154;
 		bytes.writeUTFBytes( '\x00\x01\x05\x06\x0e\x0f\x1b\x1c\x02\x04\x07\x0d\x10\x1a\x1d\x2a\x03\x08\x0c\x11\x19\x1e\x29\x2b\x09\x0b\x12\x18\x1f\x28\x2c\x35\x0a\x13\x17\x20\x27\x2d\x34\x36\x14\x16\x21\x26\x2e\x33\x37\x3c\x15\x22\x25\x2f\x32\x38\x3b\x3d\x23\x24\x30\x31\x39\x3a\x3e\x3f' );
 
 		bytes.length += 64;
@@ -109,7 +107,7 @@ private class TMP {
 			t = Std.int( ( Memory.getByte( 130 + i ) * sf + 50 ) / 100 );
 			if ( t < 1 ) t = 1;
 			else if ( t > 255 ) t = 255;
-			Memory.setByte( 1 + Memory.getByte( O + i ), t );
+			Memory.setByte( 1 + Memory.getByte( 1154 + i ), t );
 		} while ( ++i < 64 );
 
 		// UVTable
@@ -118,18 +116,18 @@ private class TMP {
 			t = Std.int( ( Memory.getByte( 194 + i ) * sf + 50 ) / 100 );
 			if ( t < 1 ) t = 1;
 			else if ( t > 255 ) t = 255;
-			Memory.setByte( 66 + Memory.getByte( O + i ), t );
+			Memory.setByte( 66 + Memory.getByte( 1154 + i ), t );
 		} while ( ++i < 64 );
 
 		// aasf
-		Memory.setDouble( O + 64 + 8 * 0, 1.000000000 );
-		Memory.setDouble( O + 64 + 8 * 1, 1.387039845 );
-		Memory.setDouble( O + 64 + 8 * 2, 1.306562965 );
-		Memory.setDouble( O + 64 + 8 * 3, 1.175875602 );
-		Memory.setDouble( O + 64 + 8 * 4, 1.000000000 );
-		Memory.setDouble( O + 64 + 8 * 5, 0.785694958 );
-		Memory.setDouble( O + 64 + 8 * 6, 0.541196100 );
-		Memory.setDouble( O + 64 + 8 * 7, 0.275899379 );
+		Memory.setDouble( 1154 + 64 + 8 * 0, 1.000000000 );
+		Memory.setDouble( 1154 + 64 + 8 * 1, 1.387039845 );
+		Memory.setDouble( 1154 + 64 + 8 * 2, 1.306562965 );
+		Memory.setDouble( 1154 + 64 + 8 * 3, 1.175875602 );
+		Memory.setDouble( 1154 + 64 + 8 * 4, 1.000000000 );
+		Memory.setDouble( 1154 + 64 + 8 * 5, 0.785694958 );
+		Memory.setDouble( 1154 + 64 + 8 * 6, 0.541196100 );
+		Memory.setDouble( 1154 + 64 + 8 * 7, 0.275899379 );
 
 		// fdtbl_Y
 		// fdtbl_UV
@@ -141,16 +139,16 @@ private class TMP {
 		do {
 			col = 0;
 			do {
-				n = Memory.getDouble( O + 64 + row ) * Memory.getDouble( O + 64 + col ) * 8;
-				Memory.setDouble( 130       + i * 8, 1.0 / ( Memory.getByte(  1 + Memory.getByte( O + i ) ) * n ) );
-				Memory.setDouble( 130 + 512 + i * 8, 1.0 / ( Memory.getByte( 66 + Memory.getByte( O + i ) ) * n ) );
+				n = Memory.getDouble( 1154 + 64 + row ) * Memory.getDouble( 1154 + 64 + col ) * 8;
+				Memory.setDouble( 130       + i * 8, 1.0 / ( Memory.getByte(  1 + Memory.getByte( 1154 + i ) ) * n ) );
+				Memory.setDouble( 130 + 512 + i * 8, 1.0 / ( Memory.getByte( 66 + Memory.getByte( 1154 + i ) ) * n ) );
 				++i;
 				col += 8;
 			} while ( col < 64 );
 			row += 8;
 		} while ( row < 64 );
 
-		bytes.length = O;
+		bytes.length = 1154;
 		bytes.position = 0;
 		Memory.memory = mem;
 
@@ -162,7 +160,7 @@ private class TMP {
 		var mem:ByteArray = Memory.memory;
 
 		var bytes:ByteArray = new ByteArray();
-		bytes.length = 1460;
+		bytes.length = 1994;
 
 		Memory.memory = bytes;
 
@@ -201,9 +199,9 @@ private class TMP {
 		} while ( ++i < 41 );
 
 		computeHuffmanTable(   0, 416 );	// YDC_HT
-		computeHuffmanTable(  30, 452 );	// YAC_HT
-		computeHuffmanTable( 210, 938 );	// UVDC_HT
-		computeHuffmanTable( 239, 974 );	// UVAC_HT
+		computeHuffmanTable(  29, 452 );	// YAC_HT
+		computeHuffmanTable( 208, 1205 );	// UVDC_HT
+		computeHuffmanTable( 237, 1241 );	// UVAC_HT
 
 		bytes.position = 0;
 		Memory.memory = mem;
@@ -214,44 +212,46 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	public static function createCategoryTable():ByteArray {
+	public static inline function createCategoryTable():ByteArray {
 
 		var mem:ByteArray = Memory.memory;
 
 		var bytes:ByteArray = new ByteArray();
-		bytes.length = 1460;
+		bytes.length = 0xFFFF * 3;
 
 		Memory.memory = bytes;
 
-		//var nrlower:int = 1;
-		//var nrupper:int = 2;
-		//var bitString:BitString;
-		//const I15:int = 15;
-		//var pos:int;
-		//var l:uint = 0;
-		//for (var cat:int=1; cat<=I15; ++cat)
-		//{
-			//Positive numbers
-			//for (var nr:int=nrlower; nr<nrupper; ++nr)
-			//{
-				//pos = int(32767+nr);
-				//category[pos] = cat;
-				//bitcode[pos] = bitString = new BitString();
-				//bitString.len = cat;
-				//bitString.val = nr;
-			//}
-			//Negative numbers
-			//for (var nrneg:int=-(nrupper-1); nrneg<=-nrlower; ++nrneg)
-			//{
-				//pos = int(32767+nrneg);
-				//category[pos] = cat;
-				//bitcode[pos] = bitString = new BitString();
-				//bitString.len = cat;
-				//bitString.val = nrupper-1+nrneg;
-			//}
-			//nrlower <<= 1;
-			//nrupper <<= 1;
-		//}
+		var low:Int = 1;
+		var upp:Int = 2;
+
+		var p:UInt;
+		var i:Int;
+		var l:Int;
+		var cat:UInt = 1;
+		do {
+
+			// Positive numbers
+			i = low;
+			l = upp;
+			do {
+				p = ( 32767 + i ) * 3;
+				Memory.setByte( p, cat );
+				Memory.setI16( p + 1, i );
+			} while ( ++i < l );
+
+			// Negative numbers
+			i = - upp + 1;
+			l = - low;
+			do {
+				p = ( 32767 + i ) * 3;
+				Memory.setByte( p, cat );
+				Memory.setI16( p + 1, upp - 1 + i );
+			} while ( ++i <= l );
+
+			low <<= 1;
+			upp <<= 1;
+		
+		} while ( ++cat <= 15 );
 
 		bytes.position = 0;
 		Memory.memory = mem;
@@ -278,22 +278,23 @@ private class TMP {
 		var l:UInt;
 		var p:UInt;
 
-		i = 0;
+		i = 1;
 		do {
 	
 			l = Memory.getByte( toRead + i );
 			j = 1;
-			do {
-				
-				p = toWrite + Memory.getByte( toRead + 16 + pos_in_table );
-				
+			while ( j <= l ) {
+
+				p = toWrite + Memory.getByte( toRead + 17 + pos_in_table ) * 3;
+
 				Memory.setByte( p , i );
 				Memory.setI16( p + 1, codeValue );
 
-				pos_in_table++;
-				codeValue++;
+				++pos_in_table;
+				++codeValue;
+				++j;
 
-			} while ( ++j <= l );
+			}
 	
 			codeValue <<= 1;
 	

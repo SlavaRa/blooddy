@@ -8,6 +8,7 @@ package by.blooddy.crypto.image;
 
 import by.blooddy.system.Memory;
 import flash.display.BitmapData;
+import flash.Lib;
 import flash.utils.ByteArray;
 
 /**
@@ -33,13 +34,16 @@ class JPEGEncoder {
  */
 private class TMP {
 
+	private static inline var Z1:UInt = 4096;
+	private static inline var Z2:UInt = Z1 + 512 * 3;
+
 	//--------------------------------------------------------------------------
 	//
 	//  Class methods
 	//
 	//--------------------------------------------------------------------------
 
-	public static function encode(image:BitmapData, quality:UInt):ByteArray {
+	public static inline function encode(image:BitmapData, quality:UInt):ByteArray {
 
 		var mem:ByteArray = Memory.memory;
 
@@ -47,9 +51,9 @@ private class TMP {
 		var height:UInt = image.height;
 
 		var bytes:ByteArray = new ByteArray();
-		var len:UInt = width * height * 4;
+		var len:UInt = width * height * 3;
 
-		bytes.position = 4096;
+		bytes.position = Z2;
 
 		bytes.writeBytes( JPEGTable.getTable( quality ) );
 		
@@ -75,7 +79,7 @@ private class TMP {
 		do {
 			x = 0;
 			do {
-				//RGB2YUV(image, xpos, ypos);
+				rgb2yuv( image, x, y );
 				//DCY = processDU(YDU, fdtbl_Y, DCY, YDC_HT, YAC_HT);
 				//DCU = processDU(UDU, fdtbl_UV, DCU, UVDC_HT, UVAC_HT);
 				//DCV = processDU(VDU, fdtbl_UV, DCV, UVDC_HT, UVAC_HT);
@@ -110,7 +114,7 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static function writeAPP0():Void {
+	private static inline function writeAPP0():Void {
 		Memory.setI16(	2,	0xE0FF		);	// marker
 		Memory.setI16(	4,	0x1000		);	// length
 		Memory.setI32(	6,	0x4649464A	);	// JFIF
@@ -124,13 +128,13 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static function writeDQT():Void {
+	private static inline function writeDQT():Void {
 		Memory.setI16(	20,	0xDBFF		);	// marker
 		Memory.setI16(	22,	0x8400		);	// length
 
 		var bytes:ByteArray = Memory.memory;
 		bytes.position = 24;
-		bytes.writeBytes( bytes, 4096, 130 );
+		bytes.writeBytes( bytes, Z2, 130 );
 
 		Memory.setByte( 24,	0x00		);
 		Memory.setByte( 89,	0x01		);
@@ -139,7 +143,7 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static function writeSOF0(width:UInt, height:UInt):Void {
+	private static inline function writeSOF0(width:UInt, height:UInt):Void {
 		Memory.setI16(	154,	0xC0FF		);	// marker
 		Memory.setI16(	156,	0x1100		);	// length, truecolor YUV JPG
 		Memory.setByte(	158,	0x08		);	// precision
@@ -158,13 +162,13 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static function writeDHT():Void {
+	private static inline function writeDHT():Void {
 		Memory.setI16(	173,	0xC4FF		);	// marker
 		Memory.setI16(	175,	0xA201		);	// length
 
 		var bytes:ByteArray = Memory.memory;
 		bytes.position = 177;
-		bytes.writeBytes( bytes, 4096 + 1154, 416 );
+		bytes.writeBytes( bytes, Z2 + 1154, 416 );
 
 		Memory.setByte(	177,	0x00		);	// HTYDCinfo
 		Memory.setByte(	206,	0x10		);	// HTYACinfo
@@ -175,7 +179,7 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static function writeSOS():Void {
+	private static inline function writeSOS():Void {
 		Memory.setI16(	593,	0xDAFF		);	// marker
 		Memory.setI16(	595,	0x0C00		);	// length
 		Memory.setByte(	597,	0x03		);	// nrofcomponents
@@ -184,5 +188,48 @@ private class TMP {
 		Memory.setI16(	602,	0x1103		);	// IdV, HTV
 		Memory.setI32(	604,	0x00003f00	);	// Ss, Se, Bf
 	}
-		
+
+	/**
+	 * @private
+	 */
+	private static inline function rgb2yuv(img:BitmapData, xpos:UInt, ypos:UInt):Void {
+
+		var pos:UInt = 0;
+
+		var x:UInt;
+		var y:UInt;
+
+		var c:UInt;
+		var r:UInt;
+		var g:UInt;
+		var b:UInt;
+
+		y = 0;
+		do {
+			x = 0;
+			do {
+
+				c = img.getPixel( xpos + x, ypos + y );
+
+				r = ( c >> 16 ) & 0xFF;
+				g = ( c >>  8 ) & 0xFF;
+				b = ( c       ) & 0xFF;
+
+				Memory.setDouble( Z1 + 512 * 0 + pos,   0.29900 * r + 0.58700 * g + 0.11400 * b - 0x80 ); // YDU
+				Memory.setDouble( Z1 + 512 * 1 + pos, - 0.16874 * r - 0.33126 * g + 0.50000 * b        ); // UDU
+				Memory.setDouble( Z1 + 512 * 2 + pos,   0.50000 * r - 0.41869 * g - 0.08131 * b        ); // VDU
+
+				++pos;
+
+			} while ( ++x < 8 );
+		} while ( ++y < 8 );
+
+		var arr:Array<Float> = [];
+		var i:Int;
+		for ( i in 0...64 ) {
+			arr.push( Memory.getDouble( Z1 + 512 * 0 + i ) );
+		}
+		Lib.trace( arr );
+	}
+
 }
