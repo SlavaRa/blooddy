@@ -119,7 +119,7 @@ package by.blooddy.crypto.image {
 			}
 			return HT;
 		}
-		
+
 		private var std_dc_luminance_nrcodes:Vector.<int> = Vector.<int>([0,0,1,5,1,1,1,1,1,1,0,0,0,0,0,0,0]);
 		private var std_dc_luminance_values:Vector.<int> = Vector.<int>([0,1,2,3,4,5,6,7,8,9,10,11]);
 		private var std_ac_luminance_nrcodes:Vector.<int> = Vector.<int>([0,0,2,1,3,3,2,4,3,5,5,4,4,0,0,1,0x7d]);
@@ -174,8 +174,8 @@ package by.blooddy.crypto.image {
 		private function initHuffmanTbl():void
 		{
 			YDC_HT = computeHuffmanTbl(std_dc_luminance_nrcodes,std_dc_luminance_values);
-			UVDC_HT = computeHuffmanTbl(std_dc_chrominance_nrcodes,std_dc_chrominance_values);
 			YAC_HT = computeHuffmanTbl(std_ac_luminance_nrcodes,std_ac_luminance_values);
+			UVDC_HT = computeHuffmanTbl(std_dc_chrominance_nrcodes,std_dc_chrominance_values);
 			UVAC_HT = computeHuffmanTbl(std_ac_chrominance_nrcodes,std_ac_chrominance_values);
 		}
 		
@@ -646,7 +646,7 @@ package by.blooddy.crypto.image {
 			}
 			byteout.writeShort(0xFFD9); //EOI
 			
-			byteout.length = 576;
+			byteout.length = 607;
 			
 			return byteout;
 		}

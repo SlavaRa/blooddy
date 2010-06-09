@@ -16,6 +16,12 @@ import flash.utils.ByteArray;
  */
 class JPEGEncoder {
 
+	//--------------------------------------------------------------------------
+	//
+	//  Class methods
+	//
+	//--------------------------------------------------------------------------
+
 	public static function encode(image:BitmapData, ?quality:UInt=60):ByteArray {
 		return TMP.encode( image, quality );
 	}
@@ -27,52 +33,57 @@ class JPEGEncoder {
  */
 private class TMP {
 
+	//--------------------------------------------------------------------------
+	//
+	//  Class methods
+	//
+	//--------------------------------------------------------------------------
+
 	public static function encode(image:BitmapData, quality:UInt):ByteArray {
 
 		var mem:ByteArray = Memory.memory;
 
-		var quantTable:ByteArray = JPEGHelper.createQuantTable( quality );
-		var huffmanTable:ByteArray = JPEGHelper.createHuffmanTable();
+		var width:UInt = image.width;
+		var height:UInt = image.height;
 
 		var bytes:ByteArray = new ByteArray();
-		var len:UInt = image.width * image.height * 4;
+		var len:UInt = width * height * 4;
 
-		bytes.length = 2048 * 2048;
+		bytes.position = 4096;
 
+		bytes.writeBytes( JPEGTable.getTable( quality ) );
+		
 		Memory.memory = bytes;
 
-		//bytenew=0;
-		//bytepos=7;
-		
 		// Add JPEG headers
 		Memory.setI16( 0, 0xD8FF ); // SOI
 		writeAPP0();
-		writeDQT( quantTable );
+		writeDQT();
 		writeSOF0( image.width, image.height );
-		writeDHT( huffmanTable );
-		//writeSOS();
-		//
+		writeDHT();
+		writeSOS();
+		
 		// Encode 8x8 macroblocks
-		//var DCY:Number=0;
-		//var DCU:Number=0;
-		//var DCV:Number=0;
-		//bytenew=0;
-		//bytepos=7;
-		//
-		//var width:int = image.width;
-		//var height:int = image.height;
-		//
-		//for (var ypos:int=0; ypos<height; ypos+=8)
-		//{
-			//for (var xpos:int=0; xpos<width; xpos+=8)
-			//{
+		var DCY:Float = 0;
+		var DCU:Float = 0;
+		var DCV:Float = 0;
+
+		var x:UInt;
+		var y:UInt;
+		
+		y = 0;
+		do {
+			x = 0;
+			do {
 				//RGB2YUV(image, xpos, ypos);
 				//DCY = processDU(YDU, fdtbl_Y, DCY, YDC_HT, YAC_HT);
 				//DCU = processDU(UDU, fdtbl_UV, DCU, UVDC_HT, UVAC_HT);
 				//DCV = processDU(VDU, fdtbl_UV, DCV, UVDC_HT, UVAC_HT);
-			//}
-		//}
-		//
+				x += 8;
+			} while ( x < width );
+			y += 8;
+		} while ( y < height );
+
 		// Do the bit alignment of the EOI marker
 		//if ( bytepos >= 0 )
 		//{
@@ -83,12 +94,18 @@ private class TMP {
 		//}
 		//bytes.writeShort(0xFFD9); //EOI
 //
-		bytes.length = 576;
+		bytes.length = 607;
 
 		Memory.memory = mem;
 
 		return bytes;
 	}
+
+	//--------------------------------------------------------------------------
+	//
+	//  Private class methods
+	//
+	//--------------------------------------------------------------------------
 
 	/**
 	 * @private
@@ -97,30 +114,26 @@ private class TMP {
 		Memory.setI16(	2,	0xE0FF		);	// marker
 		Memory.setI16(	4,	0x1000		);	// length
 		Memory.setI32(	6,	0x4649464A	);	// JFIF
-		Memory.setByte( 10,	0x00		);	// 
+		Memory.setByte( 10,	0x00		);	//
 		Memory.setI16(	11,	0x0101		);	// version
 		Memory.setByte( 13,	0x00		);	// xyunits
-		Memory.setI32(	14,	0x10001000	);	// density
+		Memory.setI32(	14,	0x01000100	);	// density
 		Memory.setI16(	18, 0x0000		);	// thumbn
 	}
 
 	/**
 	 * @private
 	 */
-	private static function writeDQT(quantTable:ByteArray):Void {
+	private static function writeDQT():Void {
 		Memory.setI16(	20,	0xDBFF		);	// marker
 		Memory.setI16(	22,	0x8400		);	// length
-		Memory.setByte( 24,	0x00		);	// 
 
 		var bytes:ByteArray = Memory.memory;
+		bytes.position = 24;
+		bytes.writeBytes( bytes, 4096, 130 );
 
-		bytes.position = 25;
-		bytes.writeBytes( quantTable, 0, 64 );
-
-		Memory.setByte( 89,	0x01		);	// 
-
-		bytes.position = 90;
-		bytes.writeBytes( quantTable, 64, 64 );
+		Memory.setByte( 24,	0x00		);
+		Memory.setByte( 89,	0x01		);
 	}
 	
 	/**
@@ -145,19 +158,31 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static function writeDHT(huffmanTable:ByteArray):Void {
+	private static function writeDHT():Void {
 		Memory.setI16(	173,	0xC4FF		);	// marker
 		Memory.setI16(	175,	0xA201		);	// length
 
 		var bytes:ByteArray = Memory.memory;
 		bytes.position = 177;
-		bytes.writeBytes( huffmanTable, 0, 416 );
+		bytes.writeBytes( bytes, 4096 + 1154, 416 );
 
 		Memory.setByte(	177,	0x00		);	// HTYDCinfo
 		Memory.setByte(	206,	0x10		);	// HTYACinfo
 		Memory.setByte(	385,	0x01		);	// HTUDCinfo
 		Memory.setByte(	414,	0x11		);	// HTUACinfo
-
 	}
 
+	/**
+	 * @private
+	 */
+	private static function writeSOS():Void {
+		Memory.setI16(	593,	0xDAFF		);	// marker
+		Memory.setI16(	595,	0x0C00		);	// length
+		Memory.setByte(	597,	0x03		);	// nrofcomponents
+		Memory.setI16(	598,	0x0001		);	// IdY, HTY
+		Memory.setI16(	600,	0x1102		);	// IdU, HTU
+		Memory.setI16(	602,	0x1103		);	// IdV, HTV
+		Memory.setI32(	604,	0x00003f00	);	// Ss, Se, Bf
+	}
+		
 }

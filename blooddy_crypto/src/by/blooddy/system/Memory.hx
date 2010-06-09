@@ -15,6 +15,12 @@ import flash.system.ApplicationDomain;
  */
 class Memory {
 
+	//--------------------------------------------------------------------------
+	//
+	//  Class properties
+	//
+	//--------------------------------------------------------------------------
+
 	public static inline var memory( get_memory, set_memory ):ByteArray;
 
 	private static inline function get_memory():ByteArray {
@@ -24,6 +30,12 @@ class Memory {
 	private static inline function set_memory(value:ByteArray):ByteArray {
 		return ApplicationDomain.currentDomain.domainMemory = value;
 	}
+
+	//--------------------------------------------------------------------------
+	//
+	//  Class methods
+	//
+	//--------------------------------------------------------------------------
 
 	public static inline function setByte(address:Int, value:Int):Void {
 		untyped __vmem_set__( 0, address, value );
