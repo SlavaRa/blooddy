@@ -15,6 +15,12 @@ import flash.utils.ByteArray;
  */
 class CRC32 {
 
+	//--------------------------------------------------------------------------
+	//
+	//  Class methods
+	//
+	//--------------------------------------------------------------------------
+
 	public static function hash(bytes:ByteArray):UInt {
 		return TMP.hash( bytes );
 	}
@@ -25,6 +31,12 @@ class CRC32 {
  * @private
  */
 private class TMP {
+
+	//--------------------------------------------------------------------------
+	//
+	//  Class methods
+	//
+	//--------------------------------------------------------------------------
 
 	public static inline function hash(bytes:ByteArray):UInt {
 

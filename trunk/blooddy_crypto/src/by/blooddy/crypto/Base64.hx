@@ -16,6 +16,12 @@ import flash.utils.ByteArray;
  */
 class Base64 {
 
+	//--------------------------------------------------------------------------
+	//
+	//  Class methods
+	//
+	//--------------------------------------------------------------------------
+
 	public static function encode(bytes:ByteArray, insertNewLines:Bool=false):String {
 		return TMP.encode( bytes, insertNewLines );
 	}
@@ -30,6 +36,12 @@ class Base64 {
  * @private
  */
 private class TMP {
+
+	//--------------------------------------------------------------------------
+	//
+	//  Class methods
+	//
+	//--------------------------------------------------------------------------
 
 	public static inline function encode(bytes:ByteArray, insertNewLines:Bool=false):String {
 
@@ -172,6 +184,12 @@ private class TMP {
 		
 		return bytes;
 	}
+
+	//--------------------------------------------------------------------------
+	//
+	//  Private class methods
+	//
+	//--------------------------------------------------------------------------
 
 	/**
 	 * @private
