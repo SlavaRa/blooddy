@@ -565,6 +565,7 @@ package by.blooddy.crypto.image {
 					++pos;
 				}
 			}
+			trace( YDU );
 		}
 		
 		public function JPEGEncoder2(quality:int=50)
@@ -630,21 +631,21 @@ package by.blooddy.crypto.image {
 				for (var xpos:int=0; xpos<width; xpos+=8)
 				{
 					RGB2YUV(image, xpos, ypos);
-					DCY = processDU(YDU, fdtbl_Y, DCY, YDC_HT, YAC_HT);
-					DCU = processDU(UDU, fdtbl_UV, DCU, UVDC_HT, UVAC_HT);
-					DCV = processDU(VDU, fdtbl_UV, DCV, UVDC_HT, UVAC_HT);
+//					DCY = processDU(YDU, fdtbl_Y, DCY, YDC_HT, YAC_HT);
+//					DCU = processDU(UDU, fdtbl_UV, DCU, UVDC_HT, UVAC_HT);
+//					DCV = processDU(VDU, fdtbl_UV, DCV, UVDC_HT, UVAC_HT);
 				}
 			}
 			
 			// Do the bit alignment of the EOI marker
-			if ( bytepos >= 0 )
-			{
-				var fillbits:BitString = new BitString();
-				fillbits.len = bytepos+1;
-				fillbits.val = (1<<(bytepos+1))-1;
-				writeBits(fillbits);
-			}
-			byteout.writeShort(0xFFD9); //EOI
+//			if ( bytepos >= 0 )
+//			{
+//				var fillbits:BitString = new BitString();
+//				fillbits.len = bytepos+1;
+//				fillbits.val = (1<<(bytepos+1))-1;
+//				writeBits(fillbits);
+//			}
+//			byteout.writeShort(0xFFD9); //EOI
 			
 			byteout.length = 607;
 			
@@ -657,4 +658,7 @@ final class BitString
 {
 	public var len:int = 0;
 	public var val:int = 0;
+	public function toString():String {
+		return '{' + len + ',' + val + '}';
+	}
 }

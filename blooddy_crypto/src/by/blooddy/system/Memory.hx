@@ -23,10 +23,16 @@ class Memory {
 
 	public static inline var memory( get_memory, set_memory ):ByteArray;
 
+	/**
+	 * @private
+	 */
 	private static inline function get_memory():ByteArray {
 		return ApplicationDomain.currentDomain.domainMemory;
 	}
 
+	/**
+	 * @private
+	 */
 	private static inline function set_memory(value:ByteArray):ByteArray {
 		return ApplicationDomain.currentDomain.domainMemory = value;
 	}
