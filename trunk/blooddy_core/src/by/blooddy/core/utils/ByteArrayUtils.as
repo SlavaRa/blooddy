@@ -19,6 +19,18 @@ package by.blooddy.core.utils {
 	 */
 	public final class ByteArrayUtils {
 
+		public static function equals(b1:ByteArray, b2:ByteArray):Boolean {
+			var l:uint = b1.length;
+			if ( l != b2.length ) return false;
+			for ( var i:uint = 0; i<l; i++ ) {
+				if ( b1[ i ] != b2[ i ] ) {
+					trace( i, i.toString( 16 ), b1[ i ].toString( 16 ), b2[ i ].toString( 16 ) );
+					return false;
+				}
+			}
+			return true;
+		}
+		
 		public static function bytesToHashString(bytes:ByteArray, shift:uint=0):String {
 			var l:uint = bytes.length;
 			var arr:Array = new Array();
