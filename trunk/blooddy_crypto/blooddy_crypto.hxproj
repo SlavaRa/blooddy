@@ -19,7 +19,7 @@
   <build>
     <option directives="" />
     <option flashStrict="False" />
-    <option mainClass="by.blooddy.crypto.Main" />
+    <option mainClass="Main" />
     <option forcetraces="False" />
     <option additional="" />
   </build>
