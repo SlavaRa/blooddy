@@ -265,6 +265,8 @@ package by.blooddy.crypto.image {
 				d6 = data[int(dataOff+6)];
 				d7 = data[int(dataOff+7)];
 				
+				trace( d0 );
+				
 				var tmp0:Number = d0 + d7;
 				var tmp7:Number = d0 - d7;
 				var tmp1:Number = d1 + d6;
@@ -279,101 +281,101 @@ package by.blooddy.crypto.image {
 				var tmp13:Number = tmp0 - tmp3;
 				var tmp11:Number = tmp1 + tmp2;
 				var tmp12:Number = tmp1 - tmp2;
-				
-				data[int(dataOff)] = tmp10 + tmp11; /* phase 3 */
-				data[int(dataOff+4)] = tmp10 - tmp11;
-				
-				var z1:Number = (tmp12 + tmp13) * 0.707106781; /* c4 */
-				data[int(dataOff+2)] = tmp13 + z1; /* phase 5 */
-				data[int(dataOff+6)] = tmp13 - z1;
-				
-				/* Odd part */
-				tmp10 = tmp4 + tmp5; /* phase 2 */
-				tmp11 = tmp5 + tmp6;
-				tmp12 = tmp6 + tmp7;
-				
-				/* The rotator is modified from fig 4-8 to avoid extra negations. */
-				var z5:Number = (tmp10 - tmp12) * 0.382683433; /* c6 */
-				var z2:Number = 0.541196100 * tmp10 + z5; /* c2-c6 */
-				var z4:Number = 1.306562965 * tmp12 + z5; /* c2+c6 */
-				var z3:Number = tmp11 * 0.707106781; /* c4 */
-				
-				var z11:Number = tmp7 + z3;	/* phase 5 */
-				var z13:Number = tmp7 - z3;
-				
-				data[int(dataOff+5)] = z13 + z2;	/* phase 6 */
-				data[int(dataOff+3)] = z13 - z2;
-				data[int(dataOff+1)] = z11 + z4;
-				data[int(dataOff+7)] = z11 - z4;
-				
+//				
+//				data[int(dataOff)] = tmp10 + tmp11; /* phase 3 */
+//				data[int(dataOff+4)] = tmp10 - tmp11;
+//				
+//				var z1:Number = (tmp12 + tmp13) * 0.707106781; /* c4 */
+//				data[int(dataOff+2)] = tmp13 + z1; /* phase 5 */
+//				data[int(dataOff+6)] = tmp13 - z1;
+//				
+//				/* Odd part */
+//				tmp10 = tmp4 + tmp5; /* phase 2 */
+//				tmp11 = tmp5 + tmp6;
+//				tmp12 = tmp6 + tmp7;
+//				
+//				/* The rotator is modified from fig 4-8 to avoid extra negations. */
+//				var z5:Number = (tmp10 - tmp12) * 0.382683433; /* c6 */
+//				var z2:Number = 0.541196100 * tmp10 + z5; /* c2-c6 */
+//				var z4:Number = 1.306562965 * tmp12 + z5; /* c2+c6 */
+//				var z3:Number = tmp11 * 0.707106781; /* c4 */
+//				
+//				var z11:Number = tmp7 + z3;	/* phase 5 */
+//				var z13:Number = tmp7 - z3;
+//				
+//				data[int(dataOff+5)] = z13 + z2;	/* phase 6 */
+//				data[int(dataOff+3)] = z13 - z2;
+//				data[int(dataOff+1)] = z11 + z4;
+//				data[int(dataOff+7)] = z11 - z4;
+//				
 				dataOff += 8; /* advance pointer to next row */
 			}
-			
-			/* Pass 2: process columns. */
-			dataOff = 0;
-			for (i=0; i<I8; ++i)
-			{
-				d0 = data[int(dataOff)];
-				d1 = data[int(dataOff + 8)];
-				d2 = data[int(dataOff + 16)];
-				d3 = data[int(dataOff + 24)];
-				d4 = data[int(dataOff + 32)];
-				d5 = data[int(dataOff + 40)];
-				d6 = data[int(dataOff + 48)];
-				d7 = data[int(dataOff + 56)];
-				
-				var tmp0p2:Number = d0 + d7;
-				var tmp7p2:Number = d0 - d7;
-				var tmp1p2:Number = d1 + d6;
-				var tmp6p2:Number = d1 - d6;
-				var tmp2p2:Number = d2 + d5;
-				var tmp5p2:Number = d2 - d5;
-				var tmp3p2:Number = d3 + d4;
-				var tmp4p2:Number = d3 - d4;
-				
-				/* Even part */
-				var tmp10p2:Number = tmp0p2 + tmp3p2;	/* phase 2 */
-				var tmp13p2:Number = tmp0p2 - tmp3p2;
-				var tmp11p2:Number = tmp1p2 + tmp2p2;
-				var tmp12p2:Number = tmp1p2 - tmp2p2;
-				
-				data[int(dataOff)] = tmp10p2 + tmp11p2; /* phase 3 */
-				data[int(dataOff+32)] = tmp10p2 - tmp11p2;
-				
-				var z1p2:Number = (tmp12p2 + tmp13p2) * 0.707106781; /* c4 */
-				data[int(dataOff+16)] = tmp13p2 + z1p2; /* phase 5 */
-				data[int(dataOff+48)] = tmp13p2 - z1p2;
-				
-				/* Odd part */
-				tmp10p2 = tmp4p2 + tmp5p2; /* phase 2 */
-				tmp11p2 = tmp5p2 + tmp6p2;
-				tmp12p2 = tmp6p2 + tmp7p2;
-				
-				/* The rotator is modified from fig 4-8 to avoid extra negations. */
-				var z5p2:Number = (tmp10p2 - tmp12p2) * 0.382683433; /* c6 */
-				var z2p2:Number = 0.541196100 * tmp10p2 + z5p2; /* c2-c6 */
-				var z4p2:Number = 1.306562965 * tmp12p2 + z5p2; /* c2+c6 */
-				var z3p2:Number= tmp11p2 * 0.707106781; /* c4 */
-				
-				var z11p2:Number = tmp7p2 + z3p2;	/* phase 5 */
-				var z13p2:Number = tmp7p2 - z3p2;
-				
-				data[int(dataOff+40)] = z13p2 + z2p2; /* phase 6 */
-				data[int(dataOff+24)] = z13p2 - z2p2;
-				data[int(dataOff+ 8)] = z11p2 + z4p2;
-				data[int(dataOff+56)] = z11p2 - z4p2;
-				
-				dataOff++; /* advance pointer to next column */
-			}
-			
-			// Quantize/descale the coefficients
-			var fDCTQuant:Number;
-			for (i=0; i<I64; ++i)
-			{
-				// Apply the quantization and scaling factor & Round to nearest integer
-				fDCTQuant = data[int(i)]*fdtbl[int(i)];
-				outputfDCTQuant[int(i)] = (fDCTQuant > 0.0) ? int(fDCTQuant + 0.5) : int(fDCTQuant - 0.5);
-			}
+//			
+//			/* Pass 2: process columns. */
+//			dataOff = 0;
+//			for (i=0; i<I8; ++i)
+//			{
+//				d0 = data[int(dataOff)];
+//				d1 = data[int(dataOff + 8)];
+//				d2 = data[int(dataOff + 16)];
+//				d3 = data[int(dataOff + 24)];
+//				d4 = data[int(dataOff + 32)];
+//				d5 = data[int(dataOff + 40)];
+//				d6 = data[int(dataOff + 48)];
+//				d7 = data[int(dataOff + 56)];
+//				
+//				var tmp0p2:Number = d0 + d7;
+//				var tmp7p2:Number = d0 - d7;
+//				var tmp1p2:Number = d1 + d6;
+//				var tmp6p2:Number = d1 - d6;
+//				var tmp2p2:Number = d2 + d5;
+//				var tmp5p2:Number = d2 - d5;
+//				var tmp3p2:Number = d3 + d4;
+//				var tmp4p2:Number = d3 - d4;
+//				
+//				/* Even part */
+//				var tmp10p2:Number = tmp0p2 + tmp3p2;	/* phase 2 */
+//				var tmp13p2:Number = tmp0p2 - tmp3p2;
+//				var tmp11p2:Number = tmp1p2 + tmp2p2;
+//				var tmp12p2:Number = tmp1p2 - tmp2p2;
+//				
+//				data[int(dataOff)] = tmp10p2 + tmp11p2; /* phase 3 */
+//				data[int(dataOff+32)] = tmp10p2 - tmp11p2;
+//				
+//				var z1p2:Number = (tmp12p2 + tmp13p2) * 0.707106781; /* c4 */
+//				data[int(dataOff+16)] = tmp13p2 + z1p2; /* phase 5 */
+//				data[int(dataOff+48)] = tmp13p2 - z1p2;
+//				
+//				/* Odd part */
+//				tmp10p2 = tmp4p2 + tmp5p2; /* phase 2 */
+//				tmp11p2 = tmp5p2 + tmp6p2;
+//				tmp12p2 = tmp6p2 + tmp7p2;
+//				
+//				/* The rotator is modified from fig 4-8 to avoid extra negations. */
+//				var z5p2:Number = (tmp10p2 - tmp12p2) * 0.382683433; /* c6 */
+//				var z2p2:Number = 0.541196100 * tmp10p2 + z5p2; /* c2-c6 */
+//				var z4p2:Number = 1.306562965 * tmp12p2 + z5p2; /* c2+c6 */
+//				var z3p2:Number= tmp11p2 * 0.707106781; /* c4 */
+//				
+//				var z11p2:Number = tmp7p2 + z3p2;	/* phase 5 */
+//				var z13p2:Number = tmp7p2 - z3p2;
+//				
+//				data[int(dataOff+40)] = z13p2 + z2p2; /* phase 6 */
+//				data[int(dataOff+24)] = z13p2 - z2p2;
+//				data[int(dataOff+ 8)] = z11p2 + z4p2;
+//				data[int(dataOff+56)] = z11p2 - z4p2;
+//				
+//				dataOff++; /* advance pointer to next column */
+//			}
+//			
+//			// Quantize/descale the coefficients
+//			var fDCTQuant:Number;
+//			for (i=0; i<I64; ++i)
+//			{
+//				// Apply the quantization and scaling factor & Round to nearest integer
+//				fDCTQuant = data[int(i)]*fdtbl[int(i)];
+//				outputfDCTQuant[int(i)] = (fDCTQuant > 0.0) ? int(fDCTQuant + 0.5) : int(fDCTQuant - 0.5);
+//			}
 			return outputfDCTQuant;
 		}
 		
@@ -501,47 +503,47 @@ package by.blooddy.crypto.image {
 			const I63:int = 63;
 			const I64:int = 64;
 			var DU_DCT:Vector.<int> = fDCTQuant(CDU, fdtbl);
-			//ZigZag reorder
-			for (var j:int=0;j<I64;++j) {
-				DU[ZigZag[j]]=DU_DCT[j];
-			}
-			var Diff:int = DU[0] - DC; DC = DU[0];
-			//Encode DC
-			if (Diff==0) {
-				writeBits(HTDC[0]); // Diff might be 0
-			} else {
-				pos = int(32767+Diff);
-				writeBits(HTDC[category[pos]]);
-				writeBits(bitcode[pos]);
-			}
-			//Encode ACs
-			const end0pos:int = 63;
-			for (; (end0pos>0)&&(DU[end0pos]==0); end0pos--) {};
-			//end0pos = first element in reverse order !=0
-			if ( end0pos == 0) {
-				writeBits(EOB);
-				return DC;
-			}
-			var i:int = 1;
-			var lng:int;
-			while ( i <= end0pos ) {
-				var startpos:int = i;
-				for (; (DU[i]==0) && (i<=end0pos); ++i) {}
-				var nrzeroes:int = i-startpos;
-				if ( nrzeroes >= I16 ) {
-					lng = nrzeroes>>4;
-					for (var nrmarker:int=1; nrmarker <= lng; ++nrmarker)
-						writeBits(M16zeroes);
-					nrzeroes = int(nrzeroes&0xF);
-				}
-				pos = int(32767+DU[i]);
-				writeBits(HTAC[int((nrzeroes<<4)+category[pos])]);
-				writeBits(bitcode[pos]);
-				i++;
-			}
-			if ( end0pos != I63 ) {
-				writeBits(EOB);
-			}
+//			//ZigZag reorder
+//			for (var j:int=0;j<I64;++j) {
+//				DU[ZigZag[j]]=DU_DCT[j];
+//			}
+//			var Diff:int = DU[0] - DC; DC = DU[0];
+//			//Encode DC
+//			if (Diff==0) {
+//				writeBits(HTDC[0]); // Diff might be 0
+//			} else {
+//				pos = int(32767+Diff);
+//				writeBits(HTDC[category[pos]]);
+//				writeBits(bitcode[pos]);
+//			}
+//			//Encode ACs
+//			const end0pos:int = 63;
+//			for (; (end0pos>0)&&(DU[end0pos]==0); end0pos--) {};
+//			//end0pos = first element in reverse order !=0
+//			if ( end0pos == 0) {
+//				writeBits(EOB);
+//				return DC;
+//			}
+//			var i:int = 1;
+//			var lng:int;
+//			while ( i <= end0pos ) {
+//				var startpos:int = i;
+//				for (; (DU[i]==0) && (i<=end0pos); ++i) {}
+//				var nrzeroes:int = i-startpos;
+//				if ( nrzeroes >= I16 ) {
+//					lng = nrzeroes>>4;
+//					for (var nrmarker:int=1; nrmarker <= lng; ++nrmarker)
+//						writeBits(M16zeroes);
+//					nrzeroes = int(nrzeroes&0xF);
+//				}
+//				pos = int(32767+DU[i]);
+//				writeBits(HTAC[int((nrzeroes<<4)+category[pos])]);
+//				writeBits(bitcode[pos]);
+//				i++;
+//			}
+//			if ( end0pos != I63 ) {
+//				writeBits(EOB);
+//			}
 			return DC;
 		}
 		
@@ -565,7 +567,6 @@ package by.blooddy.crypto.image {
 					++pos;
 				}
 			}
-			trace( YDU );
 		}
 		
 		public function JPEGEncoder2(quality:int=50)
@@ -631,7 +632,7 @@ package by.blooddy.crypto.image {
 				for (var xpos:int=0; xpos<width; xpos+=8)
 				{
 					RGB2YUV(image, xpos, ypos);
-//					DCY = processDU(YDU, fdtbl_Y, DCY, YDC_HT, YAC_HT);
+					DCY = processDU(YDU, fdtbl_Y, DCY, YDC_HT, YAC_HT);
 //					DCU = processDU(UDU, fdtbl_UV, DCU, UVDC_HT, UVAC_HT);
 //					DCV = processDU(VDU, fdtbl_UV, DCV, UVDC_HT, UVAC_HT);
 				}

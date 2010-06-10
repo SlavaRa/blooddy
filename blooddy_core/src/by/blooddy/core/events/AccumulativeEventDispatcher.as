@@ -1,6 +1,6 @@
 package by.blooddy.core.events {
 
-	import by.blooddy.core.utils.compareObjects;
+	import by.blooddy.core.utils.equalsObjects;
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -33,7 +33,7 @@ package by.blooddy.core.events {
 		public function hasAccumulativeEvent(event:Event):Boolean {
 			var l:uint = this._events.length;
 			for ( var i:uint = 0; i<l; i++ ) {
-				if ( compareObjects( event, this._events[ i ] ) ) return true;
+				if ( equalsObjects( event, this._events[ i ] ) ) return true;
 			}
 			return false;
 		}

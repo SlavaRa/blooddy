@@ -15,7 +15,7 @@ package by.blooddy.core.utils {
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
 	 */
-	public function compareObjects(o1:Object, o2:Object):Boolean {
+	public function equalsObjects(o1:Object, o2:Object):Boolean {
 		if ( o1 === o2 ) return true;
 		if ( o1 == o2 ) return true;
 
