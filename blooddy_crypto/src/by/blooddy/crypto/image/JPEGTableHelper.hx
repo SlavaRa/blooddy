@@ -31,7 +31,15 @@ class JPEGTableHelper {
 	 * 	1154:
 	 */
 	public static function createQuantTable(?quality:UInt=60):ByteArray {
-		return TMP.createQuantTables( quality );
+		return TMP.createQuantTable( quality );
+	}
+
+	/**
+	 *	   0:	ZigZag						[1]{64}
+	 *	  64:
+	 */
+	public static function createZigZagTable():ByteArray {
+		return TMP.createZigZagTable();
 	}
 
 	/**
@@ -78,7 +86,7 @@ private class TMP {
 	//
 	//--------------------------------------------------------------------------
 
-	public static inline function createQuantTables(quality:UInt):ByteArray {
+	public static inline function createQuantTable(quality:UInt):ByteArray {
 
 		var sf:UInt = quality < 50 ? Std.int( 5000 / quality ) : Std.int( 200 - ( quality << 1 ) );
 
@@ -154,6 +162,13 @@ private class TMP {
 		bytes.position = 0;
 		Memory.memory = mem;
 
+		return bytes;
+	}
+
+	public static inline function createZigZagTable():ByteArray {
+		var bytes:ByteArray = new ByteArray();
+		bytes.writeUTFBytes( '\x00\x01\x05\x06\x0e\x0f\x1b\x1c\x02\x04\x07\x0d\x10\x1a\x1d\x2a\x03\x08\x0c\x11\x19\x1e\x29\x2b\x09\x0b\x12\x18\x1f\x28\x2c\x35\x0a\x13\x17\x20\x27\x2d\x34\x36\x14\x16\x21\x26\x2e\x33\x37\x3c\x15\x22\x25\x2f\x32\x38\x3b\x3d\x23\x24\x30\x31\x39\x3a\x3e\x3f' );
+		bytes.position = 0;
 		return bytes;
 	}
 

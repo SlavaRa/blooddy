@@ -98,7 +98,9 @@ package by.blooddy.core.utils {
 
 		public static function dump(bytes:ByteArray, offset:uint=0, length:uint=0):String {
 			offset = Math.min( offset, bytes.length );
-			length = Math.min( length, bytes.length ) || bytes.length;
+			length = Math.min( length, bytes.length - offset );
+			if ( !length ) length = bytes.length;
+			else length += offset;
 
 			var result:String = "";
 			var col:uint;
@@ -107,11 +109,11 @@ package by.blooddy.core.utils {
 			var code:uint;
 			var i:uint = offset;
 			if ( i % 16 != 0 ) { // есть пропущеные байты
-				var rest:int = i % 0xF;
+				var rest:int = i % 16;
 				result += ( '00000000' + ( i - rest ).toString( 16 ).toUpperCase() ).substr( -8 ) + ':  ';
 				if ( rest >= 8 ) result += ' ';
 				p = 0;
-				line_s = "";
+				line_s = '';
 				do {
 					result += '   ';
 					line_s += ' ';
