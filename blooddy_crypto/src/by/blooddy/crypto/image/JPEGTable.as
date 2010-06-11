@@ -31,7 +31,7 @@ package by.blooddy.crypto.image {
 		/**
 		 * @private
 		 */
-		private static var _table:ByteArray;
+		private static const _table:ByteArray = new ByteArray();
 
 		//--------------------------------------------------------------------------
 		//
@@ -75,11 +75,11 @@ package by.blooddy.crypto.image {
 			var quantTable:ByteArray = _quantTables[ quality ];
 			if ( !quantTable ) {
 				quantTable = JPEGTableHelper.createQuantTable( quality );
-				if ( !_table ) {
-					_table = new ByteArray();
-					_table.writeBytes( JPEGTableHelper.createZigZagTable() );
-					_table.writeBytes( JPEGTableHelper.createHuffmanTable() );
-					_table.writeBytes( JPEGTableHelper.createCategoryTable() );
+				if ( _table.length <= 0) {
+					var tmp:ByteArray;
+					tmp = JPEGTableHelper.createZigZagTable();		_table.writeBytes( tmp );	tmp.clear();
+					tmp = JPEGTableHelper.createHuffmanTable();		_table.writeBytes( tmp );	tmp.clear();
+					tmp = JPEGTableHelper.createCategoryTable();	_table.writeBytes( tmp );	tmp.clear();
 				}
 			}
 			var result:ByteArray = new ByteArray();

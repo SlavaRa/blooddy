@@ -43,43 +43,43 @@ class Memory {
 	//
 	//--------------------------------------------------------------------------
 
-	public static inline function setByte(address:Int, value:Int):Void {
+	public static inline function setByte(address:UInt, value:Int):Void {
 		untyped __vmem_set__( 0, address, value );
 	}
 
-	public static inline function setI16(address:Int, value:Int):Void {
+	public static inline function setI16(address:UInt, value:Int):Void {
 		untyped __vmem_set__( 1, address, value );
 	}
 
-	public static inline function setI32(address:Int, value:Int):Void {
+	public static inline function setI32(address:UInt, value:Int):Void {
 		untyped __vmem_set__( 2, address, value );
 	}
 
-	public static inline function setFloat(address:Int, value:Float):Void {
+	public static inline function setFloat(address:UInt, value:Float):Void {
 		untyped __vmem_set__( 3, address, value );
 	}
 
-	public static inline function setDouble(address:Int, value:Float):Void {
+	public static inline function setDouble(address:UInt, value:Float):Void {
 		untyped __vmem_set__( 4, address, value );
 	}
 
-	public static inline function getByte(address:Int):Int {
+	public static inline function getByte(address:UInt):Int {
 		return untyped __vmem_get__( 0, address );
 	}
 
-	public static inline function getUI16(address:Int):Int {
+	public static inline function getUI16(address:UInt):Int {
 		return untyped __vmem_get__( 1, address );
 	}
 
-	public static inline function getI32(address:Int):Int {
+	public static inline function getI32(address:UInt):Int {
 		return untyped __vmem_get__( 2, address );
 	}
 
-	public static inline function getFloat(address:Int):Float {
+	public static inline function getFloat(address:UInt):Float {
 		return untyped __vmem_get__( 3, address );
 	}
 
-	public static inline function getDouble(address:Int):Float {
+	public static inline function getDouble(address:UInt):Float {
 		return untyped __vmem_get__( 4, address );
 	}
 

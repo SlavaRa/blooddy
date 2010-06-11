@@ -22,6 +22,14 @@ class JPEGEncoder {
 	//
 	//--------------------------------------------------------------------------
 
+	/**
+	 * Created a JPEG image from the specified BitmapData
+	 *
+	 * @param	image	The BitmapData that will be converted into the JPEG format.
+	 * @param	quality	The quality level between 1 and 100 that detrmines the level of compression used in the generated JPEG
+ 	 * 
+	 * @return a ByteArray representing the JPEG encoded image data.
+	 */     
 	public static function encode(image:BitmapData, ?quality:UInt=60):ByteArray {
 		return TMP.encode( image, quality );
 	}
@@ -55,13 +63,14 @@ private class TMP {
 		var width:UInt = image.width;
 		var height:UInt = image.height;
 
-		var bytes:ByteArray = new ByteArray();
+		var tmp:ByteArray = new ByteArray();
 
-		bytes.position = Z2;
-
-		bytes.writeBytes( JPEGTable.getTable( quality ) );
+		var table:ByteArray = JPEGTable.getTable( quality );
+		tmp.position = Z2;
+		tmp.writeBytes( table );
+		table.clear();
 		
-		Memory.memory = bytes;
+		Memory.memory = tmp;
 
 		// Add JPEG headers
 		Memory.setI16( 0, 0xD8FF ); // SOI
@@ -107,10 +116,16 @@ private class TMP {
 
 		Memory.setI16( len, 0xD9FF ); //EOI
 
-		bytes.length = len + 2;
-
 		Memory.memory = mem;
 
+		tmp.length = len + 2;
+
+		var bytes:ByteArray = new ByteArray();
+		bytes.writeBytes( tmp );
+		bytes.position = 0;
+
+		tmp.clear();
+		
 		return bytes;
 	}
 
@@ -141,9 +156,9 @@ private class TMP {
 		Memory.setI16(	20,	0xDBFF		);	// marker
 		Memory.setI16(	22,	0x8400		);	// length
 
-		var bytes:ByteArray = Memory.memory;
-		bytes.position = 24;
-		bytes.writeBytes( bytes, Z2, 130 );
+		var tmp:ByteArray = Memory.memory;
+		tmp.position = 24;
+		tmp.writeBytes( tmp, Z2, 130 );
 
 		Memory.setByte( 24,	0x00		);
 		Memory.setByte( 89,	0x01		);
@@ -175,9 +190,9 @@ private class TMP {
 		Memory.setI16(	173,	0xC4FF		);	// marker
 		Memory.setI16(	175,	0xA201		);	// length
 
-		var bytes:ByteArray = Memory.memory;
-		bytes.position = 177;
-		bytes.writeBytes( bytes, Z2 + 1218, 416 );
+		var tmp:ByteArray = Memory.memory;
+		tmp.position = 177;
+		tmp.writeBytes( tmp, Z2 + 1218, 416 );
 
 		Memory.setByte(	177,	0x00		);	// HTYDCinfo
 		Memory.setByte(	206,	0x10		);	// HTYACinfo

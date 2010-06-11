@@ -46,20 +46,22 @@ private class TMP {
 	public static inline function encode(bytes:ByteArray, insertNewLines:Bool=false):String {
 
 		var len:UInt = bytes.length;
-		var pos:UInt = bytes.position;
+
 		var mem:ByteArray = Memory.memory;
 
+		var tmp:ByteArray = new ByteArray();
+		tmp.writeBytes( bytes );
+		
 		var rest:UInt = len % 3;
-		var bytesLength:UInt = len - 3;
+		var bytesLength:UInt = len - rest;
 
-		bytes.position = len;
-		bytes.writeUTFBytes( 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/' );
+		tmp.writeUTFBytes( 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/' );
 
 		var resultLength:UInt = Std.int( len / 3 ) * 4 + ( rest > 0 ? 4 : 0 );
-		bytes.length += resultLength + ( insertNewLines ? Std.int( resultLength / 76 ) : 0 );
+		tmp.length += resultLength + ( insertNewLines ? Std.int( resultLength / 76 ) : 0 );
 
-		if ( bytes.length < 1024 ) bytes.length = 1024;
-		Memory.memory = bytes;
+		if ( tmp.length < 1024 ) tmp.length = 1024;
+		Memory.memory = tmp;
 
 		var i:UInt = 0;
 		var j:UInt = len + 64;
@@ -108,12 +110,12 @@ private class TMP {
 
 		}
 
-		bytes.position = len + 64;
-		var result:String = bytes.readUTFBytes( bytes.bytesAvailable );
+		tmp.position = len + 64;
+		var result:String = tmp.readUTFBytes( tmp.bytesAvailable );
 
-		bytes.length = len;
-		bytes.position = pos;
 		Memory.memory = mem;
+
+		tmp.clear();
 		
 		return result;
 
@@ -124,15 +126,15 @@ private class TMP {
 		var len:UInt = Std.int( str.length * 0.75 );
 		var mem:ByteArray = Memory.memory;
 
-		var bytes:ByteArray = new ByteArray();
-		bytes.position = len;
-		bytes.writeUTFBytes( '\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x3e\x40\x40\x40\x3f\x34\x35\x36\x37\x38\x39\x3a\x3b\x3c\x3d\x40\x40\x40\x40\x40\x40\x40\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x40\x40\x40\x40\x40\x40\x1a\x1b\x1c\x1d\x1e\x1f\x20\x21\x22\x23\x24\x25\x26\x27\x28\x29\x2a\x2b\x2c\x2d\x2e\x2f\x30\x31\x32\x33\x40\x40\x40\x40\x40' );
-		bytes.writeUTFBytes( str );
+		var tmp:ByteArray = new ByteArray();
+		tmp.position = len;
+		tmp.writeUTFBytes( '\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x3e\x40\x40\x40\x3f\x34\x35\x36\x37\x38\x39\x3a\x3b\x3c\x3d\x40\x40\x40\x40\x40\x40\x40\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x40\x40\x40\x40\x40\x40\x1a\x1b\x1c\x1d\x1e\x1f\x20\x21\x22\x23\x24\x25\x26\x27\x28\x29\x2a\x2b\x2c\x2d\x2e\x2f\x30\x31\x32\x33\x40\x40\x40\x40\x40' );
+		tmp.writeUTFBytes( str );
 
-		var bytesLength:UInt = bytes.length - 4;
+		var bytesLength:UInt = tmp.length - 4;
 
-		if ( bytes.length < 1024 ) bytes.length = 1024;
-		Memory.memory = bytes;
+		if ( tmp.length < 1024 ) tmp.length = 1024;
+		Memory.memory = tmp;
 
 		var i:UInt = len + 128;
 		var j:UInt = 0;
@@ -178,10 +180,16 @@ private class TMP {
 			if ( getByte2( i++, len ) != -1 ) throwError();
 		}
 
-		bytes.length = j;
-		bytes.position = 0;
 		Memory.memory = mem;
+
+		tmp.length = j;
 		
+		var bytes:ByteArray = new ByteArray();
+		bytes.writeBytes( tmp );
+		bytes.position = 0;
+
+		tmp.clear();
+
 		return bytes;
 	}
 
