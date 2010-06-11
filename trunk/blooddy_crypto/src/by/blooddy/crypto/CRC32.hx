@@ -41,41 +41,47 @@ private class TMP {
 	public static inline function hash(bytes:ByteArray):UInt {
 
 		var len:UInt = bytes.length;
-		var pos:UInt = bytes.position;
-		var mem:ByteArray = Memory.memory;
+		if ( len > 0 ) {
 
-		bytes.length += 256 * 4;
+			var mem:ByteArray = Memory.memory;
 
-		Memory.memory = bytes;
+			bytes.length += 256 * 4;
 
-		var c:UInt;
-		var j:UInt;
-		var i:UInt = 0;
-		do {
-			c = i;
-			j = 0;
+			Memory.memory = bytes;
+
+			var c:UInt;
+			var j:UInt;
+			var i:UInt = 0;
 			do {
-				if ( c & 1 == 1 ) {
-					c = 0xEDB88320 ^ ( c >>> 1 );
-				} else {
-					c >>>= 1;
-				}
-			} while ( ++j < 8 );
-			Memory.setI32( len + i * 4, c );
-		} while ( ++i < 256 );
+				c = i;
+				j = 0;
+				do {
+					if ( c & 1 == 1 ) {
+						c = 0xEDB88320 ^ ( c >>> 1 );
+					} else {
+						c >>>= 1;
+					}
+				} while ( ++j < 8 );
+				Memory.setI32( len + i * 4, c );
+			} while ( ++i < 256 );
 
-		c = 0xFFFFFFFF;
+			c = 0xFFFFFFFF;
 
-		i = 0;
-		while ( i < len ) {
-			c = Memory.getI32( len + ( ( ( c ^ Memory.getByte( i++ ) ) & 0xFF ) << 2 ) ) ^ ( c >>> 8 );
+			i = 0;
+			while ( i < len ) {
+				c = Memory.getI32( len + ( ( ( c ^ Memory.getByte( i++ ) ) & 0xFF ) << 2 ) ) ^ ( c >>> 8 );
+			}
+
+			bytes.length = len;
+			Memory.memory = mem;
+
+			return c ^ 0xFFFFFFFF;
+
+		} else {
+			
+			return 0;
+			
 		}
-
-		bytes.length = len;
-		bytes.position = pos;
-		Memory.memory = mem;
-
-		return c ^ 0xFFFFFFFF;
 	}
 
 }

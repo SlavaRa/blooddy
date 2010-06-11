@@ -33,7 +33,9 @@ class MD5 {
 	public static function hash(s:String):String {
 		var bytes:ByteArray = new ByteArray();
 		bytes.writeUTFBytes( s );
-		return hashBytes( bytes );
+		var result:String = hashBytes( bytes );
+		bytes.clear();
+		return result;
 	}
 
 	/**
@@ -46,7 +48,7 @@ class MD5 {
 	 * @keyword					md5.hash, hash
 	 */
 	public static function hashBytes(data:ByteArray):String {
-		return TMP.hash( data );
+		return TMP.hashBytes( data );
 	}
 }
 
@@ -88,22 +90,24 @@ private class TMP {
 	//
 	//--------------------------------------------------------------------------
 
-	public static inline function hash(bytes:ByteArray):String {
+	public static inline function hashBytes(bytes:ByteArray):String {
 
 		var len:UInt = bytes.length;
-		var pos:UInt = bytes.position;
 		var mem:ByteArray = Memory.memory;
 
 		var i:UInt = len * 8;
-		var bytesLength:UInt = ( ( ( ( i + 64 ) >>> 9 ) << 4 ) + 15 ) * 4;
+		var bytesLength:UInt = ( ( ( ( len * 8 + 64 ) >>> 9 ) << 4 ) + 15 ) * 4;
+		
+		var tmp:ByteArray = new ByteArray();
+		tmp.writeBytes( bytes );
+		tmp.position = bytesLength + 4;
+		tmp.writeUTFBytes( '0123456789abcdef' );
+		tmp.length += 16 + 32;
 
-		bytes.position = bytesLength + 4;
-		bytes.writeUTFBytes( '0123456789abcdef' );
-		bytes.length += 16 + 32;
+		if ( tmp.length < 1024 ) tmp.length = 1024;
+		Memory.memory = tmp;
 
-		if ( bytes.length < 1024 ) bytes.length = 1024;
-		Memory.memory = bytes;
-
+		i = len * 8;
 		Memory.setI32( ( i >> 5 ) * 4, Memory.getI32( ( i >> 5 ) * 4 ) | ( 0x80 << ( i % 32 ) ) );
 		Memory.setI32( bytesLength - 4, i );
 
@@ -217,13 +221,12 @@ private class TMP {
 			b += 2;
 		}
 
-		bytes.position = bytesLength + 32;
+		tmp.position = bytesLength + 32;
 
-		var result:String = bytes.readUTFBytes( 32 );
+		var result:String = tmp.readUTFBytes( 32 );
 
 		Memory.memory = mem;
-		bytes.length = len;
-		bytes.position = pos;
+		tmp.clear();
 
 		return result;
 	}

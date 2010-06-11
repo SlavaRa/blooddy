@@ -10,6 +10,7 @@ import by.blooddy.crypto.Base64;
 import by.blooddy.crypto.CRC32;
 import by.blooddy.crypto.image.JPEGEncoder;
 import by.blooddy.crypto.image.JPEGTableHelper;
+import by.blooddy.crypto.image.PNG24Encoder;
 import by.blooddy.crypto.MD5;
 
 /**
@@ -24,6 +25,7 @@ class Main {
 		CRC32;
 		JPEGEncoder;
 		JPEGTableHelper;
+		PNG24Encoder;
 	}
 	
 }
