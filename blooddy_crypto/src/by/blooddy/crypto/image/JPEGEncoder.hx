@@ -8,7 +8,6 @@ package by.blooddy.crypto.image;
 
 import by.blooddy.system.Memory;
 import flash.display.BitmapData;
-import flash.Lib;
 import flash.utils.ByteArray;
 
 /**
@@ -34,8 +33,14 @@ class JPEGEncoder {
  */
 private class TMP {
 
-	private static inline var Z1:UInt = 4096;
-	private static inline var Z2:UInt = Z1 + 64 + 512 * 3;
+	//--------------------------------------------------------------------------
+	//
+	//  Private class variables
+	//
+	//--------------------------------------------------------------------------
+
+	private static inline var Z1:UInt = 1024 * 1024 * 10; // буфер под картинку
+	private static inline var Z2:UInt = Z1 + 256 + 512 * 3;
 
 	//--------------------------------------------------------------------------
 	//
@@ -43,7 +48,7 @@ private class TMP {
 	//
 	//--------------------------------------------------------------------------
 
-	public static function encode(image:BitmapData, quality:UInt):ByteArray {
+	public static inline function encode(image:BitmapData, quality:UInt):ByteArray {
 
 		var mem:ByteArray = Memory.memory;
 
@@ -51,7 +56,6 @@ private class TMP {
 		var height:UInt = image.height;
 
 		var bytes:ByteArray = new ByteArray();
-		var len:UInt = width * height * 3;
 
 		bytes.position = Z2;
 
@@ -78,31 +82,32 @@ private class TMP {
 
 		var x:UInt;
 		var y:UInt;
-		
+
 		y = 0;
 		do {
 			x = 0;
 			do {
 				rgb2yuv( image, x, y );
-				DCY = processDU( Z1 + 64 + 512 * 0, Z2 + 130, DCY, Z2 + 1218 + 416,  Z2 + 1218 + 452  );
-				//DCU = processDU( Z1 + 64 + 512 * 1, Z2 + 642, DCU, Z2 + 1218 + 1205, Z2 + 1218 + 1241 );
-				//DCV = processDU( Z1 + 64 + 512 * 2, Z2 + 642, DCV, Z2 + 1218 + 1205, Z2 + 1218 + 1241 );
+				DCY = processDU( Z1 + 256 + 512 * 0, Z2 + 130, DCY, Z2 + 1218 + 416,  Z2 + 1218 + 452  );
+				DCU = processDU( Z1 + 256 + 512 * 1, Z2 + 642, DCU, Z2 + 1218 + 1205, Z2 + 1218 + 1241 );
+				DCV = processDU( Z1 + 256 + 512 * 2, Z2 + 642, DCV, Z2 + 1218 + 1205, Z2 + 1218 + 1241 );
 				x += 8;
 			} while ( x < width );
 			y += 8;
 		} while ( y < height );
 
 		// Do the bit alignment of the EOI marker
-		//if ( bytepos >= 0 )
-		//{
-			//var fillbits:BitString = new BitString();
-			//fillbits.len = bytepos+1;
-			//fillbits.val = (1<<(bytepos+1))-1;
-			//writeBits(fillbits);
-		//}
-		//bytes.writeShort(0xFFD9); //EOI
-//
-		bytes.length = 707;
+		var bytepos:Int;
+		if ( Memory.getI32( Z1 - 8 ) >= 0 ) {
+			bytepos = Memory.getI32( Z1 - 8 ) + 1;
+			writeBits( bytepos, ( 1 << bytepos ) - 1 );
+		}
+
+		var len:UInt = Memory.getI32( Z1 - 12 );
+
+		Memory.setI16( len, 0xD9FF ); //EOI
+
+		bytes.length = len + 2;
 
 		Memory.memory = mem;
 
@@ -118,7 +123,7 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static function writeAPP0():Void {
+	private static inline function writeAPP0():Void {
 		Memory.setI16(	2,	0xE0FF		);	// marker
 		Memory.setI16(	4,	0x1000		);	// length
 		Memory.setI32(	6,	0x4649464A	);	// JFIF
@@ -132,7 +137,7 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static function writeDQT():Void {
+	private static inline function writeDQT():Void {
 		Memory.setI16(	20,	0xDBFF		);	// marker
 		Memory.setI16(	22,	0x8400		);	// length
 
@@ -147,7 +152,7 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static function writeSOF0(width:UInt, height:UInt):Void {
+	private static inline function writeSOF0(width:UInt, height:UInt):Void {
 		Memory.setI16(	154,	0xC0FF		);	// marker
 		Memory.setI16(	156,	0x1100		);	// length, truecolor YUV JPG
 		Memory.setByte(	158,	0x08		);	// precision
@@ -166,7 +171,7 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static function writeDHT():Void {
+	private static inline function writeDHT():Void {
 		Memory.setI16(	173,	0xC4FF		);	// marker
 		Memory.setI16(	175,	0xA201		);	// length
 
@@ -183,7 +188,7 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static function writeSOS():Void {
+	private static inline function writeSOS():Void {
 		Memory.setI16(	593,	0xDAFF		);	// marker
 		Memory.setI16(	595,	0x0C00		);	// length
 		Memory.setByte(	597,	0x03		);	// nrofcomponents
@@ -196,7 +201,7 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static function rgb2yuv(img:BitmapData, xpos:UInt, ypos:UInt):Void {
+	private static inline function rgb2yuv(img:BitmapData, xpos:UInt, ypos:UInt):Void {
 
 		var pos:UInt = 0;
 
@@ -219,9 +224,9 @@ private class TMP {
 				g = ( c >>  8 ) & 0xFF;
 				b = ( c       ) & 0xFF;
 
-				Memory.setDouble( Z1 + 64 + 512 * 0 + pos,   0.29900 * r + 0.58700 * g + 0.11400 * b - 0x80 ); // YDU
-				Memory.setDouble( Z1 + 64 + 512 * 1 + pos, - 0.16874 * r - 0.33126 * g + 0.50000 * b        ); // UDU
-				Memory.setDouble( Z1 + 64 + 512 * 2 + pos,   0.50000 * r - 0.41869 * g - 0.08131 * b        ); // VDU
+				Memory.setDouble( Z1 + 256 + 512 * 0 + pos,   0.29900 * r + 0.58700 * g + 0.11400 * b - 0x80 ); // YDU
+				Memory.setDouble( Z1 + 256 + 512 * 1 + pos, - 0.16874 * r - 0.33126 * g + 0.50000 * b        ); // UDU
+				Memory.setDouble( Z1 + 256 + 512 * 2 + pos,   0.50000 * r - 0.41869 * g - 0.08131 * b        ); // VDU
 
 				pos += 8;
 
@@ -230,39 +235,42 @@ private class TMP {
 
 	}
 
-	private static function processDU(CDU:UInt, fdtbl:UInt, DC:Int, HTDC:UInt, HTAC:UInt):Int {
+	/**
+	 * @private
+	 */
+	private static inline function processDU(CDU:UInt, fdtbl:UInt, DC:Int, HTDC:UInt, HTAC:UInt):Int {
 		
-		var pos:UInt;
-		var catpos:UInt;
 		fDCTQuant( CDU, fdtbl );
-		var DU0:Int = Memory.signExtend8( Memory.getByte( Z1 ) );
+
+		var DU0:Int = Memory.getI32( Z1 );
 		var diff:Int = DU0 - DC;
 		DC = DU0;
+
+		var pos:UInt;
 
 		// Encode DC
 		if ( diff == 0 ) {
 			writeMBits( HTDC ); // Diff might be 0
 		} else {
 			pos = ( 32767 + diff ) * 3;
-			catpos = Memory.getByte( Z2 + 3212 + pos ) * 3;
-			writeMBits( HTDC + catpos );
+			writeMBits( HTDC + Memory.getByte( Z2 + 3212 + pos ) * 3 );
 			writeMBits( Z2 + 3212 + pos );
 		}
 
 		// Encode ACs
 		var end0pos:UInt = 63;
-		while ( end0pos > 0 && Memory.getByte( Z1 + end0pos ) == 0 ) end0pos--;
+		while ( end0pos > 0 && Memory.getI32( Z1 + end0pos * 4 ) == 0 ) end0pos--;
 
 		// end0pos = first element in reverse order !=0
 		if ( end0pos != 0) {
-			var i:Int = 1;
+			var i:UInt = 1;
 			var lng:Int;
 			var startpos:Int;
 			var nrzeroes:Int;
 			var nrmarker:Int;
 			while ( i <= end0pos ) {
 				startpos = i;
-				while ( i <= end0pos && Memory.getByte( Z1 + i ) == 0 ) ++i;
+				while ( i <= end0pos && Memory.getI32( Z1 + i * 4 ) == 0 ) ++i;
 				nrzeroes = i - startpos;
 				if ( nrzeroes >= 16 ) {
 					lng = nrzeroes >> 4;
@@ -273,9 +281,8 @@ private class TMP {
 					}
 					nrzeroes = nrzeroes & 0xF;
 				}
-				pos = ( 32767 + Memory.getByte( Z1 + i ) ) * 3;
-				catpos = Memory.getByte( Z2 + 3212 + pos ) * 3;
-				writeMBits( HTDC + catpos );
+				pos = ( 32767 + Memory.getI32( Z1 + i * 4 ) ) * 3;
+				writeMBits( HTAC + ( nrzeroes << 4 ) * 3 + Memory.getByte( Z2 + 3212 + pos ) * 3 );
 				writeMBits( Z2 + 3212 + pos );
 				i++;
 			}
@@ -290,7 +297,7 @@ private class TMP {
 	 * @private
 	 * DCT & quantization core
 	 */
-	private static function fDCTQuant(data:UInt, fdtbl:UInt):Void {
+	private static inline function fDCTQuant(data:UInt, fdtbl:UInt):Void {
 
 		var dataOff:UInt;
 		var d0:Float, d1:Float, d2:Float, d3:Float, d4:Float, d5:Float, d6:Float, d7:Float;
@@ -397,7 +404,7 @@ private class TMP {
 
 			// phase 5
 			z1 = ( tmp12 + tmp13 ) * 0.707106781;	// c4
-			Memory.setDouble( data + dataOff + 16 * 8, tmp13 + z2 );
+			Memory.setDouble( data + dataOff + 16 * 8, tmp13 + z1 );
 			Memory.setDouble( data + dataOff + 48 * 8, tmp13 - z1 );
 
 			// Odd part
@@ -431,8 +438,8 @@ private class TMP {
 		do {
 			// Apply the quantization and scaling factor & Round to nearest integer
 			fDCTQuant = Memory.getDouble( data + i * 8 ) * Memory.getDouble( fdtbl + i * 8 );
-			Memory.setByte(
-				Z1 + Memory.getByte( Z2 + 1154 + i ), // ZigZag reorder
+			Memory.setI32(
+				Z1 + Memory.getByte( Z2 + 1154 + i ) * 4, // ZigZag reorder
 				Std.int( fDCTQuant + ( fDCTQuant > 0.0 ? 0.5 : - 0.5 ) )
 			);
 		} while ( ++i < 64 );
@@ -442,14 +449,14 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static function writeMBits(addres:UInt):Void {
+	private static inline function writeMBits(addres:UInt):Void {
 		writeBits( Memory.getByte( addres ), Memory.getUI16( addres + 1 ) );
 	}
 
 	/**
 	 * @private
 	 */
-	private static function writeBits(len:Int, val:Int):Void {
+	private static inline function writeBits(len:Int, val:Int):Void {
 		var bytenew:Int = Memory.getI32( Z1 -  4 );
 		var bytepos:Int = Memory.getI32( Z1 -  8 );
 		var byteout:Int = Memory.getI32( Z1 - 12 );
@@ -463,8 +470,7 @@ private class TMP {
 				if ( bytenew == 0xFF ) {
 					Memory.setI16( byteout, 0x00FF );
 					byteout += 2;
-				}
-				else {
+				} else {
 					Memory.setByte( byteout, bytenew );
 					byteout++;
 				}
