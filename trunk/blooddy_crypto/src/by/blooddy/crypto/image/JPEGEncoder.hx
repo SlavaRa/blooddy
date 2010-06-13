@@ -47,8 +47,10 @@ private class TMP {
 	//
 	//--------------------------------------------------------------------------
 
-	private static inline var Z1:UInt = 1024 * 1024 * 10; // буфер под картинку
+	private static inline var Z1:UInt = 12; // буфер под картинку
 	private static inline var Z2:UInt = Z1 + 256 + 512 * 3;
+
+	private static inline var Z0:UInt = Z2 + 199817;
 
 	//--------------------------------------------------------------------------
 	//
@@ -69,20 +71,22 @@ private class TMP {
 		tmp.position = Z2;
 		tmp.writeBytes( table );
 		table.clear();
-		
+
+		tmp.length += 608;
+
 		Memory.memory = tmp;
 
 		// Add JPEG headers
-		Memory.setI16( 0, 0xD8FF ); // SOI
+		Memory.setI16( Z0, 0xD8FF ); // SOI
 		writeAPP0();
 		writeDQT();
 		writeSOF0( image.width, image.height );
 		writeDHT();
 		writeSOS();
 
-		Memory.setI32( Z1 -  4,   0 ); // bytenew
-		Memory.setI32( Z1 -  8,   7 ); // bytepos
-		Memory.setI32( Z1 - 12, 607 ); // byteout
+		Memory.setI32( 8,   0 ); // bytenew
+		Memory.setI32( 4,   7 ); // bytepos
+		Memory.setI32( 0, 607 ); // byteout
 
 		// Encode 8x8 macroblocks
 		var DCY:Int = 0;
@@ -96,6 +100,9 @@ private class TMP {
 		do {
 			x = 0;
 			do {
+				if ( tmp.length - Z0 - Memory.getI32( 0 ) < 2048 ) {
+					tmp.length += 4096;
+				}
 				rgb2yuv( image, x, y );
 				DCY = processDU( Z1 + 256 + 512 * 0, Z2 + 130, DCY, Z2 + 1218 + 416,  Z2 + 1218 + 452  );
 				DCU = processDU( Z1 + 256 + 512 * 1, Z2 + 642, DCU, Z2 + 1218 + 1205, Z2 + 1218 + 1241 );
@@ -107,21 +114,19 @@ private class TMP {
 
 		// Do the bit alignment of the EOI marker
 		var bytepos:Int;
-		if ( Memory.getI32( Z1 - 8 ) >= 0 ) {
-			bytepos = Memory.getI32( Z1 - 8 ) + 1;
+		if ( Memory.getI32( 4 ) >= 0 ) {
+			bytepos = Memory.getI32( 4 ) + 1;
 			writeBits( bytepos, ( 1 << bytepos ) - 1 );
 		}
 
-		var len:UInt = Memory.getI32( Z1 - 12 );
+		var len:UInt = Memory.getI32( 0 );
 
-		Memory.setI16( len, 0xD9FF ); //EOI
+		Memory.setI16( Z0 + len, 0xD9FF ); //EOI
 
 		Memory.memory = mem;
 
-		tmp.length = len + 2;
-
 		var bytes:ByteArray = new ByteArray();
-		bytes.writeBytes( tmp );
+		bytes.writeBytes( tmp, Z0, len + 2 );
 		bytes.position = 0;
 
 		tmp.clear();
@@ -139,78 +144,78 @@ private class TMP {
 	 * @private
 	 */
 	private static inline function writeAPP0():Void {
-		Memory.setI16(	2,	0xE0FF		);	// marker
-		Memory.setI16(	4,	0x1000		);	// length
-		Memory.setI32(	6,	0x4649464A	);	// JFIF
-		Memory.setByte( 10,	0x00		);	//
-		Memory.setI16(	11,	0x0101		);	// version
-		Memory.setByte( 13,	0x00		);	// xyunits
-		Memory.setI32(	14,	0x01000100	);	// density
-		Memory.setI16(	18, 0x0000		);	// thumbn
+		Memory.setI16(	Z0 +  2,	0xE0FF		);	// marker
+		Memory.setI16(	Z0 +  4,	0x1000		);	// length
+		Memory.setI32(	Z0 +  6,	0x4649464A	);	// JFIF
+		Memory.setByte( Z0 + 10,	0x00		);	//
+		Memory.setI16(	Z0 + 11,	0x0101		);	// version
+		Memory.setByte( Z0 + 13,	0x00		);	// xyunits
+		Memory.setI32(	Z0 + 14,	0x01000100	);	// density
+		Memory.setI16(	Z0 + 18,	0x0000		);	// thumbn
 	}
 
 	/**
 	 * @private
 	 */
 	private static inline function writeDQT():Void {
-		Memory.setI16(	20,	0xDBFF		);	// marker
-		Memory.setI16(	22,	0x8400		);	// length
+		Memory.setI16(	Z0 + 20,	0xDBFF		);	// marker
+		Memory.setI16(	Z0 + 22,	0x8400		);	// length
 
 		var tmp:ByteArray = Memory.memory;
-		tmp.position = 24;
+		tmp.position = Z0 + 24;
 		tmp.writeBytes( tmp, Z2, 130 );
 
-		Memory.setByte( 24,	0x00		);
-		Memory.setByte( 89,	0x01		);
+		Memory.setByte( Z0 + 24,	0x00		);
+		Memory.setByte( Z0 + 89,	0x01		);
 	}
 	
 	/**
 	 * @private
 	 */
 	private static inline function writeSOF0(width:UInt, height:UInt):Void {
-		Memory.setI16(	154,	0xC0FF		);	// marker
-		Memory.setI16(	156,	0x1100		);	// length, truecolor YUV JPG
-		Memory.setByte(	158,	0x08		);	// precision
-		Memory.setI32(	159,					// height, width
+		Memory.setI16(	Z0 + 154,	0xC0FF		);	// marker
+		Memory.setI16(	Z0 + 156,	0x1100		);	// length, truecolor YUV JPG
+		Memory.setByte(	Z0 + 158,	0x08		);	// precision
+		Memory.setI32(	Z0 + 159,					// height, width
 			( ( ( height >> 8 ) & 0xFF )       ) |
 			( ( ( height      ) & 0xFF ) << 8  ) |
 			( ( ( width >> 8  ) & 0xFF ) << 16 ) |
 			( ( ( width       ) & 0xFF ) << 24 )
 		);
-		Memory.setByte(	163,	0x03		);	// nrofcomponents
-		Memory.setI32(	164,	0x00001101	);	// IdY, HVY, QTY
-		Memory.setI32(	167,	0x00011102	);	// IdU, HVU, QTU
-		Memory.setI32(	170,	0x00011103	);	// IdV, HVV, QTV
+		Memory.setByte(	Z0 + 163,	0x03		);	// nrofcomponents
+		Memory.setI32(	Z0 + 164,	0x00001101	);	// IdY, HVY, QTY
+		Memory.setI32(	Z0 + 167,	0x00011102	);	// IdU, HVU, QTU
+		Memory.setI32(	Z0 + 170,	0x00011103	);	// IdV, HVV, QTV
 	}
 
 	/**
 	 * @private
 	 */
 	private static inline function writeDHT():Void {
-		Memory.setI16(	173,	0xC4FF		);	// marker
-		Memory.setI16(	175,	0xA201		);	// length
+		Memory.setI16(	Z0 + 173,	0xC4FF		);	// marker
+		Memory.setI16(	Z0 + 175,	0xA201		);	// length
 
 		var tmp:ByteArray = Memory.memory;
-		tmp.position = 177;
+		tmp.position = Z0 + 177;
 		tmp.writeBytes( tmp, Z2 + 1218, 416 );
 
-		Memory.setByte(	177,	0x00		);	// HTYDCinfo
-		Memory.setByte(	206,	0x10		);	// HTYACinfo
-		Memory.setByte(	385,	0x01		);	// HTUDCinfo
-		Memory.setByte(	414,	0x11		);	// HTUACinfo
+		Memory.setByte(	Z0 + 177,	0x00		);	// HTYDCinfo
+		Memory.setByte(	Z0 + 206,	0x10		);	// HTYACinfo
+		Memory.setByte(	Z0 + 385,	0x01		);	// HTUDCinfo
+		Memory.setByte(	Z0 + 414,	0x11		);	// HTUACinfo
 	}
 
 	/**
 	 * @private
 	 */
 	private static inline function writeSOS():Void {
-		Memory.setI16(	593,	0xDAFF		);	// marker
-		Memory.setI16(	595,	0x0C00		);	// length
-		Memory.setByte(	597,	0x03		);	// nrofcomponents
-		Memory.setI16(	598,	0x0001		);	// IdY, HTY
-		Memory.setI16(	600,	0x1102		);	// IdU, HTU
-		Memory.setI16(	602,	0x1103		);	// IdV, HTV
-		Memory.setI32(	604,	0x00003f00	);	// Ss, Se, Bf
+		Memory.setI16(	Z0 + 593,	0xDAFF		);	// marker
+		Memory.setI16(	Z0 + 595,	0x0C00		);	// length
+		Memory.setByte(	Z0 + 597,	0x03		);	// nrofcomponents
+		Memory.setI16(	Z0 + 598,	0x0001		);	// IdY, HTY
+		Memory.setI16(	Z0 + 600,	0x1102		);	// IdU, HTU
+		Memory.setI16(	Z0 + 602,	0x1103		);	// IdV, HTV
+		Memory.setI32(	Z0 + 604,	0x00003f00	);	// Ss, Se, Bf
 	}
 
 	/**
@@ -472,9 +477,9 @@ private class TMP {
 	 * @private
 	 */
 	private static inline function writeBits(len:Int, val:Int):Void {
-		var bytenew:Int = Memory.getI32( Z1 -  4 );
-		var bytepos:Int = Memory.getI32( Z1 -  8 );
-		var byteout:Int = Memory.getI32( Z1 - 12 );
+		var bytenew:Int = Memory.getI32( 8 );
+		var bytepos:Int = Memory.getI32( 4 );
+		var byteout:Int = Memory.getI32( 0 );
 
 		while ( --len >= 0 ) {
 			if ( val & ( 1 << len ) != 0 ) {
@@ -483,10 +488,10 @@ private class TMP {
 			bytepos--;
 			if ( bytepos < 0 ) {
 				if ( bytenew == 0xFF ) {
-					Memory.setI16( byteout, 0x00FF );
+					Memory.setI16( Z0 + byteout, 0x00FF );
 					byteout += 2;
 				} else {
-					Memory.setByte( byteout, bytenew );
+					Memory.setByte( Z0 + byteout, bytenew );
 					byteout++;
 				}
 				bytepos = 7;
@@ -494,9 +499,9 @@ private class TMP {
 			}
 		}
 
-		Memory.setI32( Z1 -  4, bytenew ); // bytenew
-		Memory.setI32( Z1 -  8, bytepos ); // bytepos
-		Memory.setI32( Z1 - 12, byteout ); // byteout
+		Memory.setI32( 8, bytenew ); // bytenew
+		Memory.setI32( 4, bytepos ); // bytepos
+		Memory.setI32( 0, byteout ); // byteout
 	}
 	
 }
