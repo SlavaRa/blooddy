@@ -168,7 +168,7 @@ private class TMP {
 
 		tmp.clear();
 
-		return tmp;
+		return bytes;
 	}
 
 	public static inline function createZigZagTable():ByteArray {
