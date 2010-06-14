@@ -39,6 +39,15 @@ private class TMP {
 
 	//--------------------------------------------------------------------------
 	//
+	//  Class variables
+	//
+	//--------------------------------------------------------------------------
+
+	private static inline var Z1:UInt = 64;
+	private static inline var Z2:UInt = 128;
+
+	//--------------------------------------------------------------------------
+	//
 	//  Class methods
 	//
 	//--------------------------------------------------------------------------
@@ -50,21 +59,20 @@ private class TMP {
 		var mem:ByteArray = Memory.memory;
 
 		var tmp:ByteArray = new ByteArray();
+		tmp.writeUTFBytes( 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/' );
 		tmp.writeBytes( bytes );
 		
 		var rest:UInt = len % 3;
-		var bytesLength:UInt = len - rest;
+		var bytesLength:UInt = Z1 + len - rest;
 
-		tmp.writeUTFBytes( 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/' );
-
-		var resultLength:UInt = Std.int( len / 3 ) * 4 + ( rest > 0 ? 4 : 0 );
+		var resultLength:UInt = ( Std.int( len / 3 ) << 2 ) + ( rest > 0 ? 4 : 0 );
 		tmp.length += resultLength + ( insertNewLines ? Std.int( resultLength / 76 ) : 0 );
 
 		if ( tmp.length < 1024 ) tmp.length = 1024;
 		Memory.memory = tmp;
 
-		var i:UInt = 0;
-		var j:UInt = len + 64;
+		var i:UInt = Z1;
+		var j:UInt = Z1 + len;
 		var chunk:Int;
 
 		while ( i < bytesLength ) {
@@ -74,10 +82,10 @@ private class TMP {
 					Memory.getByte( i++ )       ;
 
 			Memory.setI32( j,
-				Memory.getByte( len + (   chunk >>> 18          ) )       |
-				Memory.getByte( len + ( ( chunk >>> 12 ) & 0x3F ) ) <<  8 |
-				Memory.getByte( len + ( ( chunk >>> 6  ) & 0x3F ) ) << 16 |
-				Memory.getByte( len + (   chunk          & 0x3F ) ) << 24
+				Memory.getByte(   chunk >>> 18          )       |
+				Memory.getByte( ( chunk >>> 12 ) & 0x3F ) <<  8 |
+				Memory.getByte( ( chunk >>> 6  ) & 0x3F ) << 16 |
+				Memory.getByte(   chunk          & 0x3F ) << 24
 			);
 			j += 4;
 
@@ -93,8 +101,8 @@ private class TMP {
 			case 1:
 				chunk = Memory.getByte( i++ );
 				Memory.setI32( j,
-					Memory.getByte( len + (   chunk >>> 2      ) )      |
-					Memory.getByte( len + ( ( chunk & 3 ) << 4 ) ) << 8 |
+					Memory.getByte(   chunk >>> 2      )      |
+					Memory.getByte( ( chunk & 3 ) << 4 ) << 8 |
 					15677 << 16
 				);
 
@@ -102,15 +110,15 @@ private class TMP {
 				chunk =	Memory.getByte( i++ ) << 8 |
 						Memory.getByte( i++ )      ;
 				Memory.setI32( j,
-					Memory.getByte( len + (   chunk >>> 10 )          )       |
-					Memory.getByte( len + ( ( chunk >>>  4 ) & 0x3F ) ) <<  8 |
-					Memory.getByte( len + ( ( chunk & 15 ) << 2 )     ) << 16 |
+					Memory.getByte(   chunk >>> 10          )       |
+					Memory.getByte( ( chunk >>>  4 ) & 0x3F ) <<  8 |
+					Memory.getByte( ( chunk & 15 ) << 2     ) << 16 |
 					61 << 24
 				);
 
 		}
 
-		tmp.position = len + 64;
+		tmp.position = Z1 + len;
 		var result:String = tmp.readUTFBytes( tmp.bytesAvailable );
 
 		Memory.memory = mem;
@@ -127,7 +135,6 @@ private class TMP {
 		var mem:ByteArray = Memory.memory;
 
 		var tmp:ByteArray = new ByteArray();
-		tmp.position = len;
 		tmp.writeUTFBytes( '\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x3e\x40\x40\x40\x3f\x34\x35\x36\x37\x38\x39\x3a\x3b\x3c\x3d\x40\x40\x40\x40\x40\x40\x40\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x40\x40\x40\x40\x40\x40\x1a\x1b\x1c\x1d\x1e\x1f\x20\x21\x22\x23\x24\x25\x26\x27\x28\x29\x2a\x2b\x2c\x2d\x2e\x2f\x30\x31\x32\x33\x40\x40\x40\x40\x40' );
 		tmp.writeUTFBytes( str );
 
@@ -136,10 +143,10 @@ private class TMP {
 		if ( tmp.length < 1024 ) tmp.length = 1024;
 		Memory.memory = tmp;
 
-		var i:UInt = len + 128;
-		var j:UInt = 0;
+		var insertNewLines:Bool = Memory.getByte( Z2 + 76 ) == 10;
 
-		var insertNewLines:Bool = Memory.getByte( i + 76 ) == 10;
+		var i:UInt = Z2;
+		var j:UInt = Z2;
 
 		var a:Int;
 		var b:Int;
@@ -148,10 +155,10 @@ private class TMP {
 
 		while ( i < bytesLength ) {
 
-			a = getByte( i++, len );
-			b = getByte( i++, len );
-			c = getByte( i++, len );
-			d = getByte( i++, len );
+			a = getByte( i++ );
+			b = getByte( i++ );
+			c = getByte( i++ );
+			d = getByte( i++ );
 
 			Memory.setByte( j++, ( a << 2 ) | ( b >> 4 ) );
 			Memory.setByte( j++, ( b << 4 ) | ( c >> 2 ) );
@@ -165,27 +172,25 @@ private class TMP {
 
 		if ( i != bytesLength ) throwError();
 
-		a = getByte( i++, len );
-		b = getByte( i++, len );
+		a = getByte( i++ );
+		b = getByte( i++ );
 		Memory.setByte( j++, ( a << 2 ) | ( b >> 4 ) );
 
-		c = getByte2( i++, len );
+		c = getByte2( i++ );
 		if ( c != -1 ) {
 			Memory.setByte( j++, ( b << 4 ) | ( c >> 2 ) );
-			d = getByte2( i++, len );
+			d = getByte2( i++ );
 			if ( d != -1 ) {
 				Memory.setByte( j++, ( c << 6 ) | d );
 			}
 		} else {
-			if ( getByte2( i++, len ) != -1 ) throwError();
+			if ( getByte2( i++ ) != -1 ) throwError();
 		}
 
 		Memory.memory = mem;
 
-		tmp.length = j;
-		
 		var bytes:ByteArray = new ByteArray();
-		bytes.writeBytes( tmp );
+		bytes.writeBytes( tmp, Z2, j - Z2 );
 		bytes.position = 0;
 
 		tmp.clear();
@@ -202,10 +207,10 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static inline function getByte(index:UInt, offset:UInt):Int {
+	private static inline function getByte(index:UInt):Int {
 		var v:Int = Memory.getByte( index );
 		if ( v & 0x80 != 0 ) throwError();
-		v = Memory.getByte( offset + v );
+		v = Memory.getByte( v );
 		if ( v == 0x40 ) throwError();
 		return v;
 	}
@@ -213,11 +218,11 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static inline function getByte2(index:UInt, offset:UInt):Int {
+	private static inline function getByte2(index:UInt):Int {
 		var v:Int = Memory.getByte( index );
 		if ( v & 0x80 != 0 ) throwError();
 		if ( v != 61 ) {
-			v = Memory.getByte( offset + v );
+			v = Memory.getByte( v );
 			if ( v == 0x40 ) throwError();
 		} else {
 			v = -1;

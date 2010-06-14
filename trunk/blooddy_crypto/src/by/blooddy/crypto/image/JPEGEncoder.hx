@@ -279,7 +279,7 @@ private class TMP {
 
 		// Encode ACs
 		var end0pos:UInt = 63;
-		while ( end0pos > 0 && Memory.getI32( Z1 + end0pos * 4 ) == 0 ) end0pos--;
+		while ( end0pos > 0 && Memory.getI32( Z1 + ( end0pos << 2 ) ) == 0 ) end0pos--;
 
 		// end0pos = first element in reverse order !=0
 		if ( end0pos != 0) {
@@ -290,7 +290,7 @@ private class TMP {
 			var nrmarker:Int;
 			while ( i <= end0pos ) {
 				startpos = i;
-				while ( i <= end0pos && Memory.getI32( Z1 + i * 4 ) == 0 ) ++i;
+				while ( i <= end0pos && Memory.getI32( Z1 + ( i << 2 ) ) == 0 ) ++i;
 				nrzeroes = i - startpos;
 				if ( nrzeroes >= 16 ) {
 					lng = nrzeroes >> 4;
@@ -301,7 +301,7 @@ private class TMP {
 					}
 					nrzeroes = nrzeroes & 0xF;
 				}
-				pos = ( 32767 + Memory.getI32( Z1 + i * 4 ) ) * 3;
+				pos = ( 32767 + Memory.getI32( Z1 + ( i << 2 ) ) ) * 3;
 				writeMBits( HTAC + ( nrzeroes << 4 ) * 3 + Memory.getByte( Z2 + 3212 + pos ) * 3 );
 				writeMBits( Z2 + 3212 + pos );
 				i++;
@@ -457,9 +457,9 @@ private class TMP {
 		var i:UInt = 0;
 		do {
 			// Apply the quantization and scaling factor & Round to nearest integer
-			fDCTQuant = Memory.getDouble( data + i * 8 ) * Memory.getDouble( fdtbl + i * 8 );
+			fDCTQuant = Memory.getDouble( data + ( i << 3 ) ) * Memory.getDouble( fdtbl + ( i << 3 ) );
 			Memory.setI32(
-				Z1 + Memory.getByte( Z2 + 1154 + i ) * 4, // ZigZag reorder
+				Z1 + ( Memory.getByte( Z2 + 1154 + i ) << 2 ), // ZigZag reorder
 				Std.int( fDCTQuant + ( fDCTQuant > 0.0 ? 0.5 : - 0.5 ) )
 			);
 		} while ( ++i < 64 );

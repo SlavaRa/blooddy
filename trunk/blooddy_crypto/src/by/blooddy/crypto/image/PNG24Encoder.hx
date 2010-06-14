@@ -75,7 +75,7 @@ private class TMP {
 		writeChunk( bytes, chunk );
 
 		// Build IDAT chunk
-		var len:UInt = width * height * 4 + height;
+		var len:UInt = ( ( width * height ) << 2 ) + height;
 		chunk.length = len;
 		if ( len < 1024 ) chunk.length = 1024;
 		else chunk.length = len;
