@@ -95,20 +95,18 @@ private class TMP {
 		var len:UInt = bytes.length;
 		var mem:ByteArray = Memory.memory;
 
-		var i:UInt = len * 8;
-		var bytesLength:UInt = ( ( ( ( len * 8 + 64 ) >>> 9 ) << 4 ) + 15 ) * 4;
-		
+		var i:UInt = len << 3;
+		var bytesLength:UInt = ( ( ( ( i + 64 ) >>> 9 ) << 4 ) + 15 ) << 2; // длинна для подсчёта в блоков
+
+		// копируем массив
 		var tmp:ByteArray = new ByteArray();
 		tmp.writeBytes( bytes );
-		tmp.position = bytesLength + 4;
-		tmp.writeUTFBytes( '0123456789abcdef' );
-		tmp.length += 16 + 32;
 
+		// помещаем в пямять
 		if ( tmp.length < 1024 ) tmp.length = 1024;
 		Memory.memory = tmp;
 
-		i = len * 8;
-		Memory.setI32( ( i >> 5 ) * 4, Memory.getI32( ( i >> 5 ) * 4 ) | ( 0x80 << ( i % 32 ) ) );
+		Memory.setI32( ( i >> 5 ) << 2, Memory.getI32( ( i >> 5 ) << 2 ) | ( 0x80 << ( i % 32 ) ) );
 		Memory.setI32( bytesLength - 4, i );
 
 		var a:Int =   1732584193;
@@ -206,22 +204,23 @@ private class TMP {
 
 		bytesLength += 4;
 
-		Memory.setI32( bytesLength + 16, a );
-		Memory.setI32( bytesLength + 20, b );
-		Memory.setI32( bytesLength + 24, c );
-		Memory.setI32( bytesLength + 28, d );
+		tmp.position = 0;
+		tmp.writeUTFBytes( '0123456789abcdef' );
+		
+		Memory.setI32( 16, a );
+		Memory.setI32( 20, b );
+		Memory.setI32( 24, c );
+		Memory.setI32( 28, d );
 
-		b = bytesLength + 32;
-		for ( i in bytesLength + 16 ... bytesLength + 32 ) {
+		b = 32;
+		i = 16;
+		do {
 			a = Memory.getByte( i );
-			Memory.setI16( b,
-				Memory.getByte( bytesLength + ( ( a >> 4 ) & 0xF ) )      |
-				Memory.getByte( bytesLength + (   a        & 0xF ) ) << 8
-			);
-			b += 2;
-		}
+			Memory.setByte( b++, Memory.getByte( ( a >> 4 ) & 0xF ) );
+			Memory.setByte( b++, Memory.getByte(   a        & 0xF ) );
+		} while ( ++i < 32 );
 
-		tmp.position = bytesLength + 32;
+		tmp.position = 32;
 
 		var result:String = tmp.readUTFBytes( 32 );
 
