@@ -9,6 +9,7 @@ package by.blooddy.code {
 	import by.blooddy.code.utils.Char;
 	
 	import flash.errors.IllegalOperationError;
+	import flash.utils.ByteArray;
 	
 	/**
 	 * @author					BlooDHounD
@@ -114,6 +115,21 @@ package by.blooddy.code {
 			this._source = source;
 		}
 		
+		public final function readTokenAsLength(tok:uint, length:uint, binary:Boolean=false):uint {
+			this._prevPosition = this._position;
+			this._nextPosition = 0;
+			length = Math.min( length, this._source.length - this._position );
+			var v:String = this._source.substr( this._position, length );
+			if ( binary ) {
+				var bytes:ByteArray = new ByteArray();
+				bytes.writeUTFBytes( v );
+				bytes.position = 0;
+				v = bytes.readUTFBytes( length );
+			}
+			this._position += v.length;
+			return this.makeToken( tok, v );
+		}
+		
 		public final function readTokenAsTo(tok:uint, ...chars):uint {
 			this._prevPosition = this._position;
 			this._nextPosition = 0;
@@ -125,7 +141,6 @@ package by.blooddy.code {
 			) {};
 			this._position--;
 			return this.makeToken( tok, this._source.substring( pos, this._position ) );
-			return tok;
 		}
 		
 		public final function readTokenAsWhile(tok:uint, ...chars):uint {
@@ -136,7 +151,6 @@ package by.blooddy.code {
 			while ( chars.indexOf( this.readCharCode() ) >= 0 ) {};
 			this._position--;
 			return this.makeToken( tok, this._source.substring( pos, this._position ) );
-			return tok;
 		}
 		
 		public final function readToken():uint {
@@ -369,11 +383,14 @@ package by.blooddy.code {
 			var c:uint = this.readCharCode();
 			if ( c == Char.e || c == Char.E ) {
 				var prefix:String;
-				if ( this.readCharCode() == Char.DASH ) {
+				c = this.readCharCode();
+				if ( c == Char.DASH ) {
 					prefix = '-';
 				} else {
 					prefix = '';
-					this._position--;
+					if ( c != Char.PLUS ) {
+						this._position--;
+					}
 				}
 				var t:String = this.readDec();
 				if ( t != null ) return 'e' + prefix + t;

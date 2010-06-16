@@ -13,7 +13,7 @@ package by.blooddy.code.json {
 	 * @langversion				3.0
 	 * @created					20.03.2010 14:33:41
 	 */
-	public class JSONToken {
+	internal final class JSONToken {
 		
 		//--------------------------------------------------------------------------
 		//

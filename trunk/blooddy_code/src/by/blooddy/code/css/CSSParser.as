@@ -482,7 +482,7 @@ package by.blooddy.code.css {
 				} catch ( e:Error ) {
 					this._errors.push( e );
 				}
-			} while ( tok != CSSToken.RIGHT_BRACE );			
+			} while ( tok != CSSToken.RIGHT_BRACE );
 			return result;
 		}
 

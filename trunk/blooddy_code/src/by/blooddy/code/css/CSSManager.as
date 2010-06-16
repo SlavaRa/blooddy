@@ -31,7 +31,7 @@ package by.blooddy.code.css {
 	 * @langversion				3.0
 	 * @created					27.04.2010 22:40:36
 	 */
-	public class CSSManager extends EventDispatcher {
+	public final class CSSManager extends EventDispatcher {
 		
 		//--------------------------------------------------------------------------
 		//

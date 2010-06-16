@@ -16,7 +16,7 @@ package by.blooddy.code.css {
 	 * @langversion				3.0
 	 * @created					09.03.2010 23:35:53
 	 */
-	public class CSSScanner extends AbstractScanner {
+	internal final class CSSScanner extends AbstractScanner {
 
 		//--------------------------------------------------------------------------
 		//
