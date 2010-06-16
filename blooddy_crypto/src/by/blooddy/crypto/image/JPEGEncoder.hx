@@ -27,9 +27,9 @@ class JPEGEncoder {
 	 *
 	 * @param	image	The BitmapData that will be converted into the JPEG format.
 	 * @param	quality	The quality level between 1 and 100 that detrmines the level of compression used in the generated JPEG
- 	 * 
+ 	 *
 	 * @return a ByteArray representing the JPEG encoded image data.
-	 */     
+	 */
 	public static function encode(image:BitmapData, ?quality:UInt=60):ByteArray {
 		return TMP.encode( image, quality );
 	}
@@ -47,10 +47,10 @@ private class TMP {
 	//
 	//--------------------------------------------------------------------------
 
-	private static inline var Z1:UInt = 12; // буфер под картинку
-	private static inline var Z2:UInt = Z1 + 256 + 512 * 3;
+	private static inline var Z1:UInt = 12;						// статические таблицы
+	private static inline var Z2:UInt = Z1 + 256 + 512 * 3;		// промежуточные таблицы
 
-	private static inline var Z0:UInt = Z2 + 199817;
+	private static inline var Z0:UInt = Z2 + 199817;			// начало записи для результата
 
 	//--------------------------------------------------------------------------
 	//

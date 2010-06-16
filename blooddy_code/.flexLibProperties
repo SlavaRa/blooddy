@@ -37,6 +37,10 @@
     <classEntry path="by.blooddy.code.css.definition.values.CollectionValue"/>
     <classEntry path="by.blooddy.code.css.definition.values.ArrayValue"/>
     <classEntry path="by.blooddy.code.css.definition.selectors.TextAttributeSelector"/>
+    <classEntry path="by.blooddy.code.phpon.PHPONScanner"/>
+    <classEntry path="by.blooddy.code.phpon.PHPONParser"/>
+    <classEntry path="by.blooddy.code.phpon.PHPONToken"/>
+    <classEntry path="by.blooddy.code.phpon.PHPON"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

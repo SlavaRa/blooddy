@@ -15,7 +15,7 @@ package by.blooddy.code.json {
 	 * @langversion				3.0
 	 * @created					Mar 10, 2010 12:17:10 PM
 	 */
-	public class JSONParser {
+	internal final class JSONParser {
 		
 		//--------------------------------------------------------------------------
 		//

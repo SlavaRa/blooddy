@@ -18,7 +18,7 @@ import by.blooddy.crypto.MD5;
  * @version	1.0
  */
 class Main {
-	
+
 	static function main() {
 		MD5;
 		Base64;
@@ -27,5 +27,5 @@ class Main {
 		JPEGTableHelper;
 		PNG24Encoder;
 	}
-	
+
 }

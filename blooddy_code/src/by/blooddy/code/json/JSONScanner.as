@@ -17,7 +17,7 @@ package by.blooddy.code.json {
 	 * @langversion				3.0
 	 * @created					20.03.2010 14:33:15
 	 */
-	public class JSONScanner extends AbstractScanner {
+	internal final class JSONScanner extends AbstractScanner {
 		
 		//--------------------------------------------------------------------------
 		//
