@@ -187,22 +187,22 @@ package by.blooddy.core.managers.resource {
 		 * @private
 		 */
 		private static function registerQueue(asset:ResourceLoaderAsset):void {
-			asset.addEventListener( Event.COMPLETE, queue_complete );
-			asset.addEventListener( ErrorEvent.ERROR, queue_complete );
+			asset.addEventListener( Event.COMPLETE, handler_queue_complete );
+			asset.addEventListener( ErrorEvent.ERROR, handler_queue_complete );
 		}
 
 		/**
 		 * @private
 		 */
 		private static function unregisterQueue(asset:ResourceLoaderAsset):void {
-			asset.removeEventListener( Event.COMPLETE, queue_complete );
-			asset.removeEventListener( ErrorEvent.ERROR, queue_complete );
+			asset.removeEventListener( Event.COMPLETE, handler_queue_complete );
+			asset.removeEventListener( ErrorEvent.ERROR, handler_queue_complete );
 		}
 
 		/**
 		 * @private
 		 */
-		private static function queue_complete(event:Event=null):void {
+		private static function handler_queue_complete(event:Event=null):void {
 			unregisterQueue( event.target as ResourceLoaderAsset );
 			_loading--;
 		 	if ( _loading < _maxLoading || _LOADING_QUEUE.length > 0 ) {
@@ -210,6 +210,8 @@ package by.blooddy.core.managers.resource {
 			}
 		}
 
+//		private static function
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor

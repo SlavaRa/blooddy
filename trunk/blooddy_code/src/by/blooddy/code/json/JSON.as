@@ -65,9 +65,9 @@ package by.blooddy.code.json {
 				case 'number':		return ( isFinite( value ) ? value : 'null' );
 				case 'boolean':		return value;
 				case 'xml':			value = value.toXMLString();
-				case 'string':		return '"' + encodeString( value ) + '"';
+				case 'string':		return encodeString( value );
 				case 'object':
-					if ( value is XMLDocument ) return '"' + encodeString( ( value as XMLDocument ).toString() ) + '"';
+					if ( value is XMLDocument ) return encodeString( ( value as XMLDocument ).toString() );
 					else if (
 						value is Array ||
 						value is Vector.<*> ||
@@ -102,10 +102,9 @@ package by.blooddy.code.json {
 					case Char.DOUBLE_QUOTE:		s = '\\"';	break;
 					default:
 						if ( c < 32 ) {
-							s = c.toString( 16 );
-							if ( s.length < 2 ) s = '0' + s;
-							s = '\\x' + s;
+							s = '\\x' + ( c < 16 ? '0' : '' ) + c.toString( 16 );
 						}
+						break;
 				}
 				if ( s ) {
 					result += value.substring( j, i ) + s;
@@ -114,13 +113,15 @@ package by.blooddy.code.json {
 				}
 			}
 			result += value.substr( j );
-			return result;
+			return '"' + result + '"';
 		}
 
 		/**
 		 * @private
 		 */
 		private static function encodeArray(value:Object, list:Array):String {
+			if ( list.indexOf( value ) >= 0 ) throw new ArgumentError();
+			list.push( value );
 			var arr:Array = new Array();
 			var l:int = value.length - 1;
 			while ( l > 0 && value[ l ] == null ) {
@@ -130,6 +131,7 @@ package by.blooddy.code.json {
 			for ( var i:uint = 0; i<l; i++ ) {
 				arr.push( encodeValue( value[ i ], list ) );
 			}
+			list.pop();
 			return '[' + arr.join( ',' ) + ']';
 		}
 
