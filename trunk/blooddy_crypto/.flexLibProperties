@@ -2,6 +2,7 @@
 <flexLibProperties includeAllClasses="true" version="3">
   <includeClasses>
     <classEntry path="by.blooddy.crypto.image.JPEGTable"/>
+    <classEntry path="by.blooddy.crypto.image.PNG24Filter"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
