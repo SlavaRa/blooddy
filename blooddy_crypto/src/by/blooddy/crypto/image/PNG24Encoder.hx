@@ -9,6 +9,7 @@ package by.blooddy.crypto.image;
 import by.blooddy.crypto.CRC32;
 import by.blooddy.system.Memory;
 import flash.display.BitmapData;
+import flash.Error;
 import flash.utils.ByteArray;
 
 /**
@@ -29,8 +30,8 @@ class PNG24Encoder {
 	 * @param	image	The BitmapData that will be converted into the PNG format.
 	 * @return			a ByteArray representing the PNG encoded image data.
 	 */			
-	public static function encode(image:BitmapData):ByteArray {
-		return TMP.encode( image );
+	public static function encode(image:BitmapData, ?filter:UInt=0):ByteArray {
+		return TMP.encode( image, filter );
 	}
 
 }
@@ -42,11 +43,27 @@ private class TMP {
 
 	//--------------------------------------------------------------------------
 	//
+	//  Class variables
+	//
+	//--------------------------------------------------------------------------
+
+	public static inline var NONE:UInt =	0;
+
+	public static inline var SUB:UInt =		1;
+
+	public static inline var UP:UInt =		2;
+
+	public static inline var AVERAGE:UInt =	3;
+
+	public static inline var PAETH:UInt =	4;
+
+	//--------------------------------------------------------------------------
+	//
 	//  Class methods
 	//
 	//--------------------------------------------------------------------------
 
-	public static inline function encode(image:BitmapData):ByteArray {
+	public static inline function encode(image:BitmapData, filter:UInt):ByteArray {
 
 		var mem:ByteArray = Memory.memory;
 
@@ -66,49 +83,34 @@ private class TMP {
 		chunk.length = 1024;
 		Memory.memory = chunk;
 		Memory.setI32( 0, 0x52444849 );
-		setI32( 4, width );
-		setI32( 8, height );
-		Memory.setI32( 12, 0x00000608 ); // 32bit RGBA
-		Memory.setByte( 16, 0 );
+		writeI32( 4, width );
+		writeI32( 8, height );
+		Memory.setByte( 12, 0x08 );		// Bit depth
+		Memory.setByte( 13, ( image.transparent ? 0x06 : 0x02 ) );	// Colour type
+		Memory.setByte( 14, 0x00 );		// Compression method
+		Memory.setByte( 15, 0x00 );		// Filter method
+		Memory.setByte( 16, 0x00 );		// Interlace method
 		Memory.memory = null;
 		chunk.length = 17;
 		writeChunk( bytes, chunk );
 
 		// Build IDAT chunk
-		var len:UInt = ( ( width * height ) << 2 ) + height;
-		chunk.length = len;
-		if ( len < 1024 ) chunk.length = 1024;
-		else chunk.length = len;
+		var len:UInt = ( ( width * height ) * ( image.transparent ? 4 : 3 ) ) + height;
+		var len2:UInt = len + width * 4;
+		if ( len2 < 1024 ) chunk.length = 1024;
+		else chunk.length = len2;
 		Memory.memory = chunk;
-		var x:UInt, y:UInt, c:UInt;
-		var i:UInt = 0;
-		if ( image.transparent ) {
-			y = 0;
-			do {
-				Memory.setByte( i++, 0 ); // no filter
-				x = 0;
-				do {
-					c = image.getPixel32( x, y );
-					Memory.setByte( i++, c >> 16 );
-					Memory.setByte( i++, c >>  8 );
-					Memory.setByte( i++, c       );
-					Memory.setByte( i++, c >> 24 );
-				} while ( ++x < width );
-			} while ( ++y < height );
-		} else {
-			y = 0;
-			do {
-				Memory.setByte( i++, 0 ); // no filter
-				x = 0;
-				do {
-					c = image.getPixel( x, y );
-					Memory.setByte( i++, c >> 16 );
-					Memory.setByte( i++, c >>  8 );
-					Memory.setByte( i++, c       );
-					Memory.setByte( i++, 0xFF    );
-				} while ( ++x < width );
-			} while ( ++y < height );
+
+		switch ( filter ) {
+			case NONE:		writeNone( image );
+			case SUB:		writeSub( image );
+			case UP:		writeUp( image, len );
+			case AVERAGE:	writeAverage( image, len );
+			case PAETH:		writePaeth( image, len );
+			default:
+				throwError();
 		}
+		
 		Memory.memory = null;
 		chunk.length = len;
 		chunk.compress();
@@ -135,18 +137,386 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static inline function writeChunk(png:ByteArray, chunk:ByteArray):Void {
-		png.writeUnsignedInt( chunk.length - 4 );
-		png.writeBytes( chunk, 0 );
-		png.writeUnsignedInt( CRC32.hash( chunk ) );
-
-	}
-
-	private static inline function setI32(address:UInt, value:Int):Void {
+	private static inline function writeI32(address:UInt, value:Int):Void {
 		Memory.setByte( address,     value >> 24 );
 		Memory.setByte( address + 1, value >> 16 );
 		Memory.setByte( address + 2, value >>  8 );
 		Memory.setByte( address + 3, value       );
 	}
 	
+	/**
+	 * @private
+	 */
+	private static inline function writeChunk(bytes:ByteArray, chunk:ByteArray):Void {
+		bytes.writeUnsignedInt( chunk.length - 4 );
+		bytes.writeBytes( chunk, 0 );
+		bytes.writeUnsignedInt( CRC32.hash( chunk ) );
+	}
+
+	/**
+	 * @private
+	 */
+	private static inline function writeNone(image:BitmapData):Void {
+		var width:UInt = image.width;
+		var height:UInt = image.height;
+		var x:UInt, y:UInt;
+		var c:UInt;
+		var i:UInt = 0;
+		if ( image.transparent ) {
+			y = 0;
+			do {
+				Memory.setByte( i++, NONE );
+				x = 0;
+				do {
+					c = image.getPixel32( x, y );
+					Memory.setByte( i++, c >> 16 );
+					Memory.setByte( i++, c >>  8 );
+					Memory.setByte( i++, c       );
+					Memory.setByte( i++, c >> 24 );
+				} while ( ++x < width );
+			} while ( ++y < height );
+		} else {
+			y = 0;
+			do {
+				Memory.setByte( i++, NONE );
+				x = 0;
+				do {
+					c = image.getPixel( x, y );
+					Memory.setByte( i++, c >> 16 );
+					Memory.setByte( i++, c >>  8 );
+					Memory.setByte( i++, c       );
+				} while ( ++x < width );
+			} while ( ++y < height );
+		}
+	}
+	
+	/**
+	 * @private
+	 */
+	private static inline function writeSub(image:BitmapData):Void {
+		var width:UInt = image.width;
+		var height:UInt = image.height;
+		var x:UInt, y:UInt;
+		var r:UInt, g:UInt, b:UInt;
+		var r0:UInt, g0:UInt, b0:UInt;
+		var i:UInt = 0;
+		if ( image.transparent ) {
+			var a:UInt, a0:UInt;
+			y = 0;
+			do {
+				Memory.setByte( i++, SUB );
+				a0 = 0;
+				r0 = 0;
+				g0 = 0;
+				b0 = 0;
+				x = 0;
+				do {
+
+					b = image.getPixel32( x, y );
+
+					a = b >>> 24;
+					r = b >>> 16;
+					g = b >>>  8;
+					
+					Memory.setByte( i++, r - r0 );
+					Memory.setByte( i++, g - g0 );
+					Memory.setByte( i++, b - b0 );
+					Memory.setByte( i++, a - a0 );
+
+					a0 = a;
+					r0 = r;
+					g0 = g;
+					b0 = b;
+					
+				} while ( ++x < width );
+			} while ( ++y < height );
+		} else {
+			y = 0;
+			do {
+				Memory.setByte( i++, SUB );
+				r0 = 0;
+				g0 = 0;
+				b0 = 0;
+				x = 0;
+				do {
+
+					b = image.getPixel( x, y );
+
+					r = b >>> 16;
+					g = b >>>  8;
+					
+					Memory.setByte( i++, r - r0 );
+					Memory.setByte( i++, g - g0 );
+					Memory.setByte( i++, b - b0 );
+
+					r0 = r;
+					g0 = g;
+					b0 = b;
+					
+				} while ( ++x < width );
+			} while ( ++y < height );
+		}
+	}
+
+	/**
+	 * @private
+	 */
+	private static inline function writeUp(image:BitmapData, offset:UInt):Void {
+		var width:UInt = image.width;
+		var height:UInt = image.height;
+		var x:UInt, y:UInt;
+		var c:UInt;
+		var j:UInt;
+		var i:UInt = 0;
+		if ( image.transparent ) {
+			y = 0;
+			do {
+				j = offset;
+				Memory.setByte( i++, UP );
+				x = 0;
+				do {
+					c = image.getPixel32( x, y );
+					Memory.setByte( i++, ( c >>> 16 ) - Memory.getByte( j + 2 ) );
+					Memory.setByte( i++, ( c >>>  8 ) - Memory.getByte( j + 1 ) );
+					Memory.setByte( i++,   c          - Memory.getByte( j     ) );
+					Memory.setByte( i++, ( c >>> 24 ) - Memory.getByte( j + 3 ) );
+					Memory.setI32( j, c );
+					j += 4;
+				} while ( ++x < width );
+			} while ( ++y < height );
+		} else {
+			y = 0;
+			do {
+				j = offset;
+				Memory.setByte( i++, UP );
+				x = 0;
+				do {
+					c = image.getPixel( x, y );
+					Memory.setByte( i++, ( c >>> 16 ) - Memory.getByte( j + 2 ) );
+					Memory.setByte( i++, ( c >>>  8 ) - Memory.getByte( j + 1 ) );
+					Memory.setByte( i++,   c          - Memory.getByte( j     ) );
+					Memory.setI32( j, c );
+					j += 4;
+				} while ( ++x < width );
+			} while ( ++y < height );
+		}
+	}
+
+	/**
+	 * @private
+	 */
+	private static inline function writeAverage(image:BitmapData, offset:UInt):Void {
+		var width:UInt = image.width;
+		var height:UInt = image.height;
+		var x:UInt, y:UInt;
+		var c:UInt;
+		var r:UInt, g:UInt, b:UInt;
+		var r0:UInt, g0:UInt, b0:UInt;
+		var j:UInt;
+		var i:UInt = 0;
+		if ( image.transparent ) {
+			var a:UInt, a0:UInt;
+			y = 0;
+			do {
+				j = offset;
+				Memory.setByte( i++, AVERAGE );
+				a0 = 0;
+				r0 = 0;
+				g0 = 0;
+				b0 = 0;
+				x = 0;
+				do {
+
+					c = image.getPixel32( x, y );
+
+					a =   c >>> 24        ;
+					r = ( c >> 16 ) & 0xFF;
+					g = ( c >>  8 ) & 0xFF;
+					b = ( c       ) & 0xFF;
+
+					Memory.setByte( i++, r - Std.int( ( r0 + Memory.getByte( j + 2 ) ) / 2 ) );
+					Memory.setByte( i++, g - Std.int( ( g0 + Memory.getByte( j + 1 ) ) / 2 ) );
+					Memory.setByte( i++, b - Std.int( ( b0 + Memory.getByte( j     ) ) / 2 ) );
+					Memory.setByte( i++, a - Std.int( ( a0 + Memory.getByte( j + 3 ) ) / 2 ) );
+
+					Memory.setI32( j, c );
+					j += 4;
+
+					a0 = a;
+					r0 = r;
+					g0 = g;
+					b0 = b;
+					
+				} while ( ++x < width );
+			} while ( ++y < height );
+		} else {
+			y = 0;
+			do {
+				j = offset;
+				Memory.setByte( i++, AVERAGE );
+				r0 = 0;
+				g0 = 0;
+				b0 = 0;
+				x = 0;
+				do {
+
+					c = image.getPixel( x, y );
+
+					r =   c >>> 16         ;
+					g = ( c >>   8 ) & 0xFF;
+					b = ( c        ) & 0xFF;
+
+					Memory.setByte( i++, r - Std.int( ( r0 + Memory.getByte( j + 2 ) ) / 2 ) );
+					Memory.setByte( i++, g - Std.int( ( g0 + Memory.getByte( j + 1 ) ) / 2 ) );
+					Memory.setByte( i++, b - Std.int( ( b0 + Memory.getByte( j     ) ) / 2 ) );
+
+					Memory.setI32( j, c );
+					j += 4;
+
+					r0 = r;
+					g0 = g;
+					b0 = b;
+					
+				} while ( ++x < width );
+			} while ( ++y < height );
+		}
+	}
+
+	/**
+	 * @private
+	 */
+	private static inline function writePaeth(image:BitmapData, offset:UInt):Void {
+		var width:UInt = image.width;
+		var height:UInt = image.height;
+		var x:UInt, y:UInt;
+		var c:UInt, c0:UInt, c1:UInt;
+		var r:UInt, g:UInt, b:UInt;
+		var r0:UInt, g0:UInt, b0:UInt;
+		var r1:UInt, g1:UInt, b1:UInt;
+		var r2:UInt, g2:UInt, b2:UInt;
+		var j:UInt;
+		var i:UInt = 0;
+		if ( image.transparent ) {
+			var a:UInt, a0:UInt, a1:UInt, a2:UInt;
+			y = 0;
+			do {
+
+				j = offset;
+				Memory.setByte( i++, PAETH );
+				a0 = 0;
+				r0 = 0;
+				g0 = 0;
+				b0 = 0;
+				a2 = 0;
+				r2 = 0;
+				g2 = 0;
+				b2 = 0;
+				x = 0;
+				do {
+
+					c = image.getPixel32( x, y );
+
+					a =   c >>> 24         ;
+					r = ( c >>  16 ) & 0xFF;
+					g = ( c >>   8 ) & 0xFF;
+					b =   c          & 0xFF;
+
+					a1 = Memory.getByte( j + 3 );
+					r1 = Memory.getByte( j + 2 );
+					g1 = Memory.getByte( j + 1 );
+					b1 = Memory.getByte( j     );
+					
+					Memory.setByte( i++, r - paethPredictor( r0, r1, r2 ) );
+					Memory.setByte( i++, g - paethPredictor( g0, g1, g2 ) );
+					Memory.setByte( i++, b - paethPredictor( b0, b1, b2 ) );
+					Memory.setByte( i++, a - paethPredictor( a0, a1, a2 ) );
+
+					Memory.setI32( j, c );
+					j += 4;
+
+					a0 = a;
+					r0 = r;
+					g0 = g;
+					b0 = b;
+					a2 = a1;
+					r2 = r1;
+					g2 = g1;
+					b2 = b1;
+					
+				} while ( ++x < width );
+			} while ( ++y < height );
+		} else {
+			y = 0;
+			do {
+				j = offset;
+				Memory.setByte( i++, PAETH );
+				r0 = 0;
+				g0 = 0;
+				b0 = 0;
+				r2 = 0;
+				g2 = 0;
+				b2 = 0;
+				x = 0;
+				do {
+
+					c = image.getPixel( x, y );
+
+					r =   c >>> 16         ;
+					g = ( c >>   8 ) & 0xFF;
+					b =   c          & 0xFF;
+
+					r1 = Memory.getByte( j + 2 );
+					g1 = Memory.getByte( j + 1 );
+					b1 = Memory.getByte( j     );
+					
+					Memory.setByte( i++, r - paethPredictor( r0, r1, r2 ) );
+					Memory.setByte( i++, g - paethPredictor( g0, g1, g2 ) );
+					Memory.setByte( i++, b - paethPredictor( b0, b1, b2 ) );
+
+					Memory.setI32( j, c );
+					j += 4;
+
+					r0 = r;
+					g0 = g;
+					b0 = b;
+					r2 = r1;
+					g2 = g1;
+					b2 = b1;
+					
+				} while ( ++x < width );
+			} while ( ++y < height );
+		}
+	}
+
+	/**
+	 * @private
+	 */
+	private static inline function paethPredictor(a:UInt, b:UInt, c:UInt):UInt {
+		var p:Int = a + b - c;
+		var pa:UInt = abs( p - a );
+		var pb:UInt = abs( p - b );
+		var pc:UInt = abs( p - c );
+		if ( pa <= pb && pa <= pc ) {
+			return a;
+		} else if ( pb <= pc ) {
+			return b;
+		} else {
+			return c;
+		}
+	}
+
+	/**
+	 * @private
+	 */
+	private static inline function abs(v:Int):UInt {
+		return ( v < 0 ? -v : v );
+	}
+
+	/**
+	 * @private
+	 */
+	private static inline function throwError():Void {
+		Error.throwError( Error, 0 );
+	}
+
 }

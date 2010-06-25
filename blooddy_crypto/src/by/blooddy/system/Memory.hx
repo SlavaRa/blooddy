@@ -63,11 +63,11 @@ class Memory {
 		untyped __vmem_set__( 4, address, value );
 	}
 
-	public static inline function getByte(address:UInt):Int {
+	public static inline function getByte(address:UInt):UInt {
 		return untyped __vmem_get__( 0, address );
 	}
 
-	public static inline function getUI16(address:UInt):Int {
+	public static inline function getUI16(address:UInt):UInt {
 		return untyped __vmem_get__( 1, address );
 	}
 
