@@ -6,10 +6,10 @@
 
 package by.blooddy.core.data {
 
-	import by.blooddy.core.errors.getErrorMessage;
 	import by.blooddy.core.events.data.DataBaseEvent;
 	import by.blooddy.core.utils.ClassUtils;
 	
+	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
 
 	//--------------------------------------
@@ -64,7 +64,7 @@ package by.blooddy.core.data {
 		public function DataBaseNativeEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super( type, bubbles, cancelable );
 			if ( !( this is DataBaseEvent ) ) {
-				throw new ArgumentError( getErrorMessage( 2012, this ), 2012 );
+				Error.throwError( IllegalOperationError, 2012, ClassUtils.getClassName( this ) );
 			}
 		}
 

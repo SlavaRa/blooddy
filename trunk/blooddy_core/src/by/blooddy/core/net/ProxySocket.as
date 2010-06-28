@@ -6,7 +6,6 @@
 
 package by.blooddy.core.net {
 
-	import by.blooddy.core.errors.getErrorMessage;
 	import by.blooddy.core.utils.math.NumberUtils;
 	
 	import flash.errors.IOError;
@@ -298,7 +297,7 @@ package by.blooddy.core.net {
 		 */
 		public function connect(host:String, port:int):void {
 
-			if ( port < 0 || port > 0xFFFF ) throw new SecurityError( getErrorMessage( 2002 ), 2002 );
+			if ( port < 0 || port > 0xFFFF ) Error.throwError( SecurityError, 2003 );
 
 			this._host = host;
 			this._port = port;
@@ -330,7 +329,7 @@ package by.blooddy.core.net {
 		 * @inheritDoc
 		 */
 		public function close():void {
-			if ( !this._sesID ) throw new IOError( getErrorMessage( 2002 ), 2002 );
+			if ( !this._sesID ) Error.throwError( IOError, 2002 );
 			this.clear();
 			super.dispatchEvent( new Event( Event.CLOSE ) );
 		}
@@ -339,7 +338,7 @@ package by.blooddy.core.net {
 		 * @inheritDoc
 		 */
 		public function flush():void {
-			if ( !this._sesID ) throw new IOError( getErrorMessage( 2002 ), 2002 );
+			if ( !this._sesID ) Error.throwError( IOError, 2002 );
 			this._poll.writeBytes( this._output );	// перенесли в пул
 			this._output.length = 0;				// очистили всякую то что пытались отправить
 			if ( !this._conn1.connected || !this._conn2.connected ) {
@@ -822,8 +821,8 @@ package by.blooddy.core.net {
 //
 //==============================================================================
 
-import flash.net.URLStream;
 import flash.net.URLRequest;
+import flash.net.URLStream;
 
 ////////////////////////////////////////////////////////////////////////////////
 //

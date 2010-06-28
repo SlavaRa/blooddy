@@ -6,8 +6,6 @@
 
 package by.blooddy.core.data {
 
-	import by.blooddy.core.errors.getErrorMessage;
-	
 	import flash.errors.IllegalOperationError;
 
 	/**
@@ -48,14 +46,14 @@ package by.blooddy.core.data {
 		//--------------------------------------------------------------------------
 
 		//----------------------------------
-		//  id
+		//  name
 		//----------------------------------
 
 		/**
 		 * @private
 		 */
 		public override function set name(value:String):void {
-			throw new IllegalOperationError( getErrorMessage( 2071, this, 'name' ), 2071 );
+			Error.throwError( IllegalOperationError, 3008 );
 		}
 
 		//--------------------------------------------------------------------------
@@ -65,7 +63,7 @@ package by.blooddy.core.data {
 		//--------------------------------------------------------------------------
 
 		$protected_data override function setParent(value:DataContainer):void {
-			throw new ArgumentError();
+			Error.throwError( IllegalOperationError, 2037 );
 		}
 		
 	}

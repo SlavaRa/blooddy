@@ -7,7 +7,6 @@
 package by.blooddy.core.net.loading {
 
 	import by.blooddy.core.display.dispose;
-	import by.blooddy.core.errors.getErrorMessage;
 	import by.blooddy.core.net.MIME;
 	
 	import flash.display.Bitmap;
@@ -419,7 +418,7 @@ package by.blooddy.core.net.loading {
 //
 //==============================================================================
 
-import by.blooddy.core.errors.getErrorMessage;
+import by.blooddy.core.utils.ClassUtils;
 import by.blooddy.core.utils.time.setTimeout;
 
 import flash.display.DisplayObject;
@@ -517,7 +516,8 @@ internal final class LoaderAsset extends flash.display.Loader {
 	 * @private
 	 */
 	public override function get content():DisplayObject {
-		throw new IllegalOperationError( getErrorMessage( 2071, this ), 2071 );
+		Error.throwError( IllegalOperationError, 1069, 'content', ClassUtils.getClassName( this ) );
+		return null;
 	}
 
 	/**
@@ -532,7 +532,8 @@ internal final class LoaderAsset extends flash.display.Loader {
 	 * @private
 	 */
 	public override function get contentLoaderInfo():LoaderInfo {
-		throw new IllegalOperationError( getErrorMessage( 2071, this ), 2071 );
+		Error.throwError( IllegalOperationError, 1069, 'contentLoaderInfo', ClassUtils.getClassName( this ) );
+		return null;
 	}
 
 	/**
@@ -553,7 +554,7 @@ internal final class LoaderAsset extends flash.display.Loader {
 	 * @private
 	 */
 	public override function load(request:URLRequest, context:LoaderContext=null):void {
-		throw new IllegalOperationError( getErrorMessage( 2071, this ), 2071 );
+		Error.throwError( IllegalOperationError, 1001, 'load' );
 	}
 
 	/**
@@ -568,7 +569,7 @@ internal final class LoaderAsset extends flash.display.Loader {
 	 * @private
 	 */
 	public override function loadBytes(bytes:ByteArray, context:LoaderContext=null):void {
-		throw new IllegalOperationError( getErrorMessage( 2071, this ), 2071 );
+		Error.throwError( IllegalOperationError, 1001, 'loadBytes' );
 	}
 
 	/**
@@ -635,7 +636,7 @@ internal final class LoaderAsset extends flash.display.Loader {
 		if ( event.target !== this ) return;
 		_JUNK.addChild( this );
 		_JUNK.removeChild( this );
-		throw new IllegalOperationError( getErrorMessage( 2071, this ), 2071 );
+		Error.throwError( IllegalOperationError, 2037 );
 	}
 
 }

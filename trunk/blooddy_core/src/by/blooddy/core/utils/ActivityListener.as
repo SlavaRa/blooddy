@@ -6,7 +6,6 @@
 
 package by.blooddy.core.utils {
 
-	import by.blooddy.core.errors.getErrorMessage;
 	import by.blooddy.core.utils.time.FrameTimer;
 	import by.blooddy.core.utils.time.getTimer;
 	import by.blooddy.core.utils.ui.ContextMenuUtils;
@@ -456,7 +455,7 @@ package by.blooddy.core.utils {
 		 * @private
 		 */
 		public override function set opaqueBackground(value:Object):void {
-			throw new IllegalOperationError( getErrorMessage(2071), 2071 );
+			Error.throwError( IllegalOperationError, 3008 );
 		}
 
 		//----------------------------------
@@ -467,7 +466,7 @@ package by.blooddy.core.utils {
 		 * @private
 		 */
 		public override function set scale9Grid(innerRectangle:Rectangle):void {
-			throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
+			Error.throwError( IllegalOperationError, 3008 );
 		}
 
 		//----------------------------------
@@ -485,7 +484,7 @@ package by.blooddy.core.utils {
 		 * @private
 		 */
 		public override function set scrollRect(value:Rectangle):void {
-			throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
+			Error.throwError( IllegalOperationError, 3008 );
 		}
 
 		//--------------------------------------------------------------------------
