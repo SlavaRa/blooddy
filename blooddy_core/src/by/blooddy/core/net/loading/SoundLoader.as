@@ -146,7 +146,7 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 */
 		$protected_load override function $loadBytes(bytes:ByteArray):void {
-			throw new IllegalOperationError(); // TODO: дописать
+			Error.throwError( IllegalOperationError, 2014 );
 		}
 
 		/**
@@ -268,7 +268,6 @@ package by.blooddy.core.net.loading {
 //
 //==============================================================================
 
-import by.blooddy.core.errors.getErrorMessage;
 import by.blooddy.core.net.loading.SoundLoader;
 
 import flash.errors.IOError;
@@ -352,7 +351,7 @@ internal final class SoundAsset extends Sound {
 	 * @private
 	 */
 	public override function load(request:URLRequest, context:SoundLoaderContext=null):void {
-		throw new IllegalOperationError( getErrorMessage( 2071, this ), 2071 );
+		Error.throwError( IllegalOperationError, 1001, 'load' );
 	}
 	
 	/**
@@ -367,7 +366,8 @@ internal final class SoundAsset extends Sound {
 	 * @private
 	 */
 	public override function extract(target:ByteArray, length:Number, startPosition:Number=-1):Number {
-		throw new IllegalOperationError( getErrorMessage( 2071, this ), 2071 );
+		Error.throwError( IllegalOperationError, 1001, 'extract' );
+		return 0;
 	}
 
 	/**

@@ -6,7 +6,6 @@
 
 package by.blooddy.core.utils.time {
 
-	import by.blooddy.core.errors.getErrorMessage;
 	import by.blooddy.core.utils.enterFrameBroadcaster;
 	
 	import flash.errors.IllegalOperationError;
@@ -136,7 +135,7 @@ package by.blooddy.core.utils.time {
 		 * @private
 		 */
 		public override function set repeatCount(value:int):void {
-			throw new IllegalOperationError( getErrorMessage( 2071, this, 'repeatCount' ), 2071 );
+			Error.throwError( IllegalOperationError, 3008 );
 		}
 
 		//----------------------------------
@@ -190,7 +189,7 @@ package by.blooddy.core.utils.time {
 		 * @private
 		 */
 		public override function reset():void {
-			throw new IllegalOperationError( getErrorMessage( 2071, this, 'reset' ), 2071 );
+			Error.throwError( IllegalOperationError, 1001, 'reset' );
 		}
 
 		//--------------------------------------------------------------------------

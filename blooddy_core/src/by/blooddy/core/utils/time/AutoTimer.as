@@ -6,8 +6,6 @@
 
 package by.blooddy.core.utils.time {
 
-	import by.blooddy.core.errors.getErrorMessage;
-	
 	import flash.errors.IllegalOperationError;
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
@@ -58,7 +56,7 @@ package by.blooddy.core.utils.time {
 		 * @private
 		 */
 		public override function set delay(value:Number):void {
-			throw new IllegalOperationError( getErrorMessage( 2071, this, 'delay' ), 2071 );
+			Error.throwError( IllegalOperationError, 3008 );
 		}
 
 		[Deprecated( message="свойство не используется" )]
@@ -74,7 +72,7 @@ package by.blooddy.core.utils.time {
 		 * @private
 		 */
 		public override function set repeatCount(value:int):void {
-			throw new IllegalOperationError( getErrorMessage( 2071, this, 'repeatCount' ), 2071 );
+			Error.throwError( IllegalOperationError, 3008 );
 		}
 
 		//--------------------------------------------------------------------------
@@ -88,7 +86,7 @@ package by.blooddy.core.utils.time {
 		 * @private
 		 */
 		public override function start():void {
-			throw new IllegalOperationError( getErrorMessage( 2071, this, 'start' ), 2071 );
+			Error.throwError( IllegalOperationError, 1001, 'start' );
 		}
 
 		[Deprecated( message="метод запрещён. выключается автоматически.", replacement="removeEventListener" )]
@@ -96,7 +94,7 @@ package by.blooddy.core.utils.time {
 		 * @private
 		 */
 		public override function stop():void {
-			throw new IllegalOperationError( getErrorMessage( 2071, this, 'stop' ), 2071 );
+			Error.throwError( IllegalOperationError, 1001, 'stop' );
 		}
 
 		[Deprecated( message="метод не использщуется" )]
@@ -104,7 +102,7 @@ package by.blooddy.core.utils.time {
 		 * @private
 		 */
 		public override function reset():void {
-			throw new IllegalOperationError( getErrorMessage( 2071, this, 'reset' ), 2071 );
+			Error.throwError( IllegalOperationError, 1001, 'reset' );
 		}
 
 		//--------------------------------------------------------------------------

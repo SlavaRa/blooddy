@@ -9,7 +9,6 @@ package by.blooddy.core.controllers {
 	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.commands.CommandDispatcher;
 	import by.blooddy.core.data.DataBase;
-	import by.blooddy.core.errors.getErrorMessage;
 	import by.blooddy.core.net.ProxySharedObject;
 	
 	import flash.display.DisplayObjectContainer;
@@ -35,9 +34,9 @@ package by.blooddy.core.controllers {
 		 */
 		public function BaseController(container:DisplayObjectContainer!, dataBase:DataBase!, sharedObject:ProxySharedObject!) {
 			super();
-			if ( !container )		throw new ArgumentError( getErrorMessage( 2007, this, 'BaseController', 'container' ),		2007 );
-			if ( !dataBase )		throw new ArgumentError( getErrorMessage( 2007, this, 'BaseController', 'dataBase' ),		2007 );
-			if ( !sharedObject )	throw new ArgumentError( getErrorMessage( 2007, this, 'BaseController', 'sharedObject' ),	2007 );
+			if ( !container )		Error.throwError( TypeError, 2007, 'container' );
+			if ( !dataBase )		Error.throwError( TypeError, 2007, 'dataBase' );
+			if ( !sharedObject )	Error.throwError( TypeError, 2007, 'sharedObject' );
 			this._dataBase = dataBase;
 			this._container = container;
 			this._sharedObject = sharedObject;

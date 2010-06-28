@@ -210,8 +210,6 @@ package by.blooddy.core.managers.resource {
 			}
 		}
 
-//		private static function
-		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor

@@ -7,7 +7,6 @@
 package by.blooddy.core.net.connection {
 
 	import by.blooddy.core.commands.Command;
-	import by.blooddy.core.errors.getErrorMessage;
 	import by.blooddy.core.events.net.SerializeErrorEvent;
 	import by.blooddy.core.logging.InfoLog;
 	import by.blooddy.core.net.AbstractRemoter;
@@ -300,7 +299,7 @@ package by.blooddy.core.net.connection {
 			if ( this._socket ) {
 				this._socket.close();
 			} else {
-				throw new IOError( getErrorMessage( 2002 ), 2002 );
+				Error.throwError( IOError, 2002 );
 			}
 		}
 

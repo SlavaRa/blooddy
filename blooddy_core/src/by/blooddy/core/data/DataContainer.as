@@ -6,8 +6,6 @@
 
 package by.blooddy.core.data {
 
-	import by.blooddy.core.errors.getErrorMessage;
-
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -122,11 +120,11 @@ package by.blooddy.core.data {
 		 */
 		private function $addChildAt(child:Data, index:int):Data {
 			// проверим наличие передоваемого объекта
-			if ( !child ) throw new TypeError( getErrorMessage( 2007, this, '$addChildAt', 'child' ), 2007 );
+			if ( !child ) Error.throwError( TypeError, 2007, 'child' );
 			// проверим рэндж
-			if ( index < 0 || index > this._list.length ) throw new RangeError( getErrorMessage( 2006 ), 2006 );
+			if ( index < 0 || index > this._list.length ) Error.throwError( RangeError, 2006 );
 			// проверим не мыли это?
-			if ( child === this ) throw new ArgumentError( getErrorMessage( 2024 ), 2024 );
+			if ( child === this ) Error.throwError( ArgumentError, 2024 );
 			// если есть родитель, то надо его отуда удалить
 			if ( child._parent === this ) {
 				this.$setChildIndex( child, index, false );
@@ -143,7 +141,7 @@ package by.blooddy.core.data {
 				}
 				// проверим нашу пренадлежность, вдруг зацикливание
 				if ( child is DataContainer && ( child as DataContainer ).$contains( this ) ) {
-					throw new ArgumentError( getErrorMessage( 2150 ), 2150 );
+					Error.throwError( ArgumentError, 2150 );
 				}
 				// добавляем
 				this._list.splice( index, 0, child );
@@ -200,7 +198,7 @@ package by.blooddy.core.data {
 		private function $removeChildAt(index:int, strict:Boolean=true):Data {
 			if ( strict ) {
 				// проверим рэндж
-				if ( index < 0 || index > this._list.length ) throw new RangeError( getErrorMessage( 2006 ), 2006 );
+				if ( index < 0 || index > this._list.length ) Error.throwError( RangeError, 2006 );
 			}
 			// удалим
 			var child:Data = this._list.splice( index, 1 )[0] as Data;
@@ -226,7 +224,7 @@ package by.blooddy.core.data {
 		 */
 		public function contains(child:Data):Boolean {
 			// проверим наличие передоваемого объекта
-			if ( !child ) throw new TypeError( getErrorMessage( 2007, this, 'contains', 'child' ), 2007 );
+			if ( !child )  Error.throwError( TypeError, 2007, 'child' );
 			return this.$contains( child );
 		}
 
@@ -265,7 +263,7 @@ package by.blooddy.core.data {
 		 */
 		private function $getChildAt(index:int):Data {
 			// проверим рэндж
-			if ( index<0 || index>this._list.length ) throw new RangeError( getErrorMessage( 2006 ), 2006 );
+			if ( index<0 || index>this._list.length ) Error.throwError( RangeError, 2006 );
 			return this._list[ index ] as Data;
 		}
 
@@ -317,7 +315,7 @@ package by.blooddy.core.data {
 		private function $getChildIndex(child:Data, strict:Boolean=true):int {
 			if ( strict ) {
 				// проверяем мы ли родитель
-				if ( !child || child._parent !== this ) throw new ArgumentError( getErrorMessage( 2025, this ), 2025 );
+				if ( !child || child._parent !== this ) Error.throwError( ArgumentError, 2025 );
 			}
 			// ищем
 			return this._list.indexOf( child );
@@ -347,9 +345,9 @@ package by.blooddy.core.data {
 		 */
 		private function $setChildIndex(child:Data, index:int, strict:Boolean=true):void {
 			if ( strict ) {
-				if ( !child ) throw new TypeError( getErrorMessage( 2007, this, '$addChildAt', 'child' ), 2007 );
+				if ( !child )  Error.throwError( TypeError, 2007, 'child' );
 				// проверим рэндж
-				if ( index < 0 || index > this._list.length ) throw new RangeError( getErrorMessage( 2006 ), 2006 );
+				if ( index < 0 || index > this._list.length ) Error.throwError( RangeError, 2006 );
 			}
 			this._list.splice( this.$getChildIndex( child, strict ), 1 );
 			this._list.splice( index, 0, child );

@@ -167,7 +167,7 @@ package by.blooddy.core.data {
 		public override function dispatchEvent(event:Event):Boolean {
 			if ( event.bubbles ) {
 				if ( event is DataBaseEvent ) return this.dispatchEventFunction( event as DataBaseEvent );
-				else throw new ArgumentError( 'bubbling поддерживается только у событий наследованных от DataBaseEvent' );
+				else throw new TypeError( 'bubbling поддерживается только у событий наследованных от DataBaseEvent' );
 			} else return super.dispatchEvent( event );
 		}
 

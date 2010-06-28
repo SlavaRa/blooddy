@@ -19,8 +19,14 @@ package by.blooddy.core.display {
 			this._target.addEventListener(Event.REMOVED_FROM_STAGE, this.handler_removedFromStage, false, int.MAX_VALUE);
 		}
 
+		/**
+		 * @private
+		 */
 		private var _target:DisplayObject;
 
+		/**
+		 * @private
+		 */
 		private	const _listeners:Vector.<StageObserverItem> = new Vector.<StageObserverItem>();
 
 		public function registerEventListener(target:IEventDispatcher, type:String, listener:Function, useCapture:Boolean=false, priority:int=0, useWeakReference:Boolean=false):void {
@@ -69,12 +75,18 @@ package by.blooddy.core.display {
 			this._target = null;
 		}
 
+		/**
+		 * @private
+		 */
 		private function handler_addedToStage(event:Event):void {
 			for (var i:uint=0; i<this._listeners.length; i++) {
 				( this._listeners[i] as StageObserverItem ).activate();
 			}
 		}
 
+		/**
+		 * @private
+		 */
 		private function handler_removedFromStage(event:Event):void {
 			for (var i:uint=0; i<this._listeners.length; i++) {
 				( this._listeners[i] as StageObserverItem ).deactivate();
@@ -90,8 +102,6 @@ package by.blooddy.core.display {
 //  Inner definitions
 //
 //==============================================================================
-
-import by.blooddy.core.errors.getErrorMessage;
 
 import flash.events.IEventDispatcher;
 
@@ -109,9 +119,9 @@ internal final class StageObserverItem {
 
 	public function StageObserverItem(target:IEventDispatcher!, type:String!, listener:Function, useCapture:Boolean=false, priority:int=0, useWeakReference:Boolean=false) {
 		super();
-		if ( !target )			throw new ArgumentError( getErrorMessage( 2007, this, 'StageObserverItem', 'target' ),		2007 );
-		if ( !type )			throw new ArgumentError( getErrorMessage( 2007, this, 'StageObserverItem', 'type' ),		2007 );
-		if ( listener == null )	throw new ArgumentError( getErrorMessage( 2007, this, 'StageObserverItem', 'listener' ),	2007 );
+		if ( !target )			Error.throwError( TypeError, 2007, 'target' );
+		if ( !type )			Error.throwError( TypeError, 2007, 'type' );
+		if ( listener == null )	Error.throwError( TypeError, 2007, 'listener' );
 		this.target = target;
 		this.type = type;
 		this.listener = listener;

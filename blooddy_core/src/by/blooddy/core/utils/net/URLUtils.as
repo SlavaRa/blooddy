@@ -58,9 +58,11 @@ package by.blooddy.core.utils.net {
 		
 		public static function getPathURL(url:String):String {
 			var loc:Location = new Location( url );
-			var i:int = loc.path.lastIndexOf( '/' );
-			if ( i > 0 && i < loc.path.length - 1 ) {
-				loc.path = loc.path.substring( 0, i + 1 );
+			if ( loc.path ) {
+				var i:int = loc.path.lastIndexOf( '/' );
+				if ( i > 0 && i < loc.path.length - 1 ) {
+					loc.path = loc.path.substring( 0, i + 1 );
+				}
 			}
 			loc.search = null;
 			loc.hash = null;
