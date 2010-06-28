@@ -75,7 +75,7 @@ package by.blooddy.crypto.image {
 			var quantTable:ByteArray = _quantTables[ quality ];
 			if ( !quantTable ) {
 				quantTable = JPEGTableHelper.createQuantTable( quality );
-				if ( _table.length <= 0) {
+				if ( _table.length <= 0 ) {
 					var tmp:ByteArray;
 					tmp = JPEGTableHelper.createZigZagTable();		_table.writeBytes( tmp );	tmp.clear();
 					tmp = JPEGTableHelper.createHuffmanTable();		_table.writeBytes( tmp );	tmp.clear();
