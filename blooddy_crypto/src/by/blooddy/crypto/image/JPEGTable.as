@@ -71,7 +71,7 @@ package by.blooddy.crypto.image {
 		 *	199817:
 		 */
 		public static function getTable(quality:uint=60):ByteArray {
-			if ( quality > 100 ) throw new ArgumentError();
+			if ( quality > 100 ) Error.throwError( RangeError, 2006, 'quality' );
 			var quantTable:ByteArray = _quantTables[ quality ];
 			if ( !quantTable ) {
 				quantTable = JPEGTableHelper.createQuantTable( quality );

@@ -72,21 +72,22 @@ private class TMP {
 		tmp.writeBytes( table );
 		table.clear();
 
-		tmp.length += 608;
+		tmp.length += 680;
 
 		Memory.memory = tmp;
 
 		// Add JPEG headers
 		Memory.setI16( Z0, 0xD8FF ); // SOI
-		writeAPP0();
-		writeDQT();
-		writeSOF0( image.width, image.height );
-		writeDHT();
-		writeSOS();
+		writeAPP0( Z0 +   2 );
+		writeAPP1( Z0 +  20 );
+		writeDQT(  Z0 +  92 );
+		writeSOF0( Z0 + 226, image.width, image.height );
+		writeDHT(  Z0 + 245 );
+		writeSOS(  Z0 + 665 );
 
-		Memory.setI32( 8,   0 ); // bytenew
-		Memory.setI32( 4,   7 ); // bytepos
-		Memory.setI32( 0, 607 ); // byteout
+		Memory.setI32( 8, 0 );			// bytenew
+		Memory.setI32( 4, 7 );			// bytepos
+		Memory.setI32( 0, Z0 + 679 );	// byteout
 
 		// Encode 8x8 macroblocks
 		var DCY:Int = 0;
@@ -100,7 +101,7 @@ private class TMP {
 		do {
 			x = 0;
 			do {
-				if ( tmp.length - Z0 - Memory.getI32( 0 ) < 2048 ) {
+				if ( tmp.length - Memory.getI32( 0 ) < 2048 ) {
 					tmp.length += 4096;
 				}
 				rgb2yuv( image, x, y );
@@ -121,12 +122,12 @@ private class TMP {
 
 		var len:UInt = Memory.getI32( 0 );
 
-		Memory.setI16( Z0 + len, 0xD9FF ); //EOI
+		Memory.setI16( len, 0xD9FF ); //EOI
 
 		Memory.memory = mem;
 
 		var bytes:ByteArray = new ByteArray();
-		bytes.writeBytes( tmp, Z0, len + 2 );
+		bytes.writeBytes( tmp, Z0, len - Z0 + 2 );
 		bytes.position = 0;
 
 		tmp.clear();
@@ -143,79 +144,109 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static inline function writeAPP0():Void {
-		Memory.setI16(	Z0 +  2,	0xE0FF		);	// marker
-		Memory.setI16(	Z0 +  4,	0x1000		);	// length
-		Memory.setI32(	Z0 +  6,	0x4649464A	);	// JFIF
-		Memory.setByte( Z0 + 10,	0x00		);	//
-		Memory.setI16(	Z0 + 11,	0x0101		);	// version
-		Memory.setByte( Z0 + 13,	0x00		);	// xyunits
-		Memory.setI32(	Z0 + 14,	0x01000100	);	// density
-		Memory.setI16(	Z0 + 18,	0x0000		);	// thumbn
+	private static inline function writeAPP0(p:UInt):Void {
+		Memory.setI16(	p     ,	0xE0FF		);	// marker
+		Memory.setI16(	p +  2,	0x1000		);	// length
+		Memory.setI32(	p +  4,	0x4649464A	);	// JFIF
+		Memory.setByte( p +  8,	0x00		);	//
+		Memory.setI16(	p +  9,	0x0101		);	// version
+		Memory.setByte( p + 11,	0x00		);	// xyunits
+		Memory.setI32(	p + 12,	0x01000100	);	// density
+		Memory.setI16(	p + 16,	0x0000		);	// thumbn
 	}
 
 	/**
 	 * @private
 	 */
-	private static inline function writeDQT():Void {
-		Memory.setI16(	Z0 + 20,	0xDBFF		);	// marker
-		Memory.setI16(	Z0 + 22,	0x8400		);	// length
+	private static inline function writeAPP1(p:UInt):Void {
+		Memory.setI16(	p     ,	0xE1FF		);	// marker
+		Memory.setI16(	p +  2,	0x4600		);	// length
+
+		Memory.setI32(  p +  4, 0x66697845	);	// Exif
+		Memory.setI16(  p +  8, 0x0000		);	//
+		Memory.setI32(  p + 10, 0x002A4949	);	// TIFF Header
+		Memory.setI32(  p + 14, 0x00000008	);	//
+
+		Memory.setI16(  p + 18, 0x0001		);
+		
+		Memory.setI16(  p + 20, 0x0131		);	// tag
+		Memory.setI16(  p + 22, 0x0002		);	// type
+		Memory.setI32(  p + 24, 0x00000023	);	// count
+		Memory.setI32(  p + 28, 0x0000001A	);	// value offset
+		Memory.setI32(  p + 32, 0x00000000	);	//
 
 		var tmp:ByteArray = Memory.memory;
-		tmp.position = Z0 + 24;
+		tmp.position = p + 36;
+		tmp.writeMultiByte( 'by.blooddy.crypto.image.JPEGEncoder', 'x-ascii' ); // length=35
+
+		Memory.setByte( p + 71, 0x00		);	// zero
+
+	}
+
+	/**
+	 * @private
+	 */
+	private static inline function writeDQT(p:UInt):Void {
+		Memory.setI16(	p     ,	0xDBFF		);	// marker
+		Memory.setI16(	p +  2,	0x8400		);	// length
+
+		var tmp:ByteArray = Memory.memory;
+		tmp.position = p + 4;
 		tmp.writeBytes( tmp, Z2, 130 );
 
-		Memory.setByte( Z0 + 24,	0x00		);
-		Memory.setByte( Z0 + 89,	0x01		);
+		Memory.setByte( p +  4,	0x00		);
+		Memory.setByte( p + 69,	0x01		);
 	}
 	
 	/**
 	 * @private
 	 */
-	private static inline function writeSOF0(width:UInt, height:UInt):Void {
-		Memory.setI16(	Z0 + 154,	0xC0FF		);	// marker
-		Memory.setI16(	Z0 + 156,	0x1100		);	// length, truecolor YUV JPG
-		Memory.setByte(	Z0 + 158,	0x08		);	// precision
-		Memory.setI32(	Z0 + 159,					// height, width
-			( ( ( height >> 8 ) & 0xFF )       ) |
-			( ( ( height      ) & 0xFF ) << 8  ) |
-			( ( ( width >> 8  ) & 0xFF ) << 16 ) |
-			( ( ( width       ) & 0xFF ) << 24 )
+	private static inline function writeSOF0(p:UInt, width:UInt, height:UInt):Void {
+		Memory.setI16(	p     ,	0xC0FF		);	// marker
+		Memory.setI16(	p +  2,	0x1100		);	// length, truecolor YUV JPG
+		Memory.setByte(	p +  4,	0x08		);	// precision
+		Memory.setI32(	p +  5,					// height
+			( ( ( height >> 8 ) & 0xFF )      ) |
+			( ( ( height      ) & 0xFF ) << 8 )
 		);
-		Memory.setByte(	Z0 + 163,	0x03		);	// nrofcomponents
-		Memory.setI32(	Z0 + 164,	0x00001101	);	// IdY, HVY, QTY
-		Memory.setI32(	Z0 + 167,	0x00011102	);	// IdU, HVU, QTU
-		Memory.setI32(	Z0 + 170,	0x00011103	);	// IdV, HVV, QTV
+		Memory.setI32(	p +  7,					// width
+			( ( ( width >> 8  ) & 0xFF )      ) |
+			( ( ( width       ) & 0xFF ) << 8 )
+		);
+		Memory.setByte(	p +  9,	0x03		);	// nrofcomponents
+		Memory.setI32(	p + 10,	0x00001101	);	// IdY, HVY, QTY
+		Memory.setI32(	p + 13,	0x00011102	);	// IdU, HVU, QTU
+		Memory.setI32(	p + 16,	0x00011103	);	// IdV, HVV, QTV
 	}
 
 	/**
 	 * @private
 	 */
-	private static inline function writeDHT():Void {
-		Memory.setI16(	Z0 + 173,	0xC4FF		);	// marker
-		Memory.setI16(	Z0 + 175,	0xA201		);	// length
+	private static inline function writeDHT(p:UInt):Void {
+		Memory.setI16(	p      ,	0xC4FF		);	// marker
+		Memory.setI16(	p +   2,	0xA201		);	// length
 
 		var tmp:ByteArray = Memory.memory;
-		tmp.position = Z0 + 177;
+		tmp.position = p + 4;
 		tmp.writeBytes( tmp, Z2 + 1218, 416 );
 
-		Memory.setByte(	Z0 + 177,	0x00		);	// HTYDCinfo
-		Memory.setByte(	Z0 + 206,	0x10		);	// HTYACinfo
-		Memory.setByte(	Z0 + 385,	0x01		);	// HTUDCinfo
-		Memory.setByte(	Z0 + 414,	0x11		);	// HTUACinfo
+		Memory.setByte(	p +   4,	0x00		);	// HTYDCinfo
+		Memory.setByte(	p +  33,	0x10		);	// HTYACinfo
+		Memory.setByte(	p + 212,	0x01		);	// HTUDCinfo
+		Memory.setByte(	p + 241,	0x11		);	// HTUACinfo
 	}
 
 	/**
 	 * @private
 	 */
-	private static inline function writeSOS():Void {
-		Memory.setI16(	Z0 + 593,	0xDAFF		);	// marker
-		Memory.setI16(	Z0 + 595,	0x0C00		);	// length
-		Memory.setByte(	Z0 + 597,	0x03		);	// nrofcomponents
-		Memory.setI16(	Z0 + 598,	0x0001		);	// IdY, HTY
-		Memory.setI16(	Z0 + 600,	0x1102		);	// IdU, HTU
-		Memory.setI16(	Z0 + 602,	0x1103		);	// IdV, HTV
-		Memory.setI32(	Z0 + 604,	0x00003f00	);	// Ss, Se, Bf
+	private static inline function writeSOS(p:UInt):Void {
+		Memory.setI16(	p     ,	0xDAFF		);	// marker
+		Memory.setI16(	p +  2,	0x0C00		);	// length
+		Memory.setByte(	p +  4,	0x03		);	// nrofcomponents
+		Memory.setI16(	p +  5,	0x0001		);	// IdY, HTY
+		Memory.setI16(	p +  7,	0x1102		);	// IdU, HTU
+		Memory.setI16(	p +  9,	0x1103		);	// IdV, HTV
+		Memory.setI32(	p + 11,	0x00003f00	);	// Ss, Se, Bf
 	}
 
 	/**
@@ -488,10 +519,10 @@ private class TMP {
 			bytepos--;
 			if ( bytepos < 0 ) {
 				if ( bytenew == 0xFF ) {
-					Memory.setI16( Z0 + byteout, 0x00FF );
+					Memory.setI16( byteout, 0x00FF );
 					byteout += 2;
 				} else {
-					Memory.setByte( Z0 + byteout, bytenew );
+					Memory.setByte( byteout, bytenew );
 					byteout++;
 				}
 				bytepos = 7;
