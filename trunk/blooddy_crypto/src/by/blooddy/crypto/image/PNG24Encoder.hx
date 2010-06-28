@@ -1,3 +1,4 @@
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  © 2010 BlooDHounD
@@ -29,7 +30,7 @@ class PNG24Encoder {
 	 *
 	 * @param	image	The BitmapData that will be converted into the PNG format.
 	 * @return			a ByteArray representing the PNG encoded image data.
-	 */			
+	 */
 	public static function encode(image:BitmapData, ?filter:UInt=0):ByteArray {
 		return TMP.encode( image, filter );
 	}
@@ -73,13 +74,13 @@ private class TMP {
 		// Create output byte array
 		var bytes:ByteArray = new ByteArray();
 
-		// Write PNG signature
+		// PNG signature
 		bytes.writeUnsignedInt( 0x89504e47 );
 		bytes.writeUnsignedInt( 0x0D0A1A0A );
 
 		var chunk:ByteArray = new ByteArray();
 
-		// Build IHDR chunk
+		// IHDR
 		chunk.length = 1024;
 		Memory.memory = chunk;
 		Memory.setI32( 0, 0x52444849 );
@@ -94,7 +95,7 @@ private class TMP {
 		chunk.length = 17;
 		writeChunk( bytes, chunk );
 
-		// Build IDAT chunk
+		// IDAT
 		var len:UInt = ( ( width * height ) * ( image.transparent ? 4 : 3 ) ) + height;
 		var len2:UInt = len + width * 4;
 		if ( len2 < 1024 ) chunk.length = 1024;
@@ -108,7 +109,7 @@ private class TMP {
 			case AVERAGE:	writeAverage( image, len );
 			case PAETH:		writePaeth( image, len );
 			default:
-				throwError();
+				Error.throwError( ArgumentError, 2008, 'filter' );
 		}
 		
 		Memory.memory = null;
@@ -120,7 +121,10 @@ private class TMP {
 		chunk.writeUnsignedInt( 0x49444154 );
 		writeChunk( bytes, chunk );
 
-		// Build IEND chunk
+		// tEXt
+		writeTextChunk( bytes, chunk, 'Software', 'by.blooddy.crypto.image.PNG24Encoder' );
+
+		// IEND
 		chunk.length = 0;
 		chunk.writeUnsignedInt( 0x49454E44 );
 		writeChunk( bytes, chunk );
@@ -151,6 +155,18 @@ private class TMP {
 		bytes.writeUnsignedInt( chunk.length - 4 );
 		bytes.writeBytes( chunk, 0 );
 		bytes.writeUnsignedInt( CRC32.hash( chunk ) );
+	}
+
+	/**
+	 * @private
+	 */
+	private static inline function writeTextChunk(bytes:ByteArray, chunk:ByteArray, keyword:String, text:String):Void {
+		chunk.length = 0;
+		chunk.writeUnsignedInt( 0x74455874 );
+		chunk.writeMultiByte( keyword, 'latin-1' );
+		chunk.writeByte( 0 );
+		chunk.writeMultiByte( text, 'latin-1' );
+		writeChunk( bytes, chunk );
 	}
 
 	/**
@@ -334,10 +350,10 @@ private class TMP {
 					g = ( c >>  8 ) & 0xFF;
 					b = ( c       ) & 0xFF;
 
-					Memory.setByte( i++, r - Std.int( ( r0 + Memory.getByte( j + 2 ) ) / 2 ) );
-					Memory.setByte( i++, g - Std.int( ( g0 + Memory.getByte( j + 1 ) ) / 2 ) );
-					Memory.setByte( i++, b - Std.int( ( b0 + Memory.getByte( j     ) ) / 2 ) );
-					Memory.setByte( i++, a - Std.int( ( a0 + Memory.getByte( j + 3 ) ) / 2 ) );
+					Memory.setByte( i++, r - ( ( r0 + Memory.getByte( j + 2 ) ) >>> 1 ) );
+					Memory.setByte( i++, g - ( ( g0 + Memory.getByte( j + 1 ) ) >>> 1 ) );
+					Memory.setByte( i++, b - ( ( b0 + Memory.getByte( j     ) ) >>> 1 ) );
+					Memory.setByte( i++, a - ( ( a0 + Memory.getByte( j + 3 ) ) >>> 1 ) );
 
 					Memory.setI32( j, c );
 					j += 4;
@@ -366,9 +382,9 @@ private class TMP {
 					g = ( c >>   8 ) & 0xFF;
 					b = ( c        ) & 0xFF;
 
-					Memory.setByte( i++, r - Std.int( ( r0 + Memory.getByte( j + 2 ) ) / 2 ) );
-					Memory.setByte( i++, g - Std.int( ( g0 + Memory.getByte( j + 1 ) ) / 2 ) );
-					Memory.setByte( i++, b - Std.int( ( b0 + Memory.getByte( j     ) ) / 2 ) );
+					Memory.setByte( i++, r - ( ( r0 + Memory.getByte( j + 2 ) ) >>> 1 ) );
+					Memory.setByte( i++, g - ( ( g0 + Memory.getByte( j + 1 ) ) >>> 1 ) );
+					Memory.setByte( i++, b - ( ( b0 + Memory.getByte( j     ) ) >>> 1 ) );
 
 					Memory.setI32( j, c );
 					j += 4;
@@ -510,13 +526,6 @@ private class TMP {
 	 */
 	private static inline function abs(v:Int):UInt {
 		return ( v < 0 ? -v : v );
-	}
-
-	/**
-	 * @private
-	 */
-	private static inline function throwError():Void {
-		Error.throwError( Error, 0 );
 	}
 
 }

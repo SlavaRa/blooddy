@@ -52,7 +52,7 @@ private class TMP {
 	//
 	//--------------------------------------------------------------------------
 
-	public static inline function encode(bytes:ByteArray, insertNewLines:Bool=false):String {
+	public static inline function encode(bytes:ByteArray, insertNewLines:Bool):String {
 
 		var len:UInt = bytes.length;
 
@@ -89,9 +89,8 @@ private class TMP {
 			);
 			j += 4;
 
-			if ( insertNewLines && i % 57 == 0 ) {
-				Memory.setByte( j, 10 );
-				j++;
+			if ( insertNewLines && ( i - Z1 ) % 57 == 0 ) {
+				Memory.setByte( j++, 10 );
 			}
 
 		}

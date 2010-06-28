@@ -103,7 +103,8 @@ private class TMP {
 		tmp.writeBytes( bytes );
 
 		// помещаем в пямять
-		if ( tmp.length < 1024 ) tmp.length = 1024;
+		if ( bytesLength + 4 < 1024 ) tmp.length = 1024;
+		else tmp.length = bytesLength + 4;
 		Memory.memory = tmp;
 
 		Memory.setI32( ( i >> 5 ) << 2, Memory.getI32( ( i >> 5 ) << 2 ) | ( 0x80 << ( i % 32 ) ) );
