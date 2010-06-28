@@ -1,4 +1,3 @@
-
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  © 2010 BlooDHounD
@@ -9,6 +8,7 @@ package by.blooddy.crypto.image;
 
 import by.blooddy.crypto.CRC32;
 import by.blooddy.system.Memory;
+import by.blooddy.utils.ByteArrayUtils;
 import flash.display.BitmapData;
 import flash.Error;
 import flash.utils.ByteArray;
@@ -71,6 +71,9 @@ private class TMP {
 		var width:UInt = image.width;
 		var height:UInt = image.height;
 
+		var len:UInt = ( ( width * height ) * ( image.transparent ? 4 : 3 ) ) + height;
+		var len2:UInt = len + width * 4;
+
 		// Create output byte array
 		var bytes:ByteArray = new ByteArray();
 
@@ -78,30 +81,23 @@ private class TMP {
 		bytes.writeUnsignedInt( 0x89504e47 );
 		bytes.writeUnsignedInt( 0x0D0A1A0A );
 
-		var chunk:ByteArray = new ByteArray();
+		var chunk:ByteArray = ByteArrayUtils.createByteArray( len2 );
 
 		// IHDR
-		chunk.length = 1024;
-		Memory.memory = chunk;
-		Memory.setI32( 0, 0x52444849 );
-		writeI32( 4, width );
-		writeI32( 8, height );
-		Memory.setByte( 12, 0x08 );		// Bit depth
-		Memory.setByte( 13, ( image.transparent ? 0x06 : 0x02 ) );	// Colour type
-		Memory.setByte( 14, 0x00 );		// Compression method
-		Memory.setByte( 15, 0x00 );		// Filter method
-		Memory.setByte( 16, 0x00 );		// Interlace method
-		Memory.memory = null;
-		chunk.length = 17;
+		chunk.writeUnsignedInt( 0x49484452 );
+		chunk.writeUnsignedInt( width );
+		chunk.writeUnsignedInt( height );
+		chunk.writeByte( 0x08 );     // Bit depth
+		chunk.writeByte( image.transparent ? 0x06 : 0x02 );     // Colour type
+		chunk.writeByte( 0x00 );     // Compression method
+		chunk.writeByte( 0x00 );     // Filter method
+		chunk.writeByte( 0x00 );     // Interlace method
 		writeChunk( bytes, chunk );
 
 		// IDAT
-		var len:UInt = ( ( width * height ) * ( image.transparent ? 4 : 3 ) ) + height;
-		var len2:UInt = len + width * 4;
 		if ( len2 < 1024 ) chunk.length = 1024;
 		else chunk.length = len2;
 		Memory.memory = chunk;
-
 		switch ( filter ) {
 			case NONE:		writeNone( image );
 			case SUB:		writeSub( image );
@@ -111,7 +107,6 @@ private class TMP {
 			default:
 				Error.throwError( ArgumentError, 2008, 'filter' );
 		}
-		
 		Memory.memory = null;
 		chunk.length = len;
 		chunk.compress();

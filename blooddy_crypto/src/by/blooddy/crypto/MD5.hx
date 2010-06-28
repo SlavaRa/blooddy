@@ -7,6 +7,7 @@
 package by.blooddy.crypto;
 
 import by.blooddy.system.Memory;
+import by.blooddy.utils.ByteArrayUtils;
 import flash.utils.ByteArray;
 
 /**
@@ -99,12 +100,11 @@ private class TMP {
 		var bytesLength:UInt = ( ( ( ( i + 64 ) >>> 9 ) << 4 ) + 15 ) << 2; // длинна для подсчёта в блоков
 
 		// копируем массив
-		var tmp:ByteArray = new ByteArray();
+		var tmp:ByteArray = ByteArrayUtils.createByteArray( bytesLength + 4 );
 		tmp.writeBytes( bytes );
 
 		// помещаем в пямять
-		if ( bytesLength + 4 < 1024 ) tmp.length = 1024;
-		else tmp.length = bytesLength + 4;
+		if ( tmp.length < 1024 ) tmp.length = 1024;
 		Memory.memory = tmp;
 
 		Memory.setI32( ( i >> 5 ) << 2, Memory.getI32( ( i >> 5 ) << 2 ) | ( 0x80 << ( i % 32 ) ) );
@@ -226,6 +226,7 @@ private class TMP {
 		var result:String = tmp.readUTFBytes( 32 );
 
 		Memory.memory = mem;
+
 		tmp.clear();
 
 		return result;

@@ -38,6 +38,9 @@ private class TMP {
 	//
 	//--------------------------------------------------------------------------
 
+	/**
+	 * @private
+	 */
 	private static inline var Z0:UInt = 256 * 4;
 
 	//--------------------------------------------------------------------------
@@ -56,8 +59,7 @@ private class TMP {
 			var mem:ByteArray = Memory.memory;
 
 			var tmp:ByteArray = new ByteArray();
-			tmp.position = Z0;
-			tmp.writeBytes( bytes );
+			tmp.length = Z0;
 
 			Memory.memory = tmp;
 
@@ -79,10 +81,14 @@ private class TMP {
 
 			c = 0xFFFFFFFF;
 
+			tmp.position = Z0;
+			tmp.length = len;
+			tmp.writeBytes( bytes );
+
 			i = Z0;
-			while ( i < len ) {
-				c = Memory.getI32( ( ( c ^ Memory.getByte( i++ ) & 0xFF ) << 2 ) ) ^ ( c >>> 8 );
-			}
+			do {
+				c = Memory.getI32( ( ( c ^ Memory.getByte( i ) & 0xFF ) << 2 ) ) ^ ( c >>> 8 );
+			} while ( ++i < len );
 
 			Memory.memory = mem;
 
