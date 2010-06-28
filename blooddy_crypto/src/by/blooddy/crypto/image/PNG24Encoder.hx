@@ -175,24 +175,41 @@ private class TMP {
 	private static inline function writeNone(image:BitmapData):Void {
 		var width:UInt = image.width;
 		var height:UInt = image.height;
-		var x:UInt, y:UInt;
+		var x:UInt, y:UInt = 0;
 		var c:UInt;
 		var i:UInt = 0;
 		if ( image.transparent ) {
-			y = 0;
-			do {
-				Memory.setByte( i++, NONE );
+			if ( width >= 64 ) { // для широких картинок быстрее копировать целиком ряды байтов
+				width <<= 2;
+				var bmp:ByteArray = image.getPixels( image.rect );
+				var tmp:ByteArray = Memory.memory;
+				tmp.position = 0;
 				x = 0;
 				do {
-					c = image.getPixel32( x, y );
-					Memory.setByte( i++, c >> 16 );
-					Memory.setByte( i++, c >>  8 );
-					Memory.setByte( i++, c       );
-					Memory.setByte( i++, c >> 24 );
-				} while ( ++x < width );
-			} while ( ++y < height );
+					tmp.writeBytes( bmp, y * width, width );
+					i = x + width;
+					do {
+						Memory.setByte( i, Memory.getByte( i - 4 ) );
+						i -= 4;
+					} while ( i > x );
+					Memory.setByte( x, NONE );
+					x += width + 1;
+					++tmp.position;
+				} while ( ++y < height );
+			} else {
+				do {
+					Memory.setByte( i++, NONE );
+					x = 0;
+					do {
+						c = image.getPixel32( x, y );
+						Memory.setByte( i++, c >> 16 );
+						Memory.setByte( i++, c >>  8 );
+						Memory.setByte( i++, c       );
+						Memory.setByte( i++, c >> 24 );
+					} while ( ++x < width );
+				} while ( ++y < height );
+			}
 		} else {
-			y = 0;
 			do {
 				Memory.setByte( i++, NONE );
 				x = 0;
@@ -212,13 +229,12 @@ private class TMP {
 	private static inline function writeSub(image:BitmapData):Void {
 		var width:UInt = image.width;
 		var height:UInt = image.height;
-		var x:UInt, y:UInt;
+		var x:UInt, y:UInt = 0;
 		var r:UInt, g:UInt, b:UInt;
 		var r0:UInt, g0:UInt, b0:UInt;
 		var i:UInt = 0;
 		if ( image.transparent ) {
 			var a:UInt, a0:UInt;
-			y = 0;
 			do {
 				Memory.setByte( i++, SUB );
 				a0 = 0;
@@ -247,7 +263,6 @@ private class TMP {
 				} while ( ++x < width );
 			} while ( ++y < height );
 		} else {
-			y = 0;
 			do {
 				Memory.setByte( i++, SUB );
 				r0 = 0;
@@ -280,12 +295,11 @@ private class TMP {
 	private static inline function writeUp(image:BitmapData, offset:UInt):Void {
 		var width:UInt = image.width;
 		var height:UInt = image.height;
-		var x:UInt, y:UInt;
+		var x:UInt, y:UInt = 0;
 		var c:UInt;
 		var j:UInt;
 		var i:UInt = 0;
 		if ( image.transparent ) {
-			y = 0;
 			do {
 				j = offset;
 				Memory.setByte( i++, UP );
@@ -301,7 +315,6 @@ private class TMP {
 				} while ( ++x < width );
 			} while ( ++y < height );
 		} else {
-			y = 0;
 			do {
 				j = offset;
 				Memory.setByte( i++, UP );
@@ -324,7 +337,7 @@ private class TMP {
 	private static inline function writeAverage(image:BitmapData, offset:UInt):Void {
 		var width:UInt = image.width;
 		var height:UInt = image.height;
-		var x:UInt, y:UInt;
+		var x:UInt, y:UInt = 0;
 		var c:UInt;
 		var r:UInt, g:UInt, b:UInt;
 		var r0:UInt, g0:UInt, b0:UInt;
@@ -332,7 +345,6 @@ private class TMP {
 		var i:UInt = 0;
 		if ( image.transparent ) {
 			var a:UInt, a0:UInt;
-			y = 0;
 			do {
 				j = offset;
 				Memory.setByte( i++, AVERAGE );
@@ -366,7 +378,6 @@ private class TMP {
 				} while ( ++x < width );
 			} while ( ++y < height );
 		} else {
-			y = 0;
 			do {
 				j = offset;
 				Memory.setByte( i++, AVERAGE );
@@ -404,7 +415,7 @@ private class TMP {
 	private static inline function writePaeth(image:BitmapData, offset:UInt):Void {
 		var width:UInt = image.width;
 		var height:UInt = image.height;
-		var x:UInt, y:UInt;
+		var x:UInt, y:UInt = 0;
 		var c:UInt, c0:UInt, c1:UInt;
 		var r:UInt, g:UInt, b:UInt;
 		var r0:UInt, g0:UInt, b0:UInt;
@@ -414,7 +425,6 @@ private class TMP {
 		var i:UInt = 0;
 		if ( image.transparent ) {
 			var a:UInt, a0:UInt, a1:UInt, a2:UInt;
-			y = 0;
 			do {
 
 				j = offset;
@@ -462,7 +472,6 @@ private class TMP {
 				} while ( ++x < width );
 			} while ( ++y < height );
 		} else {
-			y = 0;
 			do {
 				j = offset;
 				Memory.setByte( i++, PAETH );
