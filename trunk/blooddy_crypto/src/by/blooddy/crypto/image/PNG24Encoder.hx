@@ -89,15 +89,17 @@ private class TMP {
 		chunk.writeUnsignedInt( height );
 		chunk.writeByte( 0x08 );     // Bit depth
 		chunk.writeByte( image.transparent ? 0x06 : 0x02 );     // Colour type
-		chunk.writeByte( 0x00 );     // Compression method
-		chunk.writeByte( 0x00 );     // Filter method
-		chunk.writeByte( 0x00 );     // Interlace method
+		//chunk.writeByte( 0x00 );     // Compression method
+		//chunk.writeByte( 0x00 );     // Filter method
+		//chunk.writeByte( 0x00 );     // Interlace method
+		chunk.length = 17;
 		writeChunk( bytes, chunk );
 
 		// IDAT
 		if ( len2 < 1024 ) chunk.length = 1024;
 		else chunk.length = len2;
 		Memory.memory = chunk;
+		if ( len < 17 ) Memory.fill( len, 17, 0x00 ); // если битмапка очень маленькая, то мы случайно могли наследить
 		switch ( filter ) {
 			case NONE:		writeNone( image );
 			case SUB:		writeSub( image );
@@ -217,7 +219,7 @@ private class TMP {
 			} while ( ++y < height );
 		}
 	}
-	
+
 	/**
 	 * @private
 	 */

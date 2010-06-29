@@ -32,23 +32,86 @@ package by.blooddy.crypto.image.palette {
 
 			if ( maxColors < 2 || maxColors > 256 ) Error.throwError( RangeError, 2006 );
 
-			var colors:Vector.<uint> = image.getVector( image.rect );
+			var colors:Vector.<uint> = new Vector.<uint>();
+
+			var width:uint = image.width;
+			var height:uint = image.height;
+
+			var t:uint;
+			var c:uint;
+			var x:uint;
+			var y:uint = 0;
+
+			var minA:uint = 0xFF000000;
+			var minR:uint = 0x00FF0000;
+			var minG:uint = 0x0000FF00;
+			var minB:uint = 0x000000FF;
+
+			var maxA:uint = 0x00000000;
+			var maxR:uint = 0x00000000;
+			var maxG:uint = 0x00000000;
+			var maxB:uint = 0x00000000;
 			
-			var block:Block = new Block( image.getVector( image.rect ), 1 );
-			var blockQueue:Array = new Array();
+			do {
+				x = 0;
+				do {
 
-			blockQueue.push( block );
+					c = image.getPixel32( x, y );
 
-			while( blockQueue.length < maxColors ){
-				block = blockQueue.pop();
-				if( block.maxSideLength <= 1 ){
-					blockQueue.push( block );//push back
-					break; //all splited
-				}
-				var splited:Vector.<Block> = block.splite();
-				this.addToQueue( blockQueue, splited[0] );
-				this.addToQueue( blockQueue, splited[1] );
+					t = c & 0xFF000000;
+					if ( t < minA ) minA = t;
+					if ( t > maxA ) maxA = t;
+
+					t = c & 0x00FF0000;
+					if ( t < minR ) minR = t;
+					if ( t > maxR ) maxR = t;
+
+					t = c & 0x0000FF00;
+					if ( t < minG ) minG = t;
+					if ( t > maxG ) maxG = t;
+
+					t = c & 0x000000FF;
+					if ( t < minB ) minB = t;
+					if ( t > maxB ) maxB = t;
+					
+					colors.push( c );
+
+				} while ( ++x < width );
+			} while ( ++y < height );
+
+			var block:BBB = new BBB();
+			block.points = colors;
+			block.minA = minA;
+			block.minR = minR;
+			block.minG = minG;
+			block.minB = minB;
+			block.maxA = maxA;
+			block.maxR = maxR;
+			block.maxG = maxG;
+			block.maxB = maxB;
+			block.midA = ( ( minA + maxA )   / 2 ) & 0xFF000000;
+			if ( block.midA > 0 ) {
+				block.midR = ( ( maxR + minR ) >>> 1 ) & 0xFF0000  ;
+				block.midG = ( ( maxG + minG ) >>> 1 ) & 0xFF00    ;
+				block.midB =   ( maxB + minB ) >>> 1               ;
+				block.color = block.midA | block.midR | block.midG | block.midB;
 			}
+
+//			var block:Block = new Block( image.getVector( image.rect ), 1 );
+//			var blockQueue:Array = new Array();
+//
+//			blockQueue.push( block );
+//
+//			while( blockQueue.length < maxColors ){
+//				block = blockQueue.pop();
+//				if( block.maxSideLength <= 1 ){
+//					blockQueue.push( block );//push back
+//					break; //all splited
+//				}
+//				var splited:Vector.<Block> = block.splite();
+//				this.addToQueue( blockQueue, splited[0] );
+//				this.addToQueue( blockQueue, splited[1] );
+//			}
 
 		}
 
@@ -62,7 +125,11 @@ package by.blooddy.crypto.image.palette {
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
+		public function getColors():Vector.<uint> {
+			return null;
+		}
+
 		public function getIndexByColor(color:uint):uint {
 			return 0;
 		}
@@ -85,10 +152,38 @@ package by.blooddy.crypto.image.palette {
 					return;
 				}
 			}
-			queue.push (block );
+			queue.push( block );
 		}
 		
 	}
+
+}
+import flash.external.ExternalInterface;
+
+internal final class BBB {
+
+	public function BBB() {
+		super();
+	}
+
+	public var points:Vector.<uint>;
+
+	public var minA:uint;
+	public var minR:uint;
+	public var minG:uint;
+	public var minB:uint;
+	
+	public var maxA:uint;
+	public var maxR:uint;
+	public var maxG:uint;
+	public var maxB:uint;
+	
+	public var midA:uint;
+	public var midR:uint;
+	public var midG:uint;
+	public var midB:uint;
+
+	public var color:uint;
 
 }
 
@@ -107,6 +202,7 @@ internal final class Block{
 	public var maxSideLength:uint;
 	
 	public function Block(points:Vector.<uint>, alphaWeight:int, counted:Boolean=false, minCo:uint=0, maxCo:uint=0){
+		super();
 		this.points = points;
 		this.alphaWeight = alphaWeight;
 		if(points.length < 1){
@@ -156,7 +252,7 @@ internal final class Block{
 			}
 		}
 	}
-	
+
 	/**
 	 * Splits to two Block.
 	 */

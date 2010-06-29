@@ -95,4 +95,10 @@ class Memory {
 		return untyped __vmem_sign__( 2, value );
 	}
 
+	public static inline function fill(start:UInt, end:UInt, value:Int):Void {
+		do {
+			setByte( start, value );
+		} while ( ++start < end ) ;
+	}
+	
 }
