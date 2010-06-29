@@ -6,6 +6,7 @@
 		<symbol>by.blooddy.crypto.CRC32</symbol>
 		<symbol>by.blooddy.crypto.image.JPEGEncoder</symbol>
 		<symbol>by.blooddy.crypto.image.PNG24Encoder</symbol>
+		<symbol>by.blooddy.crypto.image.PNG24Encoder2</symbol>
 	</includes>
 
 </flex-config>
