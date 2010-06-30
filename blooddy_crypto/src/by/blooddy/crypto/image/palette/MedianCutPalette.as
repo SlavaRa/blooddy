@@ -32,7 +32,7 @@ package by.blooddy.crypto.image.palette {
 
 			if ( maxColors < 2 || maxColors > 256 ) Error.throwError( RangeError, 2006 );
 
-			var colors:Vector.<uint> = new Vector.<uint>();
+			var lpoints:Vector.<uint> = new Vector.<uint>();
 
 			var width:uint = image.width;
 			var height:uint = image.height;
@@ -42,16 +42,16 @@ package by.blooddy.crypto.image.palette {
 			var x:uint;
 			var y:uint = 0;
 
-			var minA:uint = 0xFF000000;
-			var minR:uint = 0x00FF0000;
-			var minG:uint = 0x0000FF00;
-			var minB:uint = 0x000000FF;
+			var lminA:uint = 0xFF000000;
+			var lminR:uint = 0x00FF0000;
+			var lminG:uint = 0x0000FF00;
+			var lminB:uint = 0x000000FF;
 
-			var maxA:uint = 0x00000000;
-			var maxR:uint = 0x00000000;
-			var maxG:uint = 0x00000000;
-			var maxB:uint = 0x00000000;
-			
+			var lmaxA:uint = 0x00000000;
+			var lmaxR:uint = 0x00000000;
+			var lmaxG:uint = 0x00000000;
+			var lmaxB:uint = 0x00000000;
+
 			do {
 				x = 0;
 				do {
@@ -59,60 +59,187 @@ package by.blooddy.crypto.image.palette {
 					c = image.getPixel32( x, y );
 
 					t = c & 0xFF000000;
-					if ( t < minA ) minA = t;
-					if ( t > maxA ) maxA = t;
+					if ( t < lminA ) lminA = t;
+					if ( t > lmaxA ) lmaxA = t;
 
 					t = c & 0x00FF0000;
-					if ( t < minR ) minR = t;
-					if ( t > maxR ) maxR = t;
+					if ( t < lminR ) lminR = t;
+					if ( t > lmaxR ) lmaxR = t;
 
 					t = c & 0x0000FF00;
-					if ( t < minG ) minG = t;
-					if ( t > maxG ) maxG = t;
+					if ( t < lminG ) lminG = t;
+					if ( t > lmaxG ) lmaxG = t;
 
 					t = c & 0x000000FF;
-					if ( t < minB ) minB = t;
-					if ( t > maxB ) maxB = t;
+					if ( t < lminB ) lminB = t;
+					if ( t > lmaxB ) lmaxB = t;
 					
-					colors.push( c );
+					lpoints.push( c );
 
 				} while ( ++x < width );
 			} while ( ++y < height );
 
-			var block:BBB = new BBB();
-			block.points = colors;
-			block.minA = minA;
-			block.minR = minR;
-			block.minG = minG;
-			block.minB = minB;
-			block.maxA = maxA;
-			block.maxR = maxR;
-			block.maxG = maxG;
-			block.maxB = maxB;
-			block.midA = ( ( minA + maxA )   / 2 ) & 0xFF000000;
-			if ( block.midA > 0 ) {
-				block.midR = ( ( maxR + minR ) >>> 1 ) & 0xFF0000  ;
-				block.midG = ( ( maxG + minG ) >>> 1 ) & 0xFF00    ;
-				block.midB =   ( maxB + minB ) >>> 1               ;
-				block.color = block.midA | block.midR | block.midG | block.midB;
+			var block:Block = new Block(
+				lpoints,
+				lminA, lminR, lminG, lminB,
+				lmaxA, lmaxR, lmaxG, lmaxB
+			);
+
+			if ( block.count > 1 ) {
+
+				var rpoints:Vector.<uint>;
+				
+				var rminA:uint;
+				var rminR:uint;
+				var rminG:uint;
+				var rminB:uint;
+				
+				var rmaxA:uint;
+				var rmaxR:uint;
+				var rmaxG:uint;
+				var rmaxB:uint;
+				
+				var mask:uint;
+				var mid:uint;
+
+				var count:uint;
+				var lblock:Block;
+				var rblock:Block;
+
+				var i:uint;
+				var l:uint;
+
+				do {
+	
+					lpoints = new Vector.<uint>();
+					rpoints = new Vector.<uint>();
+	
+					lminA = 0xFF000000;
+					lminR = 0x00FF0000;
+					lminG = 0x0000FF00;
+					lminB = 0x000000FF;
+					lmaxA = 0x00000000;
+					lmaxR = 0x00000000;
+					lmaxG = 0x00000000;
+					lmaxB = 0x00000000;				
+					rminA = 0xFF000000;
+					rminR = 0x00FF0000;
+					rminG = 0x0000FF00;
+					rminB = 0x000000FF;
+					rmaxA = 0x00000000;
+					rmaxR = 0x00000000;
+					rmaxG = 0x00000000;
+					rmaxB = 0x00000000;
+	
+					mid = block.mid;
+					mask = block.mask;
+
+					for each ( c in block.points ) {
+
+						if ( ( c & mask ) <= mid ) {
+
+							t = c & 0xFF000000;
+							if ( t < lminA ) lminA = t;
+							if ( t > lmaxA ) lmaxA = t;
+							
+							t = c & 0x00FF0000;
+							if ( t < lminR ) lminR = t;
+							if ( t > lmaxR ) lmaxR = t;
+							
+							t = c & 0x0000FF00;
+							if ( t < lminG ) lminG = t;
+							if ( t > lmaxG ) lmaxG = t;
+							
+							t = c & 0x000000FF;
+							if ( t < lminB ) lminB = t;
+							if ( t > lmaxB ) lmaxB = t;
+
+							lpoints.push( c );
+
+						} else {
+
+							t = c & 0xFF000000;
+							if ( t < rminA ) rminA = t;
+							if ( t > rmaxA ) rmaxA = t;
+							
+							t = c & 0x00FF0000;
+							if ( t < rminR ) rminR = t;
+							if ( t > rmaxR ) rmaxR = t;
+							
+							t = c & 0x0000FF00;
+							if ( t < rminG ) rminG = t;
+							if ( t > rmaxG ) rmaxG = t;
+							
+							t = c & 0x000000FF;
+							if ( t < rminB ) rminB = t;
+							if ( t > rmaxB ) rmaxB = t;
+
+							rpoints.push( c );
+
+						}
+					}
+
+//					var lmx:uint = uint(lminA|lminR|lminG|lminB);
+//					var rmx:uint = uint(rminA|rminR|rminG|rminB);
+//					var lmn:uint = uint(lmaxA|lmaxR|lmaxG|lmaxB);
+//					var rmn:uint = uint(rmaxA|rmaxR|rmaxG|rmaxB);
+//					return [new Block(left, alphaWeight, true, lmx, lmn), new Block(right, alphaWeight, true, rmx, rmn)];
+
+					lblock = new Block(
+						lpoints,
+						lminA, lminR, lminG, lminB,
+						lmaxA, lmaxR, lmaxG, lmaxB
+					);
+					rblock = new Block(
+						rpoints,
+						rminA, rminR, rminG, rminB,
+						rmaxA, rmaxR, rmaxG, rmaxB
+					);
+
+					trace( block, '-->', lblock, rblock );
+					
+					l = this._blocks.length;
+
+					if ( lblock.count > rblock.count ) {
+						block = rblock;
+						rblock = lblock;
+						lblock = block;
+					}
+					block = lblock;
+					count = block.count;
+					
+					for ( i=0; i<l; i++ ) {
+						if ( count < this._blocks[ i ].count ) {
+							this._blocks.splice( i, 0, block );
+							if ( lblock ) {
+								block = rblock
+								count = block.count;
+								i--;
+								lblock = null;
+							} else {
+								rblock = null;
+								break;
+							}
+						}
+					}
+
+					if ( lblock ) this._blocks.push( lblock );
+					if ( rblock ) this._blocks.push( rblock );
+
+					trace( this._blocks );
+
+					block = this._blocks.pop();
+
+				} while ( this._blocks.length < maxColors && block.count > 1 );
+
 			}
 
-//			var block:Block = new Block( image.getVector( image.rect ), 1 );
-//			var blockQueue:Array = new Array();
-//
-//			blockQueue.push( block );
-//
-//			while( blockQueue.length < maxColors ){
-//				block = blockQueue.pop();
-//				if( block.maxSideLength <= 1 ){
-//					blockQueue.push( block );//push back
-//					break; //all splited
-//				}
-//				var splited:Vector.<Block> = block.splite();
-//				this.addToQueue( blockQueue, splited[0] );
-//				this.addToQueue( blockQueue, splited[1] );
-//			}
+			this._blocks.push( block ); // push back
 
+			for each ( block in this._blocks ) {
+				this._colors.push( block.color );
+			}
+			
 		}
 
 		/**
@@ -120,6 +247,11 @@ package by.blooddy.crypto.image.palette {
 		 */
 		private const _blocks:Vector.<Block> = new Vector.<Block>();
 
+		/**
+		 * @private
+		 */
+		private const _colors:Vector.<uint> = new Vector.<uint>();
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -134,36 +266,67 @@ package by.blooddy.crypto.image.palette {
 			return 0;
 		}
 
-		//--------------------------------------------------------------------------
-		//
-		//  Private methods
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		private function addToQueue(queue:Array, block:Block):void{
-			var blockV:uint = block.maxSideLength;
-			var n:int = queue.length;
-			for(var i:int=0; i<n; i++){
-				if(blockV < queue[i].maxSideLength){
-					queue.splice( i, 0, block );
-					return;
-				}
-			}
-			queue.push( block );
-		}
-		
 	}
 
 }
-import flash.external.ExternalInterface;
 
-internal final class BBB {
+internal final class Block {
 
-	public function BBB() {
+	public function Block(
+		points:Vector.<uint>,
+		minA:uint, minR:uint, minG:uint, minB:uint,
+		maxA:uint, maxR:uint, maxG:uint, maxB:uint
+	) {
 		super();
+		if (
+			minR == 0xFF ||
+			minG == 0xFF ||
+			minB == 0xFF
+		) {
+			minA = maxA = 0xFF000000;
+		}
+		this.minA = minA;
+		this.minR = minR;
+		this.minG = minG;
+		this.minB = minB;
+		this.maxA = maxA;
+		this.maxR = maxR;
+		this.maxG = maxG;
+		this.maxB = maxB;
+		var midA:uint = ( ( maxA + minA ) / 2 ) & 0xFF000000;
+		if ( midA > 0 ) {
+			var midR:uint = ( ( maxR + minR ) >>> 1 ) & 0xFF0000;
+			var midG:uint = ( ( maxG + minG ) >>> 1 ) & 0xFF00;
+			var midB:uint = ( ( maxB + minB ) >>> 1 ) & 0xFF;
+			var t:uint = maxB - minB;
+			if ( t > this.count ) {
+				this.count = t;
+				this.mid = midB;
+				this.mask = 0x000000FF;
+			}
+			t = ( maxG - minG ) >>> 8;
+			if ( t > this.count ) {
+				this.count = t;
+				this.mid = midG;
+				this.mask = 0x0000FF00;
+			}
+			t = ( maxR - minR ) >>> 16;
+			if ( t > this.count ) {
+				this.count = t;
+				this.mid = midR;
+				this.mask = 0x00FF000000;
+			}
+			t = ( maxA - minA ) >>> 24;
+			if ( t > this.count ) {
+				this.count = t;
+				this.mid = midA;
+				this.mask = 0xFF000000;
+			}
+			if ( this.count > 1 ) {
+				this.points = points;
+			}
+			this.color = midA | midR | midG | midB;
+		}
 	}
 
 	public var points:Vector.<uint>;
@@ -178,283 +341,14 @@ internal final class BBB {
 	public var maxG:uint;
 	public var maxB:uint;
 	
-	public var midA:uint;
-	public var midR:uint;
-	public var midG:uint;
-	public var midB:uint;
+	public var mid:uint;
+	public var mask:uint;
+	public var count:uint;
 
 	public var color:uint;
 
-}
-
-internal final class Block{
-	
-	public static const NUM_DIM:int = 4;
-	
-	private var points:Vector.<uint>;
-	public var minCorner:uint;
-	public var maxCorner:uint;
-	public var midCorner:uint;
-	public var publishColor:uint;
-	
-	private var alphaWeight:int;
-	private var maxSideLengthOffset:uint;
-	public var maxSideLength:uint;
-	
-	public function Block(points:Vector.<uint>, alphaWeight:int, counted:Boolean=false, minCo:uint=0, maxCo:uint=0){
-		super();
-		this.points = points;
-		this.alphaWeight = alphaWeight;
-		if(points.length < 1){
-			throw new Error("points.length < 1");
-		}
-		
-		if(counted){
-			minCorner = minCo;
-			maxCorner = maxCo;
-		}else{
-			minCorner = minDim(points);
-			maxCorner = maxDim(points);
-		}
-		
-		maxSideLengthOffset = 0;
-		maxSideLength = 0;
-		midCorner = 0;
-		publishColor = 0;
-		for(var i:int=0; i<NUM_DIM; i++){
-			var offset:uint = i*8;
-			var mask:uint = uint(0x000000FF << offset);
-			var minC:uint = uint((minCorner&mask)>>>offset);
-			var maxC:uint = uint((maxCorner&mask)>>>offset);
-			midCorner |= ((uint((minC+maxC)/2)) << offset);
-			if(i<3){
-				publishColor |= ((uint((minC+maxC)/2)) << offset);
-			}else{//means alpha
-				if(minC == 0){
-					//do nothing means keep 0 alpha -- transparent
-				}else if(maxC == 255){
-					publishColor |= (0xFF000000); //opaque
-				}else{
-					publishColor |= ((uint((minC+maxC)/2)) << offset); //middle
-				}
-			}
-			var length:uint = uint(uint((maxCorner&mask)>>>offset)-uint((minCorner&mask)>>>offset));
-			if(i == 3){//the rbg weight is 2 times of alpha
-				if(length > maxSideLength*alphaWeight){
-					maxSideLengthOffset = offset;
-					maxSideLength = length;
-				}
-			}else{
-				if(length > maxSideLength){
-					maxSideLengthOffset = offset;
-					maxSideLength = length;
-				}
-			}
-		}
-	}
-
-	/**
-	 * Splits to two Block.
-	 */
-	public function splite():Vector.<Block>{
-		if(maxSideLength <= 1){
-			trace("Error maxSideLength = 1 can't splite!!!");
-		}
-		var offset:uint = maxSideLengthOffset;
-		var mask:uint = uint(0x000000FF << offset);
-		
-		var left:Vector.<uint> = new Vector.<uint>();
-		var right:Vector.<uint> = new Vector.<uint>();
-		var mid:uint = uint(midCorner & mask);
-		var p:uint;
-		
-		var lminA:uint = uint.MAX_VALUE;
-		var lminR:uint = uint.MAX_VALUE;
-		var lminG:uint = uint.MAX_VALUE;
-		var lminB:uint = uint.MAX_VALUE;
-		var lmaxA:uint = 0;
-		var lmaxR:uint = 0;
-		var lmaxG:uint = 0;
-		var lmaxB:uint = 0;
-		var rminA:uint = uint.MAX_VALUE;
-		var rminR:uint = uint.MAX_VALUE;
-		var rminG:uint = uint.MAX_VALUE;
-		var rminB:uint = uint.MAX_VALUE;
-		var rmaxA:uint = 0;
-		var rmaxR:uint = 0;
-		var rmaxG:uint = 0;
-		var rmaxB:uint = 0;
-		var test:uint;
-		
-		var n:int = points.length;
-		
-		for(var i:int=0; i<n; i++){
-			p = points[i];
-			if((uint(p & mask)) <= mid){
-				//min
-				test = p&0xFF000000;
-				if(test < lminA){
-					lminA = test;
-				}
-				
-				test = (p&0x00FF0000);
-				if(test < lminR){
-					lminR = test;
-				}
-				
-				test = (p&0x0000FF00);
-				if(test < lminG){
-					lminG = test;
-				}
-				
-				test = p&0x000000FF;
-				if(test < lminB){
-					lminB = test;
-				}
-				
-				//max
-				test = p&0xFF000000;
-				if(test > lmaxA){
-					lmaxA = test;
-				}
-				
-				test = (p&0x00FF0000);
-				if(test > lmaxR){
-					lmaxR = test;
-				}
-				
-				test = (p&0x0000FF00);
-				if(test > lmaxG){
-					lmaxG = test;
-				}
-				
-				test = p&0x000000FF;
-				if(test > lmaxB){
-					lmaxB = test;
-				}
-				//push
-				left.push(p);
-			}else{
-				//min
-				test = p&0xFF000000;
-				if(test < rminA){
-					rminA = test;
-				}
-				
-				test = (p&0x00FF0000);
-				if(test < rminR){
-					rminR = test;
-				}
-				
-				test = (p&0x0000FF00);
-				if(test < rminG){
-					rminG = test;
-				}
-				
-				test = p&0x000000FF;
-				if(test < rminB){
-					rminB = test;
-				}
-				
-				//max
-				test = p&0xFF000000;
-				if(test > rmaxA){
-					rmaxA = test;
-				}
-				
-				test = (p&0x00FF0000);
-				if(test > rmaxR){
-					rmaxR = test;
-				}
-				
-				test = (p&0x0000FF00);
-				if(test > rmaxG){
-					rmaxG = test;
-				}
-				
-				test = p&0x000000FF;
-				if(test > rmaxB){
-					rmaxB = test;
-				}
-				right.push(p);
-			}
-		}
-		var lmx:uint = uint(lminA|lminR|lminG|lminB);
-		var rmx:uint = uint(rminA|rminR|rminG|rminB);
-		var lmn:uint = uint(lmaxA|lmaxR|lmaxG|lmaxB);
-		var rmn:uint = uint(rmaxA|rmaxR|rmaxG|rmaxB);
-		
-		var result:Vector.<Block> = new Vector.<Block>( 2, true );
-		result[ 0 ] = new Block(left, alphaWeight, true, lmx, lmn);
-		result[ 1 ] = new Block(right, alphaWeight, true, rmx, rmn);
-		return result;
+	public function toString():String {
+		return this.color.toString( 16 ) + '[' + this.count + '](' + this.mid.toString( 16 ) + ')';
 	}
 	
-	private function minDim(ps:Vector.<uint>):uint{
-		var p:uint = ps[0];
-		var minA:uint = p&0xFF000000;
-		var minR:uint = p&0x00FF0000;
-		var minG:uint = p&0x0000FF00;
-		var minB:uint = p&0x000000FF;
-		var test:uint;
-		var n:int = ps.length;
-		for(var i:int=1; i<n; i++){
-			p = ps[i];
-			test = p&0xFF000000;
-			if(test < minA){
-				minA = test;
-			}
-			
-			test = (p&0x00FF0000);
-			if(test < minR){
-				minR = test;
-			}
-			
-			test = (p&0x0000FF00);
-			if(test < minG){
-				minG = test;
-			}
-			
-			test = p&0x000000FF;
-			if(test < minB){
-				minB = test;
-			}
-		}
-		
-		return minA|minR|minG|minB;
-	}
-	
-	private function maxDim(ps:Vector.<uint>):uint{
-		var p:uint = ps[0];
-		var maxA:uint = p&0xFF000000;
-		var maxR:uint = p&0x00FF0000;
-		var maxG:uint = p&0x0000FF00;
-		var maxB:uint = p&0x000000FF;
-		var test:uint;
-		var n:int = ps.length;
-		for(var i:int=1; i<n; i++){
-			p = ps[i];
-			test = p&0xFF000000;
-			if(test > maxA){
-				maxA = test;
-			}
-			
-			test = (p&0x00FF0000);
-			if(test > maxR){
-				maxR = test;
-			}
-			
-			test = (p&0x0000FF00);
-			if(test > maxG){
-				maxG = test;
-			}
-			
-			test = p&0x000000FF;
-			if(test > maxB){
-				maxB = test;
-			}
-		}
-		
-		return maxA|maxR|maxG|maxB;
-	}
 }
