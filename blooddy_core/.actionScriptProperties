@@ -48,7 +48,6 @@
     <sourceAttachmentPath/>
   </compiler>
   <applications>
-    <application path="blooddy_platform.as"/>
   </applications>
   <modules/>
   <buildCSSFiles/>
