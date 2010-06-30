@@ -235,6 +235,7 @@ package by.blooddy.core.utils.time {
 		 * @private
 		 */
 		private function handler_enterFrame(event:Event):void {
+			if ( !this._running ) return;
 			super.dispatchEvent( new TimerEvent( TimerEvent.TIMER ) );
 		}
 
@@ -242,6 +243,7 @@ package by.blooddy.core.utils.time {
 		 * @private
 		 */
 		private function handler_enterFrame2(event:Event):void {
+			if ( !this._running ) return;
 			if ( ( ++this._count % this._reset_count ) == 0 && this._running ) {
 				super.dispatchEvent( new TimerEvent( TimerEvent.TIMER ) );
 			}

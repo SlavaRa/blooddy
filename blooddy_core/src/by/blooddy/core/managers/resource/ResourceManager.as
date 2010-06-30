@@ -130,12 +130,12 @@ package by.blooddy.core.managers.resource {
 		//  baseURL
 		//----------------------------------
 		
-		public static function get ignoreSecurity():Boolean {
-			return ResourceLoaderAsset.ignoreSecurity;
+		public static function get ignoreSecurityDomain():Boolean {
+			return ResourceLoaderAsset.ignoreSecurityDomain;
 		}
 		
-		public static function set ignoreSecurity(value:Boolean):void {
-			ResourceLoaderAsset.ignoreSecurity = value;
+		public static function set ignoreSecurityDomain(value:Boolean):void {
+			ResourceLoaderAsset.ignoreSecurityDomain = value;
 		}
 
 		//--------------------------------------------------------------------------
@@ -522,7 +522,7 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 
 	public static var baseURL:String;
 
-	public static var ignoreSecurity:Boolean = true;
+	public static var ignoreSecurityDomain:Boolean = true;
 
 	//--------------------------------------------------------------------------
 	//
@@ -600,7 +600,7 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 		} else {
 			url = baseURL + '/' + this._url;
 		}
-		super.loaderContext = new LoaderContext( new ApplicationDomain( ApplicationDomain.currentDomain ), ignoreSecurity );
+		super.loaderContext = new LoaderContext( new ApplicationDomain( ApplicationDomain.currentDomain ), ignoreSecurityDomain );
 		try { // так как запуск отложен, то и ошибку надо генерировать в виде события
 			super.load( new URLRequest( url ) );
 		} catch ( e:Error ) {

@@ -29,7 +29,7 @@ package by.blooddy.core.net.loading {
 		public function LoaderContext(applicationDomain:ApplicationDomain=null, ignoreSecurity:Boolean=false, checkPolicyFile:Boolean=false) {
 			super();
 			this.applicationDomain = applicationDomain;
-			this.ignoreSecurity = ignoreSecurity;
+			this.ignoreSecurityDomain = ignoreSecurity;
 			this.checkPolicyFile = checkPolicyFile;
 		}
 
@@ -44,7 +44,7 @@ package by.blooddy.core.net.loading {
 		 */
 		public var applicationDomain:ApplicationDomain;
 
-		public var ignoreSecurity:Boolean;
+		public var ignoreSecurityDomain:Boolean;
 		
 		public var checkPolicyFile:Boolean;
 		
