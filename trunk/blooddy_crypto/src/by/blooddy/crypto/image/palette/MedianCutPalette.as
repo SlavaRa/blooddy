@@ -8,6 +8,7 @@ package by.blooddy.crypto.image.palette {
 
 	import flash.display.BitmapData;
 	import flash.utils.ByteArray;
+	import flash.utils.getTimer;
 	
 	/**
 	 * @author					BlooDHounD
@@ -32,10 +33,17 @@ package by.blooddy.crypto.image.palette {
 
 			if ( maxColors < 2 || maxColors > 256 ) Error.throwError( RangeError, 2006 );
 
+			maxColors--; // сдвиг для ускорения проверки
+
+			var TTT:Number = getTimer();
+
 			var lpoints:Vector.<uint> = new Vector.<uint>();
+			var hash:Object = new Object();
 
 			var width:uint = image.width;
 			var height:uint = image.height;
+
+			var cx:uint;
 
 			var t:uint;
 			var c:uint;
@@ -52,11 +60,12 @@ package by.blooddy.crypto.image.palette {
 			var lmaxG:uint = 0x00000000;
 			var lmaxB:uint = 0x00000000;
 
-			do {
-				x = 0;
-				do {
+			for ( y=0; y<height; y++ ) {
+				for ( x=0; x<width; x++ ) {
 
 					c = image.getPixel32( x, y );
+					if ( c == cx ) continue;
+					cx = c;
 
 					t = c & 0xFF000000;
 					if ( t < lminA ) lminA = t;
@@ -76,15 +85,15 @@ package by.blooddy.crypto.image.palette {
 					
 					lpoints.push( c );
 
-				} while ( ++x < width );
-			} while ( ++y < height );
+				}
+			}
 
 			var block:Block = new Block(
 				lpoints,
 				lminA, lminR, lminG, lminB,
 				lmaxA, lmaxR, lmaxG, lmaxB
 			);
-
+			trace( getTimer() - TTT )
 			if ( block.count > 1 ) {
 
 				var rpoints:Vector.<uint>;
@@ -106,7 +115,7 @@ package by.blooddy.crypto.image.palette {
 				var lblock:Block;
 				var rblock:Block;
 
-				var i:uint;
+				var i:int;
 				var l:uint;
 
 				do {
@@ -133,10 +142,15 @@ package by.blooddy.crypto.image.palette {
 	
 					mid = block.mid;
 					mask = block.mask;
+					cx = 0;
+					i = 0;
 
 					for each ( c in block.points ) {
 
-						if ( ( c & mask ) <= mid ) {
+						if ( c == cx ) continue;
+						cx = c;
+
+						if ( uint( c & mask ) <= mid ) {
 
 							t = c & 0xFF000000;
 							if ( t < lminA ) lminA = t;
@@ -145,11 +159,11 @@ package by.blooddy.crypto.image.palette {
 							t = c & 0x00FF0000;
 							if ( t < lminR ) lminR = t;
 							if ( t > lmaxR ) lmaxR = t;
-							
+
 							t = c & 0x0000FF00;
 							if ( t < lminG ) lminG = t;
 							if ( t > lmaxG ) lmaxG = t;
-							
+
 							t = c & 0x000000FF;
 							if ( t < lminB ) lminB = t;
 							if ( t > lmaxB ) lmaxB = t;
@@ -179,12 +193,6 @@ package by.blooddy.crypto.image.palette {
 						}
 					}
 
-//					var lmx:uint = uint(lminA|lminR|lminG|lminB);
-//					var rmx:uint = uint(rminA|rminR|rminG|rminB);
-//					var lmn:uint = uint(lmaxA|lmaxR|lmaxG|lmaxB);
-//					var rmn:uint = uint(rmaxA|rmaxR|rmaxG|rmaxB);
-//					return [new Block(left, alphaWeight, true, lmx, lmn), new Block(right, alphaWeight, true, rmx, rmn)];
-
 					lblock = new Block(
 						lpoints,
 						lminA, lminR, lminG, lminB,
@@ -196,8 +204,6 @@ package by.blooddy.crypto.image.palette {
 						rmaxA, rmaxR, rmaxG, rmaxB
 					);
 
-					trace( block, '-->', lblock, rblock );
-					
 					l = this._blocks.length;
 
 					if ( lblock.count > rblock.count ) {
@@ -215,6 +221,7 @@ package by.blooddy.crypto.image.palette {
 								block = rblock
 								count = block.count;
 								i--;
+								l++;
 								lblock = null;
 							} else {
 								rblock = null;
@@ -226,7 +233,6 @@ package by.blooddy.crypto.image.palette {
 					if ( lblock ) this._blocks.push( lblock );
 					if ( rblock ) this._blocks.push( rblock );
 
-					trace( this._blocks );
 
 					block = this._blocks.pop();
 
@@ -235,11 +241,15 @@ package by.blooddy.crypto.image.palette {
 			}
 
 			this._blocks.push( block ); // push back
-
-			for each ( block in this._blocks ) {
-				this._colors.push( block.color );
-			}
 			
+			trace( getTimer() - TTT );
+			
+//			trace( this._blocks );
+
+//			for each ( block in this._blocks ) {
+//				this._colors.push( block.color );
+//			}
+//			
 		}
 
 		/**
@@ -278,13 +288,6 @@ internal final class Block {
 		maxA:uint, maxR:uint, maxG:uint, maxB:uint
 	) {
 		super();
-		if (
-			minR == 0xFF ||
-			minG == 0xFF ||
-			minB == 0xFF
-		) {
-			minA = maxA = 0xFF000000;
-		}
 		this.minA = minA;
 		this.minR = minR;
 		this.minG = minG;
@@ -314,7 +317,7 @@ internal final class Block {
 			if ( t > this.count ) {
 				this.count = t;
 				this.mid = midR;
-				this.mask = 0x00FF000000;
+				this.mask = 0x00FF0000;
 			}
 			t = ( maxA - minA ) >>> 24;
 			if ( t > this.count ) {

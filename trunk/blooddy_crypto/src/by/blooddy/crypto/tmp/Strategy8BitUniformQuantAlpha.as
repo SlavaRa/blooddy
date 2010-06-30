@@ -67,10 +67,8 @@ package by.blooddy.crypto.tmp{
 			}
 //			trace("start color number : " + points.length);
 			
-			trace("++++++++ build Points : " + (getTimer() - time));
-			time = getTimer();
-			
 			var block:Block = new Block(points, alphaWeight);
+			trace("++++++++ first block : " + (getTimer() - time));
 			var blockQueue:Array = new Array();
 			blockQueue.push(block);
 			while(blockQueue.length < colorNumber){
@@ -80,16 +78,14 @@ package by.blooddy.crypto.tmp{
 					break; //all splited
 				}
 				var splited:Array = block.splite();
-				trace( block, '-->', splited[0], splited[1] );
 				addToQueue(blockQueue, splited[0]);
 				addToQueue(blockQueue, splited[1]);
-				trace( blockQueue );			}
-
+			}
 			
 			trace("++++++++ build Blocks : " + (getTimer() - time));
 			time = getTimer();
 			
-			trace("block number : " + blockQueue.length);
+//			trace("block number : " + blockQueue.length);
 			
 			ihdr = new IHDR(w, h, IHDR.ByteDepth_8, IHDR.CT_IndexedColor);
 			
