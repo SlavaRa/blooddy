@@ -24,6 +24,7 @@ package by.blooddy.core.net {
 	import flash.utils.clearTimeout;
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
+	import by.blooddy.core.utils.ByteArrayUtils;
 
 	//--------------------------------------
 	//  Implements events: ISocket
@@ -62,38 +63,38 @@ package by.blooddy.core.net {
 	 * @playerversion			Flash 9
 	 * @langversion				3.0
 	 * 
-     *                    +------------------------+
-     *                    |пришёл запрос от клиента|◄ - - - - - - - - - - - - - - - - - - - - +
-     *                    +------------------------+                                          |
-     *                                |
-     *                                |                                                       |
-     *                                ▼
-     *                   +---------------------------+                                        |
-     *               нет |есть ли открытое соединение|  да
-     *          +--------|с этим клиентом?           |--------+                               |
-     *          |        +---------------------------+        |
-     *          |                                             |                               |
-     *          ▼                                             ▼
-     * +-----------------+                          +------------------+                      |
-     * |отправляем данные|                          |закрываем открытое|
-     * |на игровой сервер|◄-------------------------|рание соединение  |                      |
-     * +-----------------+                          +------------------+
-     *          |                                                                             |
-     *          +---------------------+
-     *                                |
-     *                                ▼                                                       |
-     *                     +--------------------+                     +-----------------+
-     *                     |проверяем, есть ли  | да                  |отправляем данные|     |
-     *            +-------►|что-нить для клиента|--------------------►|на клиент        |
-     *            |        +--------------------+                     +-----------------+     |
-     *            |                  |нет                                      |
-     *            |                  |                                         |              |
-     *            |                  ▼                                         ▼
-     *            |     +--------------------------+                  +------------------+    |
-     *            | нет |держим содинение открытым.| да               |закрываем открытое|
-     *            +-----|вышел ли таймоут?         |-----------------►|рание соединение  |- - +
-     *                  +--------------------------+                  +------------------+
-     *
+	 *                    +------------------------+
+	 *                    |пришёл запрос от клиента|◄ - - - - - - - - - - - - - - - - - - - - +
+	 *                    +------------------------+                                          |
+	 *                                |
+	 *                                |                                                       |
+	 *                                ▼
+	 *                   +---------------------------+                                        |
+	 *               нет |есть ли открытое соединение|  да
+	 *          +--------|с этим клиентом?           |--------+                               |
+	 *          |        +---------------------------+        |
+	 *          |                                             |                               |
+	 *          ▼                                             ▼
+	 * +-----------------+                          +------------------+                      |
+	 * |отправляем данные|                          |закрываем открытое|
+	 * |на игровой сервер|◄-------------------------|рание соединение  |                      |
+	 * +-----------------+                          +------------------+
+	 *          |                                                                             |
+	 *          +---------------------+
+	 *                                |
+	 *                                ▼                                                       |
+	 *                     +--------------------+                     +-----------------+
+	 *                     |проверяем, есть ли  | да                  |отправляем данные|     |
+	 *            +-------►|что-нить для клиента|--------------------►|на клиент        |
+	 *            |        +--------------------+                     +-----------------+     |
+	 *            |                  |нет                                      |
+	 *            |                  |                                         |              |
+	 *            |                  ▼                                         ▼
+	 *            |     +--------------------------+                  +------------------+    |
+	 *            | нет |держим содинение открытым.| да               |закрываем открытое|
+	 *            +-----|вышел ли таймоут?         |-----------------►|рание соединение  |- - +
+	 *                  +--------------------------+                  +------------------+
+	 *
 	 * @keyword					proxysocket, socket
 	 * 
 	 * @see						by.blooddy.core.net.Socket
@@ -183,6 +184,12 @@ package by.blooddy.core.net {
 		 */
 		private var _cmdID:uint;
 
+		/**
+		 * @private
+		 * Счётчик отправленых команд.
+		 */
+		private var _status:int;
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Implements properties: ISocket
@@ -396,7 +403,9 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		private function clear():void {
-			
+
+			this._sesID = null;
+
 			if ( this._conn1.connected ) this._conn1.close();
 			if ( this._conn2.connected ) this._conn2.close();
 			
@@ -457,7 +466,7 @@ package by.blooddy.core.net {
 				this._timeoutID = 0;
 
 				this._variables.ses = this._sesID;
-				//trace( 'connected ' + this._sesID );
+//				trace( 'connected ' + this._sesID );
 				// соединения
 				this._conn1.addEventListener( Event.COMPLETE,						this.handler_complete );
 				this._conn1.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_error );
@@ -508,8 +517,14 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		private function handler_error(event:ErrorEvent):void {
-			//trace( ( event.target === this._conn1 ? 1 : 2 ), event.type, this._cmdID );
-			this.close();
+			if ( this._status ) { // патч на странное поведение флэша
+				//trace( ( event.target === this._conn1 ? 1 : 2 ), event.type, this._cmdID );
+				if ( this._sesID ) {
+					this.close();
+				}
+			} else {
+				this.handler_complete( event );
+			}
 		}
 
 		/**
@@ -525,15 +540,16 @@ package by.blooddy.core.net {
 			//} else {
 				//if ( this._conn1.connected ) this._conn1.close();
 			//}
-			
-			//var pos:uint = this._input.position;
-			conn.readBytes( this._input, this._input.length );
-			//trace( ( conn === this._conn1 ? 1 : 2 ), event, this._cmdID );
-			//trace( ByteArrayUtils.dump( this._input, pos ) );
-			if ( event.bytesLoaded == 1 && event.bytesTotal == 1 && this._input[ this._input.length-1 ] == 0x20 ) {
-				this._input.length--;
-			} else {
+			if ( conn.bytesAvailable > 0 ) {
+//				var pos:uint = this._input.position;
+				conn.readBytes( this._input, this._input.length );
+//				trace( ( conn === this._conn1 ? 1 : 2 ), event, this._cmdID );
+//				trace( ByteArrayUtils.dump( this._input, pos ) );
+//				if ( event.bytesLoaded == 1 && event.bytesTotal == 1 && this._input[ this._input.length-1 ] == 0x20 ) {
+//					this._input.length--;
+//				} else {
 				super.dispatchEvent( new ProgressEvent( ProgressEvent.SOCKET_DATA, false, false, this._input.bytesAvailable ) );
+//				}
 			}
 		}
 
@@ -553,11 +569,7 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		private function handler_httpStatus(event:HTTPStatusEvent):void {
-			if ( event.status != 200 ) {
-				if ( this._sesID ) {
-					this.close();
-				}
-			}
+			this._status - event.status;
 		}
 
 		//--------------------------------------------------------------------------

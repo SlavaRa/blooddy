@@ -68,7 +68,7 @@ package by.blooddy.core.utils {
 		/**
 		 * @private
 		 */
-		private const _TIMES:Vector.<uint> = new Vector.<uint>();
+		private const _times:Vector.<uint> = new Vector.<uint>();
 
 		//--------------------------------------------------------------------------
 		//
@@ -126,15 +126,15 @@ package by.blooddy.core.utils {
 		 */
 		private function updateFPS():void {
 			var time:Number = getTimer() - this._samplingTime;
-			var l:uint = this._TIMES.length;
+			var l:uint = this._times.length;
 			var i:uint = 0;
-			while ( i< l && this._TIMES[ i ] < time ) i++;
+			while ( i< l && this._times[ i ] < time ) i++;
 			if ( i > 0 ) {
-				this._TIMES.splice( 0, i );
-				l = this._TIMES.length;
+				this._times.splice( 0, i );
+				l = this._times.length;
 			}
 			if ( l > 0 ) {
-				this._fps = 1E3 * l / ( this._TIMES[ l - 1 ] - this._TIMES[ 0 ] );
+				this._fps = 1E3 * l / ( this._times[ l - 1 ] - this._times[ 0 ] );
 			} else {
 				this._fps = 0;
 			}
@@ -152,7 +152,7 @@ package by.blooddy.core.utils {
 		 */
 		private function handler_enterFrame(event:Event):void {
 			// запомним время
-			this._TIMES.push( getTimer() );
+			this._times.push( getTimer() );
 		}
 
 	}

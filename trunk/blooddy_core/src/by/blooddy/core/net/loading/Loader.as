@@ -241,7 +241,7 @@ package by.blooddy.core.net.loading {
 		private function create_loaderContext(canSecurity:Boolean=false):flash.system.LoaderContext {
 			if (
 				this._loaderContext && (
-					( canSecurity && this._loaderContext.ignoreSecurity ) ||
+					( canSecurity && this._loaderContext.ignoreSecurityDomain ) ||
 					this._loaderContext.checkPolicyFile ||
 					this._loaderContext.applicationDomain
 				)
@@ -249,7 +249,7 @@ package by.blooddy.core.net.loading {
 				return new flash.system.LoaderContext(
 					this._loaderContext.checkPolicyFile,
 					this._loaderContext.applicationDomain,
-					( canSecurity && this._loaderContext.ignoreSecurity
+					( canSecurity && this._loaderContext.ignoreSecurityDomain
 						?	SecurityDomain.currentDomain
 						:	null
 					)
@@ -301,7 +301,7 @@ package by.blooddy.core.net.loading {
 
 			} catch ( e:SecurityError ) {
 
-				if ( this._loaderContext && this._loaderContext.ignoreSecurity ) {
+				if ( this._loaderContext && this._loaderContext.ignoreSecurityDomain ) {
 
 					this._contentType = this._loaderInfo.contentType;
 					this._loaderInfo.removeEventListener( Event.COMPLETE, this.handler_loader_complete );

@@ -28,7 +28,7 @@ package by.blooddy.core.filters {
 		 * @private
 		 * constant for contrast calculations
 		 */
-		private static const DELTA_INDEX:Array = new Array(
+		private static const _DELTA_INDEX:Vector.<Number> = new <Number>[
 			0,    0.01, 0.02, 0.04, 0.05, 0.06, 0.07, 0.08, 0.1,  0.11,
 			0.12, 0.14, 0.15, 0.16, 0.17, 0.18, 0.20, 0.21, 0.22, 0.24,
 			0.25, 0.27, 0.28, 0.30, 0.32, 0.34, 0.36, 0.38, 0.40, 0.42,
@@ -40,13 +40,13 @@ package by.blooddy.core.filters {
 			4.0,  4.3,  4.7,  4.9,  5.0,  5.5,  6.0,  6.5,  6.8,  7.0,
 			7.3,  7.5,  7.8,  8.0,  8.4,  8.7,  9.0,  9.4,  9.6,  9.8, 
 			10.0
-		);
+		];
 
 		/**
 		 * @private
 		 * identity matrix constant
 		 */
-		private static const IDENTITY_MATRIX:Array = new Array(
+		private static const _IDENTITY_MATRIX:Array = new Array(
 			1,	0,	0,	0,	0,
 			0,	1,	0,	0,	0,
 			0,	0,	1,	0,	0,
@@ -57,17 +57,17 @@ package by.blooddy.core.filters {
 		/**
 		 * @private
 		 */
-		private static const LUM_R:Number = 0.212671;
+		private static const _LUM_R:Number = 0.212671;
 
 		/**
 		 * @private
 		 */
-		private static const LUM_G:Number = 0.715160;
+		private static const _LUM_G:Number = 0.715160;
 
 		/**
 		 * @private
 		 */
-		private static const LUM_B:Number = 0.072169;
+		private static const _LUM_B:Number = 0.072169;
 	
 		//--------------------------------------------------------------------------
 		//
@@ -76,7 +76,7 @@ package by.blooddy.core.filters {
 		//--------------------------------------------------------------------------
 
 		public static function getFilter(hue:Number=0, saturation:Number=0, brightness:Number=0, contrast:Number=0, color32:uint=0x00000000):ColorMatrixFilter {
-			var m:Array = IDENTITY_MATRIX.slice();
+			var m:Array = _IDENTITY_MATRIX.slice();
 			var value:Number, x:Number;
 			if ( hue ) {
 
@@ -89,9 +89,9 @@ package by.blooddy.core.filters {
 					m = multiplyMatrix(
 						m,
 						new Array(
-							LUM_R + cos * ( 1 - LUM_R ) + sin * ( - LUM_R ),	LUM_G + cos * (   - LUM_G ) + sin * ( -LUM_G ),	LUM_B + cos * (   - LUM_B ) + sin * ( 1 - LUM_B ),	0,		0,
-							LUM_R + cos * (   - LUM_R ) + sin * ( 0.143 ),		LUM_G + cos * ( 1 - LUM_G ) + sin * ( 0.140 ),	LUM_B + cos * (   - LUM_B ) + sin * ( - 0.283 ),	0,		0,
-							LUM_R + cos * (   - LUM_R ) + sin * ( LUM_R - 1 ),	LUM_G + cos * (   - LUM_G ) + sin * ( LUM_G ),	LUM_B + cos * ( 1 - LUM_B ) + sin * (  LUM_B ),		0,		0,
+							_LUM_R + cos * ( 1 - _LUM_R ) + sin * ( - _LUM_R ),		_LUM_G + cos * (   - _LUM_G ) + sin * ( - _LUM_G ),	_LUM_B + cos * (   - _LUM_B ) + sin * ( 1 - _LUM_B ),	0,		0,
+							_LUM_R + cos * (   - _LUM_R ) + sin * ( 0.143 ),		_LUM_G + cos * ( 1 - _LUM_G ) + sin * (   0.140 ),	_LUM_B + cos * (   - _LUM_B ) + sin * ( - 0.283 ),		0,		0,
+							_LUM_R + cos * (   - _LUM_R ) + sin * ( _LUM_R - 1 ),	_LUM_G + cos * (   - _LUM_G ) + sin * (   _LUM_G ),	_LUM_B + cos * ( 1 - _LUM_B ) + sin * (  _LUM_B ),		0,		0,
 							0,													0,												0,													1,		0,
 							0,													0,												0,													0,		1
 						)
@@ -144,9 +144,9 @@ package by.blooddy.core.filters {
 					x = value % 1;
 					value = int( value );
 					if ( x ) {
-						x = DELTA_INDEX[ value ] * ( 1 - x ) + DELTA_INDEX[ value+1 ] * x; // use linear interpolation for more granularity.
+						x = _DELTA_INDEX[ value ] * ( 1 - x ) + _DELTA_INDEX[ value+1 ] * x; // use linear interpolation for more granularity.
 					} else {
-						x = DELTA_INDEX[ value ];
+						x = _DELTA_INDEX[ value ];
 					}
 				} else {
 					x = contrast;
@@ -175,9 +175,9 @@ package by.blooddy.core.filters {
 
   				m = multiplyMatrix(
 					new Array(
-						a * r * LUM_R + inv_a,		a * r * LUM_G,				a * r * LUM_B,				0,		0,
-						a * g * LUM_R,				a * g * LUM_G + inv_a,		a * g * LUM_B,				0,		0,
-						a * b * LUM_R,				a * b * LUM_G,				a * b * LUM_B + inv_a,		0,		0,
+						a * r * _LUM_R + inv_a,		a * r * _LUM_G,				a * r * _LUM_B,				0,		0,
+						a * g * _LUM_R,				a * g * _LUM_G + inv_a,		a * g * _LUM_B,				0,		0,
+						a * b * _LUM_R,				a * b * _LUM_G,				a * b * _LUM_B + inv_a,		0,		0,
 						0,							0,							0,							1,		0,
 						0,							0,							0,							0,		1
 					),
