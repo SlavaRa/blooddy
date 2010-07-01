@@ -138,16 +138,6 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static inline function writeI32(address:UInt, value:Int):Void {
-		Memory.setByte( address,     value >> 24 );
-		Memory.setByte( address + 1, value >> 16 );
-		Memory.setByte( address + 2, value >>  8 );
-		Memory.setByte( address + 3, value       );
-	}
-	
-	/**
-	 * @private
-	 */
 	private static inline function writeChunk(bytes:ByteArray, chunk:ByteArray):Void {
 		bytes.writeUnsignedInt( chunk.length - 4 );
 		bytes.writeBytes( chunk, 0 );
