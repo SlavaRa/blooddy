@@ -64,7 +64,7 @@ package by.blooddy.crypto.image.palette {
 				for ( x=0; x<width; x++ ) {
 
 					c = image.getPixel32( x, y );
-					if ( c == cx ) continue;
+					if ( c == cx || c == image.getPixel32( x, y-1 ) ) continue;
 					cx = c;
 
 					t = c & 0xFF000000;
@@ -93,7 +93,7 @@ package by.blooddy.crypto.image.palette {
 				lminA, lminR, lminG, lminB,
 				lmaxA, lmaxR, lmaxG, lmaxB
 			);
-			trace( getTimer() - TTT )
+			trace( 'firlst', getTimer() - TTT )
 			if ( block.count > 1 ) {
 
 				var rpoints:Vector.<uint>;
@@ -242,7 +242,7 @@ package by.blooddy.crypto.image.palette {
 
 			this._blocks.push( block ); // push back
 			
-			trace( getTimer() - TTT );
+			trace( 'total', getTimer() - TTT );
 			
 //			trace( this._blocks );
 

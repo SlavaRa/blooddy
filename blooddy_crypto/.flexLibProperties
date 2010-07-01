@@ -4,8 +4,6 @@
     <classEntry path="by.blooddy.crypto.image.JPEGTable"/>
     <classEntry path="by.blooddy.crypto.image.PNG24Filter"/>
     <classEntry path="by.blooddy.crypto.tmp.Strategy8BitUniformQuantAlpha"/>
-    <classEntry path="by.blooddy.crypto.tmp.EncodeStrategyBase"/>
-    <classEntry path="by.blooddy.crypto.tmp.AsPngEncoder"/>
     <classEntry path="by.blooddy.crypto.tmp.Chunk"/>
     <classEntry path="by.blooddy.crypto.tmp.IHDR"/>
     <classEntry path="by.blooddy.crypto.tmp.IEND"/>
