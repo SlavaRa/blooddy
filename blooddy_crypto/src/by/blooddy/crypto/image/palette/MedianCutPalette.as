@@ -87,6 +87,8 @@ package by.blooddy.crypto.image.palette {
 
 				}
 			}
+			trace( lminA + ' ' + lminR + ' ' + lminG + ' ' + lminB );
+			trace( lmaxA + ' ' + lmaxR + ' ' + lmaxG + ' ' + lmaxB );
 
 			var block:Block = new Block(
 				lpoints,
@@ -130,7 +132,7 @@ package by.blooddy.crypto.image.palette {
 					lmaxA = 0x00000000;
 					lmaxR = 0x00000000;
 					lmaxG = 0x00000000;
-					lmaxB = 0x00000000;				
+					lmaxB = 0x00000000;
 					rminA = 0xFF000000;
 					rminR = 0x00FF0000;
 					rminG = 0x0000FF00;
@@ -246,9 +248,10 @@ package by.blooddy.crypto.image.palette {
 			
 //			trace( this._blocks );
 
-//			for each ( block in this._blocks ) {
-//				this._colors.push( block.color );
-//			}
+			for each ( block in this._blocks ) {
+				this._colors.push( block.color );
+			}
+			trace( this._colors );
 //			
 		}
 
@@ -329,6 +332,7 @@ internal final class Block {
 				this.points = points;
 			}
 			this.color = midA | midR | midG | midB;
+			trace( this.color.toString( 16 ) );
 		}
 	}
 
