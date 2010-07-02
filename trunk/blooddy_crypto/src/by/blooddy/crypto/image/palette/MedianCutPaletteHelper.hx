@@ -71,8 +71,7 @@ private class TMP {
 		var colorsList:Vector<ByteArray> = new Vector<ByteArray>();
 
 		var blockCount:UInt = 0;
-		var blocks:ByteArray = new ByteArray();
-		blocks.length = BLOCK * maxColors + BLOCK;
+		var blocks:ByteArray = ByteArrayUtils.createByteArray( BLOCK * maxColors + BLOCK );
 		if ( blocks.length < 1024 ) blocks.length = 1024;
 
 		var colors:ByteArray = new ByteArray();
@@ -188,6 +187,7 @@ private class TMP {
 
 				mask = Memory.getI32( blockCount * BLOCK + 1 );
 				mid = Memory.getI32( blockCount * BLOCK + 5 ) & mask;
+				Lib.trace( cast( mid ).toString ( 16 ) + ' ' + mask );
 
 				colors = colorsList[ Memory.getByte( blockCount * BLOCK + 17 ) ];
 				len = colors.length;
@@ -198,12 +198,12 @@ private class TMP {
 
 				i = 0;
 				x = len;
-				y = ( len << 1 ) - 4;
+				y = len << 1;
 				do {
 
 					c = Memory.getI32( i );
+					Lib.trace( cast( untyped( c ) >>> 0 ).toString( 16 ) );
 
-					Lib.trace( c & mask );
 					if ( c & mask <= mid ) {
 
 						if ( transparent ) {
@@ -354,8 +354,6 @@ private class TMP {
 			}
 			i += BLOCK;
 		};
-		
-		Lib.trace( cast ( ( midA | midR | midG | midB ) >>> 0 ).toString ( 16 ) );
 		
 		Memory.setByte( i     , count );
 		Memory.setI32(  i +  1, mask );

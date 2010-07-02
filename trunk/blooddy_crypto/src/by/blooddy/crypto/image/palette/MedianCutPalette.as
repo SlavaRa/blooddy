@@ -140,15 +140,16 @@ package by.blooddy.crypto.image.palette {
 	
 					mid = block.mid;
 					mask = block.mask;
+					trace( mid.toString( 16 ), mask );
 					cx = 0;
 					i = 0;
 
 					for each ( c in block.points ) {
 
+						trace( c.toString( 16 ) );
 						if ( c == cx ) continue;
 						cx = c;
 
-						trace( uint( c & mask ), ( c & mask ) );
 						if ( uint( c & mask ) <= mid ) {
 
 							t = c & 0xFF000000;
@@ -327,7 +328,7 @@ internal final class Block {
 				this.points = points;
 			}
 			this.color = midA | midR | midG | midB;
-			trace( this.color.toString( 16 ) );
+//			trace( this.color.toString( 16 ) );
 		}
 	}
 

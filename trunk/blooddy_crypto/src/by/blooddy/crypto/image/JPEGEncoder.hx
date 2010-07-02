@@ -205,11 +205,11 @@ private class TMP {
 		Memory.setI16(	p     ,	0xC0FF		);	// marker
 		Memory.setI16(	p +  2,	0x1100		);	// length, truecolor YUV JPG
 		Memory.setByte(	p +  4,	0x08		);	// precision
-		Memory.setI32(	p +  5,					// height
+		Memory.setI16(	p +  5,					// height
 			( ( ( height >> 8 ) & 0xFF )      ) |
 			( ( ( height      ) & 0xFF ) << 8 )
 		);
-		Memory.setI32(	p +  7,					// width
+		Memory.setI16(	p +  7,					// width
 			( ( ( width >> 8  ) & 0xFF )      ) |
 			( ( ( width       ) & 0xFF ) << 8 )
 		);
@@ -271,9 +271,9 @@ private class TMP {
 
 				c = img.getPixel( xpos + x, ypos + y );
 
-				r = ( c >> 16 ) & 0xFF;
-				g = ( c >>  8 ) & 0xFF;
-				b = ( c       ) & 0xFF;
+				r =   c >>> 16         ;
+				g = ( c >>   8 ) & 0xFF;
+				b =   c          & 0xFF;
 
 				Memory.setDouble( Z1 + 256 + 512 * 0 + pos,   0.29900 * r + 0.58700 * g + 0.11400 * b - 0x80 ); // YDU
 				Memory.setDouble( Z1 + 256 + 512 * 1 + pos, - 0.16874 * r - 0.33126 * g + 0.50000 * b        ); // UDU
