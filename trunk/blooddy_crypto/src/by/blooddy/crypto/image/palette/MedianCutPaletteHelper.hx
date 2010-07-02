@@ -51,7 +51,7 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static var BLOCK:UInt = 21;
+	private static var BLOCK:UInt = 18;
 
 	//--------------------------------------------------------------------------
 	//
@@ -71,7 +71,8 @@ private class TMP {
 		var colorsList:Vector<ByteArray> = new Vector<ByteArray>();
 
 		var blockCount:UInt = 0;
-		var blocks:ByteArray = ByteArrayUtils.createByteArray( BLOCK * maxColors + BLOCK );
+		var blocks:ByteArray = new ByteArray();
+		blocks.length = BLOCK * maxColors + BLOCK;
 		if ( blocks.length < 1024 ) blocks.length = 1024;
 
 		var colors:ByteArray = new ByteArray();
@@ -128,9 +129,6 @@ private class TMP {
 			} while ( ++x < width );
 		} while ( ++y < height );
 
-		Lib.trace( lminA + ' ' + lminR + ' ' + lminG + ' ' + lminB );
-		Lib.trace( lmaxA + ' ' + lmaxR + ' ' + lmaxG + ' ' + lmaxB );
-		
 		Memory.memory = blocks;
 
 		colors.length = i;
@@ -188,10 +186,10 @@ private class TMP {
 				rminG = 0x0000FF00;
 				rmaxG = 0x00000000;
 
-				mid = Memory.getI32( blockCount * BLOCK + 1 );
-				mask = Memory.getI32( blockCount * BLOCK + 5 );
+				mask = Memory.getI32( blockCount * BLOCK + 1 );
+				mid = Memory.getI32( blockCount * BLOCK + 5 ) & mask;
 
-				colors = colorsList[ Memory.getI32( blockCount * BLOCK + 21 ) ];
+				colors = colorsList[ Memory.getByte( blockCount * BLOCK + 17 ) ];
 				len = colors.length;
 				colors.length <<= 1; // увеличиваем буфер под дополнительную палитру
 				if ( colors.length < 1024 ) colors.length = 1024;
@@ -205,6 +203,7 @@ private class TMP {
 
 					c = Memory.getI32( i );
 
+					Lib.trace( c & mask );
 					if ( c & mask <= mid ) {
 
 						if ( transparent ) {
@@ -298,7 +297,7 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static function writeBlock(
+	private static inline function writeBlock(
 		blocks:ByteArray,
 		blockID:UInt,
 		minA:UInt, minR:UInt, minG:UInt, minB:UInt,
@@ -306,7 +305,7 @@ private class TMP {
 		blockCount:UInt,
 		transparent:Bool
 	):Void {
-		var midA:UInt = ( transparent ? ( ( maxA + minA ) / 2 ) & 0xFF000000 : 0xFF000000 );
+		var midA:UInt = ( transparent ? untyped( ( untyped( maxA ) + untyped( minA ) ) / 2 ) & 0xFF000000 : 0xFF000000 );
 		var midR:UInt = 0;
 		var midG:UInt = 0;
 		var midB:UInt = 0;
@@ -359,12 +358,11 @@ private class TMP {
 		Lib.trace( cast ( ( midA | midR | midG | midB ) >>> 0 ).toString ( 16 ) );
 		
 		Memory.setByte( i     , count );
-		Memory.setI32(  i +  1, mid );
-		Memory.setI32(  i +  5, mask );
-		Memory.setI32(  i +  9, midA | midR | midG | midB );
-		Memory.setI32(  i + 13, minA | minR | minG | minB );
-		Memory.setI32(  i + 17, maxA | maxR | maxG | maxB );
-		Memory.setByte( i + 21, blockID );
+		Memory.setI32(  i +  1, mask );
+		Memory.setI32(  i +  5, midA | midR | midG | midB );
+		Memory.setI32(  i +  9, minA | minR | minG | minB );
+		Memory.setI32(  i + 13, maxA | maxR | maxG | maxB );
+		Memory.setByte( i + 17, blockID );
 		
 	}
 

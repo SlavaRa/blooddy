@@ -35,8 +35,6 @@ package by.blooddy.crypto.image.palette {
 
 			maxColors--; // сдвиг для ускорения проверки
 
-			var TTT:Number = getTimer();
-
 			var lpoints:Vector.<uint> = new Vector.<uint>();
 			var hash:Object = new Object();
 
@@ -87,15 +85,13 @@ package by.blooddy.crypto.image.palette {
 
 				}
 			}
-			trace( lminA + ' ' + lminR + ' ' + lminG + ' ' + lminB );
-			trace( lmaxA + ' ' + lmaxR + ' ' + lmaxG + ' ' + lmaxB );
 
 			var block:Block = new Block(
 				lpoints,
 				lminA, lminR, lminG, lminB,
 				lmaxA, lmaxR, lmaxG, lmaxB
 			);
-			trace( 'firlst', getTimer() - TTT )
+
 			if ( block.count > 1 ) {
 
 				var rpoints:Vector.<uint>;
@@ -152,6 +148,7 @@ package by.blooddy.crypto.image.palette {
 						if ( c == cx ) continue;
 						cx = c;
 
+						trace( uint( c & mask ), ( c & mask ) );
 						if ( uint( c & mask ) <= mid ) {
 
 							t = c & 0xFF000000;
@@ -243,8 +240,6 @@ package by.blooddy.crypto.image.palette {
 			}
 
 			this._blocks.push( block ); // push back
-			
-			trace( 'total', getTimer() - TTT );
 			
 //			trace( this._blocks );
 
