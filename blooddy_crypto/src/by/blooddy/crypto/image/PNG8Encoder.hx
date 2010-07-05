@@ -9,8 +9,10 @@ package by.blooddy.crypto.image;
 import by.blooddy.crypto.image.palette.IPalette;
 import by.blooddy.crypto.image.palette.MedianCutPalette;
 import by.blooddy.system.Memory;
+import by.blooddy.utils.ByteArrayUtils;
 import flash.display.BitmapData;
 import flash.Error;
+import flash.Lib;
 import flash.utils.ByteArray;
 import flash.Vector;
 
@@ -61,7 +63,7 @@ private class TMP {
 		var bits:UInt;
 		// Create output byte array
 		var bytes:ByteArray = new ByteArray();
-		var chunk:ByteArray = new ByteArray();
+		var chunk:ByteArray = ByteArrayUtils.createByteArray( len2 );
 
 		// PNG signature
 		PNGEncoderHelper.writeSignature( bytes );
@@ -71,33 +73,25 @@ private class TMP {
 
 		// PLTE
 		// tRNS
-		writeColors( bytes, chunk, colors );
+		if ( image.transparent ) {
+			writeColors( bytes, chunk, colors, true );
+		} else {
+			writeColors( bytes, chunk, colors, false );
+		}
 
+		// IDAT
 		// IDAT
 		if ( len2 < 1024 ) chunk.length = 1024;
 		else chunk.length = len2;
 		Memory.memory = chunk;
-		if ( len < 17 ) Memory.fill( len, 17, 0x00 ); // если битмапка очень маленькая, то мы случайно могли наследить
 		if ( image.transparent ) {
-			switch ( filter ) {
-				case PNGEncoderHelper.NONE:		writeNone( image, palette, len, true );
-				case PNGEncoderHelper.SUB:		writeSub( image, palette, len, true );
-				case PNGEncoderHelper.UP:		writeUp( image, palette, len, true );
-				case PNGEncoderHelper.AVERAGE:	writeAverage( image, palette, len, true );
-				case PNGEncoderHelper.PAETH:	writePaeth( image, palette, len, true );
-				default:						Error.throwError( ArgumentError, 2008, 'filter' );
-			}
+			if ( len < 4 + 4 * 256 ) Memory.fill( len, min( 4 + 4 * 256, len2 ), 0x00 ); // мы случайно могли наследить
+			writeIDATContent( image, palette, filter, len, true );
 		} else {
-			switch ( filter ) {
-				case PNGEncoderHelper.NONE:		writeNone( image, palette, len, false );
-				case PNGEncoderHelper.SUB:		writeSub( image, palette, len, false );
-				case PNGEncoderHelper.UP:		writeUp( image, palette, len, false );
-				case PNGEncoderHelper.AVERAGE:	writeAverage( image, palette, len, false );
-				case PNGEncoderHelper.PAETH:	writePaeth( image, palette, len, false );
-				default:						Error.throwError( ArgumentError, 2008, 'filter' );
-			}
+			if ( len < 4 + 3 * 256 ) Memory.fill( len, min( 4 + 3 * 256, len2 ), 0x00 ); // мы случайно могли наследить
+			writeIDATContent( image, palette, filter, len, false );
 		}
-		Memory.memory = null;
+		Memory.memory = mem;
 		chunk.length = len;
 		chunk.compress();
 		chunk.position = 4;
@@ -107,7 +101,7 @@ private class TMP {
 		PNGEncoderHelper.writeChunk( bytes, chunk );
 
 		// tEXt
-		//PNGEncoderHelper.writeTEXT( bytes, chunk, 'Software', 'by.blooddy.crypto.image.PNG8Encoder' );
+		PNGEncoderHelper.writeTEXT( bytes, chunk, 'Software', 'by.blooddy.crypto.image.PNG8Encoder' );
 
 		// IEND
 		PNGEncoderHelper.writeIEND( bytes, chunk );
@@ -130,7 +124,14 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static inline function writeColors(bytes:ByteArray, chunk:ByteArray, colors:Vector<UInt>):Void {
+	private static inline function min(v1:UInt, v2:UInt):UInt {
+		return ( v1 < v2 ? v1 : v2 );
+	}
+
+	/**
+	 * @private
+	 */
+	private static inline function writeColors(bytes:ByteArray, chunk:ByteArray, colors:Vector<UInt>, transparent:Bool):Void {
 		chunk.length = 1024 + 4;
 		Memory.memory = chunk;
 		var l:UInt = colors.length;
@@ -141,8 +142,9 @@ private class TMP {
 		var c:UInt;
 		do {
 			c = colors[ k ];
-			// a
-			Memory.setByte( j++, c >> 24 );
+			if ( transparent ) { // a
+				Memory.setByte( j++, c >> 24 );
+			}
 			// rgb
 			Memory.setByte( i++, c >> 16 );
 			Memory.setByte( i++, c >>  8 );
@@ -154,84 +156,127 @@ private class TMP {
 		chunk.writeUnsignedInt( 0x504C5445 );
 		chunk.length = 4 + 3 * l;
 		PNGEncoderHelper.writeChunk( bytes, chunk );
-		chunk.length = 1024 + 8;
 		// tRNS
-		chunk.position = 0;
-		chunk.writeUnsignedInt( 0x74524E53 );
-		chunk.writeBytes( chunk, 4 + 3 * 256, l );
-		chunk.length = l + 4;
-		PNGEncoderHelper.writeChunk( bytes, chunk );
+		if ( transparent ) {
+			chunk.length = 1024 + 4;
+			chunk.position = 0;
+			chunk.writeUnsignedInt( 0x74524E53 );
+			chunk.writeBytes( chunk, 4 + 3 * 256, l );
+			chunk.length = l + 4;
+			PNGEncoderHelper.writeChunk( bytes, chunk );
+		}
 	}
 	
-
 	/**
 	 * @private
 	 */
-	private static inline function writeNone(image:BitmapData, palette:IPalette, offset:UInt, transparent:Bool):Void {
+	private static inline function writeIDATContent(image:BitmapData, palette:IPalette, filter:UInt, offset:UInt, transparent:Bool):Void {
 		var width:UInt = image.width;
 		var height:UInt = image.height;
+
 		var x:UInt, y:UInt = 0;
-		var c:UInt;
-		var hash:Array<Null<UInt>> = new Array<Null<UInt>>();
-		var index;
-		var i:UInt = 0;
-		do {
-			Memory.setByte( i++, PNGEncoderHelper.NONE );
-			x = 0;
-			do {
-				c = ( transparent ? image.getPixel32( x, y ) : image.getPixel( x, y ) );
-				index = hash[ c ];
-				if ( index == null ) {
-					hash[ c ] = index = palette.getIndexByColor( c );
-				}
-				Memory.setByte( i++, index );
-			} while ( ++x < width );
-		} while ( ++y < height );
-	}
+		var c:UInt, c0:UInt, c1:UInt, c2:UInt;
+		var i:UInt = 0, j:UInt;
 
-	/**
-	 * @private
-	 */
-	private static inline function writeSub(image:BitmapData, palette:IPalette, offset:UInt, transparent:Bool):Void {
-		var width:UInt = image.width;
-		var height:UInt = image.height;
-		var x:UInt, y:UInt = 0;
-		var r:UInt, g:UInt, b:UInt;
-		var r0:UInt, g0:UInt, b0:UInt;
-		var a:UInt, a0:UInt = 0;
-		var i:UInt = 0;
-		do {
-			Memory.setByte( i++, PNGEncoderHelper.SUB );
-			if ( transparent ) {
-				a0 = 0;
-			}
-			r0 = 0;
-			g0 = 0;
-			b0 = 0;
-			x = 0;
-			do {
+		switch ( filter ) {
 
-				b = ( transparent ? image.getPixel32( x, y ) : image.getPixel( x, y ) );
+			case PNGEncoderHelper.NONE:
+				do {
+					Memory.setByte( i++, PNGEncoderHelper.NONE );
+					x = 0;
+					do {
+						Memory.setByte(
+							i++,
+							palette.getIndexByColor(
+								transparent ? image.getPixel32( x, y ) : image.getPixel( x, y )
+							)
+						);
+					} while ( ++x < width );
+				} while ( ++y < height );
 
-				r = b >>> 16;
-				Memory.setByte( i++, r - r0 );
-				r0 = r;
 
-				g = b >>>  8;
-				Memory.setByte( i++, g - g0 );
-				g0 = g;
+			case PNGEncoderHelper.SUB:
+				do {
+					Memory.setByte( i++, PNGEncoderHelper.SUB );
+					c0 = 0;
+					x = 0;
+					do {
 
-				Memory.setByte( i++, b - b0 );
-				b0 = b;
+						c = palette.getIndexByColor(
+							transparent ? image.getPixel32( x, y ) : image.getPixel( x, y )
+						);
+						Memory.setByte( i++, c - c0 );
+						c0 = c;
 
-				if ( transparent ) {
-					a = b >>> 24;
-					Memory.setByte( i++, a - a0 );
-					a0 = a;
-				}
+					} while ( ++x < width );
+				} while ( ++y < height );
 
-			} while ( ++x < width );
-		} while ( ++y < height );
+
+			case PNGEncoderHelper.UP:
+				do {
+					j = offset;
+					Memory.setByte( i++, PNGEncoderHelper.UP );
+					x = 0;
+					do {
+						c = palette.getIndexByColor(
+							transparent ? image.getPixel32( x, y ) : image.getPixel( x, y )
+						);
+						Memory.setByte( i++, c - Memory.getByte( j ) );
+						Memory.setByte( j++, c );
+					} while ( ++x < width );
+				} while ( ++y < height );
+
+			
+			case PNGEncoderHelper.AVERAGE:
+				do {
+					j = offset;
+					Memory.setByte( i++, PNGEncoderHelper.AVERAGE );
+					c0 = 0;
+					x = 0;
+					do {
+
+						c = palette.getIndexByColor(
+							transparent ? image.getPixel32( x, y ) : image.getPixel( x, y )
+						);
+
+						Memory.setByte( i++, c - ( ( c0 + Memory.getByte( j ) ) >>> 1 ) );
+						c0 = c;
+
+						Memory.setByte( j++, c );
+						
+					} while ( ++x < width );
+				} while ( ++y < height );
+
+
+			case PNGEncoderHelper.PAETH:
+				do {
+
+					j = offset;
+					Memory.setByte( i++, PNGEncoderHelper.PAETH );
+					c0 = 0;
+					c2 = 0;
+					x = 0;
+					do {
+
+						c = palette.getIndexByColor(
+							transparent ? image.getPixel32( x, y ) : image.getPixel( x, y )
+						);
+
+						c1 = Memory.getByte( j );
+						Memory.setByte( i++, c - PNGEncoderHelper.paethPredictor( c0, c1, c2 ) );
+						c0 = c;
+						c2 = c1;
+
+						Memory.setByte( j++, c );
+
+					} while ( ++x < width );
+				} while ( ++y < height );
+
+
+			default:
+				Error.throwError( ArgumentError, 2008, 'filter' );
+
+		}
 	}
 
 	/**
@@ -241,23 +286,20 @@ private class TMP {
 		var width:UInt = image.width;
 		var height:UInt = image.height;
 		var x:UInt, y:UInt = 0;
-		var c:UInt;
-		var j:UInt;
+		var c:UInt, c0:UInt;
 		var i:UInt = 0;
 		do {
-			j = offset;
 			Memory.setByte( i++, PNGEncoderHelper.UP );
+			c0 = 0;
 			x = 0;
 			do {
-				c = ( transparent ? image.getPixel32( x, y ) : image.getPixel( x, y ) );
-				Memory.setByte( i++, ( c >>> 16 ) - Memory.getByte( j + 2 ) );
-				Memory.setByte( i++, ( c >>>  8 ) - Memory.getByte( j + 1 ) );
-				Memory.setByte( i++,   c          - Memory.getByte( j     ) );
-				if ( transparent ) {
-					Memory.setByte( i++, ( c >>> 24 ) - Memory.getByte( j + 3 ) );
-				}
-				Memory.setI32( j, c );
-				j += 4;
+
+				c = palette.getIndexByColor(
+					transparent ? image.getPixel32( x, y ) : image.getPixel( x, y )
+				);
+				Memory.setByte( i++, c - c0 );
+				c0 = c;
+
 			} while ( ++x < width );
 		} while ( ++y < height );
 	}

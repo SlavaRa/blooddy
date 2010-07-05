@@ -49,8 +49,6 @@ private class TMP {
 
 	public static inline function encode(image:BitmapData, filter:UInt):ByteArray {
 
-		var mem:ByteArray = Memory.memory;
-
 		var width:UInt = image.width;
 		var height:UInt = image.height;
 
@@ -70,30 +68,12 @@ private class TMP {
 		// IDAT
 		if ( len2 < 1024 ) chunk.length = 1024;
 		else chunk.length = len2;
+		var mem:ByteArray = Memory.memory;
 		Memory.memory = chunk;
 		if ( len < 17 ) Memory.fill( len, 17, 0x00 ); // если битмапка очень маленькая, то мы случайно могли наследить
-		if ( image.transparent ) {
-			switch ( filter ) {
-				case PNGEncoderHelper.NONE:		writeNone( image, len, true );
-				case PNGEncoderHelper.SUB:		writeSub( image, len, true );
-				case PNGEncoderHelper.UP:		writeUp( image, len, true );
-				case PNGEncoderHelper.AVERAGE:	writeAverage( image, len, true );
-				case PNGEncoderHelper.PAETH:	writePaeth( image, len, true );
-				default:
-					Error.throwError( ArgumentError, 2008, 'filter' );
-			}
-		} else {
-			switch ( filter ) {
-				case PNGEncoderHelper.NONE:		writeNone( image, len, false );
-				case PNGEncoderHelper.SUB:		writeSub( image, len, false );
-				case PNGEncoderHelper.UP:		writeUp( image, len, false );
-				case PNGEncoderHelper.AVERAGE:	writeAverage( image, len, false );
-				case PNGEncoderHelper.PAETH:	writePaeth( image, len, false );
-				default:
-					Error.throwError( ArgumentError, 2008, 'filter' );
-			}
-		}
-		Memory.memory = null;
+		if ( image.transparent )	writeIDATContent( image, filter, len, true );
+		else						writeIDATContent( image, filter, len, false );
+		Memory.memory = mem;
 		chunk.length = len;
 		chunk.compress();
 		chunk.position = 4;
@@ -108,8 +88,6 @@ private class TMP {
 		// IEND
 		PNGEncoderHelper.writeIEND( bytes, chunk );
 
-		Memory.memory = mem;
-
 		chunk.clear();
 
 		bytes.position = 0;
@@ -120,237 +98,210 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static inline function writeNone(image:BitmapData, offset:UInt, transparent:Bool):Void {
+	private static inline function writeIDATContent(image:BitmapData, filter:UInt, offset:UInt, transparent:Bool):Void {
 		var width:UInt = image.width;
 		var height:UInt = image.height;
+
 		var x:UInt, y:UInt = 0;
 		var c:UInt;
-		var i:UInt = 0;
-		if ( transparent && width >= 64 ) { // для широких картинок быстрее копировать целиком ряды байтов
-			width <<= 2;
-			var bmp:ByteArray = image.getPixels( image.rect );
-			var tmp:ByteArray = Memory.memory;
-			tmp.position = 0;
-			x = 0;
-			do {
-				tmp.writeBytes( bmp, y * width, width );
-				i = x + width;
-				do {
-					Memory.setByte( i, Memory.getByte( i - 4 ) );
-					i -= 4;
-				} while ( i > x );
-				Memory.setByte( x, PNGEncoderHelper.NONE );
-				x += width + 1;
-				++tmp.position;
-			} while ( ++y < height );
-		} else {
-			do {
-				Memory.setByte( i++, PNGEncoderHelper.NONE );
-				x = 0;
-				do {
-					c = ( transparent ? image.getPixel32( x, y ) : image.getPixel( x, y ) );
-					Memory.setByte( i++, c >> 16 );
-					Memory.setByte( i++, c >>  8 );
-					Memory.setByte( i++, c       );
-					if ( transparent ) {
-						Memory.setByte( i++, c >> 24 );
-					}
-				} while ( ++x < width );
-			} while ( ++y < height );
-		}
-	}
+		var i:UInt = 0, j:UInt;
 
-	/**
-	 * @private
-	 */
-	private static inline function writeSub(image:BitmapData, offset:UInt, transparent:Bool):Void {
-		var width:UInt = image.width;
-		var height:UInt = image.height;
-		var x:UInt, y:UInt = 0;
 		var r:UInt, g:UInt, b:UInt;
 		var r0:UInt, g0:UInt, b0:UInt;
-		var a:UInt, a0:UInt = 0;
-		var i:UInt = 0;
-		do {
-			Memory.setByte( i++, PNGEncoderHelper.SUB );
-			if ( transparent ) {
-				a0 = 0;
-			}
-			r0 = 0;
-			g0 = 0;
-			b0 = 0;
-			x = 0;
-			do {
-
-				b = ( transparent ? image.getPixel32( x, y ) : image.getPixel( x, y ) );
-
-				r = b >>> 16;
-				Memory.setByte( i++, r - r0 );
-				r0 = r;
-
-				g = b >>>  8;
-				Memory.setByte( i++, g - g0 );
-				g0 = g;
-
-				Memory.setByte( i++, b - b0 );
-				b0 = b;
-
-				if ( transparent ) {
-					a = b >>> 24;
-					Memory.setByte( i++, a - a0 );
-					a0 = a;
-				}
-
-			} while ( ++x < width );
-		} while ( ++y < height );
-	}
-
-	/**
-	 * @private
-	 */
-	private static inline function writeUp(image:BitmapData, offset:UInt, transparent:Bool):Void {
-		var width:UInt = image.width;
-		var height:UInt = image.height;
-		var x:UInt, y:UInt = 0;
-		var c:UInt;
-		var j:UInt;
-		var i:UInt = 0;
-		do {
-			j = offset;
-			Memory.setByte( i++, PNGEncoderHelper.UP );
-			x = 0;
-			do {
-				c = ( transparent ? image.getPixel32( x, y ) : image.getPixel( x, y ) );
-				Memory.setByte( i++, ( c >>> 16 ) - Memory.getByte( j + 2 ) );
-				Memory.setByte( i++, ( c >>>  8 ) - Memory.getByte( j + 1 ) );
-				Memory.setByte( i++,   c          - Memory.getByte( j     ) );
-				if ( transparent ) {
-					Memory.setByte( i++, ( c >>> 24 ) - Memory.getByte( j + 3 ) );
-				}
-				Memory.setI32( j, c );
-				j += 4;
-			} while ( ++x < width );
-		} while ( ++y < height );
-	}
-
-	/**
-	 * @private
-	 */
-	private static inline function writeAverage(image:BitmapData, offset:UInt, transparent:Bool):Void {
-		var width:UInt = image.width;
-		var height:UInt = image.height;
-		var x:UInt, y:UInt = 0;
-		var c:UInt;
-		var r:UInt, g:UInt, b:UInt;
-		var r0:UInt, g0:UInt, b0:UInt;
-		var a:UInt, a0:UInt = 0;
-		var j:UInt;
-		var i:UInt = 0;
-		do {
-			j = offset;
-			Memory.setByte( i++, PNGEncoderHelper.AVERAGE );
-			if ( transparent ) {
-				a0 = 0;
-			}
-			r0 = 0;
-			g0 = 0;
-			b0 = 0;
-			x = 0;
-			do {
-
-				c = ( transparent ? image.getPixel32( x, y ) : image.getPixel( x, y ) );
-
-				r = ( transparent ? ( c >> 16 ) & 0xFF : c >>> 16 );
-				Memory.setByte( i++, r - ( ( r0 + Memory.getByte( j + 2 ) ) >>> 1 ) );
-				r0 = r;
-
-				g = ( c >>  8 ) & 0xFF;
-				Memory.setByte( i++, g - ( ( g0 + Memory.getByte( j + 1 ) ) >>> 1 ) );
-				g0 = g;
-
-				b = ( c       ) & 0xFF;
-				Memory.setByte( i++, b - ( ( b0 + Memory.getByte( j ) ) >>> 1 ) );
-				b0 = b;
-
-				if ( transparent ) {
-					a =   c >>> 24;
-					Memory.setByte( i++, a - ( ( a0 + Memory.getByte( j + 3 ) ) >>> 1 ) );
-					a0 = a;
-				}
-
-				Memory.setI32( j, c );
-				j += 4;
-
-				
-			} while ( ++x < width );
-		} while ( ++y < height );
-	}
-
-	/**
-	 * @private
-	 */
-	private static inline function writePaeth(image:BitmapData, offset:UInt, transparent:Bool):Void {
-		var width:UInt = image.width;
-		var height:UInt = image.height;
-		var x:UInt, y:UInt = 0;
-		var c:UInt, c0:UInt, c1:UInt;
-		var r:UInt, g:UInt, b:UInt;
-		var r0:UInt, g0:UInt, b0:UInt;
-		var r1:UInt, g1:UInt, b1:UInt;
 		var r2:UInt, g2:UInt, b2:UInt;
+		var r1:UInt, g1:UInt, b1:UInt;
 		var a:UInt, a0:UInt = 0, a1:UInt, a2:UInt = 0;
-		var j:UInt;
-		var i:UInt = 0;
-		do {
 
-			j = offset;
-			Memory.setByte( i++, PNGEncoderHelper.PAETH );
-			if ( transparent ) {
-				a0 = 0;
-				a2 = 0;
-			}
-			r0 = 0;
-			r2 = 0;
-			g0 = 0;
-			g2 = 0;
-			b0 = 0;
-			b2 = 0;
-			x = 0;
-			do {
+		switch ( filter ) {
 
-				c = ( transparent ? image.getPixel32( x, y ) : image.getPixel( x, y ) );
+			case PNGEncoderHelper.NONE:
+				if ( transparent && width >= 64 ) { // для широких картинок быстрее копировать целиком ряды байтов
+					width <<= 2;
+					var bmp:ByteArray = image.getPixels( image.rect );
+					var tmp:ByteArray = Memory.memory;
+					tmp.position = 0;
+					x = 0;
+					do {
+						tmp.writeBytes( bmp, y * width, width );
+						i = x + width;
+						do {
+							Memory.setByte( i, Memory.getByte( i - 4 ) );
+							i -= 4;
+						} while ( i > x );
+						Memory.setByte( x, PNGEncoderHelper.NONE );
+						x += width + 1;
+						++tmp.position;
+					} while ( ++y < height );
+				} else {
+					do {
+						Memory.setByte( i++, PNGEncoderHelper.NONE );
+						x = 0;
+						do {
+							c = ( transparent ? image.getPixel32( x, y ) : image.getPixel( x, y ) );
+							Memory.setByte( i++, c >> 16 );
+							Memory.setByte( i++, c >>  8 );
+							Memory.setByte( i++, c       );
+							if ( transparent ) {
+								Memory.setByte( i++, c >> 24 );
+							}
+						} while ( ++x < width );
+					} while ( ++y < height );
+				}			
 
-				r = ( transparent ? ( c >> 16 ) & 0xFF : c >>> 16 );
-				r1 = Memory.getByte( j + 2 );
-				Memory.setByte( i++, r - PNGEncoderHelper.paethPredictor( r0, r1, r2 ) );
-				r0 = r;
-				r2 = r1;
 
-				g = ( c >> 8 ) & 0xFF;
-				g1 = Memory.getByte( j + 1 );
-				Memory.setByte( i++, g - PNGEncoderHelper.paethPredictor( g0, g1, g2 ) );
-				g0 = g;
-				g2 = g1;
+			case PNGEncoderHelper.SUB:
+				do {
+					Memory.setByte( i++, PNGEncoderHelper.SUB );
+					if ( transparent ) {
+						a0 = 0;
+					}
+					r0 = 0;
+					g0 = 0;
+					b0 = 0;
+					x = 0;
+					do {
 
-				b = c & 0xFF;
-				b1 = Memory.getByte( j     );
-				Memory.setByte( i++, b - PNGEncoderHelper.paethPredictor( b0, b1, b2 ) );
-				b0 = b;
-				b2 = b1;
+						b = ( transparent ? image.getPixel32( x, y ) : image.getPixel( x, y ) );
 
-				if ( transparent ) {
-					a = c >>> 24;
-					a1 = Memory.getByte( j + 3 );
-					Memory.setByte( i++, a - PNGEncoderHelper.paethPredictor( a0, a1, a2 ) );
-					a0 = a;
-					a2 = a1;
-				}
+						r = b >>> 16;
+						Memory.setByte( i++, r - r0 );
+						r0 = r;
 
-				Memory.setI32( j, c );
-				j += 4;
+						g = b >>>  8;
+						Memory.setByte( i++, g - g0 );
+						g0 = g;
 
-			} while ( ++x < width );
-		} while ( ++y < height );
+						Memory.setByte( i++, b - b0 );
+						b0 = b;
+
+						if ( transparent ) {
+							a = b >>> 24;
+							Memory.setByte( i++, a - a0 );
+							a0 = a;
+						}
+
+					} while ( ++x < width );
+				} while ( ++y < height );
+
+			
+			case PNGEncoderHelper.UP:
+				do {
+					j = offset;
+					Memory.setByte( i++, PNGEncoderHelper.UP );
+					x = 0;
+					do {
+						c = ( transparent ? image.getPixel32( x, y ) : image.getPixel( x, y ) );
+						Memory.setByte( i++, ( c >>> 16 ) - Memory.getByte( j + 2 ) );
+						Memory.setByte( i++, ( c >>>  8 ) - Memory.getByte( j + 1 ) );
+						Memory.setByte( i++,   c          - Memory.getByte( j     ) );
+						if ( transparent ) {
+							Memory.setByte( i++, ( c >>> 24 ) - Memory.getByte( j + 3 ) );
+						}
+						Memory.setI32( j, c );
+						j += 4;
+					} while ( ++x < width );
+				} while ( ++y < height );
+
+			
+			case PNGEncoderHelper.AVERAGE:
+				do {
+					j = offset;
+					Memory.setByte( i++, PNGEncoderHelper.AVERAGE );
+					if ( transparent ) {
+						a0 = 0;
+					}
+					r0 = 0;
+					g0 = 0;
+					b0 = 0;
+					x = 0;
+					do {
+
+						c = ( transparent ? image.getPixel32( x, y ) : image.getPixel( x, y ) );
+
+						r = ( transparent ? ( c >> 16 ) & 0xFF : c >>> 16 );
+						Memory.setByte( i++, r - ( ( r0 + Memory.getByte( j + 2 ) ) >>> 1 ) );
+						r0 = r;
+
+						g = ( c >>  8 ) & 0xFF;
+						Memory.setByte( i++, g - ( ( g0 + Memory.getByte( j + 1 ) ) >>> 1 ) );
+						g0 = g;
+
+						b = ( c       ) & 0xFF;
+						Memory.setByte( i++, b - ( ( b0 + Memory.getByte( j ) ) >>> 1 ) );
+						b0 = b;
+
+						if ( transparent ) {
+							a =   c >>> 24;
+							Memory.setByte( i++, a - ( ( a0 + Memory.getByte( j + 3 ) ) >>> 1 ) );
+							a0 = a;
+						}
+
+						Memory.setI32( j, c );
+						j += 4;
+
+						
+					} while ( ++x < width );
+				} while ( ++y < height );
+
+
+			case PNGEncoderHelper.PAETH:
+				do {
+
+					j = offset;
+					Memory.setByte( i++, PNGEncoderHelper.PAETH );
+					if ( transparent ) {
+						a0 = 0;
+						a2 = 0;
+					}
+					r0 = 0;
+					r2 = 0;
+					g0 = 0;
+					g2 = 0;
+					b0 = 0;
+					b2 = 0;
+					x = 0;
+					do {
+
+						c = ( transparent ? image.getPixel32( x, y ) : image.getPixel( x, y ) );
+
+						r = ( transparent ? ( c >> 16 ) & 0xFF : c >>> 16 );
+						r1 = Memory.getByte( j + 2 );
+						Memory.setByte( i++, r - PNGEncoderHelper.paethPredictor( r0, r1, r2 ) );
+						r0 = r;
+						r2 = r1;
+
+						g = ( c >> 8 ) & 0xFF;
+						g1 = Memory.getByte( j + 1 );
+						Memory.setByte( i++, g - PNGEncoderHelper.paethPredictor( g0, g1, g2 ) );
+						g0 = g;
+						g2 = g1;
+
+						b = c & 0xFF;
+						b1 = Memory.getByte( j     );
+						Memory.setByte( i++, b - PNGEncoderHelper.paethPredictor( b0, b1, b2 ) );
+						b0 = b;
+						b2 = b1;
+
+						if ( transparent ) {
+							a = c >>> 24;
+							a1 = Memory.getByte( j + 3 );
+							Memory.setByte( i++, a - PNGEncoderHelper.paethPredictor( a0, a1, a2 ) );
+							a0 = a;
+							a2 = a1;
+						}
+
+						Memory.setI32( j, c );
+						j += 4;
+
+					} while ( ++x < width );
+				} while ( ++y < height );
+
+
+			default:
+				Error.throwError( ArgumentError, 2008, 'filter' );
+
+		}
+
 	}
 
 }
