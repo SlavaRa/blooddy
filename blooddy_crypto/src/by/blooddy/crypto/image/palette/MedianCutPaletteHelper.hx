@@ -7,12 +7,11 @@
 package by.blooddy.crypto.image.palette;
 
 import by.blooddy.system.Memory;
-import by.blooddy.utils.ByteArrayUtils;
 import flash.display.BitmapData;
 import flash.Error;
 import flash.Lib;
 import flash.utils.ByteArray;
-import flash.Vector;
+import flash.utils.Endian;
 
 /**
  * @author	BlooDHounD
@@ -35,6 +34,10 @@ class MedianCutPaletteHelper {
 		}
 	}
 
+	public static function getIndexByColorFromTable(table:ByteArray, color:UInt):UInt {
+		return TMP.getIndexByColorFromTable( table, color );
+	}
+
 }
 
 /**
@@ -51,7 +54,7 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static var BLOCK:UInt = 18;
+	private static inline var BLOCK:UInt = 25;
 
 	//--------------------------------------------------------------------------
 	//
@@ -59,28 +62,25 @@ private class TMP {
 	//
 	//--------------------------------------------------------------------------
 
-	public static function createTable(image:BitmapData, maxColors:UInt, transparent:Bool):ByteArray {
-		
-		//maxColors--; // сдвиг для ускорения проверки
+	public static inline function createTable(image:BitmapData, maxColors:UInt, transparent:Bool):ByteArray {
+
+		var mem:ByteArray = Memory.memory;
 
 		var width:UInt = image.width;
 		var height:UInt = image.height;
 
-		var len:UInt = width * height * 4;
+		var len:UInt = ( width * height ) << 2;
 
-		var colorsList:Vector<ByteArray> = new Vector<ByteArray>();
+		var z:UInt = BLOCK * maxColors;
+		var colorCount:UInt = 0;
+		var tmp:ByteArray = new ByteArray();
+		tmp.length = z + len;
+		if ( tmp.length < 1024 ) tmp.length = 1024;
 
-		var blockCount:UInt = 0;
-		var blocks:ByteArray = ByteArrayUtils.createByteArray( BLOCK * maxColors + BLOCK );
-		if ( blocks.length < 1024 ) blocks.length = 1024;
-
-		var colors:ByteArray = new ByteArray();
-		if ( len < 1024 ) colors.length = 1024;
-		else colors.length = len;
-		Memory.memory = colors;
+		Memory.memory = tmp;
 
 		var c:UInt;
-		var cx:UInt = ( transparent ? image.getPixel32( 1, 1 ) : image.getPixel( 1, 1 ) );
+		var cx:UInt = ~( transparent ? image.getPixel32( 0, 0 ) : image.getPixel( 0, 0 ) );
 
 		var t:UInt;
 		var x:UInt;
@@ -95,7 +95,7 @@ private class TMP {
 		var lminB:UInt = 0x000000FF;
 		var lmaxB:UInt = 0x00000000;
 
-		var i:UInt = 0;
+		var i:UInt = z;
 		do {
 			x = 0;
 			do {
@@ -106,21 +106,21 @@ private class TMP {
 
 				if ( transparent ) {
 					t = c & 0xFF000000;
-					if		( t < lminA ) lminA = t;
-					else if	( t > lmaxA ) lmaxA = t;
+					if ( t < lminA ) lminA = t;
+					if ( t > lmaxA ) lmaxA = t;
 				}
 
 				t = c & 0x00FF0000;
-				if		( t < lminR ) lminR = t;
-				else if	( t > lmaxR ) lmaxR = t;
+				if ( t < lminR ) lminR = t;
+				if ( t > lmaxR ) lmaxR = t;
 
 				t = c & 0x0000FF00;
-				if		( t < lminG ) lminG = t;
-				else if	( t > lmaxG ) lmaxG = t;
+				if ( t < lminG ) lminG = t;
+				if ( t > lmaxG ) lmaxG = t;
 
 				t = c & 0x000000FF;
-				if		( t < lminB ) lminB = t;
-				else if	( t > lmaxB ) lmaxB = t;
+				if ( t < lminB ) lminB = t;
+				if ( t > lmaxB ) lmaxB = t;
 
 				Memory.setI32( i, c );
 				i += 4;
@@ -128,22 +128,22 @@ private class TMP {
 			} while ( ++x < width );
 		} while ( ++y < height );
 
-		Memory.memory = blocks;
-
-		colors.length = i;
-
 		writeBlock(
-			blocks,
-			colorsList.length,
+			tmp,
 			lminA, lminR, lminG, lminB,
 			lmaxA, lmaxR, lmaxG, lmaxB,
-			blockCount++,
+			z, i - z,
+			colorCount++,
 			transparent
 		);
-		colorsList.push( colors );
+
+		z = i;
 
 		if ( Memory.getByte( 0 ) > 0 ) {
 
+			var z0:UInt;
+			var v:UInt;
+			
 			var rminA:UInt = 0xFF000000;
 			var rmaxA:UInt = ( transparent ? 0x00000000 : 0xFF000000 );
 			var rminR:UInt;
@@ -156,12 +156,11 @@ private class TMP {
 			var mask:UInt;
 			var mid:UInt;
 
-			var lcolors:ByteArray;
-			var rcolors:ByteArray;
+			var blockPos:UInt;
 			
-			while ( blockCount < maxColors ) {
+			while ( colorCount < maxColors && Memory.getByte( colorCount * BLOCK - BLOCK ) > 1 ) {
 
-				blockCount--; // последний сплитим
+				colorCount--; // последний сплитим
 
 				if ( transparent ) {
 					lminA = 0xFF000000;
@@ -185,44 +184,50 @@ private class TMP {
 				rminG = 0x0000FF00;
 				rmaxG = 0x00000000;
 
-				mask = Memory.getI32( blockCount * BLOCK + 1 );
-				mid = Memory.getI32( blockCount * BLOCK + 5 ) & mask;
-				Lib.trace( cast( mid ).toString ( 16 ) + ' ' + mask );
+				blockPos = colorCount * BLOCK;
 
-				colors = colorsList[ Memory.getByte( blockCount * BLOCK + 17 ) ];
-				len = colors.length;
-				colors.length <<= 1; // увеличиваем буфер под дополнительную палитру
-				if ( colors.length < 1024 ) colors.length = 1024;
+				mask = Memory.getI32( blockPos + 1 );
+				mid = Memory.getI32( blockPos + 5 ) & mask;
+				i = Memory.getI32( blockPos + 17 );
+				len = Memory.getI32( blockPos + 21 );
 
-				Memory.memory = colors;
+				z0 = z;
+				z += len;
+				x = z0;
+				y = z;
+				len += i;
 
-				i = 0;
-				x = len;
-				y = len << 1;
+				if ( z > 1024 ) tmp.length = z;
+
+				cx = c = ~Memory.getI32( i );
 				do {
 
 					c = Memory.getI32( i );
-					Lib.trace( cast( untyped( c ) >>> 0 ).toString( 16 ) );
+					i += 4;
 
-					if ( c & mask <= mid ) {
+					if ( c == cx ) continue;
+					cx = c;
+
+					v = c & mask;
+					if ( v <= mid ) {
 
 						if ( transparent ) {
 							t = c & 0xFF000000;
 							if ( t < lminA ) lminA = t;
-							else if ( t > lmaxA ) lmaxA = t;
+							if ( t > lmaxA ) lmaxA = t;
 						}
 
 						t = c & 0x00FF0000;
 						if ( t < lminR ) lminR = t;
-						else if ( t > lmaxR ) lmaxR = t;
+						if ( t > lmaxR ) lmaxR = t;
 
 						t = c & 0x0000FF00;
 						if ( t < lminG ) lminG = t;
-						else if ( t > lmaxG ) lmaxG = t;
+						if ( t > lmaxG ) lmaxG = t;
 
 						t = c & 0x000000FF;
 						if ( t < lminB ) lminB = t;
-						else if ( t > lmaxB ) lmaxB = t;
+						if ( t > lmaxB ) lmaxB = t;
 
 						Memory.setI32( x, c );
 						x += 4;
@@ -232,77 +237,121 @@ private class TMP {
 						if ( transparent ) {
 							t = c & 0xFF000000;
 							if ( t < rminA ) rminA = t;
-							else if ( t > rmaxA ) rmaxA = t;
+							if ( t > rmaxA ) rmaxA = t;
 						}
 
 						t = c & 0x00FF0000;
 						if ( t < rminR ) rminR = t;
-						else if ( t > rmaxR ) rmaxR = t;
+						if ( t > rmaxR ) rmaxR = t;
 
 						t = c & 0x0000FF00;
 						if ( t < rminG ) rminG = t;
-						else if ( t > rmaxG ) rmaxG = t;
+						if ( t > rmaxG ) rmaxG = t;
 
 						t = c & 0x000000FF;
 						if ( t < rminB ) rminB = t;
-						else if ( t > rmaxB ) rmaxB = t;
+						if ( t > rmaxB ) rmaxB = t;
 
 						y -= 4;
 						Memory.setI32( y, c );
 
 					}
-
-					i += 4;
 				} while ( i < len );
 
-				Memory.memory = blocks;
-
 				writeBlock(
-					blocks,
-					colorsList.length,
+					tmp,
 					lminA, lminR, lminG, lminB,
 					lmaxA, lmaxR, lmaxG, lmaxB,
-					blockCount++,
+					z0, x - z0,
+					colorCount++,
 					transparent
 				);
-
-				if ( len != x ) {
-					lcolors = new ByteArray();
-					lcolors.writeBytes( colors, len, x - len );
-					colorsList.push( lcolors );
-				}
 
 				writeBlock(
-					blocks,
-					colorsList.length,
+					tmp,
 					rminA, rminR, rminG, rminB,
 					rmaxA, rmaxR, rmaxG, rmaxB,
-					blockCount++,
+					y, z - y,
+					colorCount++,
 					transparent
 				);
-
-				rcolors = new ByteArray();
-				rcolors.writeBytes( colors, y );
-				colorsList.push( rcolors );
 
 			}
 
-			blockCount += 2;
-
 		}
+
+		len = colorCount * BLOCK;
+		x = colorCount * BLOCK;
+		y = x + ( colorCount << 2 );
+		z = y + ( colorCount << 2 );
+		i = 0;
+		do {
+
+			Memory.setI32( x + ( i << 2 ), Memory.getI32( i * BLOCK +  5 ) );
+			Memory.setI32( y + ( i << 2 ), Memory.getI32( i * BLOCK +  9 ) );
+			Memory.setI32( z + ( i << 2 ), Memory.getI32( i * BLOCK + 13 ) );
+
+		} while ( ++i < colorCount );
+
+		Memory.memory = mem;
+
+		var bytes:ByteArray = new ByteArray();
+		bytes.endian = Endian.LITTLE_ENDIAN;
+		bytes.writeByte( colorCount - 1 );
+		bytes.writeBytes( tmp, x, colorCount * 12 );
+		if ( bytes.length < 1024 ) bytes.length = 1024;
 		
-		return null;
+		tmp.clear();
+
+		return bytes;
 	}
+
+	public static inline function getIndexByColorFromTable(table:ByteArray, color:UInt):UInt {
+		var mem:ByteArray = Memory.memory;
+		Memory.memory = table;
+		var l:UInt = Memory.getByte( 0 ) + 1;
+		var a:UInt =   color >>> 24         ;
+		var r:UInt = ( color >>  16 ) & 0xFF;
+		var g:UInt = ( color >>   8 ) & 0xFF;
+		var b:UInt =   color          & 0xFF;
+		var x:UInt = ( l << 2 ) + 1;
+		var y:UInt = ( l << 3 ) + 1;
+		var i:UInt = 0;
+		var j:UInt;
+		do {
+			j = i << 2;
+			if (
+				a >= Memory.getByte( x + j + 3 ) && a <= Memory.getByte( y + j + 3 ) &&
+				r >= Memory.getByte( x + j + 2 ) && r <= Memory.getByte( y + j + 2 ) &&
+				g >= Memory.getByte( x + j + 1 ) && g <= Memory.getByte( y + j + 1 ) &&
+				b >= Memory.getByte( x + j     ) && b <= Memory.getByte( y + j     )
+			) {
+				break;
+			}
+		} while ( ++i < l );
+		Memory.memory = mem;
+		if ( i >= l ) {
+			Error.throwError( RangeError, 2006 );
+		}
+		return i;
+	}
+
+	//--------------------------------------------------------------------------
+	//
+	//  Private class methods
+	//
+	//--------------------------------------------------------------------------
 
 	/**
 	 * @private
 	 */
 	private static inline function writeBlock(
-		blocks:ByteArray,
-		blockID:UInt,
+		tmp:ByteArray,
 		minA:UInt, minR:UInt, minG:UInt, minB:UInt,
 		maxA:UInt, maxR:UInt, maxG:UInt, maxB:UInt,
-		blockCount:UInt,
+		colorsPos:UInt,
+		colorsLen:UInt,
+		colorCount:UInt,
 		transparent:Bool
 	):Void {
 		var midA:UInt = ( transparent ? untyped( ( untyped( maxA ) + untyped( minA ) ) / 2 ) & 0xFF000000 : 0xFF000000 );
@@ -345,11 +394,11 @@ private class TMP {
 		}
 
 		var i:UInt = 0;
-		var l:UInt = blockCount * BLOCK;
+		var l:UInt = colorCount * BLOCK;
 		while ( i < l ) {
 			if ( count < Memory.getByte( i ) ) {
-				blocks.position = i + BLOCK;
-				blocks.writeBytes( blocks, i, l - i );
+				tmp.position = i + BLOCK;
+				tmp.writeBytes( tmp, i, l - i );
 				break;
 			}
 			i += BLOCK;
@@ -360,7 +409,8 @@ private class TMP {
 		Memory.setI32(  i +  5, midA | midR | midG | midB );
 		Memory.setI32(  i +  9, minA | minR | minG | minB );
 		Memory.setI32(  i + 13, maxA | maxR | maxG | maxB );
-		Memory.setByte( i + 17, blockID );
+		Memory.setI32(  i + 17, colorsPos );
+		Memory.setI32(  i + 21, colorsLen );
 		
 	}
 

@@ -43,7 +43,7 @@ package by.blooddy.crypto.tmp{
 			var x:int;
 			var y:int;
 			
-			trace("++++++++++++++++++++++++++++++++++++");
+//			trace("++++++++++++++++++++++++++++++++++++");
 			
 			var time:int;
 			time = getTimer();
@@ -68,7 +68,7 @@ package by.blooddy.crypto.tmp{
 //			trace("start color number : " + points.length);
 			
 			var block:Block = new Block(points, alphaWeight);
-			trace("++++++++ first block : " + (getTimer() - time));
+//			trace("++++++++ first block : " + (getTimer() - time));
 			var blockQueue:Array = new Array();
 			blockQueue.push(block);
 			while(blockQueue.length < colorNumber){
@@ -82,7 +82,7 @@ package by.blooddy.crypto.tmp{
 				addToQueue(blockQueue, splited[1]);
 			}
 			
-			trace("++++++++ build Blocks : " + (getTimer() - time));
+//			trace("++++++++ build Blocks : " + (getTimer() - time));
 			time = getTimer();
 			
 //			trace("block number : " + blockQueue.length);
@@ -106,7 +106,7 @@ package by.blooddy.crypto.tmp{
 			plte = new PLTE(plteBytes);
 			trns = new tRNS(trnsBytes);
 			
-			trace("++++++++ build PLTE : " + (getTimer() - time));
+//			trace("++++++++ build PLTE : " + (getTimer() - time));
 			time = getTimer();
 			
 			//build the IDAT chunk
@@ -130,7 +130,7 @@ package by.blooddy.crypto.tmp{
 				}
 			}
 			
-			trace("++++++++ build IDAT : " + (getTimer() - time));
+//			trace("++++++++ build IDAT : " + (getTimer() - time));
 			time = getTimer();
 			
 			idatBytes.compress();

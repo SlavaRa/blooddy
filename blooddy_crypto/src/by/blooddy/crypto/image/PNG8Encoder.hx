@@ -6,17 +6,19 @@
 
 package by.blooddy.crypto.image;
 
+import by.blooddy.crypto.image.palette.IPalette;
+import by.blooddy.crypto.image.palette.MedianCutPalette;
 import by.blooddy.system.Memory;
-import by.blooddy.utils.ByteArrayUtils;
 import flash.display.BitmapData;
 import flash.Error;
 import flash.utils.ByteArray;
+import flash.Vector;
 
 /**
  * @author	BlooDHounD
  * @version	1.0
  */
-class PNG24Encoder {
+class PNG8Encoder {
 
 	//--------------------------------------------------------------------------
 	//
@@ -24,14 +26,11 @@ class PNG24Encoder {
 	//
 	//--------------------------------------------------------------------------
 
-	/**
-	 * Created a PNG image from the specified BitmapData
-	 *
-	 * @param	image	The BitmapData that will be converted into the PNG format.
-	 * @return			a ByteArray representing the PNG encoded image data.
-	 */
-	public static function encode(image:BitmapData, ?filter:UInt=0):ByteArray {
-		return TMP.encode( image, filter );
+	public static function encode(image:BitmapData, ?palette:IPalette=null, ?filter:UInt=0):ByteArray {
+		if ( palette == null ) {
+			palette = new MedianCutPalette( image );
+		}
+		return TMP.encode( image, palette, filter );
 	}
 
 }
@@ -40,32 +39,39 @@ class PNG24Encoder {
  * @private
  */
 private class TMP {
-
+	
 	//--------------------------------------------------------------------------
 	//
 	//  Class methods
 	//
 	//--------------------------------------------------------------------------
 
-	public static inline function encode(image:BitmapData, filter:UInt):ByteArray {
+	public static inline function encode(image:BitmapData, palette:IPalette, filter:UInt):ByteArray {
 
 		var mem:ByteArray = Memory.memory;
 
 		var width:UInt = image.width;
 		var height:UInt = image.height;
 
-		var len:UInt = ( width * height ) * ( image.transparent ? 4 : 3 ) + height;
-		var len2:UInt = len + width * 4;
+		var len:UInt = width * height + height;
+		var len2:UInt = len + width;
 
+		var colors:Vector<UInt> = palette.getColors();
+
+		var bits:UInt;
 		// Create output byte array
 		var bytes:ByteArray = new ByteArray();
-		var chunk:ByteArray = ByteArrayUtils.createByteArray( len2 );
+		var chunk:ByteArray = new ByteArray();
 
 		// PNG signature
 		PNGEncoderHelper.writeSignature( bytes );
 
 		// IHDR
-		PNGEncoderHelper.writeIHDR( bytes, chunk, width, height, 0x08, ( image.transparent ? 0x06 : 0x02 ) );
+		PNGEncoderHelper.writeIHDR( bytes, chunk, width, height, 0x08, 0x03 );
+
+		// PLTE
+		// tRNS
+		writeColors( bytes, chunk, colors );
 
 		// IDAT
 		if ( len2 < 1024 ) chunk.length = 1024;
@@ -74,23 +80,21 @@ private class TMP {
 		if ( len < 17 ) Memory.fill( len, 17, 0x00 ); // если битмапка очень маленькая, то мы случайно могли наследить
 		if ( image.transparent ) {
 			switch ( filter ) {
-				case PNGEncoderHelper.NONE:		writeNone( image, len, true );
-				case PNGEncoderHelper.SUB:		writeSub( image, len, true );
-				case PNGEncoderHelper.UP:		writeUp( image, len, true );
-				case PNGEncoderHelper.AVERAGE:	writeAverage( image, len, true );
-				case PNGEncoderHelper.PAETH:	writePaeth( image, len, true );
-				default:
-					Error.throwError( ArgumentError, 2008, 'filter' );
+				case PNGEncoderHelper.NONE:		writeNone( image, palette, len, true );
+				case PNGEncoderHelper.SUB:		writeSub( image, palette, len, true );
+				case PNGEncoderHelper.UP:		writeUp( image, palette, len, true );
+				case PNGEncoderHelper.AVERAGE:	writeAverage( image, palette, len, true );
+				case PNGEncoderHelper.PAETH:	writePaeth( image, palette, len, true );
+				default:						Error.throwError( ArgumentError, 2008, 'filter' );
 			}
 		} else {
 			switch ( filter ) {
-				case PNGEncoderHelper.NONE:		writeNone( image, len, false );
-				case PNGEncoderHelper.SUB:		writeSub( image, len, false );
-				case PNGEncoderHelper.UP:		writeUp( image, len, false );
-				case PNGEncoderHelper.AVERAGE:	writeAverage( image, len, false );
-				case PNGEncoderHelper.PAETH:	writePaeth( image, len, false );
-				default:
-					Error.throwError( ArgumentError, 2008, 'filter' );
+				case PNGEncoderHelper.NONE:		writeNone( image, palette, len, false );
+				case PNGEncoderHelper.SUB:		writeSub( image, palette, len, false );
+				case PNGEncoderHelper.UP:		writeUp( image, palette, len, false );
+				case PNGEncoderHelper.AVERAGE:	writeAverage( image, palette, len, false );
+				case PNGEncoderHelper.PAETH:	writePaeth( image, palette, len, false );
+				default:						Error.throwError( ArgumentError, 2008, 'filter' );
 			}
 		}
 		Memory.memory = null;
@@ -103,7 +107,7 @@ private class TMP {
 		PNGEncoderHelper.writeChunk( bytes, chunk );
 
 		// tEXt
-		PNGEncoderHelper.writeTEXT( bytes, chunk, 'Software', 'by.blooddy.crypto.image.PNG24Encoder' );
+		//PNGEncoderHelper.writeTEXT( bytes, chunk, 'Software', 'by.blooddy.crypto.image.PNG8Encoder' );
 
 		// IEND
 		PNGEncoderHelper.writeIEND( bytes, chunk );
@@ -117,53 +121,78 @@ private class TMP {
 		return bytes;
 	}
 
+	//--------------------------------------------------------------------------
+	//
+	//  Private class methods
+	//
+	//--------------------------------------------------------------------------
+
 	/**
 	 * @private
 	 */
-	private static inline function writeNone(image:BitmapData, offset:UInt, transparent:Bool):Void {
+	private static inline function writeColors(bytes:ByteArray, chunk:ByteArray, colors:Vector<UInt>):Void {
+		chunk.length = 1024 + 4;
+		Memory.memory = chunk;
+		var l:UInt = colors.length;
+
+		var i:UInt = 4;
+		var j:UInt = 4 + 3 * 256;
+		var k:UInt = 0;
+		var c:UInt;
+		do {
+			c = colors[ k ];
+			// a
+			Memory.setByte( j++, c >> 24 );
+			// rgb
+			Memory.setByte( i++, c >> 16 );
+			Memory.setByte( i++, c >>  8 );
+			Memory.setByte( i++, c       );
+		} while ( ++k < l );
+		Memory.memory = null;
+		// PLTE
+		chunk.position = 0;
+		chunk.writeUnsignedInt( 0x504C5445 );
+		chunk.length = 4 + 3 * l;
+		PNGEncoderHelper.writeChunk( bytes, chunk );
+		chunk.length = 1024 + 8;
+		// tRNS
+		chunk.position = 0;
+		chunk.writeUnsignedInt( 0x74524E53 );
+		chunk.writeBytes( chunk, 4 + 3 * 256, l );
+		chunk.length = l + 4;
+		PNGEncoderHelper.writeChunk( bytes, chunk );
+	}
+	
+
+	/**
+	 * @private
+	 */
+	private static inline function writeNone(image:BitmapData, palette:IPalette, offset:UInt, transparent:Bool):Void {
 		var width:UInt = image.width;
 		var height:UInt = image.height;
 		var x:UInt, y:UInt = 0;
 		var c:UInt;
+		var hash:Array<Null<UInt>> = new Array<Null<UInt>>();
+		var index;
 		var i:UInt = 0;
-		if ( transparent && width >= 64 ) { // для широких картинок быстрее копировать целиком ряды байтов
-			width <<= 2;
-			var bmp:ByteArray = image.getPixels( image.rect );
-			var tmp:ByteArray = Memory.memory;
-			tmp.position = 0;
+		do {
+			Memory.setByte( i++, PNGEncoderHelper.NONE );
 			x = 0;
 			do {
-				tmp.writeBytes( bmp, y * width, width );
-				i = x + width;
-				do {
-					Memory.setByte( i, Memory.getByte( i - 4 ) );
-					i -= 4;
-				} while ( i > x );
-				Memory.setByte( x, PNGEncoderHelper.NONE );
-				x += width + 1;
-				++tmp.position;
-			} while ( ++y < height );
-		} else {
-			do {
-				Memory.setByte( i++, PNGEncoderHelper.NONE );
-				x = 0;
-				do {
-					c = ( transparent ? image.getPixel32( x, y ) : image.getPixel( x, y ) );
-					Memory.setByte( i++, c >> 16 );
-					Memory.setByte( i++, c >>  8 );
-					Memory.setByte( i++, c       );
-					if ( transparent ) {
-						Memory.setByte( i++, c >> 24 );
-					}
-				} while ( ++x < width );
-			} while ( ++y < height );
-		}
+				c = ( transparent ? image.getPixel32( x, y ) : image.getPixel( x, y ) );
+				index = hash[ c ];
+				if ( index == null ) {
+					hash[ c ] = index = palette.getIndexByColor( c );
+				}
+				Memory.setByte( i++, index );
+			} while ( ++x < width );
+		} while ( ++y < height );
 	}
 
 	/**
 	 * @private
 	 */
-	private static inline function writeSub(image:BitmapData, offset:UInt, transparent:Bool):Void {
+	private static inline function writeSub(image:BitmapData, palette:IPalette, offset:UInt, transparent:Bool):Void {
 		var width:UInt = image.width;
 		var height:UInt = image.height;
 		var x:UInt, y:UInt = 0;
@@ -208,7 +237,7 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static inline function writeUp(image:BitmapData, offset:UInt, transparent:Bool):Void {
+	private static inline function writeUp(image:BitmapData, palette:IPalette, offset:UInt, transparent:Bool):Void {
 		var width:UInt = image.width;
 		var height:UInt = image.height;
 		var x:UInt, y:UInt = 0;
@@ -236,7 +265,7 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static inline function writeAverage(image:BitmapData, offset:UInt, transparent:Bool):Void {
+	private static inline function writeAverage(image:BitmapData, palette:IPalette, offset:UInt, transparent:Bool):Void {
 		var width:UInt = image.width;
 		var height:UInt = image.height;
 		var x:UInt, y:UInt = 0;
@@ -289,7 +318,7 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static inline function writePaeth(image:BitmapData, offset:UInt, transparent:Bool):Void {
+	private static inline function writePaeth(image:BitmapData, palette:IPalette, offset:UInt, transparent:Bool):Void {
 		var width:UInt = image.width;
 		var height:UInt = image.height;
 		var x:UInt, y:UInt = 0;
