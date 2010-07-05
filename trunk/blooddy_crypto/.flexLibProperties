@@ -6,13 +6,12 @@
     <classEntry path="by.blooddy.crypto.tmp.Strategy8BitUniformQuantAlpha"/>
     <classEntry path="by.blooddy.crypto.tmp.Chunk"/>
     <classEntry path="by.blooddy.crypto.tmp.IHDR"/>
-    <classEntry path="by.blooddy.crypto.tmp.IEND"/>
     <classEntry path="by.blooddy.crypto.tmp.IDAT"/>
     <classEntry path="by.blooddy.crypto.tmp.PngError"/>
-    <classEntry path="by.blooddy.crypto.tmp.PLTE"/>
     <classEntry path="by.blooddy.crypto.tmp.tRNS"/>
     <classEntry path="by.blooddy.crypto.image.palette.IPalette"/>
     <classEntry path="by.blooddy.crypto.image.palette.MedianCutPalette"/>
+    <classEntry path="by.blooddy.crypto.image.PNGEncoder"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

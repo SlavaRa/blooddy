@@ -9,9 +9,9 @@ package by.blooddy.crypto.image.palette;
 import by.blooddy.system.Memory;
 import flash.display.BitmapData;
 import flash.Error;
-import flash.Lib;
 import flash.utils.ByteArray;
 import flash.utils.Endian;
+import flash.Vector;
 
 /**
  * @author	BlooDHounD
@@ -25,17 +25,13 @@ class MedianCutPaletteHelper {
 	//
 	//--------------------------------------------------------------------------
 
-	public static function createTable(image:BitmapData, ?maxColors:UInt=256):ByteArray {
+	public static function createTable(image:BitmapData, ?maxColors:UInt=256):Array<Dynamic> {
 		if ( maxColors < 2 || maxColors > 256 ) Error.throwError( RangeError, 2006 );
 		if ( image.transparent ) {
 			return TMP.createTable( image, maxColors, true );
 		} else {
 			return TMP.createTable( image, maxColors, false );
 		}
-	}
-
-	public static function getIndexByColorFromTable(table:ByteArray, color:UInt):UInt {
-		return TMP.getIndexByColorFromTable( table, color );
 	}
 
 }
@@ -62,7 +58,7 @@ private class TMP {
 	//
 	//--------------------------------------------------------------------------
 
-	public static inline function createTable(image:BitmapData, maxColors:UInt, transparent:Bool):ByteArray {
+	public static inline function createTable(image:BitmapData, maxColors:UInt, transparent:Bool):Array<Dynamic> {
 
 		var mem:ByteArray = Memory.memory;
 
@@ -199,7 +195,7 @@ private class TMP {
 
 				if ( z > 1024 ) tmp.length = z;
 
-				cx = c = ~Memory.getI32( i );
+				cx = ~Memory.getI32( i );
 				do {
 
 					c = Memory.getI32( i );
@@ -280,60 +276,28 @@ private class TMP {
 
 		}
 
+		y = 0;
+		var hash:Array<Null<UInt>> = new Array<Null<UInt>>();
+		var list:Vector<UInt> = new Vector<UInt>();
 		len = colorCount * BLOCK;
-		x = colorCount * BLOCK;
-		y = x + ( colorCount << 2 );
-		z = y + ( colorCount << 2 );
 		i = 0;
 		do {
-
-			Memory.setI32( x + ( i << 2 ), Memory.getI32( i * BLOCK +  5 ) );
-			Memory.setI32( y + ( i << 2 ), Memory.getI32( i * BLOCK +  9 ) );
-			Memory.setI32( z + ( i << 2 ), Memory.getI32( i * BLOCK + 13 ) );
-
+			t = i * BLOCK;
+			list.push( Memory.getI32( t + 5 ) );
+			x = Memory.getI32( t + 17 );
+			z = Memory.getI32( t + 21 ) + x;
+			do {
+				y++;
+				hash[ Memory.getI32( x ) >>> 0 ] = i;
+				x += 4;
+			} while ( x < z );
 		} while ( ++i < colorCount );
 
 		Memory.memory = mem;
 
-		var bytes:ByteArray = new ByteArray();
-		bytes.endian = Endian.LITTLE_ENDIAN;
-		bytes.writeByte( colorCount - 1 );
-		bytes.writeBytes( tmp, x, colorCount * 12 );
-		if ( bytes.length < 1024 ) bytes.length = 1024;
-		
 		tmp.clear();
 
-		return bytes;
-	}
-
-	public static inline function getIndexByColorFromTable(table:ByteArray, color:UInt):UInt {
-		var mem:ByteArray = Memory.memory;
-		Memory.memory = table;
-		var l:UInt = Memory.getByte( 0 ) + 1;
-		var a:UInt =   color >>> 24         ;
-		var r:UInt = ( color >>  16 ) & 0xFF;
-		var g:UInt = ( color >>   8 ) & 0xFF;
-		var b:UInt =   color          & 0xFF;
-		var x:UInt = ( l << 2 ) + 1;
-		var y:UInt = ( l << 3 ) + 1;
-		var i:UInt = 0;
-		var j:UInt;
-		do {
-			j = i << 2;
-			if (
-				a >= Memory.getByte( x + j + 3 ) && a <= Memory.getByte( y + j + 3 ) &&
-				r >= Memory.getByte( x + j + 2 ) && r <= Memory.getByte( y + j + 2 ) &&
-				g >= Memory.getByte( x + j + 1 ) && g <= Memory.getByte( y + j + 1 ) &&
-				b >= Memory.getByte( x + j     ) && b <= Memory.getByte( y + j     )
-			) {
-				break;
-			}
-		} while ( ++i < l );
-		Memory.memory = mem;
-		if ( i >= l ) {
-			Error.throwError( RangeError, 2006 );
-		}
-		return i;
+		return [ list, hash ];
 	}
 
 	//--------------------------------------------------------------------------

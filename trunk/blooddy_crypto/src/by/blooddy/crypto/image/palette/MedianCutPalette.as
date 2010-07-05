@@ -30,7 +30,9 @@ package by.blooddy.crypto.image.palette {
 		 */
 		public function MedianCutPalette(image:BitmapData, maxColors:uint=256) {
 			super();
-			this._table = MedianCutPaletteHelper.createTable( image, maxColors );
+			var arr:Array = MedianCutPaletteHelper.createTable( image, maxColors );
+			this._list = arr[ 0 ];
+			this._hash = arr[ 1 ];
 		}
 
 		//--------------------------------------------------------------------------
@@ -42,8 +44,13 @@ package by.blooddy.crypto.image.palette {
 		/**
 		 * @private
 		 */
-		private var _table:ByteArray;
+		private var _list:Vector.<uint>;
 
+		/**
+		 * @private
+		 */
+		private var _hash:Array;
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
@@ -51,17 +58,11 @@ package by.blooddy.crypto.image.palette {
 		//--------------------------------------------------------------------------
 		
 		public function getColors():Vector.<uint> {
-			this._table.position = 0;
-			var l:uint = this._table.readUnsignedByte() + 1;
-			var result:Vector.<uint> = new Vector.<uint>( l, true );
-			for ( var i:uint = 0; i<l; i++ ) {
-				result[ i ] = this._table.readUnsignedInt();
-			}
-			return result;
+			return this._list.slice();
 		}
 
 		public function getIndexByColor(color:uint):uint {
-			return MedianCutPaletteHelper.getIndexByColorFromTable( this._table, color );
+			return this._hash[ color ];
 		}
 
 	}
