@@ -9,11 +9,12 @@ package by.blooddy.gui.display.component {
 	import by.blooddy.core.controllers.IBaseController;
 	import by.blooddy.core.controllers.IController;
 	import by.blooddy.core.data.DataBase;
-	import by.blooddy.core.errors.getErrorMessage;
+	import by.blooddy.core.utils.ClassUtils;
 	import by.blooddy.core.utils.IAbstractRemoter;
 	import by.blooddy.gui.controller.ComponentController;
 	import by.blooddy.gui.events.ComponentEvent;
 	
+	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 
@@ -49,7 +50,7 @@ package by.blooddy.gui.display.component {
 		public function NativeComponentController() {
 			super();
 			if ( !( this is ComponentController ) ) {
-				throw new ArgumentError( getErrorMessage( 2012, this ), 2012 );
+				Error.throwError( IllegalOperationError, 2012, ClassUtils.getClassName( this ) );
 			}
 		}
 		

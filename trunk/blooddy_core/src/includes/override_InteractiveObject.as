@@ -4,8 +4,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-	import by.blooddy.core.errors.getErrorMessage;
-	
 	import flash.errors.IllegalOperationError;
 	import flash.ui.ContextMenu;
 
@@ -31,7 +29,7 @@
 	 * @private
 	 */
 	public override function set contextMenu(cm:ContextMenu):void {
-		throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
+		Error.throwError( IllegalOperationError, 3008 );
 	}
 
 	//----------------------------------
@@ -42,5 +40,5 @@
 	 * @private
 	 */
 	public override function set mouseEnabled(enabled:Boolean):void {
-		throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
+		Error.throwError( IllegalOperationError, 3008 );
 	}

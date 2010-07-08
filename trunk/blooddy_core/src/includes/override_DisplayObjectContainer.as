@@ -4,8 +4,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-	import by.blooddy.core.errors.getErrorMessage;
-	
 	import flash.display.DisplayObject;
 	import flash.errors.IllegalOperationError;
 	import flash.geom.Point;
@@ -25,7 +23,7 @@
 	 * @private
 	 */
 	public override function set mouseChildren(enable:Boolean):void {
-		throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
+		Error.throwError( IllegalOperationError, 3008 );
 	}
 
 	//----------------------------------
@@ -36,7 +34,7 @@
 	 * @private
 	 */
 	public override function set tabChildren(enable:Boolean):void {
-		throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
+		Error.throwError( IllegalOperationError, 3008 );
 	}
 
 	//----------------------------------
@@ -74,7 +72,7 @@
 	 * @private
 	 */
 	public override function addChild(child:DisplayObject):DisplayObject {
-		throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
+		return super.addChild( this );
 	}
 
 	[Deprecated( message="метод запрещён" )]
@@ -82,7 +80,7 @@
 	 * @private
 	 */
 	public override function addChildAt(child:DisplayObject, index:int):DisplayObject {
-		throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
+		return super.addChildAt( this, -1 );
 	}
 
 	[Deprecated( message="метод запрещён" )]
@@ -138,7 +136,7 @@
 	 * @private
 	 */
 	public override function removeChildAt(index:int):DisplayObject {
-		return super.removeChildAt(-1);
+		return super.removeChildAt( -1 );
 	}
 
 	[Deprecated( message="метод запрещён" )]
@@ -146,7 +144,7 @@
 	 * @private
 	 */
 	public override function setChildIndex(child:DisplayObject, index:int):void {
-		super.setChildIndex(this, -1);
+		super.setChildIndex( this, -1 );
 	}
 
 	[Deprecated( message="метод запрещён" )]
@@ -154,7 +152,7 @@
 	 * @private
 	 */
 	public override function swapChildren(child1:DisplayObject, child2:DisplayObject):void {
-		super.swapChildren(this, this);
+		super.swapChildren( this, this );
 	}
 
 	[Deprecated( message="метод запрещён" )]
@@ -162,5 +160,5 @@
 	 * @private
 	 */
 	public override function swapChildrenAt(index1:int, index2:int):void {
-		super.swapChildrenAt(-1, -1);
+		super.swapChildrenAt( -1, -1 );
 	}

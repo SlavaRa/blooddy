@@ -24,7 +24,7 @@ package by.blooddy.core.utils {
 			if ( l != b2.length ) return false;
 			for ( var i:uint = 0; i<l; i++ ) {
 				if ( b1[ i ] != b2[ i ] ) {
-					trace( i, i.toString( 16 ), b1[ i ].toString( 16 ), b2[ i ].toString( 16 ) );
+//					trace( i, i.toString( 16 ), b1[ i ].toString( 16 ), b2[ i ].toString( 16 ) );
 					return false;
 				}
 			}
