@@ -270,7 +270,7 @@ package by.blooddy.code {
 								else		result += 'u';
 								break;
 							default:
-								result += this.readChar();
+								result += String.fromCharCode( c );
 								break;
 						}
 						p = this._position;

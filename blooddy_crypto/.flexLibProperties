@@ -2,13 +2,7 @@
 <flexLibProperties includeAllClasses="true" version="3">
   <includeClasses>
     <classEntry path="by.blooddy.crypto.image.JPEGTable"/>
-    <classEntry path="by.blooddy.crypto.image.PNG24Filter"/>
-    <classEntry path="by.blooddy.crypto.tmp.Strategy8BitUniformQuantAlpha"/>
-    <classEntry path="by.blooddy.crypto.tmp.Chunk"/>
-    <classEntry path="by.blooddy.crypto.tmp.IHDR"/>
-    <classEntry path="by.blooddy.crypto.tmp.IDAT"/>
-    <classEntry path="by.blooddy.crypto.tmp.PngError"/>
-    <classEntry path="by.blooddy.crypto.tmp.tRNS"/>
+    <classEntry path="by.blooddy.crypto.image.PNGFilter"/>
     <classEntry path="by.blooddy.crypto.image.palette.IPalette"/>
     <classEntry path="by.blooddy.crypto.image.palette.MedianCutPalette"/>
     <classEntry path="by.blooddy.crypto.image.PNGEncoder"/>

@@ -8,7 +8,6 @@ package by.blooddy.gui.display.component {
 	
 	import by.blooddy.core.controllers.IBaseController;
 	import by.blooddy.core.display.resource.MainResourceSprite;
-	import by.blooddy.core.errors.getErrorMessage;
 	import by.blooddy.core.events.net.loading.LoaderEvent;
 	import by.blooddy.core.net.loading.ILoadable;
 	import by.blooddy.gui.parser.component.ComponentParser;
@@ -254,64 +253,64 @@ package by.blooddy.gui.display.component {
 		
 		[Deprecated( message="метод запрещён", replacement="addComponent" )]
 		public override function addChild(child:DisplayObject):DisplayObject {
-			if ( !Capabilities.isDebugger ) throw new IllegalOperationError( getErrorMessage( 2071, this, 'addChild' ), 2071 );
+			if ( !Capabilities.isDebugger ) Error.throwError( IllegalOperationError, 1001, 'addChild' );
 			return null;
 		}
 		
 		[Deprecated( message="метод запрещён", replacement="addComponent" )]
 		public override function addChildAt(child:DisplayObject, index:int):DisplayObject {
-			if ( !Capabilities.isDebugger ) throw new IllegalOperationError( getErrorMessage( 2071, this, 'addChildAt' ), 2071 );
+			if ( !Capabilities.isDebugger ) Error.throwError( IllegalOperationError, 1001, 'addChildAt' );
 			return null;
 		}
 		
 		[Deprecated( message="метод запрещён", replacement="removeComponent" )]
 		public override function removeChild(child:DisplayObject):DisplayObject {
-			if ( !Capabilities.isDebugger ) throw new IllegalOperationError( getErrorMessage( 2071, this, 'removeChild' ), 2071 );
+			if ( !Capabilities.isDebugger ) Error.throwError( IllegalOperationError, 1001, 'removeChild' );
 			return null;
 		}
 		
 		[Deprecated( message="метод запрещён", replacement="removeComponent" )]
 		public override function removeChildAt(index:int):DisplayObject {
-			if ( !Capabilities.isDebugger ) throw new IllegalOperationError( getErrorMessage( 2071, this, 'removeChildAt' ), 2071 );
+			if ( !Capabilities.isDebugger ) Error.throwError( IllegalOperationError, 1001, 'removeChildAt' );
 			return null;
 		}
 		
 		[Deprecated( message="метод запрещён" )]
 		public override function getChildAt(index:int):DisplayObject {
-			if ( !Capabilities.isDebugger ) throw new IllegalOperationError( getErrorMessage( 2071, this, 'getChildAt' ), 2071 );
+			if ( !Capabilities.isDebugger ) Error.throwError( IllegalOperationError, 1001, 'getChildAt' );
 			return null;
 		}
 		
 		[Deprecated( message="метод запрещён" )]
 		public override function getChildIndex(child:DisplayObject):int {
-			if ( !Capabilities.isDebugger ) throw new IllegalOperationError( getErrorMessage( 2071, this, 'getChildIndex' ), 2071 );
+			if ( !Capabilities.isDebugger ) Error.throwError( IllegalOperationError, 1001, 'getChildIndex' );
 			return -1;
 		}
 		
 		[Deprecated( message="метод запрещён" )]
 		public override function getChildByName(name:String):DisplayObject {
-			if ( !Capabilities.isDebugger ) throw new IllegalOperationError( getErrorMessage( 2071, this, 'getChildByName' ), 2071 );
+			if ( !Capabilities.isDebugger ) Error.throwError( IllegalOperationError, 1001, 'getChildByName' );
 			return null;
 		}
 		
 		[Deprecated( message="метод запрещён" )]
 		public override function setChildIndex(child:DisplayObject, index:int):void {
-			if ( !Capabilities.isDebugger ) throw new IllegalOperationError( getErrorMessage( 2071, this, 'setChildIndex' ), 2071 );
+			if ( !Capabilities.isDebugger ) Error.throwError( IllegalOperationError, 1001, 'setChildIndex' );
 		}
 		
 		[Deprecated( message="метод запрещён" )]
 		public override function swapChildren(child1:DisplayObject, child2:DisplayObject):void {
-			if ( !Capabilities.isDebugger ) throw new IllegalOperationError( getErrorMessage( 2071, this, 'swapChildren' ), 2071 );
+			if ( !Capabilities.isDebugger ) Error.throwError( IllegalOperationError, 1001, 'swapChildren' );
 		}
 		
 		[Deprecated( message="метод запрещён" )]
 		public override function swapChildrenAt(index1:int, index2:int):void {
-			if ( !Capabilities.isDebugger ) throw new IllegalOperationError( getErrorMessage( 2071, this, 'swapChildrenAt' ), 2071 );
+			if ( !Capabilities.isDebugger ) Error.throwError( IllegalOperationError, 1001, 'swapChildrenAt' );
 		}
 		
 		[Deprecated( message="метод запрещён", replacement="hasComponent" )]
 		public override function contains(child:DisplayObject):Boolean {
-			if ( !Capabilities.isDebugger ) throw new IllegalOperationError( getErrorMessage( 2071, this, 'contains' ), 2071 );
+			if ( !Capabilities.isDebugger ) Error.throwError( IllegalOperationError, 1001, 'contains' );
 			return false;
 		}
 

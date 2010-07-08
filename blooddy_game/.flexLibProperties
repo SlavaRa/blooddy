@@ -2,7 +2,6 @@
 <flexLibProperties includeAllClasses="false" version="1">
   <includeClasses>
     <classEntry path="by.blooddy.game.data.PointsData"/>
-    <classEntry path="by.blooddy.game.serializers.txt.ISerializer"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

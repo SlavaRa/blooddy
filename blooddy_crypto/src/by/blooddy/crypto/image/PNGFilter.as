@@ -13,7 +13,7 @@ package by.blooddy.crypto.image {
 	 * @langversion				3.0
 	 * @created					25.06.2010 16:18:02
 	 */
-	public final class PNG24Filter {
+	public final class PNGFilter {
 
 		//--------------------------------------------------------------------------
 		//

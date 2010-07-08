@@ -4,8 +4,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-	import by.blooddy.core.errors.getErrorMessage;
-	
+	import by.blooddy.core.utils.ClassUtils;
+
 	import flash.display.Graphics;
 	import flash.errors.IllegalOperationError;
 
@@ -24,7 +24,8 @@
 	 * @private
 	 */
 	public override function get graphics():Graphics {
-		throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
+		Error.throwError( IllegalOperationError, 1069, 'graphics', ClassUtils.getClassName( this ) );
+		return null;
 	}
 
 	[Deprecated( message="метод запрещён" )]
@@ -32,7 +33,7 @@
 	 * @private
 	 */
 	public override function startDrag(lockCenter:Boolean = false, bounds:Rectangle = null):void {
-		throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
+		Error.throwError( IllegalOperationError, 1001, 'startDrag' );
 	}
 
 	[Deprecated( message="метод запрещён" )]
@@ -40,5 +41,5 @@
 	 * @private
 	 */
 	public override function stopDrag():void {
-		throw new IllegalOperationError( getErrorMessage( 2071 ), 2071 );
+		Error.throwError( IllegalOperationError, 1001, 'stopDrag' );
 	}

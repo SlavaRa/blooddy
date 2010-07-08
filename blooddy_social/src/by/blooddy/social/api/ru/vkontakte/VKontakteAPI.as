@@ -156,7 +156,7 @@ package by.blooddy.social.api.ru.vkontakte {
 					data.lastName =		XMLUtils.parseListToString( user.last_name );
 					data.nickName =		XMLUtils.parseListToString( user.nickname );
 					data.sex =			XMLUtils.parseListToInt( user.sex ) - 1;
-					birthday =	XMLUtils.parseListToString( user.bdate );
+					birthday =			XMLUtils.parseListToString( user.bdate );
 					if ( birthday ) {
 						arr =			birthday.split( '.' );
 						data.birthday =	new Date( parseInt( arr[ 2 ] ), parseInt( arr[ 1 ] ) - 1, parseInt( arr[ 0 ] ) );
