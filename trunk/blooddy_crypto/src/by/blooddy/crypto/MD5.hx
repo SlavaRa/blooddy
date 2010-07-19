@@ -107,7 +107,7 @@ private class TMP {
 		if ( tmp.length < 1024 ) tmp.length = 1024;
 		Memory.memory = tmp;
 
-		Memory.setI32( ( i >> 5 ) << 2, Memory.getI32( ( i >> 5 ) << 2 ) | ( 0x80 << ( i % 32 ) ) );
+		Memory.setI32( ( i >>> 5 ) << 2, Memory.getI32( ( i >>> 5 ) << 2 ) | ( 0x80 << ( i % 32 ) ) );
 		Memory.setI32( bytesLength - 4, i );
 
 		var a:Int =   1732584193;
@@ -217,8 +217,8 @@ private class TMP {
 		i = 16;
 		do {
 			a = Memory.getByte( i );
-			Memory.setByte( b++, Memory.getByte( ( a >> 4 ) & 0xF ) );
-			Memory.setByte( b++, Memory.getByte(   a        & 0xF ) );
+			Memory.setByte( b++, Memory.getByte( ( a >>> 4 ) & 0xF ) );
+			Memory.setByte( b++, Memory.getByte(   a         & 0xF ) );
 		} while ( ++i < 32 );
 
 		tmp.position = 32;

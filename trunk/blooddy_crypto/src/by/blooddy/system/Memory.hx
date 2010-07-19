@@ -96,9 +96,19 @@ class Memory {
 	}
 
 	public static inline function fill(start:UInt, end:UInt, value:Int):Void {
+		var i:UInt = start;
+		if ( end >= 12 && end - i >= 12 ) {
+			var v:UInt = value & 0xFF;
+			v |= ( v << 8 ) | ( v << 16 ) | ( v << 24 );
+			var e:UInt = end - ( end & 7 );
+			do {
+				setI32( i, v );
+				i += 4;
+			} while ( i < end ) ;
+		}
 		do {
-			setByte( start, value );
-		} while ( ++start < end ) ;
+			setByte( i, value );
+		} while ( ++i < end ) ;
 	}
 	
 }
