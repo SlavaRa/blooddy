@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  © 2010 q1
+//  © 2010 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -13,6 +13,6 @@ package by.blooddy.core {
 	 * @langversion				3.0
 	 * @created					16.04.2010 20:31:34
 	 */
-	public namespace blooddy = 'http://blooddy.by/core';
+	public namespace blooddy = 'http://blooddy.by/ns/';
 	
 }
