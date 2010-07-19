@@ -47,10 +47,9 @@ private class TMP {
 	//
 	//--------------------------------------------------------------------------
 
-	private static inline var Z1:UInt = 12;						// статические таблицы
-	private static inline var Z2:UInt = Z1 + 256 + 512 * 3;		// промежуточные таблицы
+	private static inline var Z2:UInt = 256 + 512 * 3;		// промежуточные таблицы
 
-	private static inline var Z0:UInt = Z2 + 199817;			// начало записи для результата
+	private static inline var Z0:UInt = Z2 + 199817;		// начало записи для результата
 
 	//--------------------------------------------------------------------------
 	//
@@ -85,9 +84,9 @@ private class TMP {
 		writeDHT(  Z0 + 245 );
 		writeSOS(  Z0 + 665 );
 
-		Memory.setI32( 8, 0 );			// bytenew
-		Memory.setI32( 4, 7 );			// bytepos
-		Memory.setI32( 0, Z0 + 679 );	// byteout
+		var bytenew:Int = 0;
+		var bytepos:Int = 7;
+		var byteout:Int = Z0 + 679;
 
 		// Encode 8x8 macroblocks
 		var DCY:Int = 0;
@@ -101,13 +100,13 @@ private class TMP {
 		do {
 			x = 0;
 			do {
-				if ( tmp.length - Memory.getI32( 0 ) < 2048 ) {
+				if ( tmp.length - byteout < 2048 ) {
 					tmp.length += 4096;
 				}
 				rgb2yuv( image, x, y );
-				DCY = processDU( Z1 + 256 + 512 * 0, Z2 + 130, DCY, Z2 + 1218 + 416,  Z2 + 1218 + 452  );
-				DCU = processDU( Z1 + 256 + 512 * 1, Z2 + 642, DCU, Z2 + 1218 + 1205, Z2 + 1218 + 1241 );
-				DCV = processDU( Z1 + 256 + 512 * 2, Z2 + 642, DCV, Z2 + 1218 + 1205, Z2 + 1218 + 1241 );
+				DCY = processDU( byteout, bytepos, bytenew, 256 + 512 * 0, Z2 + 130, DCY, Z2 + 1218 + 416,  Z2 + 1218 + 452  );
+				DCU = processDU( byteout, bytepos, bytenew, 256 + 512 * 1, Z2 + 642, DCU, Z2 + 1218 + 1205, Z2 + 1218 + 1241 );
+				DCV = processDU( byteout, bytepos, bytenew, 256 + 512 * 2, Z2 + 642, DCV, Z2 + 1218 + 1205, Z2 + 1218 + 1241 );
 				x += 8;
 			} while ( x < width );
 			y += 8;
@@ -117,17 +116,15 @@ private class TMP {
 		var bytepos:Int;
 		if ( Memory.getI32( 4 ) >= 0 ) {
 			bytepos = Memory.getI32( 4 ) + 1;
-			writeBits( bytepos, ( 1 << bytepos ) - 1 );
+			writeBits( byteout, bytepos, bytenew, bytepos, ( 1 << bytepos ) - 1 );
 		}
 
-		var len:UInt = Memory.getI32( 0 );
-
-		Memory.setI16( len, 0xD9FF ); //EOI
+		Memory.setI16( byteout, 0xD9FF ); //EOI
 
 		Memory.memory = mem;
 
 		var bytes:ByteArray = new ByteArray();
-		bytes.writeBytes( tmp, Z0, len - Z0 + 2 );
+		bytes.writeBytes( tmp, Z0, byteout - Z0 + 2 );
 		bytes.position = 0;
 
 		tmp.clear();
@@ -252,48 +249,48 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static inline function rgb2yuv(img:BitmapData, xpos:UInt, ypos:UInt):Void {
+	private static inline function rgb2yuv(img:BitmapData, x:UInt, y:UInt):Void {
 
 		var pos:UInt = 0;
 
-		var x:UInt;
-		var y:UInt;
+		var xm:UInt = x + 8;
+		var ym:UInt = y + 8;
 
 		var c:UInt;
 		var r:UInt;
 		var g:UInt;
 		var b:UInt;
 
-		y = 0;
 		do {
-			x = 0;
 			do {
 
-				c = img.getPixel( xpos + x, ypos + y );
+				c = img.getPixel( x, y );
 
 				r =   c >>> 16         ;
 				g = ( c >>   8 ) & 0xFF;
 				b =   c          & 0xFF;
 
-				Memory.setDouble( Z1 + 256 + 512 * 0 + pos,   0.29900 * r + 0.58700 * g + 0.11400 * b - 0x80 ); // YDU
-				Memory.setDouble( Z1 + 256 + 512 * 1 + pos, - 0.16874 * r - 0.33126 * g + 0.50000 * b        ); // UDU
-				Memory.setDouble( Z1 + 256 + 512 * 2 + pos,   0.50000 * r - 0.41869 * g - 0.08131 * b        ); // VDU
+				Memory.setDouble( 256 + 512 * 0 + pos,   0.29900 * r + 0.58700 * g + 0.11400 * b - 0x80 ); // YDU
+				Memory.setDouble( 256 + 512 * 1 + pos, - 0.16874 * r - 0.33126 * g + 0.50000 * b        ); // UDU
+				Memory.setDouble( 256 + 512 * 2 + pos,   0.50000 * r - 0.41869 * g - 0.08131 * b        ); // VDU
 
 				pos += 8;
 
-			} while ( ++x < 8 );
-		} while ( ++y < 8 );
+			} while ( ++x < xm );
+			x -= 8;
+		} while ( ++y < ym );
+		y -= 8;
 
 	}
 
 	/**
 	 * @private
 	 */
-	private static inline function processDU(CDU:UInt, fdtbl:UInt, DC:Int, HTDC:UInt, HTAC:UInt):Int {
+	private static inline function processDU(byteout:Int, bytepos:Int, bytenew:Int, CDU:UInt, fdtbl:UInt, DC:Int, HTDC:UInt, HTAC:UInt):Int {
 		
 		fDCTQuant( CDU, fdtbl );
 
-		var DU0:Int = Memory.getI32( Z1 );
+		var DU0:Int = Memory.getI32( 0 );
 		var diff:Int = DU0 - DC;
 		DC = DU0;
 
@@ -301,19 +298,19 @@ private class TMP {
 
 		// Encode DC
 		if ( diff == 0 ) {
-			writeMBits( HTDC ); // Diff might be 0
+			writeMBits( byteout, bytepos, bytenew, HTDC ); // Diff might be 0
 		} else {
 			pos = ( 32767 + diff ) * 3;
-			writeMBits( HTDC + Memory.getByte( Z2 + 3212 + pos ) * 3 );
-			writeMBits( Z2 + 3212 + pos );
+			writeMBits( byteout, bytepos, bytenew, HTDC + Memory.getByte( Z2 + 3212 + pos ) * 3 );
+			writeMBits( byteout, bytepos, bytenew, Z2 + 3212 + pos );
 		}
 
 		// Encode ACs
 		var end0pos:UInt = 63;
-		while ( end0pos > 0 && Memory.getI32( Z1 + ( end0pos << 2 ) ) == 0 ) end0pos--;
+		while ( end0pos > 0 && Memory.getI32( end0pos << 2 ) == 0 ) end0pos--;
 
 		// end0pos = first element in reverse order !=0
-		if ( end0pos != 0) {
+		if ( end0pos != 0 ) {
 			var i:UInt = 1;
 			var lng:Int;
 			var startpos:Int;
@@ -321,25 +318,25 @@ private class TMP {
 			var nrmarker:Int;
 			while ( i <= end0pos ) {
 				startpos = i;
-				while ( i <= end0pos && Memory.getI32( Z1 + ( i << 2 ) ) == 0 ) ++i;
+				while ( i <= end0pos && Memory.getI32( i << 2 ) == 0 ) ++i;
 				nrzeroes = i - startpos;
 				if ( nrzeroes >= 16 ) {
 					lng = nrzeroes >> 4;
 					nrmarker = 1;
 					while ( nrmarker <= lng ) {
-						writeMBits( HTAC + 0xF0 * 3 );
+						writeMBits( byteout, bytepos, bytenew, HTAC + 0xF0 * 3 );
 						++nrmarker;
 					}
 					nrzeroes = nrzeroes & 0xF;
 				}
-				pos = ( 32767 + Memory.getI32( Z1 + ( i << 2 ) ) ) * 3;
-				writeMBits( HTAC + ( nrzeroes << 4 ) * 3 + Memory.getByte( Z2 + 3212 + pos ) * 3 );
-				writeMBits( Z2 + 3212 + pos );
+				pos = ( 32767 + Memory.getI32( i << 2 ) ) * 3;
+				writeMBits( byteout, bytepos, bytenew, HTAC + ( nrzeroes << 4 ) * 3 + Memory.getByte( Z2 + 3212 + pos ) * 3 );
+				writeMBits( byteout, bytepos, bytenew, Z2 + 3212 + pos );
 				i++;
 			}
 		}
 		if ( end0pos != 63 ) {
-			writeMBits( HTAC );
+			writeMBits( byteout, bytepos, bytenew, HTAC );
 		}
 		return DC;
 	}
@@ -490,7 +487,7 @@ private class TMP {
 			// Apply the quantization and scaling factor & Round to nearest integer
 			fDCTQuant = Memory.getDouble( data + ( i << 3 ) ) * Memory.getDouble( fdtbl + ( i << 3 ) );
 			Memory.setI32(
-				Z1 + ( Memory.getByte( Z2 + 1154 + i ) << 2 ), // ZigZag reorder
+				Memory.getByte( Z2 + 1154 + i ) << 2, // ZigZag reorder
 				Std.int( fDCTQuant + ( fDCTQuant > 0.0 ? 0.5 : - 0.5 ) )
 			);
 		} while ( ++i < 64 );
@@ -500,18 +497,14 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static inline function writeMBits(addres:UInt):Void {
-		writeBits( Memory.getByte( addres ), Memory.getUI16( addres + 1 ) );
+	private static inline function writeMBits(byteout:Int, bytepos:Int, bytenew:Int, addres:UInt):Void {
+		writeBits( byteout, bytepos, bytenew, Memory.getByte( addres ), Memory.getUI16( addres + 1 ));
 	}
 
 	/**
 	 * @private
 	 */
-	private static inline function writeBits(len:Int, val:Int):Void {
-		var bytenew:Int = Memory.getI32( 8 );
-		var bytepos:Int = Memory.getI32( 4 );
-		var byteout:Int = Memory.getI32( 0 );
-
+	private static inline function writeBits(byteout:Int, bytepos:Int, bytenew:Int, len:Int, val:Int):Void {
 		while ( --len >= 0 ) {
 			if ( val & ( 1 << len ) != 0 ) {
 				bytenew |= 1 << bytepos;
@@ -529,10 +522,6 @@ private class TMP {
 				bytenew = 0;
 			}
 		}
-
-		Memory.setI32( 8, bytenew ); // bytenew
-		Memory.setI32( 4, bytepos ); // bytepos
-		Memory.setI32( 0, byteout ); // byteout
 	}
 	
 }
