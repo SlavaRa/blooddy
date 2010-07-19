@@ -12,7 +12,7 @@ package by.blooddy.core.net.loading {
 	import by.blooddy.core.utils.crypto.UIDUtils;
 	import by.blooddy.core.utils.enterFrameBroadcaster;
 	import by.blooddy.core.utils.net.URLUtils;
-	
+
 	import flash.display.Loader;
 	import flash.errors.IllegalOperationError;
 	import flash.events.ErrorEvent;
@@ -22,7 +22,7 @@ package by.blooddy.core.net.loading {
 	import flash.events.ProgressEvent;
 	import flash.net.URLRequest;
 	import flash.utils.ByteArray;
-	
+
 	//--------------------------------------
 	//  Implements events: ILoadable
 	//--------------------------------------
