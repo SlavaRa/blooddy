@@ -46,7 +46,7 @@
       <libraryPathEntry kind="1" linkType="1" path="libs"/>
     </libraryPath>
     <sourceAttachmentPath>
-      <sourceAttachmentPathEntry kind="3" linkType="1" path="D:/_work/__WORKSPACE__/blooddy_crypto/libs/blooddy_crypto.swc" sourcepath="d:/_work/__WORKSPACE__/blooddy_crypto/src/" useDefaultLinkType="false"/>
+      <sourceAttachmentPathEntry kind="3" linkType="1" path="D:/__workspace/blooddy_crypto/libs/blooddy_crypto.swc" sourcepath="src-hx" useDefaultLinkType="false"/>
     </sourceAttachmentPath>
   </compiler>
   <applications>

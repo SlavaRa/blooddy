@@ -1,4 +1,4 @@
--cp src
+-cp src-hx
 -main Main
 -swf libs/blooddy_crypto.swc
 -swf-version 10
