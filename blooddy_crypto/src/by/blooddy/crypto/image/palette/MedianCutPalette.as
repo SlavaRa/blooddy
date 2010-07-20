@@ -6,9 +6,7 @@
 
 package by.blooddy.crypto.image.palette {
 
-	import flash.utils.ByteArray;
 	import flash.display.BitmapData;
-	import flash.utils.Endian;
 	
 	/**
 	 * @author					BlooDHounD
@@ -26,7 +24,13 @@ package by.blooddy.crypto.image.palette {
 		//--------------------------------------------------------------------------
 
 		/**
-		 * Constructor
+		 * Создаёт объект MedianCutPalette
+		 * 
+		 * @param	image		картинка, на основании которой необходимо построить палитру.
+		 * @param	maxColors	максимальное количество цветов. ограничевается в предлах от 2 до 256.
+		 * 
+		 * @throw	TypeError	параметр image не должен быть равен null;
+		 * @throw	RangeError	количество цветов заданно в неверном диапазоне
 		 */
 		public function MedianCutPalette(image:BitmapData, maxColors:uint=256) {
 			super();
@@ -56,11 +60,17 @@ package by.blooddy.crypto.image.palette {
 		//  Methods
 		//
 		//--------------------------------------------------------------------------
-		
+
+		/**
+		 * @inheritDoc
+		 */
 		public function getColors():Vector.<uint> {
 			return this._list.slice();
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function getIndexByColor(color:uint):uint {
 			return this._hash[ color ];
 		}
