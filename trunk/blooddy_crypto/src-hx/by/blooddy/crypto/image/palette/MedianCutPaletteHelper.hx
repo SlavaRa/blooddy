@@ -25,7 +25,8 @@ class MedianCutPaletteHelper {
 	//
 	//--------------------------------------------------------------------------
 
-	public static function createTable(image:BitmapData, ?maxColors:UInt=256):Array<Dynamic> {
+	public static function createTable(image:BitmapData, ?maxColors:UInt = 256):Array<Dynamic> {
+		if ( image == null ) Error.throwError( TypeError, 2006 );
 		if ( maxColors < 2 || maxColors > 256 ) Error.throwError( RangeError, 2006 );
 		if ( image.transparent ) {
 			return TMP.createTable( image, maxColors, true );
