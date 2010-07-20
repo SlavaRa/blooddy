@@ -2,10 +2,10 @@
 <flexLibProperties includeAllClasses="true" version="3">
   <includeClasses>
     <classEntry path="by.blooddy.crypto.image.JPEGTable"/>
+    <classEntry path="by.blooddy.crypto.image.PNGEncoder"/>
     <classEntry path="by.blooddy.crypto.image.PNGFilter"/>
     <classEntry path="by.blooddy.crypto.image.palette.IPalette"/>
     <classEntry path="by.blooddy.crypto.image.palette.MedianCutPalette"/>
-    <classEntry path="by.blooddy.crypto.image.PNGEncoder"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
