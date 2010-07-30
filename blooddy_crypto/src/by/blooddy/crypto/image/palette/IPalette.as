@@ -7,7 +7,7 @@
 package by.blooddy.crypto.image.palette {
 
 	/**
-	 * Базовый интерфейс для создания различных палитр.
+	 * The base interface for creating color palletes to be used in PNG encoders.
 	 * 
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -20,20 +20,21 @@ package by.blooddy.crypto.image.palette {
 	public interface IPalette {
 
 		/**
-		 * Возрврщает список используемых в палитре цветов.
+		 * Returns the list of the colors used in the palette.
 		 * 
-		 * @return все используемые в палитре цвета.
+		 * @return All the colors used in the palette.
 		 */
 		function getColors():Vector.<uint>;
 
 		/**
-		 * Возврщает номер цвета в палитре. Одни и тот же номер может вернуться для для разных цветов.
+		 * Returns the index of the color inside the palette. 
+		 * It is possible that the same index will be returned for different color values.
 		 * 
-		 * @param	color			цвет для которого нужно вернуть его номер.
+		 * @param	color			The color you wish to index.
 		 * 
-		 * @return					номер цвета в палитре.
+		 * @return					The index of the color inside the palette.
 		 * 
-		 * @throw	ArgumentError	цвет в палитре не найден.
+		 * @throws	<code>ArgumentError</code>	If the color was not found inside the palette.
 		 */
 		function getIndexByColor(color:uint):uint;
 
