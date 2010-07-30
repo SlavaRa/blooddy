@@ -9,6 +9,8 @@ package by.blooddy.crypto.image.palette {
 	import flash.display.BitmapData;
 	
 	/**
+	 * This class provides a palette that can be used in <code>PNGEncoder</code>.
+	 * 
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
@@ -24,13 +26,18 @@ package by.blooddy.crypto.image.palette {
 		//--------------------------------------------------------------------------
 
 		/**
-		 * Создаёт объект MedianCutPalette
+		 * Creates new <code>MedianCutPalette</code>.
 		 * 
-		 * @param	image		картинка, на основании которой необходимо построить палитру.
-		 * @param	maxColors	максимальное количество цветов. ограничевается в предлах от 2 до 256.
+		 * @param	image		The source image to use when creating the palette.
 		 * 
-		 * @throw	TypeError	параметр image не должен быть равен null;
-		 * @throw	RangeError	количество цветов заданно в неверном диапазоне
+		 * @param	maxColors	The maximum number of collors to be stored inside
+		 * 						the palette. The possible range is from 2 to 256 inclusive.
+		 * @default	256.
+		 * 
+		 * @throws	<code>TypeError</code>	The <code>image</code> parameter must 
+		 * 			not be <code>null</code>.
+		 * 
+		 * @throws	<code>RangeError</code>	The number of colors is out of bounds.
 		 */
 		public function MedianCutPalette(image:BitmapData, maxColors:uint=256) {
 			super();

@@ -9,6 +9,9 @@ package by.blooddy.crypto {
 	import flash.utils.ByteArray;
 	
 	/**
+	 * Encodes and decodes binary data using 
+	 * <a herf="http://tools.ietf.org/html/rfc1321">MD5 (Message Digest)</a> algorithm.
+	 * 
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
@@ -23,22 +26,22 @@ package by.blooddy.crypto {
 		//--------------------------------------------------------------------------
 		
 		/**
-		 * Performs the MD5 hash algorithm on a String.
+		 * Performs MD5 hash algorithm on a String.
 		 *
-		 * @param		s			The string to hash
+		 * @param		source		The string to hash.
 		 *
-		 * @return					A string containing the hash value of s
+		 * @return					A string containing the hash value of <code>source</code>.
 		 *
 		 * @keyword					md5.hash, hash
 		 */
-		public static native function hash(s:String):String;
+		public static native function hash(source:String):String;
 		
 		/**
-		 * Performs the MD5 hash algorithm on a ByteArray.
+		 * Performs MD5 hash algorithm on a <code>ByteArray</code>.
 		 *
-		 * @param	data			The ByteArray data to hash
+		 * @param	data			The <code>ByteArray</code> data to hash.
 		 *
-		 * @return					A string containing the hash value of data
+		 * @return					A string containing the hash value of data.
 		 *
 		 * @keyword					md5.hash, hash
 		 */
