@@ -44,22 +44,7 @@ package ru.avangardonline.data.battle.actions {
 		//  elementID
 		//----------------------------------
 
-		/**
-		 * @private
-		 */
-		private var _elementID:uint;
-
-		public function get elementID():uint {
-			return this._elementID;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set elementID(value:uint):void {
-			if ( this._elementID === value ) return;
-			this._elementID = value;
-		}
+		public var elementID:uint;
 
 		//--------------------------------------------------------------------------
 		//
@@ -90,7 +75,7 @@ package ru.avangardonline.data.battle.actions {
 		protected final function getCommand(command:Command, id:uint=0):Command {
 			return	new Command(
 						'forWorldElement',
-						new Array( id || this._elementID, command )
+						new Array( id || this.elementID, command )
 					);
 		}
 

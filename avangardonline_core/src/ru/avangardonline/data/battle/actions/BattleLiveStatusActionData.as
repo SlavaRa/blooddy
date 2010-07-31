@@ -43,22 +43,7 @@ package ru.avangardonline.data.battle.actions {
 		//  live
 		//----------------------------------
 
-		/**
-		 * @private
-		 */
-		private var _live:Boolean = false;
-
-		public function get live():Boolean {
-			return this._live;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set live(value:Boolean):void {
-			if ( this._live === value ) return;
-			this._live = value;
-		}
+		public var live:Boolean;
 
 		//--------------------------------------------------------------------------
 		//
@@ -80,7 +65,7 @@ package ru.avangardonline.data.battle.actions {
 				super.getCommand(
 					new Command(
 						'changeLiveStatus',
-						[ this._live ]
+						[ this.live ]
 					)
 				)
 			);
@@ -90,7 +75,7 @@ package ru.avangardonline.data.battle.actions {
 		public override function apply(collection:BattleWorldElementCollectionData):void {
 			var element:MinionCharacterData = collection.getElement( super.elementID ) as MinionCharacterData;
 			if ( !element ) throw new ArgumentError();
-			element.live = this._live;
+			element.live = this.live;
 		}
 
 	}

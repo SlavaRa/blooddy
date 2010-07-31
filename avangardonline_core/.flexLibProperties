@@ -43,13 +43,10 @@
     <classEntry path="ru.avangardonline.events.data.character.MinionCharacterDataEvent"/>
     <classEntry path="ru.avangardonline.serializers.txt.data.battle.BattleDataSerializer"/>
     <classEntry path="ru.avangardonline.serializers.txt.data.battle.BattleTurnDataSerializer"/>
-    <classEntry path="ru.avangardonline.serializers.txt.data.battle.actions.BattleActionDataSerializer"/>
     <classEntry path="ru.avangardonline.serializers.txt.data.battle.actions.BattleAtackActionDataSerializer"/>
     <classEntry path="ru.avangardonline.serializers.txt.data.battle.actions.BattleLiveStatusActionDataSerializer"/>
     <classEntry path="ru.avangardonline.serializers.txt.data.battle.actions.BattleMoveActionDataSerializer"/>
     <classEntry path="ru.avangardonline.serializers.txt.data.battle.actions.BattleVictoryActionDataSerializer"/>
-    <classEntry path="ru.avangardonline.serializers.txt.data.battle.actions.BattleWorldElementActionDataSerializer"/>
-    <classEntry path="ru.avangardonline.serializers.txt.data.battle.world.BattleWorldElementCollectionDataSerializer"/>
     <classEntry path="ru.avangardonline.serializers.txt.data.battle.world.BattleWorldElementDataSerializer"/>
     <classEntry path="ru.avangardonline.serializers.txt.data.character.CharacterDataSerializer"/>
     <classEntry path="ru.avangardonline.serializers.txt.data.character.HeroCharacterDataSerializer"/>

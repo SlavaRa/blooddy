@@ -4,13 +4,12 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.serializers.txt.data.battle.world {
+package ru.avangardonline.serializers.battle.world {
 
-	import by.blooddy.game.serializers.txt.ISerializer;
-	
 	import flash.errors.IllegalOperationError;
 	
 	import ru.avangardonline.data.battle.world.BattleWorldFieldData;
+	import ru.avangardonline.serializers.ISerializer;
 	
 	/**
 	 * @author					BlooDHounD

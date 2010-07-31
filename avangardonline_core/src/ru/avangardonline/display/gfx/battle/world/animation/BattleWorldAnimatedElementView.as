@@ -20,6 +20,12 @@ package ru.avangardonline.display.gfx.battle.world.animation {
 	import ru.avangardonline.data.battle.world.BattleWorldAbstractElementData;
 	import ru.avangardonline.display.gfx.battle.world.BattleWorldElementView;
 	
+	//--------------------------------------
+	//  Events
+	//--------------------------------------
+	
+	[Event( name="complete", type="flash.events.Event" )]
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -41,7 +47,7 @@ package ru.avangardonline.display.gfx.battle.world.animation {
 		public function BattleWorldAnimatedElementView(data:BattleWorldAbstractElementData!) {
 			super( data );
 			this._data = data;
-			this._timer.addEventListener( TimerEvent.TIMER,	this.renderFrame, false, int.MAX_VALUE, true );
+			this._timer.addEventListener( TimerEvent.TIMER,	this.drawFrame, false, int.MAX_VALUE, true );
 		}
 
 		//--------------------------------------------------------------------------
@@ -121,6 +127,7 @@ package ru.avangardonline.display.gfx.battle.world.animation {
 		 */
 		protected override function draw():Boolean {
 			if ( !super.stage || !this._currentAnim ) return false;
+			var t:Boolean = true;
 			super.lockResourceBundle( this.getAnimationDefinition().bundleName );
 			this.$element = this.getAnimation();
 			this._data.world.time.removeEventListener( TimeEvent.TIME_RELATIVITY_CHANGE, this.updateDelay );
@@ -134,9 +141,13 @@ package ru.avangardonline.display.gfx.battle.world.animation {
 						this.updateDelay();
 						this._timer.start();
 					}
-					this.renderFrame();
+					this.drawFrame();
+					t = false;
 				}
 				super.updateRotation();
+			}
+			if ( t && this._currentAnim.repeatCount > 0 ) { // если текущая не вечна
+				super.dispatchEvent( new Event( Event.COMPLETE ) );
 			}
 			return true;
 		}
@@ -180,7 +191,7 @@ package ru.avangardonline.display.gfx.battle.world.animation {
 		/**
 		 * @private
 		 */
-		private function renderFrame(event:Event=null):Boolean {
+		private function drawFrame(event:Event=null):Boolean {
 			
 			if ( !this._animation ) throw new IllegalOperationError();
 			
@@ -197,18 +208,19 @@ package ru.avangardonline.display.gfx.battle.world.animation {
 			
 			this._animation.gotoAndStop( currentFrame );
 			
-			//если текущая анимация закончилась
+			// если текущая анимация закончилась
 			if ( this._currentAnim.repeatCount > 0 && this._currentAnim_count >= this._currentAnim.repeatCount ) {
 				this._data.world.time.removeEventListener( TimeEvent.TIME_RELATIVITY_CHANGE, this.updateDelay );
 				this._currentAnim = null;
 				this._currentAnim_count = 0;
 				this._timer.stop();
 				this._animation.gotoAndStop( this._animation.totalFrames );
+				super.dispatchEvent( new Event( Event.COMPLETE ) );
 			}			
 			
 			return true;
 		}
-		
+
 		/**
 		 * @private
 		 */

@@ -4,11 +4,13 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.serializers.txt.data.battle.actions {
+package ru.avangardonline.serializers.battle.actions {
 
 	import ru.avangardonline.data.battle.actions.BattleAtackActionData;
+	import ru.avangardonline.data.battle.actions.BattleCastActionData;
 	import ru.avangardonline.data.battle.actions.BattleLiveStatusActionData;
 	import ru.avangardonline.data.battle.actions.BattleMoveActionData;
+	import ru.avangardonline.data.battle.actions.BattleSpellActionData;
 	import ru.avangardonline.data.battle.actions.BattleVictoryActionData;
 	import ru.avangardonline.data.battle.actions.BattleWorldElementActionData;
 
@@ -33,6 +35,8 @@ package ru.avangardonline.serializers.txt.data.battle.actions {
 				case 'a':	return BattleAtackActionDataSerializer.deserialize( source, target as BattleAtackActionData );
 				case 'd':	return BattleLiveStatusActionDataSerializer.deserialize( source, target as BattleLiveStatusActionData );
 				case 'v':	return BattleVictoryActionDataSerializer.deserialize( source, target as BattleVictoryActionData );
+				case 'c':	return BattleCastActionDataSerializer.deserialize( source, target as BattleCastActionData );
+				case 's':	return BattleSpellActionDataSerializer.deserialize( source, target as BattleSpellActionData );
 			}
 			throw new ArgumentError();
 		}

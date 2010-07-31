@@ -10,6 +10,7 @@ package ru.avangardonline.display.gfx.character {
 	import by.blooddy.core.display.StageObserver;
 	
 	import flash.display.DisplayObject;
+	import flash.events.Event;
 	
 	import ru.avangardonline.data.character.CharacterData;
 	import ru.avangardonline.display.gfx.battle.world.animation.Animation;
@@ -73,6 +74,7 @@ package ru.avangardonline.display.gfx.character {
 		 */
 		public function CharacterView(data:CharacterData!) {
 			super( data );
+			super.addEventListener( Event.COMPLETE, this.handler_complete, false, int.MIN_VALUE, true );
 			this._data = data;
 			var observer:StageObserver = new StageObserver( this );
 			observer.registerEventListener( data, CharacterInteractionDataEvent.ATACK,				this.handler_atack );
@@ -153,6 +155,13 @@ package ru.avangardonline.display.gfx.character {
 		//  Event handlers
 		//
 		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private function handler_complete(event:Event):void {
+			this.setAnimation( _ANIM_IDLE );
+		}
 
 		/**
 		 * @private

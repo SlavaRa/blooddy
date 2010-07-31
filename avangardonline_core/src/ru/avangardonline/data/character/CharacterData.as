@@ -10,15 +10,13 @@ package ru.avangardonline.data.character {
 	
 	import ru.avangardonline.data.battle.world.BattleWorldElementData;
 	import ru.avangardonline.events.data.character.CharacterInteractionDataEvent;
-	import ru.avangardonline.events.data.character.HeroCharacterDataEvent;
 
 	//--------------------------------------
 	//  Events
 	//--------------------------------------
 
-	[Event( name="victory", type="ru.avangardonline.events.data.character.HeroCharacterDataEvent" )]
 	[Event( name="atack", type="ru.avangardonline.events.data.character.CharacterInteractionDataEvent" )]
-	[Event( name="defence", type="ru.avangardonline.events.data.character.CharacterInteractionDataEventDataEvent" )]
+	[Event( name="defence", type="ru.avangardonline.events.data.character.CharacterInteractionDataEvent" )]
 
 	/**
 	 * @author					BlooDHounD

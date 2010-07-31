@@ -4,15 +4,13 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.serializers.txt.data.battle.actions {
+package ru.avangardonline.serializers.battle.actions {
 
-	import by.blooddy.core.errors.getErrorMessage;
-	import by.blooddy.game.serializers.txt.ISerializer;
-	
 	import flash.errors.IllegalOperationError;
 	
 	import ru.avangardonline.data.battle.actions.BattleActionData;
 	import ru.avangardonline.data.battle.actions.BattleWorldElementActionData;
+	import ru.avangardonline.serializers.ISerializer;
 	
 	/**
 	 * @author					BlooDHounD
@@ -53,7 +51,7 @@ package ru.avangardonline.serializers.txt.data.battle.actions {
 		//--------------------------------------------------------------------------
 
 		public virtual function deserialize(source:String, target:*=null):* {
-			throw new IllegalOperationError( getErrorMessage( 2071, this ), 2071 );
+			Error.throwError( IllegalOperationError, 2014 );
 		}
 
 	}

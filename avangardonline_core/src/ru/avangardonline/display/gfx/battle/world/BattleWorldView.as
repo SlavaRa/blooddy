@@ -222,7 +222,7 @@ package ru.avangardonline.display.gfx.battle.world {
 		 * @private
 		 */
 		private function removeWorldElement(data:BattleWorldAbstractElementData):void {
-			if ( !( data in this._elements) ) throw new ArgumentError();
+			if ( !( data in this._elements ) ) throw new ArgumentError();
 			if ( data.coord.moving ) {
 				this.moveStopElement( data );
 			}
@@ -322,7 +322,7 @@ package ru.avangardonline.display.gfx.battle.world {
 		 * @private
 		 */
 		private function handler_removed(event:DataBaseEvent):void {
-			if ( event.target is BattleWorldAbstractElementData ) {
+			if ( event.target is BattleWorldAbstractElementData && event.target in this._elements ) {
 				this.removeWorldElement( event.target as BattleWorldAbstractElementData );
 			}
 		}

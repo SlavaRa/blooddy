@@ -4,11 +4,10 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.serializers.txt.data.items {
-	
-	import by.blooddy.game.serializers.txt.ISerializer;
+package ru.avangardonline.serializers.items {
 	
 	import ru.avangardonline.data.items.RuneData;
+	import ru.avangardonline.serializers.ISerializer;
 	
 	/**
 	 * @author					BlooDHounD

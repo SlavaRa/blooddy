@@ -4,20 +4,20 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.serializers.txt.data.battle.actions {
+package ru.avangardonline.serializers.character {
 
 	import flash.errors.IllegalOperationError;
 	
-	import ru.avangardonline.data.battle.actions.BattleVictoryActionData;
+	import ru.avangardonline.data.character.HeroCharacterData;
 
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					30.08.2009 15:57:14
+	 * @created					19.08.2009 22:39:30
 	 */
-	public class BattleVictoryActionDataSerializer extends BattleWorldElementActionDataSerializer {
+	public class HeroCharacterDataSerializer extends CharacterDataSerializer {
 
 		//--------------------------------------------------------------------------
 		//
@@ -28,7 +28,7 @@ package ru.avangardonline.serializers.txt.data.battle.actions {
 		/**
 		 * @private
 		 */
-		private static const _serializer:BattleVictoryActionDataSerializer = new BattleVictoryActionDataSerializer();
+		private static const _serializer:HeroCharacterDataSerializer = new HeroCharacterDataSerializer();
 
 		//--------------------------------------------------------------------------
 		//
@@ -36,8 +36,8 @@ package ru.avangardonline.serializers.txt.data.battle.actions {
 		//
 		//--------------------------------------------------------------------------
 
-		public static function deserialize(source:String, target:BattleVictoryActionData=null):BattleVictoryActionData {
-			return _serializer.deserialize( source, target ) as BattleVictoryActionData;
+		public static function deserialize(source:String, target:HeroCharacterData=null):HeroCharacterData {
+			return _serializer.deserialize( source, target ) as HeroCharacterData;
 		}
 
 		//--------------------------------------------------------------------------
@@ -49,23 +49,30 @@ package ru.avangardonline.serializers.txt.data.battle.actions {
 		/**
 		 * Constructor
 		 */
-		public function BattleVictoryActionDataSerializer() {
+		public function HeroCharacterDataSerializer() {
 			super();
 			if ( _serializer ) throw new IllegalOperationError();
 		}
 
 		//--------------------------------------------------------------------------
 		//
-		//  Implements methods
+		//  Overriden methods
 		//
 		//--------------------------------------------------------------------------
 
 		public override function deserialize(source:String, target:*=null):* {
-			if ( source.charAt( 0 ) != 'v' ) throw new ArgumentError();
-			var data:BattleVictoryActionData = target as BattleVictoryActionData;
-			if ( !data ) data = new BattleVictoryActionData();
-			source = source.substr( 1 );
-			data = super.deserialize( source, data );
+			if ( source.charAt( 0 ) != 'h' ) throw new ArgumentError();
+			var data:HeroCharacterData = target as HeroCharacterData;
+			var arr:Array = source.substr( 2 ).split( ',', 4 );
+			var id:uint = parseInt( arr[ 0 ] );
+			if ( !data ) {
+				data = new HeroCharacterData( id, arr[ 1 ] );
+			} else if ( data.id != id || data.name != arr[ 1 ] ) {
+				throw new ArgumentError();
+			}
+			super.deserialize( source, data );
+			data.race = parseInt( arr[ 2 ] );
+			data.sex = parseBoolean( arr[ 3 ] );
 			return data;
 		}
 

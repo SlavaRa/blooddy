@@ -4,24 +4,20 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.serializers.txt.data.battle {
+package ru.avangardonline.serializers.battle.actions {
 
-	import by.blooddy.game.serializers.txt.ISerializer;
-	
 	import flash.errors.IllegalOperationError;
 	
-	import ru.avangardonline.data.battle.actions.BattleActionData;
-	import ru.avangardonline.data.battle.turns.BattleTurnData;
-	import ru.avangardonline.serializers.txt.data.battle.actions.BattleActionDataSerializer;
-	
+	import ru.avangardonline.data.battle.actions.BattleVictoryActionData;
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					12.08.2009 23:33:00
+	 * @created					30.08.2009 15:57:14
 	 */
-	public class BattleTurnDataSerializer implements ISerializer {
+	public class BattleVictoryActionDataSerializer extends BattleWorldElementActionDataSerializer {
 
 		//--------------------------------------------------------------------------
 		//
@@ -32,7 +28,7 @@ package ru.avangardonline.serializers.txt.data.battle {
 		/**
 		 * @private
 		 */
-		private static const _serializer:BattleTurnDataSerializer = new BattleTurnDataSerializer();
+		private static const _serializer:BattleVictoryActionDataSerializer = new BattleVictoryActionDataSerializer();
 
 		//--------------------------------------------------------------------------
 		//
@@ -40,8 +36,8 @@ package ru.avangardonline.serializers.txt.data.battle {
 		//
 		//--------------------------------------------------------------------------
 
-		public static function deserialize(source:String, target:BattleTurnData=null):BattleTurnData {
-			return _serializer.deserialize( source, target ) as BattleTurnData;
+		public static function deserialize(source:String, target:BattleVictoryActionData=null):BattleVictoryActionData {
+			return _serializer.deserialize( source, target ) as BattleVictoryActionData;
 		}
 
 		//--------------------------------------------------------------------------
@@ -53,7 +49,7 @@ package ru.avangardonline.serializers.txt.data.battle {
 		/**
 		 * Constructor
 		 */
-		public function BattleTurnDataSerializer() {
+		public function BattleVictoryActionDataSerializer() {
 			super();
 			if ( _serializer ) throw new IllegalOperationError();
 		}
@@ -64,25 +60,12 @@ package ru.avangardonline.serializers.txt.data.battle {
 		//
 		//--------------------------------------------------------------------------
 
-		/**
-		 * @inheritDoc
-		 */
-		public function deserialize(source:String, target:*=null):* {
-			var data:BattleTurnData = target as BattleTurnData;
-			if ( !data ) throw new ArgumentError();
-
-			for each ( var action:BattleActionData in data.getActions() ) {
-				data.removeChild( action );
-			}
-
-			var tmp:Array = source.split( '\n' );
-			var l:uint = tmp.length;
-			for ( var i:int = 0; i<l; i++ ) {
-				if ( !tmp[ i ] ) continue;
-				action = BattleActionDataSerializer.deserialize( tmp[ i ] );
-				data.addChild( action );
-			}
-
+		public override function deserialize(source:String, target:*=null):* {
+			if ( source.charAt( 0 ) != 'v' ) throw new ArgumentError();
+			var data:BattleVictoryActionData = target as BattleVictoryActionData;
+			if ( !data ) data = new BattleVictoryActionData();
+			source = source.substr( 1 );
+			data = super.deserialize( source, data );
 			return data;
 		}
 

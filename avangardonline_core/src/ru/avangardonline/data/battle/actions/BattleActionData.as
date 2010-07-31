@@ -43,43 +43,13 @@ package ru.avangardonline.data.battle.actions {
 		//  startTime
 		//----------------------------------
 
-		/**
-		 * @private
-		 */
-		private var _startTime:uint;
-
-		public function get startTime():uint {
-			return this._startTime;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set startTime(value:uint):void {
-			if ( this._startTime === value ) return;
-			this._startTime = value;
-		}
+		public var startTime:uint;
 
 		//----------------------------------
 		//  lengthTime
 		//----------------------------------
 
-		/**
-		 * @private
-		 */
-		private var _lengthTime:uint;
-
-		public function get lengthTime():uint {
-			return this._lengthTime;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set lengthTime(value:uint):void {
-			if ( this._lengthTime === value ) return;
-			this._lengthTime = value;
-		}
+		public var lengthTime:uint;
 
 		//--------------------------------------------------------------------------
 		//

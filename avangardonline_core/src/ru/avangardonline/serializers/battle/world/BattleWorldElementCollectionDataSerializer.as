@@ -4,10 +4,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.serializers.txt.data.battle.world {
+package ru.avangardonline.serializers.battle.world {
 
 	import by.blooddy.core.data.Data;
-	import by.blooddy.game.serializers.txt.ISerializer;
 	
 	import flash.errors.IllegalOperationError;
 	import flash.utils.Dictionary;
@@ -17,8 +16,9 @@ package ru.avangardonline.serializers.txt.data.battle.world {
 	import ru.avangardonline.data.battle.world.BattleWorldElementData;
 	import ru.avangardonline.data.character.CharacterData;
 	import ru.avangardonline.data.character.HeroCharacterData;
-	import ru.avangardonline.serializers.txt.data.items.RuneDataSerializer;
 	import ru.avangardonline.data.items.RuneData;
+	import ru.avangardonline.serializers.ISerializer;
+	import ru.avangardonline.serializers.items.RuneDataSerializer;
 
 	/**
 	 * @author					BlooDHounD

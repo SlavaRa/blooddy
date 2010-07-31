@@ -12,6 +12,7 @@ package ru.avangardonline.controllers {
 	import by.blooddy.core.external.ExternalConnection;
 	import by.blooddy.core.managers.resource.ResourceManager;
 	import by.blooddy.core.net.ProxySharedObject;
+	import by.blooddy.core.net.RemoterProxy;
 	import by.blooddy.core.net.loading.ILoadable;
 	import by.blooddy.core.net.loading.LoaderListener;
 	import by.blooddy.core.utils.time.RelativeTime;
@@ -28,7 +29,7 @@ package ru.avangardonline.controllers {
 	import ru.avangardonline.controllers.battle.BattleController;
 	import ru.avangardonline.controllers.battle.BattleLogicalController;
 	import ru.avangardonline.data.battle.BattleData;
-	import ru.avangardonline.serializers.txt.data.battle.BattleDataSerializer;
+	import ru.avangardonline.serializers.battle.BattleDataSerializer;
 	
 	/**
 	 * @author					BlooDHounD
@@ -58,20 +59,23 @@ package ru.avangardonline.controllers {
 			this._battleLogicalController =	new BattleLogicalController	( this );
 			this._battleController =		new BattleController		( this, this._relativeTime, this._battleContainer );
 
-			this._battleLogicalController.logging = false;
-			this._battleController.logging = false;
-
+			this._battleLogicalController.logging = true;
+			
 			var params:Object = container.loaderInfo.parameters;
 			if ( params.battleURI ) {
 				this.setBattle( params.battleURI );
 			} else {
 				this.setBattle( '1.txt' );
 			}
-			this._externalConnection = new ExternalConnection( container.loaderInfo.parameters.externalID );
-			this._externalConnection.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_external_error, false, int.MAX_VALUE, true );
-			this._externalConnection.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_external_error, false, int.MAX_VALUE, true );
-			this._externalConnection.addEventListener( AsyncErrorEvent.ASYNC_ERROR,			this.handler_external_error, false, int.MAX_VALUE, true );
-			this._externalConnection.addCommandListener( 'setBattle', this.setBattle );
+			if ( params.externalID ) {
+				this._externalConnection = new ExternalConnection( params.externalID );
+				this._externalConnection.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_external_error, false, int.MAX_VALUE, true );
+				this._externalConnection.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_external_error, false, int.MAX_VALUE, true );
+				this._externalConnection.addEventListener( AsyncErrorEvent.ASYNC_ERROR,			this.handler_external_error, false, int.MAX_VALUE, true );
+				this._externalConnection.addCommandListener( 'setBattle', this.setBattle );
+				var proxy:RemoterProxy = new RemoterProxy( this._externalConnection );
+				this._battleLogicalController.addCommandListener( 'setTurn', proxy.setTurn );
+			}
 		}
 
 		//--------------------------------------------------------------------------
@@ -80,6 +84,9 @@ package ru.avangardonline.controllers {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @private
+		 */
 		private var _loader:LoaderListener;
 
 		/**
@@ -140,7 +147,7 @@ package ru.avangardonline.controllers {
 		}
 
 		public override function dispatchCommand(command:Command):void {
-			throw new IllegalOperationError();
+			Error.throwError( IllegalOperationError, 2014 );
 		}
 
 		public override function addCommandListener(commandName:String, listener:Function, priority:int=0, useWeakReference:Boolean=false):void {
@@ -184,9 +191,9 @@ package ru.avangardonline.controllers {
 		/**
 		 * @private
 		 */
-		private function setBattle(id:String):void {
-			if ( this._currentBattle == id ) return;
-			this._currentBattle = id;
+		private function setBattle(uri:String):void {
+			if ( this._currentBattle == uri ) return;
+			this._currentBattle = uri;
 			this.updateBattle();
 		}
 

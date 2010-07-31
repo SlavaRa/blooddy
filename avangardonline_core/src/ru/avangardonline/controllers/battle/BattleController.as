@@ -9,9 +9,8 @@ package ru.avangardonline.controllers.battle {
 	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.controllers.DisplayObjectController;
 	import by.blooddy.core.controllers.IBaseController;
+	import by.blooddy.core.events.data.DataBaseEvent;
 	import by.blooddy.core.filters.AdjustColor;
-	import by.blooddy.core.logging.ILogging;
-	import by.blooddy.core.logging.Logger;
 	import by.blooddy.core.utils.time.RelativeTime;
 	
 	import flash.display.DisplayObjectContainer;
@@ -21,7 +20,9 @@ package ru.avangardonline.controllers.battle {
 	
 	import ru.avangardonline.data.battle.result.BattleResultData;
 	import ru.avangardonline.data.battle.world.BattleWorldData;
+	import ru.avangardonline.data.battle.world.BattleWorldEffectData;
 	import ru.avangardonline.data.battle.world.BattleWorldElementCollectionData;
+	import ru.avangardonline.data.battle.world.BattleWorldElementData;
 	import ru.avangardonline.data.battle.world.BattleWorldFieldData;
 	import ru.avangardonline.data.character.CharacterData;
 	import ru.avangardonline.data.character.HeroCharacterData;
@@ -29,7 +30,7 @@ package ru.avangardonline.controllers.battle {
 	import ru.avangardonline.display.gfx.battle.world.BattleWorldViewFactory;
 	import ru.avangardonline.display.gui.battle.BattleResultView;
 	import ru.avangardonline.display.gui.battle.RunesView;
-	import by.blooddy.core.events.data.DataBaseEvent;
+	import ru.avangardonline.events.data.battle.world.BattleWorldTempElementEvent;
 
 	/**
 	 * @author					BlooDHounD
@@ -37,7 +38,7 @@ package ru.avangardonline.controllers.battle {
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
 	 */
-	public class BattleController extends DisplayObjectController implements ILogging {
+	public class BattleController extends DisplayObjectController {
 
 		//--------------------------------------------------------------------------
 		//
@@ -119,46 +120,6 @@ package ru.avangardonline.controllers.battle {
 			return this._time;
 		}
 
-		//----------------------------------
-		//  logger
-		//----------------------------------
-
-		/**
-		 * @private
-		 */
-		private const _logger:Logger = new Logger();
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get logger():Logger {
-			return this._logger;
-		}
- 
-		//----------------------------------
-		//  logging
-		//----------------------------------
-
-		/**
-		 * @private
-		 */
-		private var _logging:Boolean = true;
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get logging():Boolean {
-			return this._logging;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set logging(value:Boolean):void {
-			if ( this._logging == value ) return;
-			this._logging = value;
-		}
-
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
@@ -170,14 +131,15 @@ package ru.avangardonline.controllers.battle {
 		 */
 		protected override function construct():void {
 			var controller:IBaseController = super.baseController;
-			controller.addCommandListener( 'enterBattle',		this.enterBattle );
-			controller.addCommandListener( 'exitBattle',		this.exitBattle );
-			controller.addCommandListener( 'addCharacter',		this.addCharacter );
-			controller.addCommandListener( 'removeCharacter',	this.removeCharacter );
-			controller.addCommandListener( 'forWorldElement',	this.forWorldElement );
-			controller.addCommandListener( 'syncElements',		this.syncElements );
-			controller.addCommandListener( 'openBattleResult',	this.openBattleResult );
-			controller.addCommandListener( 'closeBattleResult',	this.closeBattleResult );
+			controller.addCommandListener( 'enterBattle',			this.enterBattle );
+			controller.addCommandListener( 'exitBattle',			this.exitBattle );
+			controller.addCommandListener( 'addCharacter',			this.addCharacter );
+			controller.addCommandListener( 'removeCharacter',		this.removeCharacter );
+			controller.addCommandListener( 'forWorldElement',		this.forWorldElement );
+			controller.addCommandListener( 'createEffectAtElement',	this.createEffectAtElement );
+			controller.addCommandListener( 'syncElements',			this.syncElements );
+			controller.addCommandListener( 'openBattleResult',		this.openBattleResult );
+			controller.addCommandListener( 'closeBattleResult',		this.closeBattleResult );
 			controller.call( 'enterBattle' );
 		}
 
@@ -186,14 +148,15 @@ package ru.avangardonline.controllers.battle {
 		 */
 		protected override function destruct():void {
 			var controller:IBaseController = super.baseController;
-			controller.removeCommandListener( 'enterBattle',		this.enterBattle );
-			controller.removeCommandListener( 'exitBattle',			this.exitBattle );
-			controller.removeCommandListener( 'addCharacter',		this.addCharacter );
-			controller.removeCommandListener( 'removeCharacter',	this.removeCharacter );
-			controller.removeCommandListener( 'forWorldElement',	this.forWorldElement );
-			controller.removeCommandListener( 'syncElements',		this.syncElements );
-			controller.removeCommandListener( 'openBattleResult',	this.openBattleResult );
-			controller.removeCommandListener( 'closeBattleResult',	this.closeBattleResult );
+			controller.removeCommandListener( 'enterBattle',			this.enterBattle );
+			controller.removeCommandListener( 'exitBattle',				this.exitBattle );
+			controller.removeCommandListener( 'addCharacter',			this.addCharacter );
+			controller.removeCommandListener( 'removeCharacter',		this.removeCharacter );
+			controller.removeCommandListener( 'forWorldElement',		this.forWorldElement );
+			controller.removeCommandListener( 'createEffectAtElement',	this.createEffectAtElement );
+			controller.removeCommandListener( 'syncElements',			this.syncElements );
+			controller.removeCommandListener( 'openBattleResult',		this.openBattleResult );
+			controller.removeCommandListener( 'closeBattleResult',		this.closeBattleResult );
 			if ( this._data ) {
 				this.exitBattle();
 				controller.call( 'exitBattle' );
@@ -304,6 +267,16 @@ package ru.avangardonline.controllers.battle {
 		 */
 		private function forWorldElement(id:uint, command:Command):void {
 			command.call( this._data.elements.getElement( id ) );
+		}
+
+		/**
+		 * @private
+		 */
+		private function createEffectAtElement(effectType:uint, id:uint):void {
+			var el:BattleWorldElementData = this._data.elements.getElement( id );
+			var ef:BattleWorldEffectData = new BattleWorldEffectData( effectType );
+			ef.coord.copyFrom( el.coord );
+			this._data.dispatchEvent( new BattleWorldTempElementEvent( BattleWorldTempElementEvent.ADD_ELEMENT, false, false, ef ) );
 		}
 
 		/**

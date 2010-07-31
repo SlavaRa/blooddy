@@ -44,43 +44,13 @@ package ru.avangardonline.data.battle.actions {
 		//  x
 		//----------------------------------
 
-		/**
-		 * @private
-		 */
-		private var _x:int;
-
-		public function get x():int {
-			return this._x;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set x(value:int):void {
-			if ( this._x == value ) return;
-			this._x = value;
-		}
+		public var x:int;
 
 		//----------------------------------
 		//  y
 		//----------------------------------
 
-		/**
-		 * @private
-		 */
-		private var _y:int;
-
-		public function get y():int {
-			return this._y;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set y(value:int):void {
-			if ( this._y == value ) return;
-			this._y = value;
-		}
+		public var y:int;
 
 		//--------------------------------------------------------------------------
 		//
@@ -98,7 +68,7 @@ package ru.avangardonline.data.battle.actions {
 				super.getCommand(
 					new Command(
 						'moveTo',
-						[ this._x, this._y, this.startTime + BattleTurnData.TURN_LENGTH ]
+						[ this.x, this.y, this.startTime + BattleTurnData.TURN_LENGTH ]
 					)
 				)
 			);
@@ -108,7 +78,7 @@ package ru.avangardonline.data.battle.actions {
 		public override function apply(collection:BattleWorldElementCollectionData):void {
 			var element:BattleWorldElementData = collection.getElement( super.elementID );
 			if ( !element ) throw new ArgumentError();
-			element.coord.setValues( this._x, this._y );
+			element.coord.setValues( this.x, this.y );
 		}
 
 	}

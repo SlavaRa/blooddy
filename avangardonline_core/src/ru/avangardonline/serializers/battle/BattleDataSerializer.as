@@ -4,24 +4,23 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.serializers.txt.data.battle {
+package ru.avangardonline.serializers.battle {
 
-	import by.blooddy.game.serializers.txt.ISerializer;
-	
 	import flash.errors.IllegalOperationError;
 	
 	import ru.avangardonline.data.battle.BattleData;
 	import ru.avangardonline.data.battle.actions.BattleActionData;
 	import ru.avangardonline.data.battle.actions.BattleLoseActionData;
+	import ru.avangardonline.data.battle.actions.BattleNormalizeActionData;
 	import ru.avangardonline.data.battle.actions.BattleVictoryActionData;
 	import ru.avangardonline.data.battle.actions.BattleWorldElementActionData;
 	import ru.avangardonline.data.battle.turns.BattleTurnData;
 	import ru.avangardonline.data.battle.world.BattleWorldAbstractElementData;
 	import ru.avangardonline.data.character.HeroCharacterData;
-	import ru.avangardonline.serializers.txt.data.battle.result.BattleResultDataSerializer;
-	import ru.avangardonline.serializers.txt.data.battle.world.BattleWorldElementCollectionDataSerializer;
-	import ru.avangardonline.serializers.txt.data.battle.world.BattleWorldFieldDataSerializer;
-	import ru.avangardonline.data.battle.actions.BattleNormalizeActionData;
+	import ru.avangardonline.serializers.ISerializer;
+	import ru.avangardonline.serializers.battle.result.BattleResultDataSerializer;
+	import ru.avangardonline.serializers.battle.world.BattleWorldElementCollectionDataSerializer;
+	import ru.avangardonline.serializers.battle.world.BattleWorldFieldDataSerializer;
 	
 	/**
 	 * @author					BlooDHounD

@@ -6,10 +6,11 @@
 
 package ru.avangardonline.data.battle.world {
 
+	import by.blooddy.core.utils.nextframeCall;
+	
 	import ru.avangardonline.events.data.battle.world.BattleWorldCoordinateDataEvent;
 	import ru.avangardonline.events.data.battle.world.BattleWorldDataEvent;
 	import ru.avangardonline.events.data.battle.world.BattleWorldTempElementEvent;
-	import by.blooddy.core.utils.nextframeCall;
 
 	//--------------------------------------
 	//  Events

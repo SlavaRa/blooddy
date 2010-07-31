@@ -4,20 +4,20 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.serializers.txt.data.character {
+package ru.avangardonline.serializers.character {
 
 	import flash.errors.IllegalOperationError;
 	
-	import ru.avangardonline.data.character.HeroCharacterData;
+	import ru.avangardonline.data.character.MinionCharacterData;
 
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					19.08.2009 22:39:30
+	 * @created					19.08.2009 22:43:21
 	 */
-	public class HeroCharacterDataSerializer extends CharacterDataSerializer {
+	public class MinionCharacterDataSerializer extends CharacterDataSerializer {
 
 		//--------------------------------------------------------------------------
 		//
@@ -28,7 +28,7 @@ package ru.avangardonline.serializers.txt.data.character {
 		/**
 		 * @private
 		 */
-		private static const _serializer:HeroCharacterDataSerializer = new HeroCharacterDataSerializer();
+		private static const _serializer:MinionCharacterDataSerializer = new MinionCharacterDataSerializer();
 
 		//--------------------------------------------------------------------------
 		//
@@ -36,8 +36,8 @@ package ru.avangardonline.serializers.txt.data.character {
 		//
 		//--------------------------------------------------------------------------
 
-		public static function deserialize(source:String, target:HeroCharacterData=null):HeroCharacterData {
-			return _serializer.deserialize( source, target ) as HeroCharacterData;
+		public static function deserialize(source:String, target:MinionCharacterData=null):MinionCharacterData {
+			return _serializer.deserialize( source, target ) as MinionCharacterData;
 		}
 
 		//--------------------------------------------------------------------------
@@ -49,7 +49,7 @@ package ru.avangardonline.serializers.txt.data.character {
 		/**
 		 * Constructor
 		 */
-		public function HeroCharacterDataSerializer() {
+		public function MinionCharacterDataSerializer() {
 			super();
 			if ( _serializer ) throw new IllegalOperationError();
 		}
@@ -61,18 +61,21 @@ package ru.avangardonline.serializers.txt.data.character {
 		//--------------------------------------------------------------------------
 
 		public override function deserialize(source:String, target:*=null):* {
-			if ( source.charAt( 0 ) != 'h' ) throw new ArgumentError();
-			var data:HeroCharacterData = target as HeroCharacterData;
-			var arr:Array = source.substr( 2 ).split( ',', 4 );
-			var id:uint = parseInt( arr[ 0 ] );
+			if ( source.charAt( 0 ) != 'u' ) throw new ArgumentError();
+			var data:MinionCharacterData = target as MinionCharacterData;
+			var arr:Array = source.substr( 2 ).split( '|', 3 );
+			var arr2:Array = arr[ 0 ].split( ',', 2 );
 			if ( !data ) {
-				data = new HeroCharacterData( id, arr[ 1 ] );
-			} else if ( data.id != id || data.name != arr[ 1 ] ) {
-				throw new ArgumentError();
+				data = new MinionCharacterData( parseInt( arr2[ 0 ] ) );
 			}
 			super.deserialize( source, data );
-			data.race = parseInt( arr[ 2 ] );
-			data.sex = parseBoolean( arr[ 3 ] );
+			data.type = parseInt( arr2[ 1 ] );
+			arr2 = arr[ 1 ].split( ',', 2 );
+			data.coord.x = parseInt( arr2[ 0 ] ) - 5;
+			data.coord.y = parseInt( arr2[ 1 ] ) - 1;
+			var health:int = parseInt( arr[ 2 ] );
+			data.health.current = health;
+			data.health.max = health;
 			return data;
 		}
 
