@@ -13,6 +13,15 @@ package ru.avangardonline.data.character {
 	import ru.avangardonline.data.items.RuneData;
 	import ru.avangardonline.events.data.character.HeroCharacterDataEvent;
 
+	//--------------------------------------
+	//  Events
+	//--------------------------------------
+	
+	[Event( name="cast", type="ru.avangardonline.events.data.character.HeroCharacterDataEvent" )]
+	[Event( name="victory", type="ru.avangardonline.events.data.character.HeroCharacterDataEvent" )]
+	[Event( name="lose", type="ru.avangardonline.events.data.character.HeroCharacterDataEvent" )]
+	[Event( name="normalize", type="ru.avangardonline.events.data.character.HeroCharacterDataEvent" )]
+	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -125,6 +134,10 @@ package ru.avangardonline.data.character {
 			}
 		}
 
+		public function cast(effectType:uint):void {
+			super.dispatchEvent( new HeroCharacterDataEvent( HeroCharacterDataEvent.CAST ) );
+		}
+		
 		public function victory():void {
 			super.dispatchEvent( new HeroCharacterDataEvent( HeroCharacterDataEvent.VICTORY ) );
 		}

@@ -4,22 +4,21 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.serializers.txt.data.battle.result {
-	
-	import by.blooddy.game.serializers.txt.ISerializer;
+package ru.avangardonline.serializers.battle.actions {
 	
 	import flash.errors.IllegalOperationError;
 	
-	import ru.avangardonline.data.battle.result.BattleResultElementData;
+	import ru.avangardonline.data.battle.actions.BattleAtackActionData;
+	import ru.avangardonline.data.battle.actions.BattleSpellActionData;
 	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					28.11.2009 0:18:34
+	 * @created					12.08.2009 23:06:53
 	 */
-	public class BattleResultElementDataSerializer implements ISerializer {
+	public class BattleSpellActionDataSerializer extends BattleWorldElementActionDataSerializer {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -30,7 +29,7 @@ package ru.avangardonline.serializers.txt.data.battle.result {
 		/**
 		 * @private
 		 */
-		private static const _serializer:BattleResultElementDataSerializer = new BattleResultElementDataSerializer();
+		private static const _serializer:BattleSpellActionDataSerializer = new BattleSpellActionDataSerializer();
 		
 		//--------------------------------------------------------------------------
 		//
@@ -38,8 +37,8 @@ package ru.avangardonline.serializers.txt.data.battle.result {
 		//
 		//--------------------------------------------------------------------------
 		
-		public static function deserialize(source:String, target:BattleResultElementData=null):BattleResultElementData {
-			return _serializer.deserialize( source, target ) as BattleResultElementData;
+		public static function deserialize(source:String, target:BattleSpellActionData=null):BattleSpellActionData {
+			return _serializer.deserialize( source, target ) as BattleSpellActionData;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -51,7 +50,7 @@ package ru.avangardonline.serializers.txt.data.battle.result {
 		/**
 		 * Constructor
 		 */
-		public function BattleResultElementDataSerializer() {
+		public function BattleSpellActionDataSerializer() {
 			super();
 			if ( _serializer ) throw new IllegalOperationError();
 		}
@@ -61,24 +60,16 @@ package ru.avangardonline.serializers.txt.data.battle.result {
 		//  Implements methods
 		//
 		//--------------------------------------------------------------------------
-
-		/**
-		 * @inheritDoc
-		 */
-		public function deserialize(source:String, target:*=null):* {
-			var data:BattleResultElementData = target as BattleResultElementData;
-			if ( !data ) throw new ArgumentError();
-			var tmp:Array = source.split( '|', 2 );
-			data.experience = parseInt( tmp[ 0 ] );
-			var values:Vector.<int> = new Vector.<int>();
-			if ( tmp[ 1 ] ) {
-				tmp = tmp[ 1 ].split( ',' );
-				var l:uint = tmp.length;
-				for ( var i:uint = 0; i<l; i++ ) {
-					values[ i ] = parseInt( tmp[ i ] );
-				}
-			}
-			data.values = values;
+		
+		public override function deserialize(source:String, target:*=null):* {
+			if ( source.charAt( 0 ) != 's' ) throw new ArgumentError();
+			var data:BattleSpellActionData = target as BattleSpellActionData;
+			if ( !data ) data = new BattleSpellActionData();
+			source = source.substr( 1 );
+			var arr:Array = source.split( '|', 3 );
+			data.effectType = parseInt( arr[ 0 ] );
+			data.targetID = parseInt( arr[ 1 ] );
+			data.targetHealthIncrement = -parseInt( arr[ 2 ] );
 			return data;
 		}
 		

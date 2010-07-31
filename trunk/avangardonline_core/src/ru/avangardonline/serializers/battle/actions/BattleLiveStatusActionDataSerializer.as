@@ -4,20 +4,20 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.serializers.txt.data.character {
+package ru.avangardonline.serializers.battle.actions {
 
 	import flash.errors.IllegalOperationError;
 	
-	import ru.avangardonline.data.character.MinionCharacterData;
+	import ru.avangardonline.data.battle.actions.BattleLiveStatusActionData;
 
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					19.08.2009 22:43:21
+	 * @created					12.08.2009 23:27:32
 	 */
-	public class MinionCharacterDataSerializer extends CharacterDataSerializer {
+	public class BattleLiveStatusActionDataSerializer extends BattleWorldElementActionDataSerializer {
 
 		//--------------------------------------------------------------------------
 		//
@@ -28,7 +28,7 @@ package ru.avangardonline.serializers.txt.data.character {
 		/**
 		 * @private
 		 */
-		private static const _serializer:MinionCharacterDataSerializer = new MinionCharacterDataSerializer();
+		private static const _serializer:BattleLiveStatusActionDataSerializer = new BattleLiveStatusActionDataSerializer();
 
 		//--------------------------------------------------------------------------
 		//
@@ -36,8 +36,8 @@ package ru.avangardonline.serializers.txt.data.character {
 		//
 		//--------------------------------------------------------------------------
 
-		public static function deserialize(source:String, target:MinionCharacterData=null):MinionCharacterData {
-			return _serializer.deserialize( source, target ) as MinionCharacterData;
+		public static function deserialize(source:String, target:BattleLiveStatusActionData=null):BattleLiveStatusActionData {
+			return _serializer.deserialize( source, target ) as BattleLiveStatusActionData;
 		}
 
 		//--------------------------------------------------------------------------
@@ -49,33 +49,25 @@ package ru.avangardonline.serializers.txt.data.character {
 		/**
 		 * Constructor
 		 */
-		public function MinionCharacterDataSerializer() {
+		public function BattleLiveStatusActionDataSerializer() {
 			super();
 			if ( _serializer ) throw new IllegalOperationError();
 		}
 
 		//--------------------------------------------------------------------------
 		//
-		//  Overriden methods
+		//  Implements methods
 		//
 		//--------------------------------------------------------------------------
 
 		public override function deserialize(source:String, target:*=null):* {
-			if ( source.charAt( 0 ) != 'u' ) throw new ArgumentError();
-			var data:MinionCharacterData = target as MinionCharacterData;
-			var arr:Array = source.substr( 2 ).split( '|', 3 );
-			var arr2:Array = arr[ 0 ].split( ',', 2 );
-			if ( !data ) {
-				data = new MinionCharacterData( parseInt( arr2[ 0 ] ) );
-			}
-			super.deserialize( source, data );
-			data.type = parseInt( arr2[ 1 ] );
-			arr2 = arr[ 1 ].split( ',', 2 );
-			data.coord.x = parseInt( arr2[ 0 ] ) - 5;
-			data.coord.y = parseInt( arr2[ 1 ] ) - 1;
-			var health:int = parseInt( arr[ 2 ] );
-			data.health.current = health;
-			data.health.max = health;
+			if ( source.charAt( 0 ) != 'd' ) throw new ArgumentError();
+			var data:BattleLiveStatusActionData = target as BattleLiveStatusActionData;
+			if ( !data ) data = new BattleLiveStatusActionData();
+			source = source.substr( 1 );
+			data = super.deserialize( source, data );
+			var arr:Array = source.split( '|', 2 );
+			data.live = Boolean( parseInt( arr[ 1 ] ) );
 			return data;
 		}
 

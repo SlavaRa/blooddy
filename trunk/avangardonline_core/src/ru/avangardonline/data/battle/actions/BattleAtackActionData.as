@@ -43,43 +43,13 @@ package ru.avangardonline.data.battle.actions {
 		//  targetID
 		//----------------------------------
 
-		/**
-		 * @private
-		 */
-		private var _targetID:uint;
-
-		public function get targetID():uint {
-			return this._targetID;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set targetID(value:uint):void {
-			if ( this._targetID === value ) return;
-			this._targetID = value;
-		}
+		public var targetID:uint;
 
 		//----------------------------------
 		//  targetIncreaseHealth
 		//----------------------------------
 
-		/**
-		 * @private
-		 */
-		private var _targetHealthIncrement:int;
-
-		public function get targetHealthIncrement():int {
-			return this._targetHealthIncrement;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set targetHealthIncrement(value:int):void {
-			if ( this._targetHealthIncrement === value ) return;
-			this._targetHealthIncrement = value;
-		}
+		public var targetHealthIncrement:int;
 
 		//--------------------------------------------------------------------------
 		//
@@ -97,7 +67,7 @@ package ru.avangardonline.data.battle.actions {
 				this.getCommand(
 					new Command(
 						'atack',
-						[ this._targetID ]
+						[ this.targetID ]
 					)
 				),
 				this.getCommand(
@@ -105,23 +75,23 @@ package ru.avangardonline.data.battle.actions {
 						'defence',
 						[ super.elementID ]
 					),
-					this._targetID
+					this.targetID
 				),
 				this.getCommand(
 					new Command(
 						'incHealth',
-						[ -this._targetHealthIncrement ]
+						[ this.targetHealthIncrement ]
 					),
-					this._targetID
+					this.targetID
 				)
 			);
 			return result;
 		}
 
 		public override function apply(collection:BattleWorldElementCollectionData):void {
-			var element:MinionCharacterData = collection.getElement( this._targetID ) as MinionCharacterData;
+			var element:MinionCharacterData = collection.getElement( this.targetID ) as MinionCharacterData;
 			if ( !element ) throw new ArgumentError();
-			element.health.current -= this._targetHealthIncrement;
+			element.health.current += this.targetHealthIncrement;
 		}
 
 	}

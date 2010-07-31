@@ -4,20 +4,20 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.serializers.txt.data.battle.actions {
+package ru.avangardonline.serializers.battle.actions {
 
 	import flash.errors.IllegalOperationError;
 	
-	import ru.avangardonline.data.battle.actions.BattleAtackActionData;
+	import ru.avangardonline.data.battle.actions.BattleMoveActionData;
 
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					12.08.2009 23:06:53
+	 * @created					12.08.2009 22:41:07
 	 */
-	public class BattleAtackActionDataSerializer extends BattleWorldElementActionDataSerializer {
+	public class BattleMoveActionDataSerializer extends BattleWorldElementActionDataSerializer {
 
 		//--------------------------------------------------------------------------
 		//
@@ -28,7 +28,7 @@ package ru.avangardonline.serializers.txt.data.battle.actions {
 		/**
 		 * @private
 		 */
-		private static const _serializer:BattleAtackActionDataSerializer = new BattleAtackActionDataSerializer();
+		private static const _serializer:BattleMoveActionDataSerializer = new BattleMoveActionDataSerializer();
 
 		//--------------------------------------------------------------------------
 		//
@@ -36,8 +36,8 @@ package ru.avangardonline.serializers.txt.data.battle.actions {
 		//
 		//--------------------------------------------------------------------------
 
-		public static function deserialize(source:String, target:BattleAtackActionData=null):BattleAtackActionData {
-			return _serializer.deserialize( source, target ) as BattleAtackActionData;
+		public static function deserialize(source:String, target:BattleMoveActionData=null):BattleMoveActionData {
+			return _serializer.deserialize( source, target ) as BattleMoveActionData;
 		}
 
 		//--------------------------------------------------------------------------
@@ -49,7 +49,7 @@ package ru.avangardonline.serializers.txt.data.battle.actions {
 		/**
 		 * Constructor
 		 */
-		public function BattleAtackActionDataSerializer() {
+		public function BattleMoveActionDataSerializer() {
 			super();
 			if ( _serializer ) throw new IllegalOperationError();
 		}
@@ -61,14 +61,15 @@ package ru.avangardonline.serializers.txt.data.battle.actions {
 		//--------------------------------------------------------------------------
 
 		public override function deserialize(source:String, target:*=null):* {
-			if ( source.charAt( 0 ) != 'a' ) throw new ArgumentError();
-			var data:BattleAtackActionData = target as BattleAtackActionData;
-			if ( !data ) data = new BattleAtackActionData();
+			if ( source.charAt( 0 ) != 'm' ) throw new ArgumentError();
+			var data:BattleMoveActionData = target as BattleMoveActionData;
+			if ( !data ) data = new BattleMoveActionData();
 			source = source.substr( 1 );
-			data = super.deserialize( source, data );
-			var arr:Array = source.split( '|', 3 );
-			data.targetID = parseInt( arr[ 1 ] );
-			data.targetHealthIncrement = parseInt( arr[ 2 ] );
+			super.deserialize( source, data );
+			var arr:Array = source.substr( 1 ).split( '|', 2 );
+			arr = arr[1].split( ',', 2 );
+			data.x = parseInt( arr[ 0 ] ) - 5;
+			data.y = parseInt( arr[ 1 ] ) - 1;
 			return data;
 		}
 

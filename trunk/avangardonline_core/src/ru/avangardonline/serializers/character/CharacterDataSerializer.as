@@ -4,12 +4,12 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package ru.avangardonline.serializers.txt.data.character {
+package ru.avangardonline.serializers.character {
 
 	import ru.avangardonline.data.character.CharacterData;
 	import ru.avangardonline.data.character.HeroCharacterData;
 	import ru.avangardonline.data.character.MinionCharacterData;
-	import ru.avangardonline.serializers.txt.data.battle.world.BattleWorldElementDataSerializer;
+	import ru.avangardonline.serializers.battle.world.BattleWorldElementDataSerializer;
 
 	/**
 	 * @author					BlooDHounD

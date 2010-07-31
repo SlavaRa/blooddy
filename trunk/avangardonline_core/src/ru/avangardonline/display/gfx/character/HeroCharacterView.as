@@ -6,6 +6,7 @@
 
 package ru.avangardonline.display.gfx.character {
 
+	import by.blooddy.core.display.StageObserver;
 	import by.blooddy.core.display.resource.ResourceDefinition;
 	
 	import flash.filters.DropShadowFilter;
@@ -14,9 +15,8 @@ package ru.avangardonline.display.gfx.character {
 	import flash.text.TextFormat;
 	
 	import ru.avangardonline.data.character.HeroCharacterData;
-	import ru.avangardonline.events.data.character.HeroCharacterDataEvent;
 	import ru.avangardonline.display.gfx.battle.world.animation.Animation;
-	import by.blooddy.core.display.StageObserver;
+	import ru.avangardonline.events.data.character.HeroCharacterDataEvent;
 	
 	/**
 	 * @author					BlooDHounD
@@ -53,6 +53,11 @@ package ru.avangardonline.display.gfx.character {
 		 */
 		protected static const _ANIM_VICTORY:Animation =	new Animation( 11, 1 );
 		
+		/**
+		 * @private
+		 */
+		protected static const _ANIM_CAST:Animation =	new Animation( 5, 1 );
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -66,6 +71,7 @@ package ru.avangardonline.display.gfx.character {
 			super( data );
 			this._data = data;
 			var observer:StageObserver = new StageObserver( this );
+			observer.registerEventListener( data, HeroCharacterDataEvent.CAST,		this.handler_cast );
 			observer.registerEventListener( data, HeroCharacterDataEvent.VICTORY,	this.handler_victory );
 			observer.registerEventListener( data, HeroCharacterDataEvent.LOSE,		this.handler_lose );
 			observer.registerEventListener( data, HeroCharacterDataEvent.NORMALIZE,	this.handler_normalize );
@@ -143,6 +149,13 @@ package ru.avangardonline.display.gfx.character {
 		//  Event handlers
 		//
 		//--------------------------------------------------------------------------
+		
+		/**
+		 * @private
+		 */
+		private function handler_cast(event:HeroCharacterDataEvent):void {
+			this.setAnimation( _ANIM_CAST );
+		}
 		
 		/**
 		 * @private

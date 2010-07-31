@@ -10,6 +10,8 @@ package ru.avangardonline.display.gfx.character {
 	import by.blooddy.core.display.StageObserver;
 	import by.blooddy.core.display.resource.ResourceDefinition;
 	
+	import flash.events.Event;
+	
 	import ru.avangardonline.data.character.MinionCharacterData;
 	import ru.avangardonline.display.gfx.battle.world.animation.Animation;
 	import ru.avangardonline.events.data.character.MinionCharacterDataEvent;
@@ -45,6 +47,7 @@ package ru.avangardonline.display.gfx.character {
 		 */
 		public function MinionCharacterView(data:MinionCharacterData) {
 			super( data );
+			super.addEventListener( Event.COMPLETE, this.handler_complete, false, int.MAX_VALUE, true );
 			this._data = data;
 			var observer:StageObserver = new StageObserver( this );
 			observer.registerEventListener( data, MinionCharacterDataEvent.LIVE_CHANGE, this.handler_liveChange );
@@ -122,6 +125,15 @@ package ru.avangardonline.display.gfx.character {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @private
+		 */
+		private function handler_complete(event:Event):void {
+			if ( !this._data.live ) {
+				event.stopImmediatePropagation();
+			}
+		}
+		
 		/**
 		 * @private
 		 */

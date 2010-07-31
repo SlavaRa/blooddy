@@ -23,6 +23,8 @@ package ru.avangardonline.events.data.character {
 		//
 		//--------------------------------------------------------------------------
 
+		public static const CAST:String = 'cast';
+		
 		public static const VICTORY:String = 'victory';
 
 		public static const LOSE:String = 'lose';
