@@ -9,7 +9,6 @@ package by.blooddy.crypto.image {
 	import flash.utils.ByteArray;
 
 	[ExcludeClass]
-	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0

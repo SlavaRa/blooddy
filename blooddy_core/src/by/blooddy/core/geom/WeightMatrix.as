@@ -102,7 +102,7 @@ package by.blooddy.core.geom {
 		 * @param	x		
 		 * @param	y		
 		 * 
-		 * @throw	RangeError
+		 * @throws	angeError
 		 */
 		public function addPoint(x:uint, y:uint):void {
 			if (x>=this._width || y>=this._height) throw new RangeError();
@@ -117,7 +117,7 @@ package by.blooddy.core.geom {
 		 * @param	x		
 		 * @param	y		
 		 * 
-		 * @throw	RangeError
+		 * @throws	angeError
 		 */
 		public function removePoint(x:uint, y:uint):void {
 			if (x>=this._width || y>=this._height) throw new RangeError();
@@ -140,7 +140,7 @@ package by.blooddy.core.geom {
 		 * 
 		 * @return	
 		 * 
-		 * @throw	RangeError
+		 * @throws	angeError
 		 */
 		public function hasPoint(x:uint, y:uint):Boolean {
 			if (x>=this._width || y>=this._height) throw new RangeError();

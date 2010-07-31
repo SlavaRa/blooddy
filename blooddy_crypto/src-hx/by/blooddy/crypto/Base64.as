@@ -33,9 +33,7 @@ package by.blooddy.crypto {
 		 * @param	insertNewLines	If <code>true</code> passed, the resulting 
 		 * 							string will contain line breaks.
 		 * 
-		 * @default	<code>false</code>
-		 * 
-		 * @return	The data encoded.
+		 * @return					The data encoded.
 		 */
 		public static native function encode(bytes:ByteArray, insertNewLines:Boolean=false):String;
 		
@@ -43,12 +41,14 @@ package by.blooddy.crypto {
 		 * Decodes the <code>source</code> string previously encoded using Base64
 		 * algorithm.
 		 * 
-		 * @param	source	The string containing encoded data.
+		 * @param	str				The string containing encoded data.
 		 * 
-		 * @return	The array of bytes obtained by decoding the <code>source</code>
-		 * 			string.
+		 * @return					The array of bytes obtained by decoding the <code>source</code>
+		 * 							string.
+		 * 
+		 * @throws	ArgumentError	страка не валидна
 		 */
-		public static native function decode(source:String):ByteArray;
+		public static native function decode(str:String):ByteArray;
 		
 	}
 	

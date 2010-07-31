@@ -124,7 +124,7 @@ package by.blooddy.core.commands {
 			var result:Array = new Array();
 			var length:uint = arr.length;
 			for ( var i:uint = 0; i<length; i++ ) {
-				result.push( ObjectUtils.toString( arr[ i ] ) );
+				result.push( arr[ i ] is Command ? arr[ i ] : ObjectUtils.toString( arr[ i ] ) );
 			}
 			return result.join( ',' );
 		}

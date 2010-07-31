@@ -26,23 +26,27 @@ package by.blooddy.crypto.image {
 		//  Class methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * Creates a PNG-encoded byte sequence from the specified <code>BitmapData</code>
 		 * 
-		 * @param	image		The <code>BitmapData</code> of the image you wish to encode.
+		 * @param	image			The <code>BitmapData</code> of the image you wish to encode.
 		 * 
-		 * @param	palette		The color patette to use.
-		 * @see 				by.blooddy.crypto.image.palette.IPalette
-		 * @default				<code>null</code>
+		 * @param	palette			The color patette to use.
+		 * 							если передан <code>null</code>, то используется
+		 * 							<code>by.blooddy.crypto.image.palette.MedianCutPalette</code>
 		 * 
-		 * @param	filter		The encoding algorithm you wish to apply while encoding.
-		 * 						Use the constants provided in 
-		 * 						<code>by.blooddy.crypto.image.PNGFilter</code> class.
-		 * @see					by.blooddy.crypto.image.PNGFilter
-		 * @default				<code>PNGFilter.NONE</code>
+		 * @param	filter			The encoding algorithm you wish to apply while encoding.
+		 * 							Use the constants provided in 
+		 * 							<code>by.blooddy.crypto.image.PNGFilter</code> class.
 		 * 
-		 * @return	The sequence of bytes containing the encoded image.
+		 * @return					The sequence of bytes containing the encoded image.
+		 * 
+		 * @throws	ArgumentError	неверный фильтр
+		 * 
+		 * @see 					by.blooddy.crypto.image.palette.IPalette
+		 * @see 					by.blooddy.crypto.image.palette.MedianCutPalette
+		 * @see 					by.blooddy.crypto.image.PNGFilter
 		 */
 		public static native function encode(image:BitmapData, 
 			palette:IPalette=null, filter:uint=0):ByteArray;

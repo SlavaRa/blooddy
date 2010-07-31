@@ -30,7 +30,7 @@ package by.blooddy.crypto {
 		 * 
 		 * @param	bytes	The data to be hashed.
 		 * 
-		 * @return	The resluting checksum.
+		 * @return			The resluting checksum.
 		 */
 		public static native function hash(bytes:ByteArray):uint;
 		

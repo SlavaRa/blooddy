@@ -24,7 +24,6 @@ package by.blooddy.core.net {
 	import flash.utils.clearTimeout;
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
-	import by.blooddy.core.utils.ByteArrayUtils;
 
 	//--------------------------------------
 	//  Implements events: ISocket
@@ -569,7 +568,7 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		private function handler_httpStatus(event:HTTPStatusEvent):void {
-			this._status - event.status;
+			this._status = event.status;
 		}
 
 		//--------------------------------------------------------------------------

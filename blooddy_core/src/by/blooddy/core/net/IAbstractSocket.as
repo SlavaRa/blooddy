@@ -135,8 +135,8 @@ package by.blooddy.core.net {
 		 * @event	securityError	flash.events.SecurityErrorEvent
 		 * @event	connect			flash.events.Event
 		 * 
-		 * @throw	SecurityError	флэшки нету доступа к домену.
-  		 * @throw	SecurityError	пытаемся конектиться выше порта 65535.  
+		 * @throws	ecurityError	флэшки нету доступа к домену.
+  		 * @throws	ecurityError	пытаемся конектиться выше порта 65535.  
 		 * 
 		 * @keyword					socket.connect, connect
 		 * 

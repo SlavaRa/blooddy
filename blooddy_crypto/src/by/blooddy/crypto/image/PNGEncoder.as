@@ -43,13 +43,10 @@ package by.blooddy.crypto.image {
 		 * @param	filter		The encoding algorithm you wish to apply while encoding.
 		 * 						Use the constants provided in 
 		 * 						<code>by.blooddy.crypto.image.PNGFilter</code> class.
+		 * 
 		 * @see					by.blooddy.crypto.image.PNGFilter
-		 * @default				<code>PNGFilter.NONE</code>
 		 * 
-		 * @see					by.blooddy.crypto.image.PNG8Encoder.encode()
-		 * @see					by.blooddy.crypto.image.PNG24Encoder.encode()
-		 * 
-		 * @return	The sequence of bytes containing the encoded image.
+		 * @return				The sequence of bytes containing the encoded image.
 		 */
 		public static function encode(image:BitmapData, filter:uint=0):ByteArray {
 			var size:uint = image.width * image.height;

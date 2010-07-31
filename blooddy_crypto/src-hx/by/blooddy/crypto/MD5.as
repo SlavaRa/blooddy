@@ -28,22 +28,22 @@ package by.blooddy.crypto {
 		/**
 		 * Performs MD5 hash algorithm on a String.
 		 *
-		 * @param		source		The string to hash.
+		 * @param	str		The string to hash.
 		 *
-		 * @return					A string containing the hash value of <code>source</code>.
+		 * @return			A string containing the hash value of <code>source</code>.
 		 *
-		 * @keyword					md5.hash, hash
+		 * @keyword			md5.hash, hash
 		 */
-		public static native function hash(source:String):String;
+		public static native function hash(str:String):String;
 		
 		/**
 		 * Performs MD5 hash algorithm on a <code>ByteArray</code>.
 		 *
-		 * @param	data			The <code>ByteArray</code> data to hash.
+		 * @param	data	The <code>ByteArray</code> data to hash.
 		 *
-		 * @return					A string containing the hash value of data.
+		 * @return			A string containing the hash value of data.
 		 *
-		 * @keyword					md5.hash, hash
+		 * @keyword			md5.hash, hash
 		 */
 		public static native function hashBytes(data:ByteArray):String;
 
