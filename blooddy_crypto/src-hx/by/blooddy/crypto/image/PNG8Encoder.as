@@ -33,8 +33,9 @@ package by.blooddy.crypto.image {
 		 * @param	image			The <code>BitmapData</code> of the image you wish to encode.
 		 * 
 		 * @param	palette			The color patette to use.
-		 * 							если передан <code>null</code>, то используется
+		 * 							If <code>null</code> given, the
 		 * 							<code>by.blooddy.crypto.image.palette.MedianCutPalette</code>
+		 * 							will be used.
 		 * 
 		 * @param	filter			The encoding algorithm you wish to apply while encoding.
 		 * 							Use the constants provided in 
@@ -42,7 +43,7 @@ package by.blooddy.crypto.image {
 		 * 
 		 * @return					The sequence of bytes containing the encoded image.
 		 * 
-		 * @throws	ArgumentError	неверный фильтр
+		 * @throws	ArgumentError	No such filter.
 		 * 
 		 * @see 					by.blooddy.crypto.image.palette.IPalette
 		 * @see 					by.blooddy.crypto.image.palette.MedianCutPalette

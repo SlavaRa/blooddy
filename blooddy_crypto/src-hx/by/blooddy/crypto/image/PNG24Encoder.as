@@ -36,7 +36,7 @@ package by.blooddy.crypto.image {
 		 * 
 		 * @return					a <code>ByteArray</code> containing the PNG encoded image data.
 		 * 
-		 * @throws	ArgumentError	неверный фильтр
+		 * @throws	ArgumentError	No such filter.
 		 * 
 		 * @see						by.blooddy.crypto.image.PNGFilter
 		 */
