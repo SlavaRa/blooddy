@@ -214,7 +214,7 @@ package by.blooddy.code {
 		protected final function readIdentifier():String {
 			var pos:uint = this._position;
 			var c:uint = this.readCharCode();
-			if ( 
+			if (
 				( c < Char.a || c > Char.z ) &&
 				( c < Char.A || c > Char.Z ) &&
 				c != Char.DOLLAR &&

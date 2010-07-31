@@ -178,7 +178,7 @@ package by.blooddy.core.managers {
 		 * 
 		 * @return				кука.
 		 * 
-		 * @throw	Error		нету возможности обращаться к кукам.
+		 * @throws	rror		нету возможности обращаться к кукам.
 		 */
 		public function getCookie(name:String):* {
 			this.$getCookie(name);

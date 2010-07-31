@@ -32,12 +32,11 @@ package by.blooddy.crypto.image.palette {
 		 * 
 		 * @param	maxColors	The maximum number of collors to be stored inside
 		 * 						the palette. The possible range is from 2 to 256 inclusive.
-		 * @default	256.
 		 * 
-		 * @throws	<code>TypeError</code>	The <code>image</code> parameter must 
-		 * 			not be <code>null</code>.
+		 * @throws	TypeError	The <code>image</code> parameter must 
+		 * 						not be <code>null</code>.
 		 * 
-		 * @throws	<code>RangeError</code>	The number of colors is out of bounds.
+		 * @throws	RangeError	The number of colors is out of bounds.
 		 */
 		public function MedianCutPalette(image:BitmapData, maxColors:uint=256) {
 			super();

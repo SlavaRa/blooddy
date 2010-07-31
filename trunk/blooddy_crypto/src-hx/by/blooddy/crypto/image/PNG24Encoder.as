@@ -28,15 +28,17 @@ package by.blooddy.crypto.image {
 		/**
 		 * Creates a PNG image from the specified <code>BitmapData</code>
 		 *
-		 * @param	image	The <code>BitmapData</code> to be converted to PNG format.
+		 * @param	image			The <code>BitmapData</code> to be converted to PNG format.
 		 * 
-		 * @param	filter	The encoding algorithm to use when processing the image.
-		 * 					Use the constants provided in 
-		 * 					<code>by.blooddy.crypto.image.PNGFilter</code> class.
-		 * @see				by.blooddy.crypto.image.PNGFilter
-		 * @default			<code>PNGFilter.NONE</code>
+		 * @param	filter			The encoding algorithm to use when processing the image.
+		 * 							Use the constants provided in 
+		 * 							<code>by.blooddy.crypto.image.PNGFilter</code> class.
 		 * 
-		 * @return			a <code>ByteArray</code> containing the PNG encoded image data.
+		 * @return					a <code>ByteArray</code> containing the PNG encoded image data.
+		 * 
+		 * @throws	ArgumentError	неверный фильтр
+		 * 
+		 * @see						by.blooddy.crypto.image.PNGFilter
 		 */
 		public static native function encode(image:BitmapData, filter:uint=0):ByteArray;
 		

@@ -7,6 +7,9 @@
 package by.blooddy.crypto.image {
 
 	/**
+	 * @see						by.blooddy.crypto.image.PNG8Encoder
+	 * @see						by.blooddy.crypto.image.PNG24Encoder
+	 * 
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10

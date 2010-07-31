@@ -7,22 +7,22 @@
 package by.blooddy.crypto.image.palette {
 
 	/**
-	 * The base interface for creating color palletes to be used in PNG encoders.
+	 * The base interface for creating color palletes to be used in PNG8 encoders.
+	 * 
+	 * @see						by.blooddy.crypto.image.PNG8Encoder
 	 * 
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
 	 * @created					27.06.2010 22:35:21
-	 * 
-	 * @see						by.blooddy.crypto.image.PNG8Encoder
 	 */
 	public interface IPalette {
 
 		/**
 		 * Returns the list of the colors used in the palette.
 		 * 
-		 * @return All the colors used in the palette.
+		 * @return	All the colors used in the palette.
 		 */
 		function getColors():Vector.<uint>;
 
@@ -34,7 +34,7 @@ package by.blooddy.crypto.image.palette {
 		 * 
 		 * @return					The index of the color inside the palette.
 		 * 
-		 * @throws	<code>ArgumentError</code>	If the color was not found inside the palette.
+		 * @throws	ArgumentError	If the color was not found inside the palette.
 		 */
 		function getIndexByColor(color:uint):uint;
 
