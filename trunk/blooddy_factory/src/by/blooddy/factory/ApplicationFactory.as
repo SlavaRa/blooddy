@@ -855,18 +855,10 @@ internal final class PreloaderSprite extends TextSprite {
 		with ( super.graphics ) {
 			clear();
 			beginFill( color, 0.5 );
-			moveTo( -50,     -5 );
-			lineTo( -50 + w, -5 );
-			lineTo( -50 + w,  5 );
-			lineTo( -50,      5 );
-			lineTo( -50,     -5 );
+			drawRect( -50, -5, w, 10 );
 			endFill();
 			lineStyle( 1, color );
-			moveTo( -50,     -5 );
-			lineTo(  50,     -5 );
-			lineTo(  50,      5 );
-			lineTo( -50,      5 );
-			lineTo( -50,     -5 );
+			drawRect( -50, -5, 100, 10 );
 		}
 	}
 
