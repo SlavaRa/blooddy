@@ -13,6 +13,7 @@ import by.blooddy.crypto.image.JPEGTableHelper;
 import by.blooddy.crypto.image.palette.MedianCutPaletteHelper;
 import by.blooddy.crypto.image.PNG24Encoder;
 import by.blooddy.crypto.image.PNG8Encoder;
+import by.blooddy.crypto.compression.LZW;
 import by.blooddy.crypto.MD5;
 
 /**
@@ -36,6 +37,7 @@ class Main {
 		PNG8Encoder;
 		PNG24Encoder;
 		MedianCutPaletteHelper;
+		LZW;
 	}
 
 }

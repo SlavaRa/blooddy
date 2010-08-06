@@ -83,7 +83,7 @@ package by.blooddy.core.net.loading {
 		 * @event	ioError
 		 * @event	securityError
 		 * 
-		 * @throws	rgumentError	если мы не в состоянии idle
+		 * @throws	ArgumentError	если мы не в состоянии idle
 		 * 
 		 * @copy			flash.net.URLLoader#load()
 		 */
@@ -101,7 +101,7 @@ package by.blooddy.core.net.loading {
 		 * @event	ioError
 		 * @event	securityError
 		 * 
-		 * @throws	rgumentError	если мы не в состоянии idle
+		 * @throws	ArgumentError	если мы не в состоянии idle
 		 * 
 		 * @copy			flash.net.Loader#loadBytes()
 		 */

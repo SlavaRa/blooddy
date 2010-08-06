@@ -86,7 +86,7 @@ package by.blooddy.core.data {
 		 * 
 		 * @event	added			
 		 * 
-		 * @throws	rgumentError	Самого сибя добавляем, или добавляем дитё, которое является нашим предком.
+		 * @throws	ArgumentError	Самого сибя добавляем, или добавляем дитё, которое является нашим предком.
 		 * 
 		 * @keyword					datacontainer.addchild, addchild
 		 */
@@ -106,8 +106,8 @@ package by.blooddy.core.data {
 		 * 
 		 * @return					Возвращает добавленное дитё.
 		 * 
-		 * @throws	angeError		Куда-то не туда вставляем :(
-		 * @throws	rgumentError	Самого сибя добавляем, или добавляем дитё, которое является нашим предком.
+		 * @throws	RangeError		Куда-то не туда вставляем :(
+		 * @throws	ArgumentError	Самого сибя добавляем, или добавляем дитё, которое является нашим предком.
 		 * 
 		 * @keyword					datacontainer.addchildat, addchildat
 		 */
@@ -164,7 +164,7 @@ package by.blooddy.core.data {
 		 * 
 		 * @return					Возвращает удалённое дитё.
 		 * 
-		 * @throws	rgumentError	Пытаемся удалить дитё не лежащие в нас.
+		 * @throws	ArgumentError	Пытаемся удалить дитё не лежащие в нас.
 		 * 
 		 * @keyword					datacontainer.removechild, removechild
 		 */
@@ -184,7 +184,7 @@ package by.blooddy.core.data {
 		 * 
 		 * @return					Возвращает удалённое дитё.
 		 * 
-		 * @throws	angeError		Нету такой ячейки :(
+		 * @throws	RangeError		Нету такой ячейки :(
 		 * 
 		 * @keyword					datacontainer.removechildat, removechildat
 		 */
@@ -250,7 +250,7 @@ package by.blooddy.core.data {
 		 * 
 		 * @return					Возвращает найденное дитё.
 		 * 
-		 * @throws	angeError		Нету такой ячейки :(
+		 * @throws	RangeError		Нету такой ячейки :(
 		 * 
 		 * @keyword					datacontainer.getchildat, getchildat
 		 */
@@ -301,7 +301,7 @@ package by.blooddy.core.data {
 		 * 
 		 * @return					Возвращает индекс дити или -1.
 		 * 
-		 * @throws	rgumentError	Не наше дитё!
+		 * @throws	ArgumentError	Не наше дитё!
 		 * 
 		 * @keyword					datacontainer.getchildindex, getchildindex
 		 */
@@ -331,8 +331,8 @@ package by.blooddy.core.data {
 		 * @param	child			Наше дитё.
 		 * @param	index			Новое место.
 		 * 
-		 * @throws	angeError		Нету такой ячейки :(
-		 * @throws	rgumentError	Не наше дитё!
+		 * @throws	RangeError		Нету такой ячейки :(
+		 * @throws	ArgumentError	Не наше дитё!
 		 * 
 		 * @keyword					datacontainer.setchildindex, setchildindex
 		 */
@@ -363,7 +363,7 @@ package by.blooddy.core.data {
 		 * @param	child1			Первое дитё.
 		 * @param	child2			Второе дитё.
 		 * 
-		 * @throws	rgumentError	Один из детей не наш :(
+		 * @throws	ArgumentError	Один из детей не наш :(
 		 * 
 		 * @keyword					datacontainer.swapchildren, swapchildren
 		 */
@@ -382,7 +382,7 @@ package by.blooddy.core.data {
 		 * @param	index1			Первый индекс.
 		 * @param	index2			Второй индекс.
 		 * 
-		 * @throws	angeError		Нету такой ячейки :(
+		 * @throws	RangeError		Нету такой ячейки :(
 		 * 
 		 * @keyword					datacontainer.swapchildrenat, swapchildrenat
 		 */

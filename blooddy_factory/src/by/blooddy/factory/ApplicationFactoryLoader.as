@@ -229,7 +229,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set alpha(value:Number):void {
 			throw new IllegalOperationError();
@@ -237,7 +237,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set blendMode(value:String):void {
 			throw new IllegalOperationError();
@@ -245,7 +245,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set blendShader(value:Shader):void {
 			throw new IllegalOperationError();
@@ -253,7 +253,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set cacheAsBitmap(value:Boolean):void {
 			throw new IllegalOperationError();
@@ -261,7 +261,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set filters(value:Array):void {
 			throw new IllegalOperationError();
@@ -269,7 +269,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set height(value:Number):void {
 			throw new IllegalOperationError();
@@ -277,7 +277,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set mask(value:DisplayObject):void {
 			throw new IllegalOperationError();
@@ -285,7 +285,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set name(value:String):void {
 			throw new IllegalOperationError();
@@ -293,7 +293,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set opaqueBackground(value:Object):void {
 			throw new IllegalOperationError();
@@ -317,7 +317,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set rotation(value:Number):void {
 			throw new IllegalOperationError();
@@ -325,7 +325,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set rotationX(value:Number):void {
 			throw new IllegalOperationError();
@@ -333,7 +333,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set rotationY(value:Number):void {
 			throw new IllegalOperationError();
@@ -341,7 +341,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set rotationZ(value:Number):void {
 			throw new IllegalOperationError();
@@ -349,7 +349,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set scale9Grid(innerRectangle:Rectangle):void {
 			throw new IllegalOperationError();
@@ -357,7 +357,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set scaleX(value:Number):void {
 			throw new IllegalOperationError();
@@ -365,7 +365,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set scaleY(value:Number):void {
 			throw new IllegalOperationError();
@@ -373,7 +373,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set scaleZ(value:Number):void {
 			throw new IllegalOperationError();
@@ -381,7 +381,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set scrollRect(value:Rectangle):void {
 			throw new IllegalOperationError();
@@ -397,7 +397,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство запрещено" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function get transform():Transform {
 			throw new IllegalOperationError();
@@ -412,7 +412,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set visible(value:Boolean):void {
 			throw new IllegalOperationError();
@@ -420,7 +420,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set width(value:Number):void {
 			throw new IllegalOperationError();
@@ -428,7 +428,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set x(value:Number):void {
 			throw new IllegalOperationError();
@@ -436,7 +436,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set y(value:Number):void {
 			throw new IllegalOperationError();
@@ -444,7 +444,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set z(value:Number):void {
 			throw new IllegalOperationError();
@@ -459,7 +459,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set contextMenu(cm:ContextMenu):void {
 			throw new IllegalOperationError();
@@ -467,7 +467,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set doubleClickEnabled(enabled:Boolean):void {
 			throw new IllegalOperationError();
@@ -475,7 +475,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set focusRect(focusRect:Object):void {
 			throw new IllegalOperationError();
@@ -483,7 +483,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set mouseEnabled(enabled:Boolean):void {
 			throw new IllegalOperationError();
@@ -491,7 +491,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set tabEnabled(enabled:Boolean):void {
 			throw new IllegalOperationError();
@@ -499,7 +499,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set tabIndex(index:int):void {
 			throw new IllegalOperationError();
@@ -522,7 +522,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set buttonMode(value:Boolean):void {
 			throw new IllegalOperationError();
@@ -530,7 +530,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set hitArea(value:Sprite):void {
 			throw new IllegalOperationError();
@@ -538,7 +538,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set useHandCursor(value:Boolean):void {
 			throw new IllegalOperationError();
@@ -546,7 +546,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="свойство не используется" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function set soundTransform(sndTransform:SoundTransform):void {
 			throw new IllegalOperationError();
@@ -565,7 +565,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="метод запрещён" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function dispatchEvent(event:Event):Boolean {
 			throw new IllegalOperationError();
@@ -577,7 +577,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="метод запрещён" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function addChild(child:DisplayObject):DisplayObject {
 			throw new IllegalOperationError();
@@ -585,7 +585,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="метод запрещён" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function addChildAt(child:DisplayObject, index:int):DisplayObject {
 			throw new IllegalOperationError();
@@ -593,7 +593,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="метод запрещён" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function areInaccessibleObjectsUnderPoint(point:Point):Boolean {
 			throw new IllegalOperationError();
@@ -601,7 +601,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="метод запрещён" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function contains(child:DisplayObject):Boolean {
 			throw new IllegalOperationError();
@@ -609,7 +609,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="метод запрещён" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function getChildAt(index:int):DisplayObject {
 			throw new IllegalOperationError();
@@ -617,7 +617,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="метод запрещён" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function getChildByName(name:String):DisplayObject {
 			throw new IllegalOperationError();
@@ -625,7 +625,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="метод запрещён" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function getChildIndex(child:DisplayObject):int {
 			throw new IllegalOperationError();
@@ -633,7 +633,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="метод запрещён" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function getObjectsUnderPoint(point:Point):Array {
 			throw new IllegalOperationError();
@@ -641,7 +641,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="метод запрещён" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function removeChild(child:DisplayObject):DisplayObject {
 			throw new IllegalOperationError();
@@ -649,7 +649,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="метод запрещён" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function removeChildAt(index:int):DisplayObject {
 			throw new IllegalOperationError();
@@ -657,7 +657,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="метод запрещён" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function setChildIndex(child:DisplayObject, index:int):void {
 			throw new IllegalOperationError();
@@ -665,7 +665,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="метод запрещён" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function swapChildren(child1:DisplayObject, child2:DisplayObject):void {
 			throw new IllegalOperationError();
@@ -673,7 +673,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="метод запрещён" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function swapChildrenAt(index1:int, index2:int):void {
 			throw new IllegalOperationError();
@@ -685,7 +685,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="метод запрещён" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function startDrag(lockCenter:Boolean=false, bounds:Rectangle=null):void {
 			throw new IllegalOperationError();
@@ -693,7 +693,7 @@ package by.blooddy.factory {
 
 		[Deprecated( message="метод запрещён" )]
 		/**
-		 * @throws	llegalOperationError
+		 * @throws	flash.errors.IllegalOperationError
 		 */
 		public override final function stopDrag():void {
 			throw new IllegalOperationError();

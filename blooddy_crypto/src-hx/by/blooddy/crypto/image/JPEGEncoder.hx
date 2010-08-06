@@ -84,47 +84,47 @@ private class TMP {
 		writeDHT(  Z0 + 245 );
 		writeSOS(  Z0 + 665 );
 
-		var bytenew:Int = 0;
-		var bytepos:Int = 7;
-		var byteout:Int = Z0 + 679;
+		var _byteout:Int = Z0 + 679;
+		var _bytepos:Int = 7;
+		var _bytenew:Int = 0;
 
 		// Encode 8x8 macroblocks
 		var DCY:Int = 0;
 		var DCU:Int = 0;
 		var DCV:Int = 0;
 
-		var x:UInt;
-		var y:UInt;
+		var _x:UInt;
+		var _y:UInt;
 
-		y = 0;
+		_y = 0;
 		do {
-			x = 0;
+			_x = 0;
 			do {
-				if ( tmp.length - byteout < 2048 ) {
+				if ( tmp.length - _byteout < 2048 ) {
 					tmp.length += 4096;
 				}
-				rgb2yuv( image, x, y );
-				DCY = processDU( byteout, bytepos, bytenew, 256 + 512 * 0, Z2 + 130, DCY, Z2 + 1218 + 416,  Z2 + 1218 + 452  );
-				DCU = processDU( byteout, bytepos, bytenew, 256 + 512 * 1, Z2 + 642, DCU, Z2 + 1218 + 1205, Z2 + 1218 + 1241 );
-				DCV = processDU( byteout, bytepos, bytenew, 256 + 512 * 2, Z2 + 642, DCV, Z2 + 1218 + 1205, Z2 + 1218 + 1241 );
-				x += 8;
-			} while ( x < width );
-			y += 8;
-		} while ( y < height );
+				rgb2yuv( image, _x, _y );
+				DCY = processDU( _byteout, _bytepos, _bytenew, 256 + 512 * 0, Z2 + 130, DCY, Z2 + 1218 + 416,  Z2 + 1218 + 452  );
+				DCU = processDU( _byteout, _bytepos, _bytenew, 256 + 512 * 1, Z2 + 642, DCU, Z2 + 1218 + 1205, Z2 + 1218 + 1241 );
+				DCV = processDU( _byteout, _bytepos, _bytenew, 256 + 512 * 2, Z2 + 642, DCV, Z2 + 1218 + 1205, Z2 + 1218 + 1241 );
+				_x += 8;
+			} while ( _x < width );
+			_y += 8;
+		} while ( _y < height );
 
 		// Do the bit alignment of the EOI marker
-		var bytepos:Int;
+		var _bytepos:Int;
 		if ( Memory.getI32( 4 ) >= 0 ) {
-			bytepos = Memory.getI32( 4 ) + 1;
-			writeBits( byteout, bytepos, bytenew, bytepos, ( 1 << bytepos ) - 1 );
+			_bytepos = Memory.getI32( 4 ) + 1;
+			writeBits( _byteout, _bytepos, _bytenew, _bytepos, ( 1 << _bytepos ) - 1 );
 		}
 
-		Memory.setI16( byteout, 0xD9FF ); //EOI
+		Memory.setI16( _byteout, 0xD9FF ); //EOI
 
 		Memory.memory = mem;
 
 		var bytes:ByteArray = new ByteArray();
-		bytes.writeBytes( tmp, Z0, byteout - Z0 + 2 );
+		bytes.writeBytes( tmp, Z0, _byteout - Z0 + 2 );
 		bytes.position = 0;
 
 		tmp.clear();
@@ -249,12 +249,12 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static inline function rgb2yuv(img:BitmapData, x:UInt, y:UInt):Void {
+	private static inline function rgb2yuv(img:BitmapData, _x:UInt, _y:UInt):Void {
 
 		var pos:UInt = 0;
 
-		var xm:UInt = x + 8;
-		var ym:UInt = y + 8;
+		var xm:UInt = _x + 8;
+		var ym:UInt = _y + 8;
 
 		var c:UInt;
 		var r:UInt;
@@ -264,7 +264,7 @@ private class TMP {
 		do {
 			do {
 
-				c = img.getPixel( x, y );
+				c = img.getPixel( _x, _y );
 
 				r =   c >>> 16         ;
 				g = ( c >>   8 ) & 0xFF;
@@ -276,17 +276,17 @@ private class TMP {
 
 				pos += 8;
 
-			} while ( ++x < xm );
-			x -= 8;
-		} while ( ++y < ym );
-		y -= 8;
+			} while ( ++_x < xm );
+			_x -= 8;
+		} while ( ++_y < ym );
+		_y -= 8;
 
 	}
 
 	/**
 	 * @private
 	 */
-	private static inline function processDU(byteout:Int, bytepos:Int, bytenew:Int, CDU:UInt, fdtbl:UInt, DC:Int, HTDC:UInt, HTAC:UInt):Int {
+	private static inline function processDU(_byteout:Int, _bytepos:Int, _bytenew:Int, CDU:UInt, fdtbl:UInt, DC:Int, HTDC:UInt, HTAC:UInt):Int {
 		
 		fDCTQuant( CDU, fdtbl );
 
@@ -298,11 +298,11 @@ private class TMP {
 
 		// Encode DC
 		if ( diff == 0 ) {
-			writeMBits( byteout, bytepos, bytenew, HTDC ); // Diff might be 0
+			writeMBits( _byteout, _bytepos, _bytenew, HTDC ); // Diff might be 0
 		} else {
 			pos = ( 32767 + diff ) * 3;
-			writeMBits( byteout, bytepos, bytenew, HTDC + Memory.getByte( Z2 + 3212 + pos ) * 3 );
-			writeMBits( byteout, bytepos, bytenew, Z2 + 3212 + pos );
+			writeMBits( _byteout, _bytepos, _bytenew, HTDC + Memory.getByte( Z2 + 3212 + pos ) * 3 );
+			writeMBits( _byteout, _bytepos, _bytenew, Z2 + 3212 + pos );
 		}
 
 		// Encode ACs
@@ -324,19 +324,19 @@ private class TMP {
 					lng = nrzeroes >> 4;
 					nrmarker = 1;
 					while ( nrmarker <= lng ) {
-						writeMBits( byteout, bytepos, bytenew, HTAC + 0xF0 * 3 );
+						writeMBits( _byteout, _bytepos, _bytenew, HTAC + 0xF0 * 3 );
 						++nrmarker;
 					}
 					nrzeroes = nrzeroes & 0xF;
 				}
 				pos = ( 32767 + Memory.getI32( i << 2 ) ) * 3;
-				writeMBits( byteout, bytepos, bytenew, HTAC + ( nrzeroes << 4 ) * 3 + Memory.getByte( Z2 + 3212 + pos ) * 3 );
-				writeMBits( byteout, bytepos, bytenew, Z2 + 3212 + pos );
+				writeMBits( _byteout, _bytepos, _bytenew, HTAC + ( nrzeroes << 4 ) * 3 + Memory.getByte( Z2 + 3212 + pos ) * 3 );
+				writeMBits( _byteout, _bytepos, _bytenew, Z2 + 3212 + pos );
 				i++;
 			}
 		}
 		if ( end0pos != 63 ) {
-			writeMBits( byteout, bytepos, bytenew, HTAC );
+			writeMBits( _byteout, _bytepos, _bytenew, HTAC );
 		}
 		return DC;
 	}
@@ -497,29 +497,29 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static inline function writeMBits(byteout:Int, bytepos:Int, bytenew:Int, addres:UInt):Void {
-		writeBits( byteout, bytepos, bytenew, Memory.getByte( addres ), Memory.getUI16( addres + 1 ));
+	private static inline function writeMBits(_byteout:Int, _bytepos:Int, _bytenew:Int, addres:UInt):Void {
+		writeBits( _byteout, _bytepos, _bytenew, Memory.getByte( addres ), Memory.getUI16( addres + 1 ));
 	}
 
 	/**
 	 * @private
 	 */
-	private static inline function writeBits(byteout:Int, bytepos:Int, bytenew:Int, len:Int, val:Int):Void {
+	private static inline function writeBits(_byteout:Int, _bytepos:Int, _bytenew:Int, len:Int, val:Int):Void {
 		while ( --len >= 0 ) {
 			if ( val & ( 1 << len ) != 0 ) {
-				bytenew |= 1 << bytepos;
+				_bytenew |= 1 << _bytepos;
 			}
-			bytepos--;
-			if ( bytepos < 0 ) {
-				if ( bytenew == 0xFF ) {
-					Memory.setI16( byteout, 0x00FF );
-					byteout += 2;
+			_bytepos--;
+			if ( _bytepos < 0 ) {
+				if ( _bytenew == 0xFF ) {
+					Memory.setI16( _byteout, 0x00FF );
+					_byteout += 2;
 				} else {
-					Memory.setByte( byteout, bytenew );
-					byteout++;
+					Memory.setByte( _byteout, _bytenew );
+					_byteout++;
 				}
-				bytepos = 7;
-				bytenew = 0;
+				_bytepos = 7;
+				_bytenew = 0;
 			}
 		}
 	}
