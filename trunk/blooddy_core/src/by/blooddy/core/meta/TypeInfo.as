@@ -514,6 +514,10 @@ package by.blooddy.core.meta {
 
 		$protected_info override function parseXML(xml:XML):void {
 
+			// весь код написанный в этом методе очень запутанный
+			// сложные конструкции используются с целью сэкономить память
+			// и исключиь дополнительную обработку
+			
 			xml = xml.factory[ 0 ]; // дергаем factory
 
 			// name
@@ -554,33 +558,40 @@ package by.blooddy.core.meta {
 			// собираем список интерфейсов на основании списка нашего папы
 			list = xml.implementsInterface;
 			if ( parent ) {
+
 				for each ( x in list ) {
 					n = x.@type.toString();
-					if ( !( n in parent._hash_interfaces ) ) { // добавляем только недостающие
+					if ( !( n in parent._hash_interfaces ) ) { // добавляем только "наши" интерфейсы
 						this._list_interfaces_local.push( parseType( n ) );
 					}
 					this._hash_types[ n ] = true;
 					this._hash_interfaces[ n ] = true;
 				}
+
+				// общий список интерфейсов
+				// если локальный список пуст, то берём родительский список
+				// иначе пытаемся склеить, если родительский не пуст
+				this._list_interfaces = (
+					this._list_interfaces_local.length <= 0
+					?	parent._list_interfaces
+					:	( parent._list_interfaces.length <= 0
+						?	this._list_interfaces_local
+						:	this._list_interfaces_local.concat( parent._list_interfaces )
+					)
+				);
+
 			} else {
+
 				for each ( x in list ) {
 					n = x.@type.toString();
 					this._list_interfaces_local.push( parseType( n ) );
 					this._hash_types[ n ] = true;
 					this._hash_interfaces[ n ] = true;
 				}
+
+				this._list_interfaces = this._list_interfaces_local;
+
 			}
-			this._list_interfaces = (
-				parent
-				?	( this._list_interfaces_local.length <= 0
-					?	parent._list_interfaces
-					:	( parent._list_interfaces.length <= 0
-						?	this._list_interfaces_local
-						:	this._list_interfaces_local.concat( parent._list_interfaces )
-						)
-					)
-				:	this._list_interfaces_local
-			);
 
 			// types
 			this._list_types = (
@@ -602,23 +613,27 @@ package by.blooddy.core.meta {
 			var dn:String;
 
 			// properties
-			var p:PropertyInfo, pp:PropertyInfo;
+			var p:PropertyInfo;		// окальное свойство
+			var pp:PropertyInfo;	// родительское свойство
 			list = xml.variable + xml.constant + xml.accessor; // выдёргиваем все свойства
 			for each ( x in list ) {
-				n = parseName( x ).toString();
+				n = parseName( x ).toString();	// имя свойства
 				if ( parent && n in parent._hash_members ) { // ищем свойство у родителя
 					pp = parent._hash_members[ n ] as PropertyInfo;
 				} else {
 					pp = null;
 				}
 				dn = x.@declaredBy.toString();
-				if ( !dn || dn == name ) { // это свойство объявленно у нас
+				if ( !dn || dn == name ) { // это свойство объявленно/переопределнно у нас
 					p = new PropertyInfo();
-					p._owner = this;
-					p._parent = pp;
 					p.parseXML( x );
-					if ( pp && pp._metadata == p._metadata && pp.access == p.access ) { // наше свойство неотличается от ролительского
+					// если наше свойство неотличается от ролительского
+					// то используем родительское свойство
+					if ( pp && pp._metadata == p._metadata && pp.access == p.access ) {
 						p = pp; // переиспользуем: нечего создавать лишние связи
+					} else {
+						p._owner = this;
+						p._parent = pp;
 					}
 				} else {
 					p = pp;

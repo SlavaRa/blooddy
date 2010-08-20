@@ -15,6 +15,9 @@ package by.blooddy.gui.style {
 	import by.blooddy.code.css.definition.selectors.IDSelector;
 	import by.blooddy.code.css.definition.selectors.PseudoSelector;
 	import by.blooddy.code.css.definition.selectors.TagSelector;
+	import by.blooddy.code.css.definition.values.CSSValue;
+	import by.blooddy.code.css.definition.values.CollectionValue;
+	import by.blooddy.code.css.definition.values.PercentValue;
 	import by.blooddy.core.utils.ClassAlias;
 	import by.blooddy.gui.display.state.IStatable;
 	
@@ -22,10 +25,6 @@ package by.blooddy.gui.style {
 	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
 	import flash.utils.Dictionary;
-	import by.blooddy.code.css.definition.values.CSSValue;
-	import by.blooddy.code.css.definition.values.ComplexValue;
-	import by.blooddy.code.css.definition.values.CollectionValue;
-	import by.blooddy.code.css.definition.values.PercentValue;
 	
 	/**
 	 * @author					BlooDHounD

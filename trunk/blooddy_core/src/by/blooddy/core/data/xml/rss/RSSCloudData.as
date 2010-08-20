@@ -47,7 +47,7 @@ package by.blooddy.core.data.xml.rss {
 		 * @private
 		 */
 		public override function set name(value:String):void {
-			super.name = name;
+			super.name = value;
 		}
 
 		//--------------------------------------------------------------------------

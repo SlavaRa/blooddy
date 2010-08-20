@@ -35,6 +35,9 @@ package by.blooddy.gui.parser.css.values {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @private
+		 */
 		private static function toArray(filter:BitmapFilter):Array {
 			var arr:Array;
 			var c:uint;
