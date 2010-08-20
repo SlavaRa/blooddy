@@ -6,13 +6,13 @@
 
 package by.blooddy.gui.style.meta {
 
+	import by.blooddy.core.meta.MemberInfo;
+	import by.blooddy.core.meta.PropertyInfo;
 	import by.blooddy.core.meta.TypeInfo;
 	import by.blooddy.core.utils.ClassUtils;
 	
 	import flash.errors.IllegalOperationError;
 	import flash.utils.Dictionary;
-	import by.blooddy.core.meta.MemberInfo;
-	import by.blooddy.core.meta.PropertyInfo;
 	
 	/**
 	 * @author					BlooDHounD
@@ -101,15 +101,30 @@ package by.blooddy.gui.style.meta {
 		 * @private
 		 */
 		private function parseType(type:TypeInfo):void {
-			var vlaues:XMLList = type.getMetadata().( @name == 'StyleValue' );
+			
+			// обрабатываем свойства
+			var meta:XMLList = type.getMetadata();
+
+			var hash:Object = new Object();
+
 			var list:XMLList;
 			var xml:XML;
 			var n:String;
+
+			for each ( xml in meta.( @name == 'Exclude' && arg.( @key == 'kind' && @value == 'property' ).length() > 0 ).arg.( @key == 'name' ).@value ) {
+				hash[ xml ] = true;
+			}
+
+			for each ( var prop:PropertyInfo in type.getProperties( false ) ) {
+				list = prop.getMetadata().( @name == 'StyleType' );
+				
+			}
+
 			var member:MemberInfo;
 			var properties:Vector.<PropertyInfo>;
-			for each ( xml in vlaues ) {
+			for each ( xml in meta.( @name == 'StyleValue' ) ) {
 				list = xml.arg.( @key == 'name' ).@value;
-				if ( list.length() > 0 ) {
+				if ( list.length() > 0 && !( list[ 0 ] in this._collectionValues ) ) {
 					this._collectionValues[ list[ 0 ] ] = properties = new Vector.<PropertyInfo>();
 					for each ( xml in xml.arg.( @key == '' ).@value ) {
 						member = type.getMember( xml.toString() );
@@ -118,10 +133,6 @@ package by.blooddy.gui.style.meta {
 						}
 					}
 				}
-			}
-			for each ( var prop:PropertyInfo in type.getProperties() ) {
-				list = prop.getMetadata().( @name == 'StyleType' );
-				
 			}
 		}
 

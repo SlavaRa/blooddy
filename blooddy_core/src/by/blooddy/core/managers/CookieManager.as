@@ -149,7 +149,7 @@ package by.blooddy.core.managers {
 
 		public function get enabled():Boolean {
 			if (!available) throw new Error();
-			var result:* = ExternalInterface.call('function() { try { if ( typeof(navigator.cookieEnabled) != "undefined ) return navigator.cookieEnabled; else return null; } catch(e) {} }');
+			var result:* = ExternalInterface.call('function() { try { if ( typeof(navigator.cookieEnabled) != "undefined" ) return navigator.cookieEnabled; else return null; } catch(e) {} }');
 			if ( result is Boolean ) return result;
 			else { // свойство navigator.cookieEnabled не поддерживается, установим и получим тестовую куку
 				var name:String = "__AS3_TEST_COOKIE_NAME__";
@@ -171,7 +171,10 @@ package by.blooddy.core.managers {
 		//----------------------------------
 		//  getCookie
 		//----------------------------------
-
+		
+		public function foo():* {
+			trace( 'foo' );                        
+		}                                               
 		/**
 		 * 
 		 * @param	name		имя куки.
@@ -181,7 +184,7 @@ package by.blooddy.core.managers {
 		 * @throws	Error		нету возможности обращаться к кукам.
 		 */
 		public function getCookie(name:String):* {
-			this.$getCookie(name);
+			return this.$getCookie(name);
 		}
 
 		/**

@@ -8,16 +8,16 @@ package by.blooddy.gui.parser.css.values {
 	
 	import by.blooddy.code.css.definition.values.CSSValue;
 	
-	import flash.geom.Rectangle;
+	import flash.geom.Point;
 	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					09.05.2010 16:52:21
+	 * @created					20.08.2010 14:22:37
 	 */
-	public class RectValue extends CSSValue {
+	public class PointValue extends CSSValue {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -26,9 +26,9 @@ package by.blooddy.gui.parser.css.values {
 		//--------------------------------------------------------------------------
 		
 		/**
-		 * Constructor
+		 * Constructor.
 		 */
-		public function RectValue(value:Rectangle) {
+		public function PointValue(value:Point) {
 			super();
 			this.value = value;
 		}
@@ -39,7 +39,7 @@ package by.blooddy.gui.parser.css.values {
 		//
 		//--------------------------------------------------------------------------
 		
-		public var value:Rectangle;
+		public var value:Point;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -47,17 +47,15 @@ package by.blooddy.gui.parser.css.values {
 		//
 		//--------------------------------------------------------------------------
 		
-		public function valueOf():Rectangle {
+		public function valueOf():Point {
 			return this.value;
 		}
 		
 		public function toString():String {
-			return 'rect(' +
+			return 'point(' +
 				this.value.x + ',' +
-				this.value.y + ',' +
-				this.value.width + ',' +
-				this.value.height +
-			')';
+				this.value.y +
+				')';
 		}
 		
 	}

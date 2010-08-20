@@ -74,7 +74,7 @@ package by.blooddy.gui.parser.css {
 				v = rule.declarations[ n ];
 				if ( v is ComplexValue ) {
 					v2 = ComplexValueFactory.getValue( v as ComplexValue );
-					if ( v2 !== v ) {
+					if ( v2 !== v ) { // если значение новое то надо поставить флаг о изменениях
 						v = v2;
 						h = true;
 					}
