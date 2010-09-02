@@ -143,9 +143,10 @@ package by.blooddy.core.utils.proxy {
 			return this;
 		}
 
-		prototype.setPropertyIsEnumerable( 'toLocaleString', false );
-		prototype.setPropertyIsEnumerable( 'toString', false );
-		prototype.setPropertyIsEnumerable( 'valueOf', false );
+		_dontEnumPrototype( prototype );
+//		prototype.setPropertyIsEnumerable( 'toLocaleString', false );
+//		prototype.setPropertyIsEnumerable( 'toString', false );
+//		prototype.setPropertyIsEnumerable( 'valueOf', false );
 
 	}
 

@@ -22,7 +22,10 @@
     <classEntry path="by.blooddy.gui.events.StateEvent"/>
     <classEntry path="by.blooddy.gui.style.meta.StyleInfo"/>
     <classEntry path="by.blooddy.gui.parser.css.values.PointValue"/>
-    <classEntry path="by.blooddy.gui.style.meta.PropertyStyle"/>
+    <classEntry path="by.blooddy.gui.style.meta.SimpleStyle"/>
+    <classEntry path="by.blooddy.gui.style.meta.AbstractStyle"/>
+    <classEntry path="by.blooddy.gui.style.meta.CollectionStyle"/>
+    <classEntry path="by.blooddy.gui.style.StyleType"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

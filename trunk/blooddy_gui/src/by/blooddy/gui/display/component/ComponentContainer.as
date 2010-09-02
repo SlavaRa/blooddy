@@ -92,11 +92,6 @@ package by.blooddy.gui.display.component {
 		/**
 		 * @private
 		 */
-		private var _source:Object = new Object();
-		
-		/**
-		 * @private
-		 */
 		private var _queue:Dictionary = new Dictionary();
 		
 		//--------------------------------------------------------------------------

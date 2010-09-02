@@ -43,17 +43,32 @@ package by.blooddy.core.managers.resource {
 		/**
 		 * @private
 		 */
-		private static const _NAME_BITMAP_DATA:String =	getQualifiedClassName( BitmapData );
+		private static const _NAME_BITMAP_DATA:String =		getQualifiedClassName( BitmapData );
 		
 		/**
 		 * @private
 		 */
-		private static const _NAME_SOUND:String =		getQualifiedClassName( Sound );
+		private static const _NAME_SOUND:String =			getQualifiedClassName( Sound );
 		
 		/**
 		 * @private
 		 */
-		private static const _NAME_BYTE_ARRAY:String =	getQualifiedClassName( ByteArray );
+		private static const _NAME_BYTE_ARRAY:String =		getQualifiedClassName( ByteArray );
+		
+		/**
+		 * @private
+		 */
+		private static const _PROTO_BITMAP_DATA:Object =	BitmapData.prototype;
+		
+		/**
+		 * @private
+		 */
+		private static const _PROTO_SOUND:Object =			Sound.prototype;
+		
+		/**
+		 * @private
+		 */
+		private static const _PROTO_BYTE_ARRAY:Object =		ByteArray.prototype;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -133,9 +148,10 @@ package by.blooddy.core.managers.resource {
 
 				if ( resource is Class ) {
 					var resourceClass:Class = resource as Class;
+					var p:Object = resourceClass.prototype;
 					if (
-						BitmapData.prototype.isPrototypeOf( resourceClass.prototype ) ||
-						domain.getDefinition( _NAME_BITMAP_DATA ).prototype.isPrototypeOf( resourceClass.prototype )
+						_PROTO_BITMAP_DATA.isPrototypeOf( p ) ||
+						domain.getDefinition( _NAME_BITMAP_DATA ).prototype.isPrototypeOf( p )
 					) {
 						try {
 							resource = new resourceClass( 0, 0 );
@@ -143,10 +159,10 @@ package by.blooddy.core.managers.resource {
 							resource = new resourceClass();
 						}
 					} else if ( 
-						Sound.prototype.isPrototypeOf( resourceClass.prototype ) ||
-						ByteArray.prototype.isPrototypeOf( resourceClass.prototype ) ||
-						domain.getDefinition( _NAME_SOUND ).prototype.isPrototypeOf( resourceClass.prototype ) ||
-						domain.getDefinition( _NAME_BYTE_ARRAY ).prototype.isPrototypeOf( resourceClass.prototype )
+						_PROTO_SOUND.isPrototypeOf( p ) ||
+						_PROTO_BYTE_ARRAY.isPrototypeOf( p ) ||
+						domain.getDefinition( _NAME_SOUND ).prototype.isPrototypeOf( p ) ||
+						domain.getDefinition( _NAME_BYTE_ARRAY ).prototype.isPrototypeOf( p )
 					) {
 						resource = new resourceClass();
 					}

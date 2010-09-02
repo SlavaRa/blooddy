@@ -4,53 +4,43 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.code.css.definition.values {
+package by.blooddy.gui.style.meta {
 	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					07.05.2010 0:50:17
+	 * @created					20.08.2010 14:27:34
 	 */
-	public class CollectionValue extends CSSValue {
-
+	public class SimpleStyle extends AbstractStyle {
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-
+		
 		/**
-		 * Constructor
+		 * Constructor.
 		 */
-		public function CollectionValue(values:Vector.<CSSValue>) {
+		public function SimpleStyle() {
 			super();
-			this.values = values;
 		}
-
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
+
+		public var type:Class;
+
+		/**
+		 * имя стиля для прокси-записи
+		 */
+		public var proxy:String;
 		
-		public var values:Vector.<CSSValue>;
-
-		//--------------------------------------------------------------------------
-		//
-		//  Methods
-		//
-		//--------------------------------------------------------------------------
-
-		public function valueOf():Vector.<CSSValue> {
-			return this.values;
-		}
-
-		public function toString():String {
-			return this.values.join( ' ' );
-		}
-
 	}
 	
 }

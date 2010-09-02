@@ -56,7 +56,7 @@ package by.blooddy.core.display {
 				target.removeEventListener(type, listener, useCapture);
 			}
 			var item:StageObserverItem;
-			for (var i:String in this._listeners) {
+			for (var i:Object in this._listeners) {
 				item = this._listeners[ i ];
 				if (
 					item.target === target &&

@@ -28,13 +28,13 @@ package by.blooddy.code.css.definition.values {
 			super( values );
 			this.name = name;
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public var name:String;
 
 		//--------------------------------------------------------------------------
@@ -42,7 +42,7 @@ package by.blooddy.code.css.definition.values {
 		//  Methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public override function toString():String {
 			for each ( var v:CSSValue in this.values ) {
 				if ( v is CollectionValue ) {
@@ -51,7 +51,7 @@ package by.blooddy.code.css.definition.values {
 			}
 			return this.name + '(' + this.values.join( ',' ) + ')';
 		}
-		
+
 	}
 	
 }

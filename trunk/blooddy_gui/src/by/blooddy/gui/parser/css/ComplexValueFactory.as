@@ -16,6 +16,7 @@ package by.blooddy.gui.parser.css {
 	import by.blooddy.core.filters.AdjustColor;
 	import by.blooddy.gui.parser.css.values.BitmapFilterValue;
 	import by.blooddy.gui.parser.css.values.MatrixValue;
+	import by.blooddy.gui.parser.css.values.PointValue;
 	import by.blooddy.gui.parser.css.values.RectValue;
 	
 	import flash.filters.BevelFilter;
@@ -28,9 +29,8 @@ package by.blooddy.gui.parser.css {
 	import flash.filters.GradientBevelFilter;
 	import flash.filters.GradientGlowFilter;
 	import flash.geom.Matrix;
-	import flash.geom.Rectangle;
 	import flash.geom.Point;
-	import by.blooddy.gui.parser.css.values.PointValue;
+	import flash.geom.Rectangle;
 	
 	/**
 	 * @author					BlooDHounD
@@ -39,7 +39,7 @@ package by.blooddy.gui.parser.css {
 	 * @langversion				3.0
 	 * @created					09.05.2010 19:29:33
 	 */
-	public class ComplexValueFactory {
+	public final class ComplexValueFactory {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -71,9 +71,6 @@ package by.blooddy.gui.parser.css {
 		//
 		//--------------------------------------------------------------------------
 		
-		/**
-		 * Constructor
-		 */
 		public static function getValue(value:ComplexValue):CSSValue {
 			var vv:Vector.<CSSValue> = value.values;
 			switch ( value.name ) {
@@ -158,11 +155,23 @@ package by.blooddy.gui.parser.css {
 	
 }
 
+//==============================================================================
+//
+//  Inner definitions
+//
+//==============================================================================
+
 import by.blooddy.code.css.definition.values.ArrayValue;
 import by.blooddy.code.css.definition.values.BooleanValue;
 import by.blooddy.code.css.definition.values.ColorValue;
 import by.blooddy.code.css.definition.values.NumberValue;
 import by.blooddy.code.css.definition.values.StringValue;
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Helper class: ValueAsset
+//
+////////////////////////////////////////////////////////////////////////////////
 
 /**
  * @private
@@ -180,6 +189,12 @@ internal final class ValueAsset {
 	public var name:String;
 
 }
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Helper class: Filters
+//
+////////////////////////////////////////////////////////////////////////////////
 
 /**
  * @private

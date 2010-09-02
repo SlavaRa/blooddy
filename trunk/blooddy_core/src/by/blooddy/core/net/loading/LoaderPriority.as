@@ -12,7 +12,7 @@ package by.blooddy.core.net.loading {
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
 	 */
-	public class LoaderPriority {
+	public final class LoaderPriority {
 		
 		public static const HIGHEST:int =		int.MAX_VALUE;
 		

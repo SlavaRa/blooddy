@@ -108,7 +108,11 @@ package by.blooddy.core.meta {
 
 		$protected_info override function parseXML(xml:XML):void {
 			super.parseXML( xml );
-			this._type = parseType( xml.@type.toString() );
+			if ( this._parent ) { // нефига парсить лишний раз
+				this._type = ( this._parent as PropertyInfo )._type;
+			} else {
+				this._type = parseType( xml.@type.toString() );
+			}
 			switch ( xml.name().toString() ) {
 				case 'accessor':
 					switch ( xml.@access.toString() ) {

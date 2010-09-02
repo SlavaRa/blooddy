@@ -39,6 +39,11 @@ package by.blooddy.core.meta {
 		 */
 		private static const _CONSTRUCTOR:QName = new QName( ns_as3, 'constructor' );
 
+		/**
+		 * @private
+		 */
+		private static const _EMPTY_PARAMETERS:Vector.<ParameterInfo> = new Vector.<ParameterInfo>( 0, true );
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -61,7 +66,7 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		private const _parameters:Vector.<ParameterInfo> = new Vector.<ParameterInfo>();
+		private var _parameters:Vector.<ParameterInfo>;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -105,13 +110,17 @@ package by.blooddy.core.meta {
 		//--------------------------------------------------------------------------
 		
 		$protected_info override function parseXML(xml:XML):void {
-			super.parseXML( xml );
 			var list:XMLList = xml.parameter;
-			var p:ParameterInfo;
-			for each ( xml in list ) {
-				p = new ParameterInfo();
-				p.parseXML( xml );
-				this._parameters.push( p );
+			if ( list.length() <= 0 ) {
+				this._parameters = _EMPTY_PARAMETERS;
+			} else {
+				this._parameters = new Vector.<ParameterInfo>();
+				var p:ParameterInfo;
+				for each ( xml in list ) {
+					p = new ParameterInfo();
+					p.parseXML( xml );
+					this._parameters.push( p );
+				}
 			}
 		}
 		
