@@ -149,35 +149,40 @@ package by.blooddy.core.managers.resource {
 		 * @private
 		 */
 		private static function getDefaultMaxLoading():uint {
-			if ( domain == 'localhost' ) return uint.MAX_VALUE;
 
-			var v:int = parseInt( Environment.browserVersion );
+			if ( domain == 'localhost' ) {
 
-			switch ( Environment.browserName ) {
+				return uint.MAX_VALUE;
 
-				case Environment.FIREFOX:
-					if ( v >= 3 ) return 6;
-					break;
+			} else if ( Environment.browserName ) {
 
-				case Environment.CHROME:
-					if ( v >= 5 ) return 7;
-					else if ( v >= 3 )	return 4;
-					break;
-				
-				case Environment.MSIE:
-					if ( v >= 8 ) return 6;
-					break;
-				
-				case Environment.SAFARI:
-					if ( v >= 4 ) return 6;
-					return 4;
-
-				case Environment.OPERA:
-					return 4;
+				var v:int = parseInt( Environment.browserVersion );
+				switch ( Environment.browserName ) {
+	
+					case Environment.FIREFOX:
+						if ( v >= 3 ) return 6;
+						break;
+	
+					case Environment.CHROME:
+						if ( v >= 5 ) return 7;
+						else if ( v >= 3 )	return 4;
+						break;
+					
+					case Environment.MSIE:
+						if ( v >= 8 ) return 6;
+						break;
+					
+					case Environment.SAFARI:
+						if ( v >= 4 ) return 6;
+					case Environment.OPERA:
+						return 4;
+	
+				}
 
 			}
 			
 			return 3; // по умолчанию не рыба ни мясо
+
 		}
 		
 		/**
