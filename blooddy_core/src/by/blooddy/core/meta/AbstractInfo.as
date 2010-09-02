@@ -55,7 +55,7 @@ package by.blooddy.core.meta {
 		//--------------------------------------------------------------------------
 
 		protected static function parseType(name:String):QName {
-			var i:int = name.indexOf( '::' );
+			var i:int = name.lastIndexOf( '::' );
 			if ( i < 0 ) {
 				return new QName( '', name );
 			} else {

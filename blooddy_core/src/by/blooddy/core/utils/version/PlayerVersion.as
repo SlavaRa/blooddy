@@ -25,7 +25,7 @@ package by.blooddy.core.utils.version {
 		//--------------------------------------------------------------------------
 
 		private static function init():void {
-			var arr:Array = Capabilities.version.match(/^\w+\s(\d+),(\d+),(\d+),(\d+)$/);
+			var arr:Array = Capabilities.version.match( /^\w+\s(\d+),(\d+),(\d+),(\d+)$/ );
 			_majorVersion  = parseInt( arr[1] );
 			_minorVersion  = parseInt( arr[2] );
 			_buildNumber  = parseInt( arr[3] );

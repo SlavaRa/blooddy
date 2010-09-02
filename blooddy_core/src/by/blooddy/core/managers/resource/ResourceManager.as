@@ -7,15 +7,16 @@
 package by.blooddy.core.managers.resource {
 
 	import by.blooddy.core.events.managers.ResourceBundleEvent;
+	import by.blooddy.core.net.domain;
 	import by.blooddy.core.net.loading.ILoadable;
 	import by.blooddy.core.net.loading.LoaderPriority;
 	import by.blooddy.core.utils.enterFrameBroadcaster;
+	import by.blooddy.core.utils.net.Environment;
 	
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.net.URLRequest;
-	import flash.system.Capabilities;
 
 	//--------------------------------------
 	//  Events
@@ -97,7 +98,7 @@ package by.blooddy.core.managers.resource {
 		/**
 		 * @private
 		 */
-		private static var _maxLoading:uint = ( Capabilities.playerType == 'StandAlone' ? uint.MAX_VALUE : 3 );
+		private static var _maxLoading:uint = getDefaultMaxLoading();
 
 		public static function get maxLoading():uint {
 			return _maxLoading;
@@ -108,7 +109,7 @@ package by.blooddy.core.managers.resource {
 		 */
 		public static function set maxLoading(value:uint):void {
 			if ( _maxLoading == value ) return;
-			_maxLoading = value;
+			_maxLoading = value || getDefaultMaxLoading(); // если передаётся 0, то сбрасываем на значение по умолчанию
 		 	if ( _loading < _maxLoading || _LOADING_QUEUE.length > 0 ) {
 		 		enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, updateQueue );
 			}
@@ -144,6 +145,41 @@ package by.blooddy.core.managers.resource {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @private
+		 */
+		private static function getDefaultMaxLoading():uint {
+			if ( domain == 'localhost' ) return uint.MAX_VALUE;
+
+			var v:int = parseInt( Environment.browserVersion );
+
+			switch ( Environment.browserName ) {
+
+				case Environment.FIREFOX:
+					if ( v >= 3 ) return 6;
+					break;
+
+				case Environment.CHROME:
+					if ( v >= 5 ) return 7;
+					else if ( v >= 3 )	return 4;
+					break;
+				
+				case Environment.MSIE:
+					if ( v >= 8 ) return 6;
+					break;
+				
+				case Environment.SAFARI:
+					if ( v >= 4 ) return 6;
+					return 4;
+
+				case Environment.OPERA:
+					return 4;
+
+			}
+			
+			return 3; // по умолчанию не рыба ни мясо
+		}
+		
 		/**
 		 * @private
 		 */
@@ -769,3 +805,43 @@ internal class DefaultResourceBundle implements IResourceBundle {
 	}
 
 }
+
+
+/**
+ * @private
+ */
+/*var	_u = navigator.userAgent,
+	
+	_msie =		0,
+	_opera =	0,
+	_gecko =	0,
+	_webkit =	0,
+	
+	m;
+
+m = _u.match( /AppleWebKit\/([\.\d]*)/ );
+if ( m ) {
+	if ( m[1] )	_webkit = parseFloat( m[1] );
+	else		_webkit = 1;
+} else if ( ( /KHTML/ ).test( _u ) ) {
+	_webkit = 1;
+} else {
+	m = _u.match( /Opera[\s\/]([^\s]*)/ );
+	if ( m ) {
+		if ( m[1] )	_opera = parseFloat( m[1] );
+		else		_opera = 1;
+	} else {
+		m = _u.match( /MSIE\s([^;]*)/ );
+		if ( m ) {
+			if ( m[1] )	_msie = parseFloat( m[1] );
+			else		_msie = 1;
+		} else {
+			m = _u.match( /Gecko\/([^\s]*)/ );
+			if ( m ) {
+				m = _u.match( /rv:([\.\d]*)/ );
+				if ( m && m[1] )	_gecko = parseFloat( m[1] );
+				else				_gecko = 1;
+			}
+		}
+	}
+}*/

@@ -7,6 +7,15 @@
 package by.blooddy.gui.display.state {
 	
 	import flash.events.IEventDispatcher;
+
+	//--------------------------------------
+	//  Events
+	//--------------------------------------
+	
+	/**
+	 * @eventType			by.blooddy.gui.events.StateEvent.STATE_CHANGE
+	 */
+	[Event( name="stateChange", type="by.blooddy.gui.events.StateEvent" )]
 	
 	/**
 	 * @author					BlooDHounD

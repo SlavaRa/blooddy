@@ -92,7 +92,8 @@ package by.blooddy.core.meta {
 
 		$protected_info override function parseXML(xml:XML):void {
 			super.parseXML( xml );
-			this._name = parseName( xml );
+			// нефига парсить лишний раз
+			this._name = ( this._parent ? this._parent._name : parseName( xml ) );
 		}
 
 	}

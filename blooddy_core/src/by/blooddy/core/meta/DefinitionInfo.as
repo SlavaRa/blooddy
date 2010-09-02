@@ -30,13 +30,24 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 
+		use namespace $protected_info;
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Class variables
+		//
+		//--------------------------------------------------------------------------
+		
 		/**
 		 * @private
 		 */
-		private static const _DESCRIPTION:QName = new QName( ns_rdf, 'Description' )
+		private static const _DESCRIPTION:QName = new QName( ns_rdf, 'Description' );
 
-		use namespace $protected_info;
-		
+		/**
+		 * @private
+		 */
+		private static const _EMPTY_METADATA:XMLList = new XMLList();
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class methods
@@ -138,23 +149,35 @@ package by.blooddy.core.meta {
 		//--------------------------------------------------------------------------
 
 		$protected_info override function parseXML(xml:XML):void {
-			this._metadata_local = xml.metadata.( @name != '__go_to_definition_help' );
+			var n:String;
+			var meta:XMLList = xml.metadata.(
+				n = @name,
+				n != '__go_to_definition_help'      &&
+				n != '__go_to_ctor_definition_help'
+			); // исключаев дебаг мету
 			if ( this._parent ) {
-				if ( this._metadata_local.length() > 0 ) {
-					if ( this._parent._metadata.length() > 0 ) {
-						this._metadata = this._metadata_local + this._parent._metadata;
-					} else {
-						this._metadata = this._metadata_local;
-					}
+				
+				if ( meta.length() <= 0 ) {
+					
+					this._metadata_local =	_EMPTY_METADATA;
+					this._metadata =		this._parent._metadata;
+					
 				} else {
-					if ( this._parent._metadata.length() > 0 ) {
-						this._metadata = this._parent._metadata;
+
+					this._metadata_local =	meta.copy();
+					if ( this._parent._metadata.length() <= 0 ) {
+						this._metadata = this._metadata_local;
 					} else {
-						this._metadata = this._metadata_local = this._parent._metadata;
+						this._metadata = meta.copy() + this._parent._metadata;
 					}
+					
 				}
+
 			} else {
-				this._metadata = this._metadata_local;
+
+				this._metadata_local =
+				this._metadata = ( meta.length() <= 0 ? _EMPTY_METADATA : meta.copy() );
+
 			}
 		}
 

@@ -1,32 +1,31 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  (C) 2010 BlooDHounD
+//  © 2010 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.code.css.definition.values {
+package by.blooddy.gui.style.meta {
 	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					07.05.2010 0:50:17
+	 * @created					25.08.2010 14:10:00
 	 */
-	public class CollectionValue extends CSSValue {
-
+	public class CollectionStyle extends AbstractStyle {
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-
+		
 		/**
-		 * Constructor
+		 * Constructor.
 		 */
-		public function CollectionValue(values:Vector.<CSSValue>) {
+		public function CollectionStyle() {
 			super();
-			this.values = values;
 		}
 
 		//--------------------------------------------------------------------------
@@ -35,22 +34,8 @@ package by.blooddy.code.css.definition.values {
 		//
 		//--------------------------------------------------------------------------
 		
-		public var values:Vector.<CSSValue>;
-
-		//--------------------------------------------------------------------------
-		//
-		//  Methods
-		//
-		//--------------------------------------------------------------------------
-
-		public function valueOf():Vector.<CSSValue> {
-			return this.values;
-		}
-
-		public function toString():String {
-			return this.values.join( ' ' );
-		}
-
+		public const styles:Vector.<String> = new Vector.<String>();
+		
 	}
 	
 }

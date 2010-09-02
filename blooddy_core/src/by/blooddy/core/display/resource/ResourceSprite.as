@@ -188,6 +188,9 @@ package by.blooddy.core.display.resource {
 			return this._manager.hasResource( bundleName, resourceName );
 		}
 
+		/**
+		 * @event	resourceError
+		 */
 		protected final function getResource(bundleName:String, resourceName:String=null):Object {
 			if ( !this._manager ) throw new ArgumentError( 'спрайт не имеет связи с ResourceManager' );
 			var result:Object = this._manager.getResource( bundleName, resourceName );
@@ -200,6 +203,9 @@ package by.blooddy.core.display.resource {
 			return result;
 		}
 
+		/**
+		 * @event	resourceError
+		 */
 		protected final function getDisplayObject(bundleName:String, resourceName:String=null):DisplayObject {
 			if ( !this._manager ) throw new ArgumentError( 'спрайт не имеет связи с ResourceManager' );
 			var result:DisplayObject = this._manager.getDisplayObject( bundleName, resourceName );
@@ -210,6 +216,9 @@ package by.blooddy.core.display.resource {
 			return result;
 		}
 
+		/**
+		 * @event	resourceError
+		 */
 		protected final function getSound(bundleName:String, resourceName:String=null):Sound {
 			if ( !this._manager ) throw new ArgumentError( 'спрайт не имеет связи с ResourceManager' );
 			var result:Sound = this._manager.getSound( bundleName, resourceName );

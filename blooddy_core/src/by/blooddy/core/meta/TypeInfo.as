@@ -9,10 +9,11 @@ package by.blooddy.core.meta {
 	import by.blooddy.core.utils.ClassUtils;
 	
 	import flash.errors.IllegalOperationError;
+	import flash.system.Capabilities;
 	import flash.utils.Dictionary;
 	import flash.utils.describeType;
 	import flash.utils.getDefinitionByName;
-	import flash.system.Capabilities;
+	import flash.display.Stage;
 	
 	/**
 	 * @author					BlooDHounD
@@ -86,6 +87,37 @@ package by.blooddy.core.meta {
 		 */
 		private static const _HASH:Dictionary = new Dictionary( true );
 
+		/**
+		 * @private
+		 */
+		private static const _EMPTY_HASH:Object = new Object();
+		
+		/**
+		 * @private
+		 */
+		private static const _EMPTY_LIST_QNAME:Vector.<QName> = new Vector.<QName>( 0, true );
+		
+		/**
+		 * @private
+		 */
+		private static const _EMPTY_LIST_PROPERTIES:Vector.<PropertyInfo> = new Vector.<PropertyInfo>( 0, true );
+		
+		/**
+		 * @private
+		 */
+		private static const _EMPTY_LIST_METHODS:Vector.<MethodInfo> = new Vector.<MethodInfo>( 0, true );
+		
+		/**
+		 * @private
+		 */
+		private static const _EMPTY_LIST_MEMBERS:Vector.<MemberInfo> = new Vector.<MemberInfo>( 0, true );
+
+		/**
+		 * @private
+		 */
+		private static const _EMPTY_CONSTRUCTOR:ConstructorInfo = new ConstructorInfo();
+		_EMPTY_CONSTRUCTOR.parseXML( new XML() );
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -113,7 +145,7 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		private const _hash_types:Object = new Object();
+		private var _hash_types:Object;
 		
 		/**
 		 * @private
@@ -127,12 +159,12 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		private const _hash_superclasses:Object = new Object();
+		private var _hash_superclasses:Object;
 		
 		/**
 		 * @private
 		 */
-		private const _list_superclasses:Vector.<QName> = new Vector.<QName>();
+		private var _list_superclasses:Vector.<QName>;
 		
 		//----------------------------------
 		//  interfaces
@@ -141,7 +173,7 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		private const _hash_interfaces:Object = new Object();
+		private var _hash_interfaces:Object;
 		
 		/**
 		 * @private
@@ -151,7 +183,7 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		private const _list_interfaces_local:Vector.<QName> = new Vector.<QName>();
+		private var _list_interfaces_local:Vector.<QName>;
 		
 		//----------------------------------
 		//  members
@@ -160,7 +192,7 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		private const _hash_members:Object = new Object();
+		private var _hash_members:Object;
 		
 		/**
 		 * @private
@@ -170,7 +202,7 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		private const _list_members_local:Vector.<MemberInfo> = new Vector.<MemberInfo>();
+		private var _list_members_local:Vector.<MemberInfo>;
 		
 		//----------------------------------
 		//  properties
@@ -184,7 +216,7 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		private const _list_properties_local:Vector.<PropertyInfo> = new Vector.<PropertyInfo>();
+		private var _list_properties_local:Vector.<PropertyInfo>;
 		
 		//----------------------------------
 		//  methods
@@ -198,7 +230,7 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		private const _list_methods_local:Vector.<MethodInfo> = new Vector.<MethodInfo>();
+		private var _list_methods_local:Vector.<MethodInfo>;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -227,7 +259,7 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		private const _constructor:ConstructorInfo = new ConstructorInfo();
+		private var _constructor:ConstructorInfo;
 		
 		public function get constructor():ConstructorInfo {
 			return this._constructor;
@@ -241,7 +273,7 @@ package by.blooddy.core.meta {
 		public function get source():String {
 			return this._source;
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
@@ -517,7 +549,7 @@ package by.blooddy.core.meta {
 			// весь код написанный в этом методе очень запутанный
 			// сложные конструкции используются с целью сэкономить память
 			// и исключиь дополнительную обработку
-			
+
 			xml = xml.factory[ 0 ]; // дергаем factory
 
 			// name
@@ -526,15 +558,28 @@ package by.blooddy.core.meta {
 			var list:XMLList, x:XML;
 			var n:String;
 			var i:int;
+			var hash:Object = new Object();
 
 			// superclasses
 			// собираем суперклассы
 			list = xml.extendsClass;
-			for each ( x in list ) {
-				n = x.@type.toString();
-				this._hash_types[ n ] = true;
-				this._hash_superclasses[ n ] = true;
-				this._list_superclasses.push( parseType( n ) );
+			if ( list.length() > 0 ) {
+
+				this._list_superclasses = new Vector.<QName>();
+				this._hash_superclasses = new Object();
+
+				for each ( x in list ) {
+					n = x.@type.toString();
+					this._hash_superclasses[ n ] = true;
+					this._list_superclasses.push( parseType( n ) );
+					hash[ n ] = true; 
+				}
+
+			} else {
+
+				this._list_superclasses = _EMPTY_LIST_QNAME;
+				this._hash_superclasses = _EMPTY_HASH;
+
 			}
 
 			// parent
@@ -556,53 +601,84 @@ package by.blooddy.core.meta {
 
 			// interfaces
 			// собираем список интерфейсов на основании списка нашего папы
+			var hash_interfaces:Object = new Object();
+			var list_interfaces:Vector.<QName> = new Vector.<QName>();
 			list = xml.implementsInterface;
-			if ( parent ) {
+			if ( parent ) { // если есть папа, то обрабатываем по особому
 
 				for each ( x in list ) {
 					n = x.@type.toString();
 					if ( !( n in parent._hash_interfaces ) ) { // добавляем только "наши" интерфейсы
-						this._list_interfaces_local.push( parseType( n ) );
+						list_interfaces.push( parseType( n ) );
 					}
-					this._hash_types[ n ] = true;
-					this._hash_interfaces[ n ] = true;
+					hash_interfaces[ n ] = true;
+					hash[ n ] = true;
 				}
 
 				// общий список интерфейсов
 				// если локальный список пуст, то берём родительский список
 				// иначе пытаемся склеить, если родительский не пуст
-				this._list_interfaces = (
-					this._list_interfaces_local.length <= 0
-					?	parent._list_interfaces
-					:	( parent._list_interfaces.length <= 0
-						?	this._list_interfaces_local
-						:	this._list_interfaces_local.concat( parent._list_interfaces )
-					)
-				);
+				if ( list_interfaces.length > 0 ) {
+
+					if ( parent._list_interfaces.length > 0 ) {
+						this._list_interfaces =		list_interfaces.concat( parent._list_interfaces );
+					} else {
+						this._list_interfaces =		list_interfaces;
+					}
+					this._hash_interfaces =			hash_interfaces;
+					this._list_interfaces_local =	list_interfaces;
+
+				} else {
+					
+					this._list_interfaces =			parent._list_interfaces;
+					this._hash_interfaces =			parent._hash_interfaces;
+					this._list_interfaces_local =	_EMPTY_LIST_QNAME;
+
+				}
 
 			} else {
 
 				for each ( x in list ) {
 					n = x.@type.toString();
-					this._list_interfaces_local.push( parseType( n ) );
-					this._hash_types[ n ] = true;
-					this._hash_interfaces[ n ] = true;
+					list_interfaces.push( parseType( n ) );
+					hash_interfaces[ n ] = true;
+					hash[ n ] = true;
 				}
 
-				this._list_interfaces = this._list_interfaces_local;
+				if ( list_interfaces.length > 0 ) {
 
+					this._list_interfaces =			list_interfaces;
+					this._hash_interfaces =			hash_interfaces;
+					this._list_interfaces_local =	list_interfaces;
+				
+				} else {
+
+					this._list_interfaces =			_EMPTY_LIST_QNAME;
+					this._hash_interfaces =			_EMPTY_HASH;
+					this._list_interfaces_local =	_EMPTY_LIST_QNAME;
+					
+				}
+				
 			}
 
 			// types
-			this._list_types = (
-				this._list_interfaces.length <= 0
-				?	this._list_superclasses
-				:	( this._list_superclasses.length <= 0
-					?	this._list_interfaces
-					:	this._list_interfaces.concat( this._list_superclasses )
-					)
-			);
+			if ( this._list_interfaces.length <= 0 ) {
+				
+				this._list_types = this._list_superclasses;
+				this._hash_types = this._hash_superclasses;
+				
+			} else if ( this._list_superclasses.length <= 0 ) {
+					
+				this._list_types = this._list_interfaces;
+				this._hash_types = this._hash_interfaces;
+				
+			} else {
 
+				this._list_types = this._list_interfaces.concat( this._list_superclasses );
+				this._hash_types = hash;
+
+			}
+			
 			// metadata
 			// запускаем дефолтный парсер
 			super.parseXML( xml );
@@ -611,63 +687,72 @@ package by.blooddy.core.meta {
 			// надо распарсить всех наших многочленов
 			var name:String = this._name.toString();
 			var dn:String;
+			hash = new Object();
 
 			// properties
-			var p:PropertyInfo;		// окальное свойство
+			var p:PropertyInfo;		// локальное свойство
 			var pp:PropertyInfo;	// родительское свойство
-			list = xml.variable + xml.constant + xml.accessor; // выдёргиваем все свойства
+			var list_p:Vector.<PropertyInfo> = new Vector.<PropertyInfo>();
+			var list_pp:Vector.<PropertyInfo>;
+			list = xml.*.( n = name(), n == 'accessor' || n == 'variable' || n == 'constant'  ); // выдёргиваем все свойства
 			for each ( x in list ) {
-				n = parseName( x ).toString();	// имя свойства
+				n = ( ( n = x.@uri ) ? n + '::' : '' ) + x.@name;	// имя свойства
 				if ( parent && n in parent._hash_members ) { // ищем свойство у родителя
-					pp = parent._hash_members[ n ] as PropertyInfo;
+					pp = parent._hash_members[ n ];
 				} else {
 					pp = null;
 				}
 				dn = x.@declaredBy.toString();
 				if ( !dn || dn == name ) { // это свойство объявленно/переопределнно у нас
 					p = new PropertyInfo();
+					p._parent = pp;
 					p.parseXML( x );
-					// если наше свойство неотличается от ролительского
+					// если наше свойство не отличается от ролительского
 					// то используем родительское свойство
-					if ( pp && pp._metadata == p._metadata && pp.access == p.access ) {
+					if ( pp && pp._metadata === p._metadata && pp.access == p.access ) {
 						p = pp; // переиспользуем: нечего создавать лишние связи
 					} else {
 						p._owner = this;
-						p._parent = pp;
 					}
 				} else {
 					p = pp;
 				}
 				if ( p !== pp ) { // добавляем только наши свойства
-					if ( pp ) {
-						if ( !this._list_properties ) {
-							this._list_properties = parent._list_properties.slice();
-							this._list_members = parent._list_members.slice();
-						}
-						i = this._list_properties.lastIndexOf( pp );
-						this._list_properties.splice( i, 1 );
-						i = this._list_members.lastIndexOf( pp );
-						this._list_members.splice( i, 1 );
+					if ( pp ) { // что бы не было дублей надо подчистят список родителя
+						if ( !list_pp ) list_pp = parent._list_properties.slice();
+						i = list_pp.lastIndexOf( pp );
+						list_pp.splice( i, 1 );
 					}
-					this._list_properties_local.push( p );
-					this._list_members_local.push( p );
+					list_p.push( p );
 				}
-				this._hash_members[ n ] = p;
+				hash[ n ] = p;
 			}
-			this._list_properties = (
-				this._list_properties
-				?	this._list_properties_local.concat( this._list_properties )
-				:	( parent && parent._list_properties.length > 0
-					?	this._list_properties_local.concat( parent._list_properties )
-					:	this._list_properties_local
-					)
-			);
+			
+			if ( list_p.length > 0 ) {
+
+				this._list_properties_local = list_p;
+				if ( !list_pp && parent ) list_pp = parent._list_properties;
+				if ( list_pp && list_pp.length > 0 ) {
+					this._list_properties = list_p.concat( list_pp );
+				} else {
+					this._list_properties = list_p;
+				}
+
+			} else {
+
+				this._list_properties_local = _EMPTY_LIST_PROPERTIES;
+				this._list_properties = ( parent ? parent._list_properties : _EMPTY_LIST_PROPERTIES );
+
+			}
 
 			// methods
-			var m:MethodInfo, mm:MethodInfo;
+			var m:MethodInfo;	// метод
+			var mm:MethodInfo;	// родительский метод
+			var list_m:Vector.<MethodInfo> = new Vector.<MethodInfo>();
+			var list_mm:Vector.<MethodInfo>;
 			list = xml.method;
 			for each ( x in list ) {
-				n = parseName( x ).toString();
+				n = ( ( n = x.@uri ) ? n + '::' : '' ) + x.@name;
 				if ( parent && n in parent._hash_members ) { // ищем метод у папы
 					mm = parent._hash_members[ n ] as MethodInfo;
 				} else {
@@ -676,53 +761,97 @@ package by.blooddy.core.meta {
 				dn = x.@declaredBy.toString();
 				if ( !dn || dn == name ) { // метод объявлен у нас
 					m = new MethodInfo();
-					m._owner = this;
 					m._parent = mm;
 					m.parseXML( x );
-					if ( mm && mm._metadata == m._metadata ) { // метод ничем не отличается от родительского
+					if ( mm && mm._metadata === m._metadata ) { // метод ничем не отличается от родительского
 						m = mm;
+					} else {
+						m._owner = this;
 					}
 				} else {
 					m = mm;
 				}
 				if ( m !== mm ) { // добавляем в списки только наших
 					if ( mm ) {
-						if ( !this._list_methods ) this._list_methods = parent._list_methods.slice();
-						i = this._list_methods.lastIndexOf( mm );
-						this._list_methods.splice( i, 1 );
-						if ( !this._list_members ) this._list_members = parent._list_members.slice();
-						i = this._list_members.lastIndexOf( mm );
-						this._list_members.splice( i, 1 );
+						if ( !list_mm ) list_mm = parent._list_methods.slice();
+						i = list_mm.lastIndexOf( mm );
+						list_mm.splice( i, 1 );
 					}
-					this._list_methods_local.push( m );
-					this._list_members_local.push( m );
+					list_m.push( m );
 				}
-				this._hash_members[ n ] = m;
+				hash[ n ] = m;
 			}
-			this._list_methods = (
-				this._list_methods
-				?	this._list_methods_local.concat( this._list_methods )
-				:	( parent && parent._list_methods.length > 0
-					?	this._list_methods_local.concat( parent._list_methods )
-					:	this._list_methods_local
-					)
-			);
+
+			if ( list_m.length > 0 ) {
+				
+				this._list_methods_local = list_m;
+				if ( !list_mm && parent ) list_mm = parent._list_methods;
+				if ( list_mm && list_mm.length > 0 ) {
+					this._list_methods = list_m.concat( list_mm );
+				} else {
+					this._list_methods = list_m;
+				}
+				
+			} else {
+				
+				this._list_methods_local = _EMPTY_LIST_METHODS;
+				this._list_methods = ( parent ? parent._list_methods : _EMPTY_LIST_METHODS );
+				
+			}
 
 			// members
-			this._list_members = (
-				this._list_members
-					?	this._list_members_local.concat( this._list_members )
-					:	( parent && parent._list_members.length > 0
-						?	this._list_members_local.concat( parent._list_members )
-						:	this._list_members_local
-						)
-			);
+
+			if ( list_p.length > 0 && list_m.length > 0 ) {
+				
+				this._list_members_local = Vector.<MemberInfo>( list_p ).concat( Vector.<MemberInfo>( list_m ) );
+				if ( this._list_properties === list_p && this._list_methods === list_m ) {
+					this._list_members = this._list_members_local;
+				} else {
+					this._list_members = Vector.<MemberInfo>( this._list_properties ).concat( Vector.<MemberInfo>( this._list_methods ) );
+				}
+				this._hash_members = hash;
+
+			} else if ( list_p.length > 0 ) {
+
+				this._list_members_local = Vector.<MemberInfo>( list_p );
+				if ( this._list_properties === list_p ) {
+					this._list_members = this._list_members_local;
+				} else {
+					this._list_members = Vector.<MemberInfo>( this._list_properties );
+				}
+				this._hash_members = hash;
+				
+			} else if ( list_m.length > 0 ) {
+
+				this._list_members_local = Vector.<MemberInfo>( list_m );
+				if ( this._list_methods === list_m ) {
+					this._list_members = this._list_members_local;
+				} else {
+					this._list_members = Vector.<MemberInfo>( this._list_methods );
+				}
+				this._hash_members = hash;
+
+			} else {
+				
+				this._list_members_local = _EMPTY_LIST_MEMBERS;
+				if ( parent ) {
+					this._list_members = parent._list_members;
+					this._hash_members = parent._hash_members;
+				} else {
+					this._list_members = _EMPTY_LIST_MEMBERS;
+					this._hash_members = _EMPTY_HASH;
+				}
+
+			}
 
 			// constructor
 			// распишем конструктор
 			list = xml.constructor;
 			if ( list.length() > 0 ) {
+				this._constructor = new ConstructorInfo();
 				this._constructor.parseXML( list[ 0 ] );
+			} else {
+				this._constructor = _EMPTY_CONSTRUCTOR;
 			}
 
 			if ( Capabilities.isDebugger ) {

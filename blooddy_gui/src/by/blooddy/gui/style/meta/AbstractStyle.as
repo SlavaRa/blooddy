@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  (C) 2010 BlooDHounD
+//  © 2010 BlooDhounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -11,9 +11,9 @@ package by.blooddy.gui.style.meta {
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					20.08.2010 14:27:34
+	 * @created					25.08.2010 13:56:44
 	 */
-	public class PropertyStyle {
+	public class AbstractStyle {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -24,22 +24,10 @@ package by.blooddy.gui.style.meta {
 		/**
 		 * Constructor.
 		 */
-		public function PropertyStyle(type:Class, name:String) {
+		public function AbstractStyle() {
 			super();
-			this.type = type;
-			this.name = name;
 		}
 		
-		//--------------------------------------------------------------------------
-		//
-		//  Properties
-		//
-		//--------------------------------------------------------------------------
-
-		public var type:Class;
-
-		public var name:String;
-
 	}
 	
 }
