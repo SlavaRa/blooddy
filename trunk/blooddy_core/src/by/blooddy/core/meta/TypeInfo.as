@@ -13,7 +13,6 @@ package by.blooddy.core.meta {
 	import flash.utils.Dictionary;
 	import flash.utils.describeType;
 	import flash.utils.getDefinitionByName;
-	import flash.display.Stage;
 	
 	/**
 	 * @author					BlooDHounD
@@ -44,9 +43,10 @@ package by.blooddy.core.meta {
 				c = o as Class;
 			} else {
 				c = o.constructor;
-				if ( !c ) {
+				if ( !c || !( o is c ) ) {
 					c = ClassUtils.getClass( o );
 					if ( !c ) return null;
+					// TODO: клонирование инфы, и попытаться использовать класс родитель
 				}
 			}
 			var result:TypeInfo = _HASH[ c ];
@@ -553,7 +553,7 @@ package by.blooddy.core.meta {
 			xml = xml.factory[ 0 ]; // дергаем factory
 
 			// name
-			this._name = parseType( xml.@type.toString() ); // выдёргиваем имя
+			this._name = ClassUtils.parseClassQName( xml.@type.toString() ); // выдёргиваем имя
 
 			var list:XMLList, x:XML;
 			var n:String;
@@ -571,7 +571,7 @@ package by.blooddy.core.meta {
 				for each ( x in list ) {
 					n = x.@type.toString();
 					this._hash_superclasses[ n ] = true;
-					this._list_superclasses.push( parseType( n ) );
+					this._list_superclasses.push( ClassUtils.parseClassQName( n ) );
 					hash[ n ] = true; 
 				}
 
@@ -609,7 +609,7 @@ package by.blooddy.core.meta {
 				for each ( x in list ) {
 					n = x.@type.toString();
 					if ( !( n in parent._hash_interfaces ) ) { // добавляем только "наши" интерфейсы
-						list_interfaces.push( parseType( n ) );
+						list_interfaces.push( ClassUtils.parseClassQName( n ) );
 					}
 					hash_interfaces[ n ] = true;
 					hash[ n ] = true;
@@ -640,7 +640,7 @@ package by.blooddy.core.meta {
 
 				for each ( x in list ) {
 					n = x.@type.toString();
-					list_interfaces.push( parseType( n ) );
+					list_interfaces.push( ClassUtils.parseClassQName( n ) );
 					hash_interfaces[ n ] = true;
 					hash[ n ] = true;
 				}
@@ -694,7 +694,7 @@ package by.blooddy.core.meta {
 			var pp:PropertyInfo;	// родительское свойство
 			var list_p:Vector.<PropertyInfo> = new Vector.<PropertyInfo>();
 			var list_pp:Vector.<PropertyInfo>;
-			list = xml.*.( n = name(), n == 'accessor' || n == 'variable' || n == 'constant'  ); // выдёргиваем все свойства
+			list = xml.*.( n = name(), n == 'accessor' || n == 'variable' || n == 'constant' ); // выдёргиваем все свойства
 			for each ( x in list ) {
 				n = ( ( n = x.@uri ) ? n + '::' : '' ) + x.@name;	// имя свойства
 				if ( parent && n in parent._hash_members ) { // ищем свойство у родителя
@@ -842,6 +842,15 @@ package by.blooddy.core.meta {
 					this._hash_members = _EMPTY_HASH;
 				}
 
+			}
+
+			// бывают случаи, когда мемберы из родителя не попадают в описательную XML
+			if ( parent && this._hash_members === hash ) {
+				for ( n in parent._hash_members ) {
+					if ( !( n in hash ) ) {
+						hash[ n ] = parent._hash_members[ n ];
+					}
+				}
 			}
 
 			// constructor

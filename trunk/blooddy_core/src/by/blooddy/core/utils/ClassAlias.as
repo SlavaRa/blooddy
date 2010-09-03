@@ -59,17 +59,15 @@ package by.blooddy.core.utils {
 					c = app.getDefinition( n ) as Class;
 					if ( c ) {
 						r = new WeakRef( c );
-						_HASH[ n ] = r; // аписываем оригинальное имя
-						n = ClassUtils.cutClassName( n );
-//						registerClassAlias( n, c );
-						_HASH[ n ] = r; // записываем shortname
-//						registerClassAlias( ns + n, c );
-						_HASH[ ns + n ] = r; // записываем nsname
+						_HASH[ n ] =		r; // записываем оригинальное имя
+						n = ClassUtils.parseClassName( n );
+						_HASH[ n ] =		r; // записываем shortname
+						_HASH[ ns + n ] =	r; // записываем nsname
 					}
 				}
 			}
 			// важное исключение
-			_HASH[ '*' ] = new WeakRef( new Object() ); // new Object() должен сразу удалить и возвращаться будет undefined
+			_HASH[ '*' ] = new WeakRef( new Object() ); // new Object() должен сразу удалиться и возвращаться будет undefined
 		}
 		registerBuiltinAliases();
 
@@ -158,7 +156,6 @@ package by.blooddy.core.utils {
 		 */
 		private static function $registerClassAlias(name:String, c:Class):void {
 			if ( name in _HASH && ( _HASH[ name ] as WeakRef ).get() === c ) return;
-			registerClassAlias( name, c );
 			_HASH[ name ] = new WeakRef( c );
 		}
 

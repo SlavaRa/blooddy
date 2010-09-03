@@ -714,6 +714,27 @@ internal class DefaultResourceBundle implements IResourceBundle {
 	
 	//--------------------------------------------------------------------------
 	//
+	//  Class variables
+	//
+	//--------------------------------------------------------------------------
+	
+	/**
+	 * @private
+	 */
+	private static const _PROTO_BITMAP_DATA:Object =	BitmapData.prototype;
+	
+	/**
+	 * @private
+	 */
+	private static const _PROTO_SOUND:Object =			Sound.prototype;
+	
+	/**
+	 * @private
+	 */
+	private static const _PROTO_BYTE_ARRAY:Object =		ByteArray.prototype;
+	
+	//--------------------------------------------------------------------------
+	//
 	//  Constructor
 	//
 	//--------------------------------------------------------------------------
@@ -775,11 +796,12 @@ internal class DefaultResourceBundle implements IResourceBundle {
 			var resource:* = ApplicationDomain.currentDomain.getDefinition( name );
 			if ( resource is Class ) {
 				var resourceClass:Class = resource as Class;
-				if ( BitmapData.prototype.isPrototypeOf( resourceClass.prototype ) ) {
+				var p:Object = resourceClass.prototype;
+				if ( _PROTO_BITMAP_DATA.isPrototypeOf( p ) ) {
 					resource = new resourceClass( 0, 0 );
 				} else if (
-					Sound.prototype.isPrototypeOf( resourceClass.prototype ) ||
-					ByteArray.prototype.isPrototypeOf( resourceClass.prototype )
+					_PROTO_SOUND.isPrototypeOf( p ) ||
+					_PROTO_BYTE_ARRAY.isPrototypeOf( p )
 				) {
 					resource = new resourceClass();
 				}
@@ -810,43 +832,3 @@ internal class DefaultResourceBundle implements IResourceBundle {
 	}
 
 }
-
-
-/**
- * @private
- */
-/*var	_u = navigator.userAgent,
-	
-	_msie =		0,
-	_opera =	0,
-	_gecko =	0,
-	_webkit =	0,
-	
-	m;
-
-m = _u.match( /AppleWebKit\/([\.\d]*)/ );
-if ( m ) {
-	if ( m[1] )	_webkit = parseFloat( m[1] );
-	else		_webkit = 1;
-} else if ( ( /KHTML/ ).test( _u ) ) {
-	_webkit = 1;
-} else {
-	m = _u.match( /Opera[\s\/]([^\s]*)/ );
-	if ( m ) {
-		if ( m[1] )	_opera = parseFloat( m[1] );
-		else		_opera = 1;
-	} else {
-		m = _u.match( /MSIE\s([^;]*)/ );
-		if ( m ) {
-			if ( m[1] )	_msie = parseFloat( m[1] );
-			else		_msie = 1;
-		} else {
-			m = _u.match( /Gecko\/([^\s]*)/ );
-			if ( m ) {
-				m = _u.match( /rv:([\.\d]*)/ );
-				if ( m && m[1] )	_gecko = parseFloat( m[1] );
-				else				_gecko = 1;
-			}
-		}
-	}
-}*/

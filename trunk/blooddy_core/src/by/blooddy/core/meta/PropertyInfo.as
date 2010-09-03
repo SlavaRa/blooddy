@@ -6,6 +6,8 @@
 
 package by.blooddy.core.meta {
 
+	import by.blooddy.core.utils.ClassUtils;
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -111,7 +113,7 @@ package by.blooddy.core.meta {
 			if ( this._parent ) { // нефига парсить лишний раз
 				this._type = ( this._parent as PropertyInfo )._type;
 			} else {
-				this._type = parseType( xml.@type.toString() );
+				this._type = ClassUtils.parseClassQName( xml.@type.toString() );
 			}
 			switch ( xml.name().toString() ) {
 				case 'accessor':

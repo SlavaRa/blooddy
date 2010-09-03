@@ -28,14 +28,6 @@ package by.blooddy.gui.style.meta {
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Class variables
-		//
-		//--------------------------------------------------------------------------
-		
-		private static const _PROTO_NUMBER:Object =		Number.prototype;
-		
-		//--------------------------------------------------------------------------
-		//
 		//  Class methods
 		//
 		//--------------------------------------------------------------------------
@@ -163,8 +155,6 @@ package by.blooddy.gui.style.meta {
 				name = prop.name.toString();
 				if ( name in this._styles ) continue; // exclude
 
-				trace( name );
-				
 				metaP = prop.getMetadata();
 				if ( metaP.length() > 0 ) metaP = null;
 
@@ -193,7 +183,7 @@ package by.blooddy.gui.style.meta {
 					if ( list.length() > 0 ) {
 						list = list[ 0 ].arg.( @key == '' );
 						if ( list.length() > 0 ) {
-							t = StyleType.getClassByType( list[ 0 ].@value );
+							t = StyleType.getValueByType( list[ 0 ].@value );
 						}
 					}
 
@@ -202,14 +192,14 @@ package by.blooddy.gui.style.meta {
 						if ( list.length() > 0 ) {
 							n = list[ 0 ].@value;
 							if ( n == 'Font Name' ) n = 'string'; // исключение
-							t = StyleType.getClassByType( n );
+							t = StyleType.getValueByType( n );
 						}
 					}
 					
 				}
 
 				if ( !t ) { // тип не указан
-					t = StyleType.getClassByClass( ClassAlias.getClass( prop.type ) );
+					t = StyleType.getClassByQName( prop.type );
 				}
 
 				if ( t ) {
@@ -227,11 +217,10 @@ package by.blooddy.gui.style.meta {
 								if ( n in this._styles && this._styles[ n ] is SimpleStyle ) {
 									t = this._styles[ n ].type;
 								} else {
-									t = StyleType.getClassByClass(
-										ClassAlias.getClass(
-											type.getMember( s.proxy ).type
-										)
-									)
+									prop = type.getMember( n ) as PropertyInfo;
+									if ( prop ) {
+										t = StyleType.getClassByQName( prop.type );
+									}
 								}
 								if ( t === NumberValue ) {
 									s.proxy = n;
@@ -274,28 +263,6 @@ package by.blooddy.gui.style.meta {
 				}
 			}
 
-/*
-			for each ( var prop:PropertyInfo in type.getProperties( false ) ) {
-				if ( prop.name.toString() in this._collectionValues ) continue; // exclude
-				list = prop.getMetadata().( @name == 'StyleType' );
-				
-			}
-
-			var member:MemberInfo;
-			var properties:Vector.<PropertyInfo>;
-			for each ( xml in meta.( @name == 'StyleValue' ) ) {
-				list = xml.arg.( @key == 'name' ).@value;
-				if ( list.length() > 0 && !( list[ 0 ] in this._collectionValues ) ) {
-					this._collectionValues[ list[ 0 ] ] = properties = new Vector.<PropertyInfo>();
-					for each ( xml in xml.arg.( @key == '' ).@value ) {
-						member = type.getMember( xml.toString() );
-						if ( member is PropertyInfo ) {
-							properties.push( member as PropertyInfo );
-						}
-					}
-				}
-			}
-*/
 		}
 
 	}
