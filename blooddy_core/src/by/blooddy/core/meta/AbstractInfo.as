@@ -50,21 +50,6 @@ package by.blooddy.core.meta {
 
 		//--------------------------------------------------------------------------
 		//
-		//  Protected class methods
-		//
-		//--------------------------------------------------------------------------
-
-		protected static function parseType(name:String):QName {
-			var i:int = name.lastIndexOf( '::' );
-			if ( i < 0 ) {
-				return new QName( '', name );
-			} else {
-				return new QName( name.substr( 0, i ), name.substr( i + 2 ) );
-			}
-		}
-		
-		//--------------------------------------------------------------------------
-		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------

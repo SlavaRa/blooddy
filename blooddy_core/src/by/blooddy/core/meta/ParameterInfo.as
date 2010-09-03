@@ -5,6 +5,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.meta {
+
+	import by.blooddy.core.utils.ClassUtils;
 	
 	/**
 	 * @author					BlooDHounD
@@ -94,7 +96,7 @@ package by.blooddy.core.meta {
 		//--------------------------------------------------------------------------
 		
 		$protected_info override function parseXML(xml:XML):void {
-			this._type = parseType( xml.@type.toString() );
+			this._type = ClassUtils.parseClassQName( xml.@type.toString() );
 			this._optional = parseBoolean( xml.@optional.toString() );
 		}
 		

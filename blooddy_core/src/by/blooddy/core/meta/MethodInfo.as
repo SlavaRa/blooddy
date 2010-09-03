@@ -5,6 +5,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.meta {
+
+	import by.blooddy.core.utils.ClassUtils;
 	
 	/**
 	 * @author					BlooDHounD
@@ -143,7 +145,7 @@ package by.blooddy.core.meta {
 				this._returnType = ( this._parent as MethodInfo )._returnType;
 				this._parameters = ( this._parent as MethodInfo )._parameters;
 			} else {
-				this._returnType = parseType( xml.@returnType.toString() );
+				this._returnType = ClassUtils.parseClassQName( xml.@returnType.toString() );
 				var list:XMLList = xml.parameter;
 				if ( list.length() <= 0 ) {
 					this._parameters = _EMPTY_PARAMETERS;

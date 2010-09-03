@@ -14,6 +14,7 @@ package by.blooddy.gui.style {
 	import by.blooddy.code.css.definition.values.PercentValue;
 	import by.blooddy.code.css.definition.values.StringValue;
 	import by.blooddy.code.css.definition.values.URLValue;
+	import by.blooddy.core.utils.ClassUtils;
 	import by.blooddy.gui.parser.css.values.BitmapFilterValue;
 	import by.blooddy.gui.parser.css.values.MatrixValue;
 	import by.blooddy.gui.parser.css.values.PointValue;
@@ -55,6 +56,22 @@ package by.blooddy.gui.style {
 		
 		private static const _PROTO_RECT:Object =		Rectangle.prototype;
 		
+		private static const _NAME_ARRAY:QName =		ClassUtils.getClassQName( Array );
+		
+		private static const _NAME_BOOLEAN:QName =		ClassUtils.getClassQName( Boolean );
+		
+		private static const _NAME_NUMBER:QName =		ClassUtils.getClassQName( Number );
+		
+		private static const _NAME_STRING:QName =		ClassUtils.getClassQName( String );
+		
+		private static const _NAME_FILTER:QName =		ClassUtils.getClassQName( BitmapFilter );
+		
+		private static const _NAME_MATRIX:QName =		ClassUtils.getClassQName( Matrix );
+		
+		private static const _NAME_POINT:QName =		ClassUtils.getClassQName( Point );
+		
+		private static const _NAME_RECT:QName =			ClassUtils.getClassQName( Rectangle );
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Class constants
@@ -91,7 +108,7 @@ package by.blooddy.gui.style {
 		//
 		//--------------------------------------------------------------------------
 
-		public static function getClassByType(type:String):Class {
+		public static function getValueByType(type:String):Class {
 			switch ( type.toLowerCase() ) {
 				case NUMBER:		return NumberValue;
 				case PERCENT:		return PercentValue;
@@ -109,7 +126,21 @@ package by.blooddy.gui.style {
 			return null;
 		}
 
-		public static function getClassByClass(cls:Class):Class {
+		public static function getClassByQName(type:QName):Class {
+			switch ( type ) {
+				case _NAME_NUMBER:		return NumberValue;
+				case _NAME_BOOLEAN:		return BooleanValue;
+				case _NAME_STRING:		return StringValue;
+				case _NAME_RECT:		return RectValue;
+				case _NAME_POINT:		return PointValue;
+				case _NAME_FILTER:		return BitmapFilterValue;
+				case _NAME_ARRAY:		return ArrayValue;
+				case _NAME_MATRIX:		return MatrixValue;
+			}
+			return null;
+		}
+		
+		public static function getValueByClass(cls:Class):Class {
 			if ( cls ) {
 				var p:Object = cls.prototype;
 				switch ( true ) {

@@ -49,6 +49,11 @@ package by.blooddy.core.managers.resource {
 		 */
 		private static const _NAME_DISPLAY_OBJECT:String = getQualifiedClassName( DisplayObject );
 
+		/**
+		 * @private
+		 */
+		private static const _PROTO_DISPLAY_OBJECT:Object =	DisplayObject.prototype;
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -190,9 +195,10 @@ package by.blooddy.core.managers.resource {
 				var resource:Object = this._manager.getResource( bundleName, resourceName );
 				if ( resource is Class ) {
 					var resourceClass:Class = resource as Class;
+					var p:Object = resourceClass.prototype;
 					if (
-						DisplayObject.prototype.isPrototypeOf( resourceClass.prototype ) ||
-						this._manager.getResource( bundleName, _NAME_DISPLAY_OBJECT ).prototype.isPrototypeOf( resourceClass.prototype ) // проверяем на поддоменность
+						_PROTO_DISPLAY_OBJECT.isPrototypeOf( p ) ||
+						this._manager.getResource( bundleName, _NAME_DISPLAY_OBJECT ).prototype.isPrototypeOf( p ) // проверяем на поддоменность
 					) {
 						result = new resourceClass() as DisplayObject;
 					}

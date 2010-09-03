@@ -28,12 +28,25 @@ package by.blooddy.core.utils {
 		//
 		//--------------------------------------------------------------------------
 
-		public static function cutClassName(name:String):String {
-			var index:int = name.lastIndexOf( '::' );
-			if ( index > 0 ) name = name.substr( index + 2 );
+		public static function parseClassQName(name:String):QName {
+			var i:int = name.lastIndexOf( '::' );
+			if ( i < 0 ) {
+				return new QName( '', name );
+			} else {
+				return new QName( name.substr( 0, i ), name.substr( i + 2 ) );
+			}
+		}
+		
+		public static function parseClassName(name:String):String {
+			var i:int = name.lastIndexOf( '::' );
+			if ( i > 0 ) name = name.substr( i + 2 );
 			return name;
 		}
 
+		public static function getClassQName(o:Object):QName {
+			return parseClassQName( getQualifiedClassName( o ) );
+		}
+		
 		/**
 		 * @param	value			Объект, имя класса, которого нужно узнать.
 		 *
@@ -44,7 +57,7 @@ package by.blooddy.core.utils {
 		 * @see						flash.utils.getQualifiedClassName()
 		 */
 		public static function getClassName(o:Object):String {
-			return cutClassName( getQualifiedClassName( o ) );
+			return parseClassName( getQualifiedClassName( o ) );
 		}
 		
 		/**
@@ -57,7 +70,7 @@ package by.blooddy.core.utils {
 		 * @see						flash.utils.getQualifiedSuperclassName()
 		 */
 		public static function getSuperclassName(o:Object):String {
-			return cutClassName( getQualifiedSuperclassName( o ) );
+			return parseClassName( getQualifiedSuperclassName( o ) );
 		}
 
 		public static function getClass(o:Object):Class {
