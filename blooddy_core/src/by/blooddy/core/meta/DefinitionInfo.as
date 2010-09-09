@@ -41,11 +41,6 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		private static const _DESCRIPTION:QName = new QName( ns_rdf, 'Description' );
-
-		/**
-		 * @private
-		 */
 		private static const _EMPTY_METADATA:XMLList = new XMLList();
 
 		//--------------------------------------------------------------------------
@@ -107,11 +102,11 @@ package by.blooddy.core.meta {
 		 */
 		$protected_info var _metadata_local:XMLList;
 		
-		public function getMetadata(all:Boolean=true):XMLList {
-			if ( all ) {
-				return this._metadata.copy();
-			} else {
+		public function getMetadata(local:Boolean=false):XMLList {
+			if ( local ) {
 				return this._metadata_local.copy();
+			} else {
+				return this._metadata.copy();
 			}
 		}
 
@@ -122,23 +117,8 @@ package by.blooddy.core.meta {
 		//--------------------------------------------------------------------------
 
 		public override function toXML():XML {
-			var xml:XML = super.toXML();
-			xml.setName( _DESCRIPTION );
-			var x:XML;
-			// title
-			x = <title />;
-			x.setNamespace( ns_dc );
-			x.appendChild( this._name.toString() );
-			xml.appendChild( x );
-			// metadata
-			if ( this._metadata_local.length() > 0 ) {
-				x = <metadata />;
-				x.setNamespace( ns_as3 );
-				x.@ns_rdf::parseType = 'Literal';
-				x.setChildren( this._metadata_local );
-				xml.appendChild( x );
-			}
-			
+			var xml:XML = <definition name={ this._name } />;
+			xml.appendChild( this._metadata_local );
 			return xml;
 		}
 		

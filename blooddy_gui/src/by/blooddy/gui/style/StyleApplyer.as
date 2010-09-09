@@ -17,9 +17,9 @@ package by.blooddy.gui.style {
 	import by.blooddy.code.css.definition.selectors.TagSelector;
 	import by.blooddy.code.css.definition.values.CSSValue;
 	import by.blooddy.code.css.definition.values.CollectionValue;
-	import by.blooddy.code.css.definition.values.PercentValue;
 	import by.blooddy.core.utils.ClassAlias;
 	import by.blooddy.gui.display.state.IStatable;
+	import by.blooddy.gui.style.meta.StyleInfo;
 	
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
@@ -57,17 +57,23 @@ package by.blooddy.gui.style {
 		 */
 		private static function isSelector(selector:CSSSelector, target:DisplayObject):Boolean {
 			var s:AttributeSelector = selector.selector;
+			var c:Class;
+			var sc:Vector.<String>;
 			do {
 				switch ( true ) {
 					case s is IDSelector:
 						if ( ( s as IDSelector ).value != target.name ) return false;
 						break;
 					case s is TagSelector:
-						var c:Class = ClassAlias.getClass( ( s as TagSelector ).value );
+						c = ClassAlias.getClass( ( s as TagSelector ).value );
 						if ( !c || !( target is c ) ) return false;
 						break;
 					case s is ClassSelector:
-						if ( !( target is IStyleable ) || ( target as IStyleable ).styleClass != ( s as ClassSelector ).value ) return false;
+						if ( !sc ) {
+							if ( !( target is IStyleable ) ) return false;
+							sc = ( target as IStyleable ).styleClassList;
+						}
+						if ( sc.indexOf( ( s as ClassSelector ).value ) < 0 ) return false;
 						break;
 					case s is PseudoSelector:
 						if ( !( target is IStatable ) || ( target as IStatable ).state != ( s as PseudoSelector ).value ) return false;
@@ -210,17 +216,21 @@ package by.blooddy.gui.style {
 			// сделаем из правил один большое declaration
 			var declarations:Object = new Object();
 			var value:CSSValue;
+			var info:StyleInfo = StyleInfo.getInfo( target );
 			for each ( var rule:CSSRule in rules ) {
 				
 				for ( n in rule.declarations ) {
 					
 					value = rule.declarations[ n ];
 					if ( value is CollectionValue ) {
-						
-					} else if ( value is PercentValue ) {
-						
+
+
+					} else {
+
+						//info.getStyle(
+
 					}
-					
+
 				}
 				
 			}

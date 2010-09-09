@@ -15,7 +15,7 @@ package by.blooddy.core.display {
 	//  Aliases
 	//--------------------------------------
 	
-	ClassAlias.registerNamespaceAlias( blooddy, BaseMovieClip );
+	ClassAlias.registerQNameAlias( new QName( blooddy, 'MovieClip' ), BaseMovieClip );
 
 	/**
 	 * @author					BlooDHounD

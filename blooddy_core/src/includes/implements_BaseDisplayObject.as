@@ -8,6 +8,7 @@
 
 	/**
 	 * исправления бага с двойным addedToStage
+	 * 
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10

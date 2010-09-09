@@ -73,15 +73,7 @@ package by.blooddy.core.meta {
 		//--------------------------------------------------------------------------
 
 		public override function toXML():XML {
-			var xml:XML = super.toXML();
-			// about
-			xml.@ns_rdf::about = '#' + encodeURI( this._owner._name + '-' + this._name );
-			// define
-			var x:XML = <isDefinedBy />;
-			x.setNamespace( ns_rdfs );
-			x.@ns_rdf::resource = '#' + encodeURI( this._owner._name.toString() );
-			xml.appendChild( x );
-			return xml;
+			return super.toXML();
 		}
 
 		//--------------------------------------------------------------------------
