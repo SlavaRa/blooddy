@@ -39,11 +39,6 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		private static const _LI:QName = new QName( ns_rdf, 'li' );
-
-		/**
-		 * @private
-		 */
 		private static const _EMPTY_PARAMETERS:Vector.<ParameterInfo> = new Vector.<ParameterInfo>( 0, true );
 		
 		//--------------------------------------------------------------------------
@@ -105,30 +100,11 @@ package by.blooddy.core.meta {
 		
 		public override function toXML():XML {
 			var xml:XML = super.toXML();
-			var x:XML;
-			// type
-			x = <type>method</type>;
-			x.setNamespace( ns_dc );
-			xml.appendChild( x );
-			// returnType
-			x = <returnType />;
-			x.setNamespace( ns_as3 );
-			x.@ns_rdf::resource = '#' + encodeURI( this._returnType.toString() );
-			xml.appendChild( x );
-			// parametrs
-			var seq:XML = <Seq />;
-			var l:uint = this._parameters.length;
-			for ( var i:uint = 0; i<l; i++ ) {
-				x = this._parameters[ 0 ].toXML();
-				x.setName( _LI );
-				seq.appendChild( x );
-			}
-			if ( seq.hasComplexContent() ) {
-				seq.setNamespace( ns_rdf );
-				x = <parameters />;
-				x.setNamespace( ns_as3 );
-				x.appendChild( seq );
-				xml.appendChild( x );
+			xml.setLocalName( 'method' );
+			xml.@returnType = this._returnType;
+			var i:uint, l:uint = this._parameters.length;
+			for ( i=0; i<l; i++ ) {
+				xml.appendChild( this._parameters[ i ].toXML() );
 			}
 			return xml;
 		}

@@ -114,8 +114,6 @@
     <classEntry path="by.blooddy.core.meta.ParameterInfo"/>
     <classEntry path="by.blooddy.core.meta.PropertyInfo"/>
     <classEntry path="by.blooddy.core.meta.TypeInfo"/>
-    <classEntry path="by.blooddy.core.meta.describeLinksRDF"/>
-    <classEntry path="by.blooddy.core.meta.describeTypeRDF"/>
     <classEntry path="by.blooddy.core.net.AbstractClient"/>
     <classEntry path="by.blooddy.core.net.AbstractRemoter"/>
     <classEntry path="by.blooddy.core.net.IAbstractSocket"/>
@@ -212,6 +210,7 @@
     <classEntry path="by.blooddy.core.utils.xml.XMLUtils"/>
     <classEntry path="parseBoolean"/>
     <classEntry path="by.blooddy.core.utils.net.Environment"/>
+    <classEntry path="by.blooddy.core.meta.RDFDescriber"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

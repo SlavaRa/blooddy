@@ -19,7 +19,7 @@ package by.blooddy.core.display.text {
 	//  Aliases
 	//--------------------------------------
 	
-	ClassAlias.registerNamespaceAlias( blooddy, BaseTextField );
+	ClassAlias.registerQNameAlias( new QName( blooddy, 'TextField' ), BaseTextField );
 
 	/**
 	 * @author					BlooDHounD
@@ -43,7 +43,7 @@ package by.blooddy.core.display.text {
 			super();
 			super.mouseEnabled = false;
 			super.addEventListener( Event.ADDED,				this.handler_added,				false, int.MAX_VALUE, true );
-			super.addEventListener( Event.REMOVED,				this.handler_remvoed,			false, int.MAX_VALUE, true );
+			super.addEventListener( Event.REMOVED,				this.handler_removed,			false, int.MAX_VALUE, true );
 			super.addEventListener( Event.ADDED_TO_STAGE,		this.handler_addedToStage,		false, int.MAX_VALUE, true );
 			super.addEventListener( Event.REMOVED_FROM_STAGE,	this.handler_removedFromStage,	false, int.MAX_VALUE, true );
 		}
@@ -61,7 +61,7 @@ package by.blooddy.core.display.text {
 		//  Event handlers
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 */
@@ -83,7 +83,7 @@ package by.blooddy.core.display.text {
 		/**
 		 * @private
 		 */
-		private function handler_remvoed(event:Event):void {
+		private function handler_removed(event:Event):void {
 			if ( event.target !== this ) {
 				// останавливаем расспостранение события
 				// наши родители даже не догадываются о его существовании

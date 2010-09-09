@@ -72,21 +72,7 @@ package by.blooddy.core.meta {
 		//--------------------------------------------------------------------------
 
 		public override function toXML():XML {
-			var xml:XML = super.toXML();
-			xml.@ns_rdf::parseType = 'Resource';
-			var x:XML;
-			// type
-			x = <type />;
-			x.setNamespace( ns_as3 );
-			x.@ns_rdf::resource = '#' + encodeURI( this._type.toString() );
-			xml.appendChild( x );
-			// optional
-			x = <optional />;
-			x.appendChild( this._optional );
-			x.setNamespace( ns_as3 );
-			//x.@ns_rdf::datatype = 'http://www.w3.org/2001/XMLSchema#boolean';
-			xml.appendChild( x );
-			return xml;
+			return <parameter type={ this._type } optional={ this._optional } />;
 		}
 
 		//--------------------------------------------------------------------------

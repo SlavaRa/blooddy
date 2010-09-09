@@ -16,7 +16,7 @@ package by.blooddy.core.display {
 	//  Aliases
 	//--------------------------------------
 	
-	ClassAlias.registerNamespaceAlias( blooddy, BaseSimpleButton );
+	ClassAlias.registerQNameAlias( new QName( blooddy, 'SimpleButton' ), BaseSimpleButton );
 
 	/**
 	 * @author					BlooDHounD

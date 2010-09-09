@@ -74,14 +74,27 @@ package by.blooddy.core.utils {
 		}
 
 		public static function getClass(o:Object):Class {
+			if ( o is Class ) {
+				return o as Class;
+			} else {
+				var c:Class = o.constructor as Class;
+				if ( c && o is c ) {
+					return c;
+				} else {
+					return getClassFromName( o );
+				}
+			}
+		}
+
+		public static function getClassFromName(o:Object):Class {
 			try {
 				return getDefinitionByName( getQualifiedClassName( o ) ) as Class;
 			} catch ( e:Error ) {
 			}
 			return null;
 		}
-
-		public static function getSuperclass(o:Object):Class {
+		
+		public static function getSuperclassFromName(o:Object):Class {
 			var name:String = getQualifiedSuperclassName( o );
 			if ( name ) {
 				try {

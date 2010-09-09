@@ -36,20 +36,6 @@ package by.blooddy.core.meta {
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Class variables
-		//
-		//--------------------------------------------------------------------------
-		
-		internal static const ns_rdf:Namespace = new Namespace( 'rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#' );
-		
-		internal static const ns_as3:Namespace = new Namespace( 'as3', AS3 + '#' );
-		
-		internal static const ns_dc:Namespace = new Namespace( 'dc', 'http://purl.org/dc/elements/1.1/' );
-
-		internal static const ns_rdfs:Namespace = new Namespace( 'rdfs', 'http://www.w3.org/2000/01/rdf-schema' );
-
-		//--------------------------------------------------------------------------
-		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
@@ -68,7 +54,7 @@ package by.blooddy.core.meta {
 		//--------------------------------------------------------------------------
 		
 		public function toXML():XML {
-			return <node />;
+			return new XML();
 		}
 
 		public function toString():String {

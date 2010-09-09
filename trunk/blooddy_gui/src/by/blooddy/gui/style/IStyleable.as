@@ -27,7 +27,9 @@ package by.blooddy.gui.style {
 	public interface IStyleable extends IEventDispatcher {
 		
 		function get styleClass():String;
-		
+
+		function get styleClassList():Vector.<String>;
+
 	}
 	
 }

@@ -16,7 +16,7 @@ package by.blooddy.core.display {
 	//  Aliases
 	//--------------------------------------
 	
-	ClassAlias.registerNamespaceAlias( blooddy, BaseBitmap );
+	ClassAlias.registerQNameAlias( new QName( blooddy, 'Bitmap' ), BaseBitmap );
 
 	/**
 	 * @author					BlooDHounD

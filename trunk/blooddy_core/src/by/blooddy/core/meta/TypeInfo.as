@@ -38,17 +38,8 @@ package by.blooddy.core.meta {
 		//--------------------------------------------------------------------------
 
 		public static function getInfo(o:Object):TypeInfo {
-			var c:Class;
-			if ( o is Class ) {
-				c = o as Class;
-			} else {
-				c = o.constructor;
-				if ( !c || !( o is c ) ) {
-					c = ClassUtils.getClass( o );
-					if ( !c ) return null;
-					// TODO: клонирование инфы, и попытаться использовать класс родитель
-				}
-			}
+			var c:Class = ClassUtils.getClass( o );
+			if ( !c ) return null;
 			var result:TypeInfo = _HASH[ c ];
 			if ( !result ) {
 				_privateCall = true;
@@ -241,13 +232,13 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		private var _target:Class;
-
+		private var _targetPrototype:Object;
+		
 		/**
 		 * @private
 		 */
-		private var _targetPrototype:Object;
-		
+		private var _target:Class;
+
 		public function get target():Class {
 			return this._target;
 		}
@@ -375,11 +366,11 @@ package by.blooddy.core.meta {
 			}
 		}
 
-		public function getInterfaces(all:Boolean=true):Vector.<QName> {
-			if ( all ) {
-				return this._list_interfaces.slice();
-			} else {
+		public function getInterfaces(local:Boolean=false):Vector.<QName> {
+			if ( local ) {
 				return this._list_interfaces_local.slice();
+			} else {
+				return this._list_interfaces.slice();
 			}
 		}
 
@@ -391,11 +382,11 @@ package by.blooddy.core.meta {
 			return String( name ) in this._hash_members;
 		}
 
-		public function getMembers(all:Boolean=true):Vector.<MemberInfo> {
-			if ( all ) {
-				return this._list_members.slice();
-			} else {
+		public function getMembers(local:Boolean=false):Vector.<MemberInfo> {
+			if ( local ) {
 				return this._list_members_local.slice();
+			} else {
+				return this._list_members.slice();
 			}
 		}
 
@@ -408,11 +399,11 @@ package by.blooddy.core.meta {
 		//  properties
 		//----------------------------------
 		
-		public function getProperties(all:Boolean=true):Vector.<PropertyInfo> {
-			if ( all ) {
-				return this._list_properties.slice();
-			} else {
+		public function getProperties(local:Boolean=false):Vector.<PropertyInfo> {
+			if ( local ) {
 				return this._list_properties_local.slice();
+			} else {
+				return this._list_properties.slice();
 			}
 		}
 		
@@ -420,106 +411,39 @@ package by.blooddy.core.meta {
 		//  methods
 		//----------------------------------
 		
-		public function getMethods(all:Boolean=true):Vector.<MethodInfo> {
-			if ( all ) {
-				return this._list_methods.slice();
-			} else {
+		public function getMethods(local:Boolean=false):Vector.<MethodInfo> {
+			if ( local ) {
 				return this._list_methods_local.slice();
+			} else {
+				return this._list_methods.slice();
 			}
 		}
 
-		/**
-		 * @private
-		 */
 		public override function toXML():XML {
 			var xml:XML = super.toXML();
-			xml.addNamespace( ns_rdfs );
-			xml.addNamespace( ns_dc );
-			xml.addNamespace( ns_as3 );
 
-			xml.@ns_rdf::about = '#' + encodeURI( this._name.toString() );
-
-			var resource:XML;
-			var seq:XML;
-			var x:XML;
-			var i:uint, l:uint;
-
-			// type
-			x = <type>type</type>;
-			x.setNamespace( ns_dc );
-			xml.appendChild( x );
-
-			// source
-			if ( this._source ) {
-				x = <source />;
-				x.appendChild( this._source );
-				x.setNamespace( ns_dc );
-				xml.appendChild( x );
-			}
-
-			// superClasses
-			l = this._list_superclasses.length;
-			if ( l > 0 ) {
-				resource = <extendsClass />
-				resource.setNamespace( ns_as3 );
-
-				seq = <Seq />
-				seq.setNamespace( ns_rdf );
+			xml.setLocalName( 'type' );
 				
-				for ( i=0; i<l; i++ ) {
-					x = <li />
-					x.setNamespace( ns_rdf );
-					x.@ns_rdf::resource = '#' + encodeURI( this._list_superclasses[ i ].toString() );
-
-					seq.appendChild( x );
-				}
-
-				resource.appendChild( seq );
-
-				xml.appendChild( resource );
+			// superClass
+			if ( this._parent ) {
+				xml.@base = this._parent.name;
 			}
 
 			// interfaces
-			l = this._list_interfaces_local.length;
-			if ( l > 0 ) {
-				resource = <implementsInterface />
-				resource.setNamespace( ns_as3 );
-				
-				seq = <Bag />
-				seq.setNamespace( ns_rdf );
-				
-				for ( i=0; i<l; i++ ) {
-					x = <li />
-					x.setNamespace( ns_rdf );
-					x.@ns_rdf::resource = '#' + encodeURI( this._list_interfaces_local[ i ].toString() );
-					
-					seq.appendChild( x );
-				}
-				
-				resource.appendChild( seq );
-				
-				xml.appendChild( resource );
+			for each ( var n:QName in _list_interfaces_local ) {
+				xml.appendChild( <implementsInterface type={ n } /> );
 			}
-
+			
 			// constructor
-			if ( l > 0 ) {
-				resource = this._constructor.toXML();
-				if ( resource.hasComplexContent() ) {
-					xml.appendChild( resource );
-				}
+			var x:XML = this._constructor.toXML();
+			if ( x.hasComplexContent() ) {
+				xml.appendChild( x );
 			}
 
-			// properties
-			if ( this._list_members_local.length > 0 ) {
-				resource = <members />
-				resource.setNamespace( ns_as3 );
-				resource.@ns_rdf::parseType = 'Collection';
-				for each ( var m:MemberInfo in this._list_members_local ) {
-					resource.appendChild( m.toXML() );
-				}
-				xml.appendChild( resource );
+			for each ( var m:MemberInfo in this._list_members_local ) {
+				xml.appendChild( m.toXML() );
 			}
-
+			
 			return xml;
 		}
 		

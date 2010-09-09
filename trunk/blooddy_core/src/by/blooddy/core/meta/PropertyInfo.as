@@ -77,28 +77,16 @@ package by.blooddy.core.meta {
 
 		public override function toXML():XML {
 			var xml:XML = super.toXML();
-			var x:XML;
-			// type
-			x = <type>property</type>;
-			x.setNamespace( ns_dc );
-			xml.appendChild( x );
-			// type
-			x = <type />;
-			x.setNamespace( ns_as3 );
-			x.@ns_rdf::resource = '#' + encodeURI( this._type.toString() );
-			xml.appendChild( x );
-			// access
+			xml.setLocalName( 'property' );
+			xml.@type = this._type;
+
 			var access:String = '';
 			if ( this._access & ACCESS_READ )	access += 'read';
 			if ( this._access & ACCESS_WRITE )	access += 'write';
 			if ( ( this._access & ACCESS_READ_WRITE ) != ACCESS_READ_WRITE ) access += 'only';
 			if ( access ) {
-				x = <access />;
-				x.setNamespace( ns_as3 );
-				//x.@ns_rdf::datatype = 'http://www.w3.org/2001/XMLSchema#string';
-				x.appendChild( access );
-				xml.appendChild( x );
-			}	
+				xml.@access = access;
+			}
 			return xml;
 		}
 

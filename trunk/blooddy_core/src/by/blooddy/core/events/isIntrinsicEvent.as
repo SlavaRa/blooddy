@@ -149,7 +149,7 @@ internal final class EventDispatcherInfo {
 				this._events[ key ] = true;
 			}
 		}
-		var list:XMLList = info.getMetadata( false ).( @name == 'Event' );
+		var list:XMLList = info.getMetadata( true ).( @name == 'Event' );
 		var arg:XML, name:String;
 		for each ( var xml:XML in list ) {
 			list = xml.arg;

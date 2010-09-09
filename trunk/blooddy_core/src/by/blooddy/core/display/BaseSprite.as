@@ -15,7 +15,7 @@ package by.blooddy.core.display {
 	//  Aliases
 	//--------------------------------------
 	
-	ClassAlias.registerNamespaceAlias( blooddy, BaseSprite );
+	ClassAlias.registerQNameAlias( new QName( blooddy, 'Sprite' ), BaseSprite );
 
 	/**
 	 * @author					BlooDHounD

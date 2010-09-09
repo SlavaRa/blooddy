@@ -36,11 +36,11 @@ package by.blooddy.core.utils.proxy {
 		public function Proxy() {
 			super();
 			var c:Class;
-			this._constructor = c = ClassUtils.getClass( this );
+			this._constructor = c = ClassUtils.getClassFromName( this );
 			if ( c && c.prototype ) {
 				this._prototype = c.prototype;
 			} else {
-				c = ClassUtils.getSuperclass( this );
+				c = ClassUtils.getSuperclassFromName( this );
 				if ( c && c.prototype ) {
 					this._prototype = c.prototype;
 				} else {

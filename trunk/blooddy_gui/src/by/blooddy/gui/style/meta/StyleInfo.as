@@ -33,16 +33,8 @@ package by.blooddy.gui.style.meta {
 		//--------------------------------------------------------------------------
 		
 		public static function getInfo(o:Object):StyleInfo {
-			var c:Class;
-			if ( o is Class ) {
-				c = o as Class;
-			} else {
-				c = o.constructor;
-				if ( !c ) {
-					c = ClassUtils.getClass( o );
-					if ( !c ) return null;
-				}
-			}
+			var c:Class = ClassUtils.getClass( o );
+			if ( !c ) return null;
 			var result:StyleInfo = _HASH[ c ];
 			if ( !result ) {
 				_privateCall = true;
@@ -134,7 +126,7 @@ package by.blooddy.gui.style.meta {
 			var name:String;
 			
 			// обрабатываем свойства
-			var metaT:XMLList = type.getMetadata( false );
+			var metaT:XMLList = type.getMetadata( true );
 			var metaP:XMLList;
 			var arg:XMLList;
 
