@@ -46,14 +46,14 @@ package by.blooddy.core.utils.ui {
 					items = child.contextMenu.customItems;
 					menu.customItems.length = 0;
 					
-					for (i = 0;i < items.length;i++) {
+					for ( i=0; i < items.length; ++i ) {
 						menu.customItems[i] = child.contextMenu.customItems[i];
 					}
 					
 					if (separatorBefore) {
 						items = menu.customItems;
 						
-						for (i = 0; i<items.length; i++) {
+						for ( i=0; i<items.length; ++i ) {
 							if ( ( items[i] as ContextMenuItem ).visible ) {
 								( items[i] as ContextMenuItem ).separatorBefore = true;
 								break;

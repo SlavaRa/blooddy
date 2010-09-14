@@ -38,10 +38,10 @@ package by.blooddy.core.display {
 			var i:uint;
 			var l:uint = container.numChildren;
 			var v:Vector.<uint> = new Vector.<uint>( l );
-			for ( i=0; i<l; i++ ) {
+			for ( i=0; i<l; ++i ) {
 				v[ i ] = i;
 			}
-			for ( i=0; i<l; i++ ) {
+			for ( i=0; i<l; ++i ) {
 				c = container.getChildAt( v.splice( Math.round( Math.random() * ( v.length - 1 ) ), 1 )[ 0 ] ) as DisplayObjectContainer;
 				if ( c && c.numChildren > 0 ) {
 					result = c.getChildByName( name );

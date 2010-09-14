@@ -20,7 +20,7 @@ package by.blooddy.core.utils {
 
 		public function get length():uint {
 			var length:uint = 0;
-			for ( var name:String in this ) length++;
+			for ( var name:String in this ) ++length;
 			return length;
 		}
 

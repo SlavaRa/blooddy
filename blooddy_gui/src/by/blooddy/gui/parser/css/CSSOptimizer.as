@@ -32,7 +32,7 @@ package by.blooddy.gui.parser.css {
 			if ( mediaNames ) {
 				var l:uint = mediaNames.length;
 				var i:uint;
-				for ( i=0; i<l; i++ ) {
+				for ( i=0; i<l; ++i ) {
 					mediaNames[ i ] = mediaNames[ i ].toLowerCase();
 				}
 			} else {
@@ -82,7 +82,7 @@ package by.blooddy.gui.parser.css {
 					values = ( v as CollectionValue ).values.slice();
 					l = values.length;
 					h2 = false;
-					for ( i=0; i<l; i++ ) {
+					for ( i=0; i<l; ++i ) {
 						v2 = values[ i ];
 						if ( v2 is ComplexValue ) {
 							values[ i ] = ComplexValueFactory.getValue( v2 as ComplexValue );

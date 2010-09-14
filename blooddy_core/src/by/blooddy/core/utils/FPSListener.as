@@ -128,7 +128,7 @@ package by.blooddy.core.utils {
 			var time:Number = getTimer() - this._samplingTime;
 			var l:uint = this._times.length;
 			var i:uint = 0;
-			while ( i< l && this._times[ i ] < time ) i++;
+			while ( i< l && this._times[ i ] < time ) ++i;
 			if ( i > 0 ) {
 				this._times.splice( 0, i );
 				l = this._times.length;

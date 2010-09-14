@@ -161,7 +161,7 @@ package by.blooddy.core.events {
 
 			for ( type in this._listeners ) {
 				listeners_type = this._listeners[ type ] as Vector.<Dictionary>;
-				for ( useCapture_i = 0; useCapture_i <= 1; useCapture_i++ ) {
+				for ( useCapture_i = 0; useCapture_i <= 1; ++useCapture_i ) {
 					useCapture = Boolean( useCapture_i )
 					listeners_capture = listeners_type[ useCapture_i ];
 					for ( o in listeners_capture ) {
@@ -190,7 +190,7 @@ package by.blooddy.core.events {
 
 			for ( type in this._listeners ) {
 				listeners_type = this._listeners[ type ] as Vector.<Dictionary>;
-				for ( useCapture_i = 0; useCapture_i <= 1; useCapture_i++ ) {
+				for ( useCapture_i = 0; useCapture_i <= 1; ++useCapture_i ) {
 					useCapture = Boolean( useCapture_i )
 					listeners_capture = listeners_type[ useCapture_i ];
 					for ( o in listeners_capture ) {

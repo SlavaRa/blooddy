@@ -136,7 +136,7 @@ package by.blooddy.core.utils.math {
 				expression = expression.replace(_constExp, constPhase);	// константы
 			} while ( exp != expression );
 
-			for (var i:uint=0; i<5; i++) {
+			for (var i:uint=0; i<5; ++i) {
 				do {
 					exp = expression
 					expression = expression.replace(_mathExp[i], mathPhase);	// умножение и деление

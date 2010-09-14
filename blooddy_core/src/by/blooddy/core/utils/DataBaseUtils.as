@@ -42,7 +42,7 @@ package by.blooddy.core.utils {
 			if ( data is DataContainer ) {
 				var cont:DataContainer = data as DataContainer;
 				var l:uint = cont.numChildren;
-				for ( var i:uint = 0; i<l; i++ ) {
+				for ( var i:uint = 0; i<l; ++i ) {
 					result += '\n' + _toTreeString( cont.getChildAt( i ), tabs + '\t' );
 				}
 			}

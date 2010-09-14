@@ -90,7 +90,7 @@ package by.blooddy.code.json {
 			var s:String;
 			var c:uint;
 			var j:uint = 0;
-			for ( var i:uint = 0; i<l; i++ ) {
+			for ( var i:uint = 0; i<l; ++i ) {
 				switch ( c = value.charCodeAt( i ) ) {
 					case Char.CARRIAGE_RETURN:	s = '\\r';	break;
 					case Char.NEWLINE:			s = '\\n';	break;
@@ -127,8 +127,8 @@ package by.blooddy.code.json {
 			while ( l > 0 && value[ l ] == null ) {
 				l--;
 			}
-			l++;
-			for ( var i:uint = 0; i<l; i++ ) {
+			++l;
+			for ( var i:uint = 0; i<l; ++i ) {
 				arr.push( encodeValue( value[ i ], list ) );
 			}
 			list.pop();

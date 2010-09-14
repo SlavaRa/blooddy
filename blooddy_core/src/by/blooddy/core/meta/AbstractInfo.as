@@ -53,7 +53,7 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 		
-		public function toXML():XML {
+		public function toXML(local:Boolean=false):XML {
 			return new XML();
 		}
 

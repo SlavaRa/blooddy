@@ -41,7 +41,7 @@ package by.blooddy.core.display {
 					if (item.priority != priority || item.useWeakReference != useWeakReference) {
 						item.priority = priority;
 						item.useWeakReference = useWeakReference;
-						if (this._target.stage) item.activate();
+						if ( this._target.stage ) item.activate();
 					}
 					return;
 				}
@@ -79,7 +79,7 @@ package by.blooddy.core.display {
 		 * @private
 		 */
 		private function handler_addedToStage(event:Event):void {
-			for (var i:uint=0; i<this._listeners.length; i++) {
+			for (var i:uint=0; i<this._listeners.length; ++i) {
 				( this._listeners[i] as StageObserverItem ).activate();
 			}
 		}
@@ -88,7 +88,7 @@ package by.blooddy.core.display {
 		 * @private
 		 */
 		private function handler_removedFromStage(event:Event):void {
-			for (var i:uint=0; i<this._listeners.length; i++) {
+			for (var i:uint=0; i<this._listeners.length; ++i) {
 				( this._listeners[i] as StageObserverItem ).deactivate();
 			}
 		}

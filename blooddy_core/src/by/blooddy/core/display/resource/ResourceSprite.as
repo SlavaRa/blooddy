@@ -277,7 +277,7 @@ package by.blooddy.core.display.resource {
 			if ( !def ) {
 				this._resources[ resource ] = def = new ResourceLinker( bundleName, resourceName );
 			}
-			def.count++;
+			++def.count;
 		}
 
 		/**

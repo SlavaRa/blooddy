@@ -765,7 +765,7 @@ package by.blooddy.core.utils {
 			var l:uint = 0;
 			var d:Number = this._scrollRect.width * 10 + 500;
 			while ( this._TIMES[l] + d <= time ) {
-				l++;
+				++l;
 			}
 			if ( l>1 ) {
 				this._TIMES.splice( 0, l );
@@ -799,7 +799,7 @@ package by.blooddy.core.utils {
 			gF.moveTo( t, this._FPS[0] );
 			gM.moveTo( t, this._MEM[0] );
 			gN.moveTo( t, this._NET[0] );
-			for ( var i:uint = 1; i<l; i++ ) {
+			for ( var i:uint = 1; i<l; ++i ) {
 				t = ( time - this._TIMES[i] ) / 10;
 				gF.lineTo( t, this._FPS[i] );
 				gM.lineTo( t, this._MEM[i] );

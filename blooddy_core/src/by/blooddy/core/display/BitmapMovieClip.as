@@ -123,7 +123,7 @@ package by.blooddy.core.display {
 					var mc:MovieClip = bitmap as MovieClip;
 					result = new BitmapMovieClip( pixelSnapping, smoothing );
 					const l:uint = mc.totalFrames;
-					for ( var i:uint = 0; i<l; i++ ) {
+					for ( var i:uint = 0; i<l; ++i ) {
 						mc.gotoAndStop( i + 1 );
 						result.addBitmap( mc );
 					}
@@ -290,11 +290,11 @@ package by.blooddy.core.display {
 			var i:uint;
 			const l:uint = this._list.length;
 			if ( bind ) {
-				for ( i=0; i<l; i++ ) {
+				for ( i=0; i<l; ++i ) {
 					result._list.push( this._list[ i ] );
 				}
 			} else {
-				for ( i=0; i<l; i++ ) {
+				for ( i=0; i<l; ++i ) {
 					result._list.push( this._list[ i ].clone() );
 				}
 			}
@@ -307,7 +307,7 @@ package by.blooddy.core.display {
 			element.x += x;
 			element.y += y;
 			this._list.push( element );
-			this._totalFrames++;
+			++this._totalFrames;
 			return element.bmp;
 		}
 
@@ -316,8 +316,10 @@ package by.blooddy.core.display {
 			element.x += x;
 			element.y += y;
 			this._list.splice( index, 0, element );
-			this._totalFrames++;
-			if ( index <= this._currentFrame ) this._currentFrame++;
+			++this._totalFrames;
+			if ( index <= this._currentFrame ) {
+				++this._currentFrame;
+			}
 			return element.bmp;
 		}
 
@@ -398,7 +400,7 @@ package by.blooddy.core.display {
 		 */
 		private function $getBitmapIndex(bitmap:BitmapData):int {
 			var l:uint = this._list.length;
-			for ( var i:uint=0; i<l; i++ ) {
+			for ( var i:uint=0; i<l; ++i ) {
 				if ( this._list[ i ].bmp === bitmap ) return i;
 			}
 			return -1;

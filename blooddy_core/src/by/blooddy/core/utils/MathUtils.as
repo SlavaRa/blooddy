@@ -31,7 +31,7 @@ package by.blooddy.core.utils {
 			var c:Number;
 			var hl:uint, pos:uint;
 			var v:uint, rest:uint;
-			for ( i = 0; i < l; i++ ) {
+			for ( i = 0; i < l; ++i ) {
 				c = parseInt( value.charAt( i ), inRadix );
 				if ( isNaN( c ) ) throw new ArgumentError();
 				v = c;
@@ -51,7 +51,7 @@ package by.blooddy.core.utils {
 			var result:String = "";
 			i = hash.length;
 			while ( i-- && hash[ i ] == 0 ) {};
-			i++;
+			++i;
 			while ( i-- ) {
 				result += hash[ i ].toString( outRadix );
 			}

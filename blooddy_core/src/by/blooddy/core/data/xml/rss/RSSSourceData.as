@@ -70,10 +70,10 @@ package by.blooddy.core.data.xml.rss {
 		 */
 		public override function parseXML(xml:XML):void {
 			if ( xml.name().toString() != 'source' ) throw new ArgumentError();
-			this.$lock++;
+			++this.$lock;
 			super.name =	XMLUtils.parseListToString( xml.* );
 			this._url =		XMLUtils.parseListToString( xml.@url );
-			this.$lock--;
+			--this.$lock;
 			this.dispatchChange();
 		}
 

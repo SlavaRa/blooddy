@@ -233,7 +233,7 @@ package by.blooddy.core.data {
 		protected final function formatToString(...args):String {
 			var l:uint = args.length;
 			var v:*;
-			for ( var i:uint = 0; i<l; i++ ) {
+			for ( var i:uint = 0; i<l; ++i ) {
 				v = this[ args[ i ] ];
 				if ( v is String )	v = '"' + v + '"';
 				args[ i ] += '=' + v;

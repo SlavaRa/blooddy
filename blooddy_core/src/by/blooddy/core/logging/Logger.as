@@ -154,7 +154,7 @@ package by.blooddy.core.logging {
 		private function updateList():void {
 			var time:uint = getTimer();
 			const l:uint = this._list.length;
-			for ( var i:uint = 0; i < l; i++ ) {
+			for ( var i:uint = 0; i < l; ++i ) {
 				if ( time - this._list[i].time < this._maxTime ) {
 					break;
 				}

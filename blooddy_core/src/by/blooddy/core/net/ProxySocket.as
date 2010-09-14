@@ -376,7 +376,7 @@ package by.blooddy.core.net {
 		 * Отсылает команду.
 		 */
 		private function sendPoll():void {
-			this._cmdID++;
+			++this._cmdID;
 			this._request.url = this.getURL();
 			if ( this._poll.length > 0 ) {
 				this._request.data = this._poll;

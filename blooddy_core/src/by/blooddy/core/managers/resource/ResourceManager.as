@@ -192,7 +192,7 @@ package by.blooddy.core.managers.resource {
 			if ( priority >= LoaderPriority.HIGHEST ) {
 				registerQueue( asset );
 				asset.$load();
-				_loading++;
+				++_loading;
 			} else {
 				asset.queue = new QueueItem( asset, priority );
 				_LOADING_QUEUE.push( asset.queue );
@@ -217,7 +217,7 @@ package by.blooddy.core.managers.resource {
 				asset.queue = null;
 				registerQueue( asset );
 				asset.$load();
-				_loading++;
+				++_loading;
 			}
 		 	if ( _loading >= _maxLoading || _LOADING_QUEUE.length <= 0 ) {
 		 		enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, updateQueue );

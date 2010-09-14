@@ -414,7 +414,7 @@ package by.blooddy.core.data.xml.rss {
 		public function updateXML(xml:XML):void {
 			if ( xml.name().toString() != 'channel' ) throw new ArgumentError();
 
-			this.$lock++;
+			++this.$lock;
 
 			super.parseXML( xml );
 			
@@ -479,7 +479,7 @@ package by.blooddy.core.data.xml.rss {
 				super.addChild( item );
 			}
 
-			this.$lock--;
+			--this.$lock;
 
 			this.dispatchChange(); 
 		}
@@ -496,7 +496,7 @@ package by.blooddy.core.data.xml.rss {
 		protected override function addChild_before(child:Data):void {
 			super.addChild_before( child );
 			var change:Boolean = false;
-			this.$lock++;
+			++this.$lock;
 			if ( child is RSSCategoryData ) {
 				if ( this._category === child ) return;
 				if ( this._category ) super.removeChild( this._category );
@@ -518,7 +518,7 @@ package by.blooddy.core.data.xml.rss {
 				this._textInput = child as RSSTextInputData;
 				change = true;
 			}
-			this.$lock--;
+			--this.$lock;
 			if ( change ) this.dispatchChange();
 		}
 

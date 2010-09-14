@@ -31,7 +31,7 @@ package by.blooddy.code.css.definition {
 			const l:uint = name.length;
 			var c:String, c2:String;
 			var j:uint = 0;
-			for ( var i:uint = 0; i<l; i++ ) {
+			for ( var i:uint = 0; i<l; ++i ) {
 				c = name.charAt( i );
 				c2 = c.toLowerCase();
 				if ( c2 != c ) {

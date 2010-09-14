@@ -42,12 +42,8 @@ package by.blooddy.core.managers.remote {
 		}
 	
 		public function hasDefinition(name:String):Boolean {
-			var l:uint = this._loaders.length;
-			var result:Object;
-			for ( var i:uint = 0; i<l; i++ ) {
-				if ( ( this._loaders[i] as ModuleLoader ).loaderInfo.applicationDomain.hasDefinition( name ) ) {
-					return true;
-				}
+			for each ( var loader:ModuleLoader in this._loaders ) {
+				if ( loader.loaderInfo.applicationDomain.hasDefinition( name ) ) return true;
 			}
 			return false;
 		}
@@ -55,8 +51,8 @@ package by.blooddy.core.managers.remote {
 		public function getDefinition(name:String):Object {
 			var l:uint = this._loaders.length;
 			var app:ApplicationDomain, result:Object;
-			for ( var i:uint = 0; i<l; i++ ) {
-				app = ( this._loaders[i] as ModuleLoader ).loaderInfo.applicationDomain;
+			for each ( var loader:ModuleLoader in this._loaders ) {
+				app = loader.loaderInfo.applicationDomain;
 				if ( app.hasDefinition( name ) ) {
 					result = app.getDefinition( name );
 					if ( result ) return result;
@@ -177,7 +173,7 @@ internal final class ModuleLoader extends Loader {
 	public override function unload():void {
 		var module:IRemoteModule = super.content as IRemoteModule;
 		if ( module ) {
-			module.clear();
+			module.dispose();
 		}
 		super.unload();
 	}

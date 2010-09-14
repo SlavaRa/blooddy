@@ -73,7 +73,7 @@ internal function var_dump(hash:Dictionary, o:*, char:String='\t', prefix:String
 			}
 			props.sort();
 			var l:uint = props.length;
-			for ( var i:uint = 0; i<l; i++ ) {
+			for ( var i:uint = 0; i<l; ++i ) {
 				result += new_prefix + props[ i ] + ' : ' + var_dump( hash, o[ props[ i ] ], char, new_prefix ) + '\n';
 			}
 			result += prefix + ( o is Array ? ']' : '}' );

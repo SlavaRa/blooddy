@@ -237,12 +237,12 @@ package by.blooddy.core.utils {
 			var bitsLeft:Number = length - currentByteBitsLeft;
 			
 			if (bitsLeft > 0) {
-				super.position++;
+				++super.position;
 				out = this.readBits(bitsLeft, 0) | ((byte & ((1 << currentByteBitsLeft) - 1)) << (bitsLeft));
 			} else {
 				out = (byte >> (8 - length - start)) & ((1 << length) - 1);
 				this._bitIndex = (start + length) % 8;
-				if (start + length > 7) super.position++;
+				if (start + length > 7) ++super.position;
 			}
 			
 			return out;

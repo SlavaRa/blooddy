@@ -203,11 +203,11 @@ package by.blooddy.core.filters {
 			var tmp:Array;
 			var i:uint, j:uint, k:uint, value:Number;
 			var result:Array = new Array();
-			for ( i=0; i<5; i++ ) {
+			for ( i=0; i<5; ++i ) {
 				tmp = m1.slice( i * 5, ( i + 1 ) * 5 );
-				for ( j=0; j<5; j++ ) {
+				for ( j=0; j<5; ++j ) {
 					value = 0;
-					for ( k=0; k<5; k++ ) {
+					for ( k=0; k<5; ++k ) {
 						value += m2[ j + k * 5 ] * tmp[ k ];
 					}
 					result[ j + i * 5 ] = value;

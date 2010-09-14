@@ -83,10 +83,10 @@ package by.blooddy.core.data.xml.rss {
 		 */
 		public override function parseXML(xml:XML):void {
 			if ( xml.name().toString() != 'guid' ) throw new ArgumentError();
-			this.$lock++;
+			++this.$lock;
 			super.name =		XMLUtils.parseListToString( xml.* );;
 			this._isPermaLink =	XMLUtils.parseListToBoolean( xml.@isPermaLink );
-			this.$lock--;
+			--this.$lock;
 			this.dispatchChange();
 		}
 

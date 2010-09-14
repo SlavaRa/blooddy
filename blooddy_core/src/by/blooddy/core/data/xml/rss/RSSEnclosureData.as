@@ -126,11 +126,11 @@ package by.blooddy.core.data.xml.rss {
 		 */
 		public override function parseXML(xml:XML):void {
 			if ( xml.name().toString() != 'enclosure' ) throw new ArgumentError();
-			this.$lock++;
-			super.name =				XMLUtils.parseListToString( xml.@url );
-			this._length =				XMLUtils.parseListToInt( xml.@length );
-			this._type =				XMLUtils.parseListToString( xml.@type );
-			this.$lock--;
+			++this.$lock;
+			super.name =		XMLUtils.parseListToString( xml.@url );
+			this._length =		XMLUtils.parseListToInt( xml.@length );
+			this._type =		XMLUtils.parseListToString( xml.@type );
+			--this.$lock;
 			this.dispatchChange();
 		}
 

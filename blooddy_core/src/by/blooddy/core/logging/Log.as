@@ -74,7 +74,7 @@ package by.blooddy.core.logging {
 		protected final function formatToString(...args):String {
 			var result:Array = new Array();
 			var length:uint = args.length;
-			for (var i:uint =0; i<length; i++) {
+			for (var i:uint =0; i<length; ++i) {
 				if ( this[ args[i] ] is String ) result.push( args[i] + '="' + this[ args[i] ] + '"' );
 				else result.push( args[i] + '=' + this[ args[i] ].toString() );
 			}

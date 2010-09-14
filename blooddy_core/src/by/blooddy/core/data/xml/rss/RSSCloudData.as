@@ -172,7 +172,7 @@ package by.blooddy.core.data.xml.rss {
 		 */
 		public override function parseXML(xml:XML):void {
 			if ( xml.name().toString() != 'cloud' ) throw new ArgumentError();
-			this.$lock++;
+			++this.$lock;
 			
 			super.name =				XMLUtils.parseListToString( xml.@domain );
 			this._port =				XMLUtils.parseListToInt( xml.@port );
@@ -180,7 +180,7 @@ package by.blooddy.core.data.xml.rss {
 			this._registerProcedure =	XMLUtils.parseListToString( xml.@registerProcedure );
 			this._protocol =			XMLUtils.parseListToString( xml.@protocol );
 
-			this.$lock--;
+			--this.$lock;
 			this.dispatchChange(); 
 		}
 

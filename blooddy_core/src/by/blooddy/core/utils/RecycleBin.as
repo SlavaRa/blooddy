@@ -81,8 +81,8 @@ package by.blooddy.core.utils {
 			if ( this._length == 0 ) {
 				_TIMER.addEventListener( TimerEvent.TIMER, this.handler_timer );
 			}
-			this._length++;
-			i++;
+			++this._length;
+			++i;
 			rcs.splice( i, 0, new ResourceContainer( resource, time ) );
 		}
 
@@ -161,7 +161,7 @@ package by.blooddy.core.utils {
 					if ( rc.time > time ) break;
 					dispose( rc.resource );
 				}
-				i++;
+				++i;
 				l -= i;
 				if ( l > 0 ) { // минимум один элемент на удаление
 					rcs.splice( i, l );

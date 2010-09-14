@@ -277,9 +277,9 @@ package by.blooddy.core.managers.resource {
 		private function saveResource(bundleName:String, resourceName:String, resource:Object):void {
 			var def:ResourceLinker = this._resources[ resource ];
 			if ( !def ) this._resources[ resource ] = def = new ResourceLinker( bundleName, resourceName );
-			def.count++;
+			++def.count;
 			var usage:ResourceUsage = this._resourceUsages[ bundleName ] as ResourceUsage;
-			usage.count++;
+			++usage.count;
 		}
 
 		/**

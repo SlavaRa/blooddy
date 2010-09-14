@@ -7,10 +7,8 @@
 package by.blooddy.core.utils {
 
 	import flash.net.getClassByAlias;
-	import flash.net.registerClassAlias;
 	import flash.system.ApplicationDomain;
 	import flash.utils.getDefinitionByName;
-	import flash.utils.getQualifiedClassName;
 
 	/**
 	 * @author					BlooDHounD
@@ -45,9 +43,7 @@ package by.blooddy.core.utils {
 							'flash.text.engine::TextLine',
 						'flash.display::SimpleButton',
 						'flash.text::TextField',
-					'flash.display::MorphShape',
 					'flash.display::Shape',
-					'flash.text::StaticText',
 					'flash.media::Video'
 			);
 			const app:ApplicationDomain = ApplicationDomain.currentDomain;

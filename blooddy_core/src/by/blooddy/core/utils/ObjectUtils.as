@@ -80,7 +80,7 @@ package by.blooddy.core.utils {
 			var s:String;
 			var c:String;
 			var j:uint = 0;
-			for ( var i:uint = 0; i<l; i++ ) {
+			for ( var i:uint = 0; i<l; ++i ) {
 				switch ( c = value.charAt( i ) ) {
 					case '\r':	s = '\\r';	break;
 					case '\n':	s = '\\n';	break;
@@ -118,8 +118,8 @@ package by.blooddy.core.utils {
 			while ( l > 0 && value[ l ] == null ) {
 				l--;
 			}
-			l++;
-			for ( var i:uint = 0; i<l; i++ ) {
+			++l;
+			for ( var i:uint = 0; i<l; ++i ) {
 				arr.push( encodeValue( value[ i ], list ) );
 			}
 			return '[' + arr.join( ',' ) + ']';

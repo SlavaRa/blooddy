@@ -38,7 +38,7 @@ package by.blooddy.core.utils.crypto {
 				var tlen:uint = (len > 5550 ? 5550 : len );
 				len -= tlen;
 				do {
-					a += data[i++];
+					a += data[ i++ ];
 					b += a;
 				} while (--tlen);
 				a = (a & 0xFFFF) + (a >> 16) * 15;
