@@ -45,16 +45,6 @@ package by.blooddy.core.meta {
 
 		//--------------------------------------------------------------------------
 		//
-		//  Class methods
-		//
-		//--------------------------------------------------------------------------
-
-		protected static function parseName(x:XML):QName {
-			return new QName( x.@uri.toString(), x.@name.toString() );
-		}
-
-		//--------------------------------------------------------------------------
-		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
@@ -116,9 +106,9 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 
-		public override function toXML():XML {
-			var xml:XML = <definition name={ this._name } />;
-			xml.appendChild( this._metadata_local );
+		public override function toXML(local:Boolean=false):XML {
+			var xml:XML = <definition />;
+			xml.appendChild( local ? this._metadata_local : this._metadata );
 			return xml;
 		}
 		
@@ -132,8 +122,8 @@ package by.blooddy.core.meta {
 			var n:String;
 			var meta:XMLList = xml.metadata.(
 				n = @name,
-				n != '__go_to_definition_help'      &&
-				n != '__go_to_ctor_definition_help'
+				n != '__go_to_ctor_definition_help' &&
+				n != '__go_to_definition_help'
 			); // исключаев дебаг мету
 			if ( this._parent ) {
 				

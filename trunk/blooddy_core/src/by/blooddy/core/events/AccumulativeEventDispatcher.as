@@ -32,7 +32,7 @@ package by.blooddy.core.events {
 
 		public function hasAccumulativeEvent(event:Event):Boolean {
 			var l:uint = this._events.length;
-			for ( var i:uint = 0; i<l; i++ ) {
+			for ( var i:uint = 0; i<l; ++i ) {
 				if ( equalsObjects( event, this._events[ i ] ) ) return true;
 			}
 			return false;

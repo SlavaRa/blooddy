@@ -86,9 +86,9 @@ package by.blooddy.gui.parser.css {
 							var i1:uint, i2:uint;
 							var k:uint = 0;
 							var v:CSSValue;
-							for ( i1 = 1; i1<l1 && k<l2; i1++ ) {
+							for ( i1 = 1; i1<l1 && k<l2; ++i1 ) {
 								v = vv[ i1 ];
-								for ( i2=k; i2<l2; i2++ ) {
+								for ( i2=k; i2<l2; ++i2 ) {
 									s = h[ i2 ];
 									if ( v is s.type ) {
 										f[ s.name ] = v;

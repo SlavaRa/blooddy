@@ -325,7 +325,7 @@ package by.blooddy.gui.parser.component {
 			if ( asset.mediaName ) {
 				var media:CSSMedia;
 				var l:uint = asset.medias.length;
-				for ( var i:uint = 0; i<l; i++ ) {
+				for ( var i:uint = 0; i<l; ++i ) {
 					media = asset.medias[ i ];
 					if ( !media.name ) {
 						asset.medias[ i ] = new CSSMedia( media.rules, asset.mediaName );

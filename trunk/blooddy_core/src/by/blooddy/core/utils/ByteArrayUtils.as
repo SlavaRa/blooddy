@@ -22,7 +22,7 @@ package by.blooddy.core.utils {
 		public static function equals(b1:ByteArray, b2:ByteArray):Boolean {
 			var l:uint = b1.length;
 			if ( l != b2.length ) return false;
-			for ( var i:uint = 0; i<l; i++ ) {
+			for ( var i:uint = 0; i<l; ++i ) {
 				if ( b1[ i ] != b2[ i ] ) {
 //					trace( i, i.toString( 16 ), b1[ i ].toString( 16 ), b2[ i ].toString( 16 ) );
 					return false;
@@ -34,7 +34,7 @@ package by.blooddy.core.utils {
 		public static function bytesToHashString(bytes:ByteArray, shift:uint=0):String {
 			var l:uint = bytes.length;
 			var arr:Array = new Array();
-			for ( var i:uint = 0; i<l; i++ ) {
+			for ( var i:uint = 0; i<l; ++i ) {
 				arr[i] = bytes[i] + shift;
 			}
 			return String.fromCharCode.apply( String, arr );
@@ -43,7 +43,7 @@ package by.blooddy.core.utils {
 		public static function bytesFromHashString(str:String, shift:uint=0):ByteArray {
 			var l:uint = str.length;
 			var bytes:ByteArray = new ByteArray();
-			for ( var i:uint = 0; i<l; i++ ) {
+			for ( var i:uint = 0; i<l; ++i ) {
 				bytes[i] = str.charCodeAt( i ) - shift;
 			}
 			return bytes;
@@ -53,7 +53,7 @@ package by.blooddy.core.utils {
 			var arr:Array = new Array();
 			var l:uint = bytes.length;
 			var ch:String;
-			for ( var i:uint = 0; i<l; i++ ) {
+			for ( var i:uint = 0; i<l; ++i ) {
 				ch = bytes[i].toString( 16 );
 				arr.push( ch.length < 2 ? '0' + ch : ch );
 			}
@@ -66,7 +66,7 @@ package by.blooddy.core.utils {
 			if ( separator ) {
 				arr = s.split(separator);
 				l = arr.length;
-				for (i=0; i<l; i++) {
+				for (i=0; i<l; ++i) {
 					bytes.writeByte( parseInt( arr[i] as String, 16 ) );
 				}
 			} else {
@@ -118,8 +118,8 @@ package by.blooddy.core.utils {
 					result += '   ';
 					line_s += ' ';
 				} while ( ++p < rest );
-				for ( col=( rest < 8 ? 0 : 1 ); col<2; col++ ) {
-					for ( p=p%8; p<8 && i<length; p++, i++ ) {
+				for ( col=( rest < 8 ? 0 : 1 ); col<2; ++col ) {
+					for ( p=p%8; p<8 && i<length; ++p, ++i ) {
 						code = ( bytes[ i ] & 0xFF );
 						result += ( '0' + code.toString( 16 ).toUpperCase() ).substr( -2 ) + ' ';
 						line_s += ( code >= 32 && code <= 126 ? String.fromCharCode( code ) : '.' );
@@ -136,8 +136,8 @@ package by.blooddy.core.utils {
 			while ( i<length ) {
 				result += ( '00000000' + i.toString( 16 ).toUpperCase() ).substr( -8 ) + ':  ';
 				line_s = '';
-				for ( col=0; col<2; col++ ) {
-					for ( p=0; p<8 && i<length; p++, i++ ) {
+				for ( col=0; col<2; ++col ) {
+					for ( p=0; p<8 && i<length; ++p, ++i ) {
 						code = ( bytes[ i ] & 0xFF );
 						result += ( '0' + code.toString( 16 ).toUpperCase() ).substr( -2 ) + ' ';
 						line_s += ( code >= 32 && code <= 126 ? String.fromCharCode( code ) : '.' );

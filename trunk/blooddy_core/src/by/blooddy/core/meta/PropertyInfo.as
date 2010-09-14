@@ -35,7 +35,7 @@ package by.blooddy.core.meta {
 
 		public static const ACCESS_WRITE:uint =			2;
 		
-		public static const ACCESS_READ_WRITE:uint =	ACCESS_READ | ACCESS_WRITE;
+		public static const ACCESS_READ_WRITE:uint =	0;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -63,7 +63,7 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		private var _access:uint;
+		$protected_info var _access:uint;
 
 		public function get access():uint {
 			return this._access;
@@ -75,17 +75,16 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 
-		public override function toXML():XML {
-			var xml:XML = super.toXML();
+		public override function toXML(local:Boolean=false):XML {
+			var xml:XML = super.toXML( local );
 			xml.setLocalName( 'property' );
 			xml.@type = this._type;
 
 			var access:String = '';
-			if ( this._access & ACCESS_READ )	access += 'read';
-			if ( this._access & ACCESS_WRITE )	access += 'write';
-			if ( ( this._access & ACCESS_READ_WRITE ) != ACCESS_READ_WRITE ) access += 'only';
-			if ( access ) {
-				xml.@access = access;
+			switch ( this._access ) {
+				case ACCESS_READ:		xml.@access = 'readonly';	break;
+				case ACCESS_WRITE:		xml.@access = 'writeonly';	break;
+				case ACCESS_READ_WRITE:	xml.@access = 'readwrite';	break;
 			}
 			return xml;
 		}
@@ -106,13 +105,9 @@ package by.blooddy.core.meta {
 			switch ( xml.name().toString() ) {
 				case 'accessor':
 					switch ( xml.@access.toString() ) {
-						case 'readonly':	this._access = ACCESS_READ; break;
-						case 'readwrite':	this._access = ACCESS_READ_WRITE; break;
-						case 'writeonly':	this._access = ACCESS_WRITE; break;
+						case 'readonly':	this._access = ACCESS_READ;			break;
+						case 'writeonly':	this._access = ACCESS_WRITE;		break;
 					}
-					break;
-				case 'variable':
-					this._access = ACCESS_READ_WRITE;
 					break;
 				case 'constant':
 					this._access = ACCESS_READ;

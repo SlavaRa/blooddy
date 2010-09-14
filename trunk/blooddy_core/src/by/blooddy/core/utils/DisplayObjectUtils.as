@@ -137,7 +137,6 @@ package by.blooddy.core.utils {
 					for ( i = 0; i<objects.length; i++ ) {
 						if ( !doc.contains( objects[i] ) ) objects.splice( i--, 1 );
 					}
-					
 					return getDropTarget( doc, point, objects );
 				}
 			}

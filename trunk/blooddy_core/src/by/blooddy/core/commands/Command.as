@@ -123,7 +123,7 @@ package by.blooddy.core.commands {
 		private static function arrayToString(arr:Array):String {
 			var result:Array = new Array();
 			var length:uint = arr.length;
-			for ( var i:uint = 0; i<length; i++ ) {
+			for ( var i:uint = 0; i<length; ++i ) {
 				result.push( arr[ i ] is Command ? arr[ i ] : ObjectUtils.toString( arr[ i ] ) );
 			}
 			return result.join( ',' );

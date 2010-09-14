@@ -14,9 +14,9 @@ package by.blooddy.core.meta {
 	 * @created					06.03.2010 13:06:44
 	 */
 	public interface IFunctionInfo {
-		
+
 		function getParameters():Vector.<ParameterInfo>;
-		
+
 	}
 	
 }

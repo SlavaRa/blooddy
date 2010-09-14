@@ -240,7 +240,7 @@ package by.blooddy.gui.style {
 				var cont:DisplayObjectContainer = target as DisplayObjectContainer;
 				var l:uint = cont.numChildren;
 				var child:DisplayObject;
-				for ( var i:uint = 0; i<l; i++ ) {
+				for ( var i:uint = 0; i<l; ++i ) {
 					child = cont.getChildAt( i );
 					if ( child ) this.apply( child );
 				}

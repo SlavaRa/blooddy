@@ -251,7 +251,7 @@ package by.blooddy.core.meta {
 				seq = <Seq />
 				seq.setNamespace( ns_rdf );
 				
-				for ( i=0; i<l; i++ ) {
+				for ( i=0; i<l; ++i ) {
 					x = <li />
 					x.setNamespace( ns_rdf );
 					x.@ns_rdf::resource = '#' + encodeURI( types[ i ].toString() );
@@ -274,7 +274,7 @@ package by.blooddy.core.meta {
 				seq = <Bag />
 				seq.setNamespace( ns_rdf );
 				
-				for ( i=0; i<l; i++ ) {
+				for ( i=0; i<l; ++i ) {
 					x = <li />
 					x.setNamespace( ns_rdf );
 					x.@ns_rdf::resource = '#' + encodeURI( types[ i ].toString() );
@@ -425,7 +425,7 @@ package by.blooddy.core.meta {
 			var seq:XML = <Seq />;
 			var params:Vector.<ParameterInfo> = info.getParameters();
 			var l:uint = params.length;
-			for ( var i:uint = 0; i<l; i++ ) {
+			for ( var i:uint = 0; i<l; ++i ) {
 				seq.appendChild( getParameter( params[ i ] ) );
 			}
 			if ( seq.hasComplexContent() ) {

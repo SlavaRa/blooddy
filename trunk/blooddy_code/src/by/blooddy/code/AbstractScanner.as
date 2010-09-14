@@ -422,7 +422,7 @@ package by.blooddy.code {
 		 */
 		private function readFixedHex(length:uint=0):String {
 			var c:uint;
-			for ( var i:uint = 0; i<length; i++ ) {
+			for ( var i:uint = 0; i<length; ++i ) {
 				c = this.readCharCode();
 				if (
 					( c < Char.ZERO || c > Char.NINE ) &&

@@ -47,7 +47,7 @@ package by.blooddy.code.css {
 				
 				case Char.CARRIAGE_RETURN:
 					if ( this.readCharCode() != Char.NEWLINE ) {
-						this._position--;
+						--this._position;
 					}
 				case Char.NEWLINE:
 				case Char.SPACE:
@@ -78,7 +78,7 @@ package by.blooddy.code.css {
 					this._position--;
 					t = this.readString();
 					if ( t != null ) return this.makeToken( CSSToken.STRING_LITERAL, t );
-					this._position++;
+					++this._position;
 					break;
 
 				case Char.SLASH:
@@ -86,9 +86,9 @@ package by.blooddy.code.css {
 						this._position -= 2;
 						t = this.readBlockComment();
 						if ( t != null ) return this.makeToken( CSSToken.BLOCK_COMMENT, t );
-						this._position++;
+						++this._position;
 					} else {
-						this._position--;
+						--this._position;
 					}
 					break;
 

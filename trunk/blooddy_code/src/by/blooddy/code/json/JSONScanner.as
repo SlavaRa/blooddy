@@ -79,10 +79,10 @@ package by.blooddy.code.json {
 								this._position -= 2;
 								t = this.readBlockComment();
 								if ( t != null ) return this.makeToken( JSONToken.BLOCK_COMMENT, t );
-								this._position++;
+								++this._position;
 								break;
 							default:
-								this._position--;
+								--this._position;
 						}
 						break;
 

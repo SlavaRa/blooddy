@@ -176,7 +176,7 @@ internal function compare_GradientGlowFilter(f1:GradientGlowFilter, f2:GradientG
 internal function compare_Array(a1:Array, a2:Array):Boolean {
 	var l1:int = a1.length;
 	if ( l1 != a2.length ) return false;
-	for ( var i:int = 0; i<l1; i++ ) {
+	for ( var i:int = 0; i<l1; ++i ) {
 		if ( a1[i] != a2[i] ) return false;
 	}
 	return true;

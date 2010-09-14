@@ -23,15 +23,34 @@ package by.blooddy.core.utils.proxy {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Namespaces
+		//
+		//--------------------------------------------------------------------------
+		
+		protected namespace $protected_px;
+		
+		use namespace $protected_px;
+		
+		//--------------------------------------------------------------------------
+		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
 
-		public function ProxyObject(target:Object, parent:ProxyObject=null, name:*=null) {
+		public function ProxyObject(target:Object) {
 			super();
+
+			switch ( typeof target ) {
+				case 'object':
+				case 'function':
+					if ( target ) {
+						break;
+					}
+				default:
+					throw new ArgumentError();
+			}
+
 			this._target = target;
-			this._parent = parent;
-			this._name = name;
 
 			// составим ключи
 			for ( var i:Object in this._target ) {
@@ -49,7 +68,7 @@ package by.blooddy.core.utils.proxy {
 		/**
 		 * @private
 		 */
-		private var _parent:ProxyObject;
+		$protected_px var _parent:ProxyObject;
 
 		/**
 		 * @private
@@ -93,12 +112,40 @@ package by.blooddy.core.utils.proxy {
 		//--------------------------------------------------------------------------
 
 		flash_proxy override function getProperty(name:*):* {
+			if ( name in this._hash ) {
+				return this._hash[ name ];
+			} else if ( name in this._target ) {
+				
+				var value:* = this._target[ name ];
+				if ( value && typeof value == 'object' ) {
+
+					if (
+						!( value is Array ) &&
+						!( value is Date ) &&
+						!( value is ByteArray )
+					) {
+
+						var p:ProxyObject = new ProxyObject( value );
+						p._parent = this;
+						p._name = name;
+						this._hash[ name ] = value = p;
+
+					}
+
+				}
+				return value;
+				
+			}
+			return undefined;
+			/*
+			
 			if ( !name || super.hasProperty( name ) ) {
 				return super.getProperty( name );
-			} else if ( name in this._hash ) return this._hash[ name ]; // FIXED: развлетление хэшей!
-			else if ( name in this._target ) {
-				var value:* = this._target[name];
-				if (
+			} else if ( name in this._hash ) {
+				return this._hash[ name ]; // FIXED: развлетление хэшей!
+			} else if ( name in this._target ) {
+				var value:* = this._target[ name ];
+				if ( value
 					value is Number ||
 					value is String ||
 					value is Boolean ||
@@ -113,18 +160,24 @@ package by.blooddy.core.utils.proxy {
 					return super.getProperty( name );
 				}
 			}
-			return null;
+			return undefined;*/
 		}
 
 		flash_proxy override function hasProperty(name:*):Boolean {
-			return ( name in this._target || name in this._hash || super.hasProperty(name) );
+			return ( name in this._target || super.hasProperty( name ) );
 		}
 
 		flash_proxy override function deleteProperty(name:*):Boolean {
-			delete this._hash[ name ];
-			var result:Boolean = delete this._target[ name ]; // TODO: сперва рекурсивно поубивать детей
-			this._keys.splice( this._keys.indexOf(name), 1 );
-			if ( !this._lock ) this.bubbleUpdate( name );
+			if ( name in this._hash ) {
+				delete this._hash[ name ];
+			}
+			var result:Boolean = delete this._target[ name ];
+			if ( result ) {
+				if ( this._keys ) {
+					this._keys.splice( this._keys.indexOf( name ), 1 );
+				}
+//				if ( !this._lock ) this.bubbleUpdate( name );
+			}
 			return result;
 		}
 
@@ -137,7 +190,7 @@ package by.blooddy.core.utils.proxy {
 		}
 
 		flash_proxy override function nextValue(index:int):* {
-			return this[ this._keys[ index -1 ] ];
+			return this.getProperty( this._keys[ index - 1 ] );
 		}
 
 		flash_proxy override function setProperty(name:*, value:*):void {
@@ -159,7 +212,7 @@ package by.blooddy.core.utils.proxy {
 				) {
 					//
 				} else if ( value is Object ){
-					this._hash[ name ] = new ProxyObject( value, this, name );
+//					this._hash[ name ] = new ProxyObject( value, this, name );
 				} else {
 					throw new ArgumentError();
 				}

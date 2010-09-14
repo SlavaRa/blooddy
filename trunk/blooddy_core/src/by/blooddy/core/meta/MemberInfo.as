@@ -72,8 +72,13 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 
-		public override function toXML():XML {
-			return super.toXML();
+		public override function toXML(local:Boolean=false):XML {
+			var xml:XML = super.toXML( local );
+			xml.@name = this._name.localName;
+			if ( this._name.uri ) {
+				xml.@uri = this._name.uri;
+			}
+			return xml;
 		}
 
 		//--------------------------------------------------------------------------
@@ -84,8 +89,9 @@ package by.blooddy.core.meta {
 
 		$protected_info override function parseXML(xml:XML):void {
 			super.parseXML( xml );
-			// нефига парсить лишний раз
-			this._name = ( this._parent ? this._parent._name : parseName( xml ) );
+			if ( this._parent ) {
+				this._name = this._parent._name;
+			}
 		}
 
 	}

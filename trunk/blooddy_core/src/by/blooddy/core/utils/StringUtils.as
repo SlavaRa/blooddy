@@ -78,16 +78,16 @@ package by.blooddy.core.utils {
 			var chars:Array = new Array();
 			var i:uint;
 			if ( flag & 1 ) {
-				for ( i=0; i<10; i++ ) {
+				for ( i=0; i<10; ++i ) {
 					chars.push( i );
 				}
 			}
 			if ( flag & 4 ) {
-				for ( i=97; i<123; i++ ) {
+				for ( i=97; i<123; ++i ) {
 					chars.push( String.fromCharCode( i ) );
 				}
 			} else {
-				for ( i=97; i<103; i++ ) {
+				for ( i=97; i<103; ++i ) {
 					chars.push( String.fromCharCode( i ) );
 				}
 			}

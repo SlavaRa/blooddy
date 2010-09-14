@@ -184,7 +184,7 @@ package by.blooddy.core.net.connection.filters {
 	
 				var command:NetCommand = new NetCommand( context.pattern.name, io );
 				var l:uint = context.pattern.length;
-				for ( var i:uint = 0; i<l; i++ ) {
+				for ( var i:uint = 0; i<l; ++i ) {
 					command.push(
 						this.readType(
 							bytes,
@@ -228,7 +228,7 @@ package by.blooddy.core.net.connection.filters {
 
 				// записываем комманду
 				var l:uint = pattern.length;
-				for ( var i:uint = 0; i<l; i++ ) {
+				for ( var i:uint = 0; i<l; ++i ) {
 					this.writeType( bytes, pattern[ i ], command[ i ], command.io );
 				}
 
@@ -332,7 +332,7 @@ package by.blooddy.core.net.connection.filters {
 			}
 			a.sortOn( '@id', Array.NUMERIC );
 			var l:uint = a.length;
-			for ( var i:uint = 0; i<l; i++ ) {
+			for ( var i:uint = 0; i<l; ++i ) {
 				children[ i ] = a[ i ];
 			}
 			
@@ -417,7 +417,7 @@ package by.blooddy.core.net.connection.filters {
 						l = input.readUnsignedShort();
 					}
 					var arr:Array = new Array();
-					for ( var i:uint = 0; i<l; i++ ) {
+					for ( var i:uint = 0; i<l; ++i ) {
 						arr.push( this.readType( input, desc.included, io ) );
 					}
 					return arr;
@@ -467,7 +467,7 @@ package by.blooddy.core.net.connection.filters {
 					} else {
 						output.writeShort( l );
 					}
-					for ( var i:uint = 0; i<l; i++ ) {
+					for ( var i:uint = 0; i<l; ++i ) {
 						this.writeType( output, desc.included, arr[ i ], io );
 					}
 					break;
@@ -546,7 +546,7 @@ internal final dynamic class NetCommandPattern extends NetCommand implements IXM
 		if ( this.zipped ) result.@zipped = this.zipped;
 		if ( this.system ) result.@system = this.system;
 		var l:uint = super.length;
-		for ( var i:uint = 0; i<l; i++ ) {
+		for ( var i:uint = 0; i<l; ++i ) {
 			result.appendChild( ( this[ i ] as TypeDescription ).toXML() ); 
 		}
 		return result;

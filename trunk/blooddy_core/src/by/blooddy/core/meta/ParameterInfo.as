@@ -71,7 +71,7 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 
-		public override function toXML():XML {
+		public override function toXML(local:Boolean=false):XML {
 			return <parameter type={ this._type } optional={ this._optional } />;
 		}
 

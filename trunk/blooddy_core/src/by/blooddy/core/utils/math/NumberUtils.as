@@ -85,13 +85,13 @@ package by.blooddy.core.utils.math {
 
 			switch ( endian ) {
 				case Endian.BIG_ENDIAN:
-					for ( var i:int = 0; i < 4; i++ ) {
+					for ( var i:int = 0; i < 4; ++i ) {
 						s +=	hexChars.charAt( ( n >> ( ( 3 - i ) * 8 + 4 ) ) & 0xF ) +
 								hexChars.charAt( ( n >> ( ( 3 - i ) * 8	 ) ) & 0xF );
 					}
 					break;
 				case Endian.LITTLE_ENDIAN:
-					for ( var x:int = 0; x < 4; x++ ) {
+					for ( var x:int = 0; x < 4; ++x ) {
 						s +=	hexChars.charAt( ( n >> ( x * 8 + 4 ) ) & 0xF ) +
 								hexChars.charAt( ( n >> ( x * 8 ) ) & 0xF );
 					}

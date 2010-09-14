@@ -113,7 +113,7 @@ Z 	Смещение временной зоны в секундах. Для вр
 			var char:String;
 			var d:Date = new Date( time );
 			var tmp:uint;
-			for ( var i:uint = 0; i<l; i++ ) {
+			for ( var i:uint = 0; i<l; ++i ) {
 				char = format.charAt( i );
 				if ( char == '\\' ) {
 					char = format.charAt( ++i );

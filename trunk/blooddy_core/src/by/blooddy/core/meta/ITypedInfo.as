@@ -14,9 +14,9 @@ package by.blooddy.core.meta {
 	 * @created					06.03.2010 13:34:17
 	 */
 	public interface ITypedInfo {
-		
+
 		function get type():QName;
-		
+
 	}
 	
 }

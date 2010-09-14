@@ -363,7 +363,7 @@ package by.blooddy.social.api.ru.mail.my {
 			
 			var data:String = '';
 			const l:uint = arr.length;
-			for ( var i:uint = 0; i<l; i++ ) {
+			for ( var i:uint = 0; i<l; ++i ) {
 				data += arr[ i ] + '=' + vars[ arr[i] ];
 			}
 			

@@ -28,7 +28,7 @@ package by.blooddy.core.utils.net {
 			result.requestHeaders = new Array();
 			var l:uint = request.requestHeaders.length;
 			var header:URLRequestHeader;
-			for ( var i:uint = 0; i<l; i++ ) {
+			for ( var i:uint = 0; i<l; ++i ) {
 				header = request.requestHeaders[ i ] as URLRequestHeader;
 				if ( header ) {
 					result.requestHeaders.push(

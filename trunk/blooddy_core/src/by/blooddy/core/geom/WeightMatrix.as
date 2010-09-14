@@ -31,7 +31,7 @@ package by.blooddy.core.geom {
 			this._width = width;
 			this._height = height;
 			var x:uint, y:uint;
-			for (x=0; x<width; x++) {
+			for (x=0; x<width; ++x) {
 				this._distanceMatrix[x] = new Array(height);
 //				this._pointsMatrix[x] = new Array();
 			}
@@ -207,9 +207,9 @@ package by.blooddy.core.geom {
 		public function toMatrixString(colSeparator:String="\t", rowSeparator:String="\n"):String {
 			var result:Array = new Array(), row:Array;
 			var x:uint, y:uint, s:String;
-			for (y=0; y<this._height; y++) {
+			for (y=0; y<this._height; ++y) {
 				row = new Array();
-				for (x=0; x<this._width; x++) {
+				for (x=0; x<this._width; ++x) {
 					s = ( Math.round( ( this._distanceMatrix[x][y] as Number ) * 1000 ) / 1000 ).toString();
 					if ( s.length <= 4 ) s += "\t";
 					row.push( s );
@@ -230,9 +230,9 @@ package by.blooddy.core.geom {
 		 */
 		private function updateMatrix():void {
 			var x:uint, y:uint, arr:Array, arr2:Array;
-			for (x=0; x<this._width; x++) {
+			for (x=0; x<this._width; ++x) {
 				arr = this._distanceMatrix[x] as Array;
-				for (y=0; y<this._height; y++) {
+				for (y=0; y<this._height; ++y) {
 					arr[y] = Number.MAX_VALUE;
 				}
 			}
@@ -256,12 +256,12 @@ package by.blooddy.core.geom {
 			// порбежим вверх от точки
 			end = false;
 			radius = 1;
-			for (y=y0-1; y>=0 && !end; y--, radius++) {
+			for (y=y0-1; y>=0 && !end; y--, ++radius) {
 				end = true;
 				x = x0 - radius + 1;
 				max = Math.min( x + radius * 2, this._width );
 				if ( x<0 ) x = 0;
-				for (x; x<max; x++) {
+				for (x; x<max; ++x) {
 					if ( radius < this._distanceMatrix[x][y] ) {
 						this._distanceMatrix[x][y] = radius;
 						end = false;
@@ -272,12 +272,12 @@ package by.blooddy.core.geom {
 			// порбежим вправо от точки
 			end = false;
 			radius = 1;
-			for (x=x0+1; x<this._width && !end; x++, radius++) {
+			for (x=x0+1; x<this._width && !end; ++x, ++radius) {
 				end = true;
 				y = y0 - radius + 1;
 				max = Math.min( y + radius * 2, this._height );
 				if ( y<0 ) y = 0;
-				for (y; y<max; y++) {
+				for (y; y<max; ++y) {
 					if ( radius < this._distanceMatrix[x][y] ) {
 						this._distanceMatrix[x][y] = radius;
 						end = false;
@@ -288,12 +288,12 @@ package by.blooddy.core.geom {
 			// порбежим вниз от точки
 			end = false;
 			radius = 1;
-			for (y=y0+1; y<this._height && !end; y++, radius++) {
+			for (y=y0+1; y<this._height && !end; ++y, ++radius) {
 				end = true;
 				x = x0 - radius;
 				max = Math.min( x + radius * 2, this._width );
 				if ( x<0 ) x = 0;
-				for (x; x<max; x++) {
+				for (x; x<max; ++x) {
 					if ( radius < this._distanceMatrix[x][y] ) {
 						this._distanceMatrix[x][y] = radius;
 						end = false;
@@ -304,12 +304,12 @@ package by.blooddy.core.geom {
 			// порбежим влево от точки
 			end = false;
 			radius = 1;
-			for (x=x0-1; x>=0 && !end; x--, radius++) {
+			for (x=x0-1; x>=0 && !end; x--, ++radius) {
 				end = true;
 				y = y0 - radius;
 				max = Math.min( y + radius * 2, this._height );
 				if ( y<0 ) y = 0;
-				for (y; y<max; y++) {
+				for (y; y<max; ++y) {
 					if ( radius < this._distanceMatrix[x][y] ) {
 						this._distanceMatrix[x][y] = radius;
 						end = false;

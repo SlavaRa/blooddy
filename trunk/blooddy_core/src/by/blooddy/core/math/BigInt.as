@@ -84,7 +84,7 @@ package by.blooddy.core.math {
 		private static const RADIX_LENGTH_TABLE:Array = new Array(); // TODO
 
 //		{
-//			for ( var radix:uint = 2; i<=36; radix++ ) {
+//			for ( var radix:uint = 2; i<=36; ++radix ) {
 //				RADIX_LENGTH_TABLE[ radix ] = int.MAX_VALUE.toString( radix ).length - 1;
 //			}
 //		}
@@ -216,7 +216,7 @@ package by.blooddy.core.math {
 				case 2: return this._arr[ 0 ] | ( this._arr[ 1 ] << 16 );
 			}
 			var result:Number = this._arr[ 0 ];
-			for ( var i:uint = 1; i<this._arr.length; i++ ) {
+			for ( var i:uint = 1; i<this._arr.length; ++i ) {
 				result += this._arr[ i ] * Math.pow( BASE, i );
 			}
 			if ( !this._positive ) result *= -1;
@@ -851,12 +851,12 @@ package by.blooddy.core.math {
 			var i:uint;
 			var temp:uint = 0;
 			temp += value;
-			for ( i=0; i<al && temp > 0; i++ ) {
+			for ( i=0; i<al && temp > 0; ++i ) {
 				temp += a[i];
 				result[i] = temp % BASE;
 				temp /= BASE;
 			}
-			for ( ; i<al; i++ ) {
+			for ( ; i<al; ++i ) {
 				result[i] = a[i];
 			}
 			var cl:uint = result.length;
@@ -875,7 +875,7 @@ package by.blooddy.core.math {
 			var bl:uint = b.length;
 			var temp:uint = 0;
 			var i:uint;
-			for ( i=0; i<bl; i++ ) {
+			for ( i=0; i<bl; ++i ) {
 				temp += a[i] + b[i];
 				if ( temp >= BASE ) {
 					result[i] = temp - BASE;
@@ -894,9 +894,9 @@ package by.blooddy.core.math {
 					result[i] = temp;
 					temp = 0;
 				}
-				i++;
+				++i;
 			}
-			for ( ; i<al; i++ ) {
+			for ( ; i<al; ++i ) {
 				result[i] = a[i];
 			}
 			var cl:uint = result.length;
@@ -910,7 +910,7 @@ package by.blooddy.core.math {
 			var al:uint = a.length;
 			var i:uint;
 			var temp:Number = -value; 
-			for ( i=0; i<al && temp<0; i++ ) {
+			for ( i=0; i<al && temp<0; ++i ) {
 				temp += a[i];
 				if ( temp < 0 ) {
 					result[i] = BASE + temp % BASE;
@@ -919,7 +919,7 @@ package by.blooddy.core.math {
 					result[i] = temp;
 				}
 			}
-			for ( ; i<al; i++ ) {
+			for ( ; i<al; ++i ) {
 				result[i] = a[i];
 			}
 			var cl:uint = result.length;
@@ -935,7 +935,7 @@ package by.blooddy.core.math {
 			var bl:uint = b.length;
 			var i:uint;
 			var temp:int = 0;
-			for ( i=0; i<bl; i++ ) {
+			for ( i=0; i<bl; ++i ) {
 				temp += a[i] - b[i];
 				if ( temp < 0 ) {
 					result[i] = temp + BASE;
@@ -945,7 +945,7 @@ package by.blooddy.core.math {
 					temp = 0;
 				}
 			}
-			for ( ; i<al && temp; i++ ) {
+			for ( ; i<al && temp; ++i ) {
 				temp += a[i];
 				if ( temp < 0 ) {
 					result[i] = temp + BASE;
@@ -955,7 +955,7 @@ package by.blooddy.core.math {
 					temp = 0;
 				}
 			}
-			for ( ; i<al; i++ ) {
+			for ( ; i<al; ++i ) {
 				result[i] = a[i];
 			}
 			var cl:uint = result.length;
@@ -969,7 +969,7 @@ package by.blooddy.core.math {
 		private static function $multiply_s(a:Array, value:uint, result:Array):void {
 			var al:uint = a.length;
 			var temp:Number = 0;
-			for ( var i:uint = 0; i<al; i++ ) {
+			for ( var i:uint = 0; i<al; ++i ) {
 				temp += a[i] * value;
 				result[i] = temp % BASE;
 				temp = uint( temp / BASE );
@@ -993,11 +993,11 @@ package by.blooddy.core.math {
 			var bl:uint = b.length;
 			var i:uint, j:uint;
 			var temp:Number = 0;
-			for ( i=0; i<al; i++ ) {
+			for ( i=0; i<al; ++i ) {
 				temp = 0;
 				// вычисление временного результата с одновременным прибавлением
 				// его к c[i+j] (делаются переносы)
-				for ( j=0; j<bl; j++ ) {
+				for ( j=0; j<bl; ++j ) {
 					temp += a[i] * b[j] + uint( result[i+j] );
 					result[i+j] = temp % BASE;
 					temp = uint( temp / BASE );
@@ -1082,7 +1082,7 @@ package by.blooddy.core.math {
 				carry = 0; borrow = 0;
 				//uShift = u.slice( vJ );
 				// цикл по цифрам B
-				for ( i=0; i<n; i++ ) {
+				for ( i=0; i<n; ++i ) {
 					// получить в temp цифру произведения B*qGuess
 					temp1 = b[i] * qGuess + carry;
 					carry = temp1 / BASE;
@@ -1116,7 +1116,7 @@ package by.blooddy.core.math {
 					result[vJ] = qGuess-1;
 					// добавить одно, вычтенное сверх необходимого B к U
 					carry = 0;
-					for ( i=0; i<n; i++ ) {
+					for ( i=0; i<n; ++i ) {
 						temp = rest[ i + vJ ] + b[i] + carry;
 						if ( temp >= BASE ) {
 							rest[ i + vJ ] = temp - BASE;
@@ -1157,7 +1157,7 @@ package by.blooddy.core.math {
 			}
 			var l:int = a.length;
 			if ( value != 0 && l > 0 ) {
-				for ( c=0; c<l; c++ ) {
+				for ( c=0; c<l; ++c ) {
 					a[ c ] = ( ( a[ c ] >> value ) | ( a[ c+1 ] << value ) ) & 0xFFFF;
 				}
 				$cleanArray( a );

@@ -101,7 +101,7 @@ package by.blooddy.core.utils.crypto {
 				// 80 steps to process each block
 				// TODO: unroll for faster execution, or 4 loops of
 				// 20 each to avoid the k and f function calls
-				for ( var t:int = 0; t < 80; t++ ) {
+				for ( var t:int = 0; t < 80; ++t ) {
 					
 					if ( t < 16 ) {
 						// 6.1.a

@@ -189,7 +189,7 @@ package by.blooddy.factory {
 		 * @keyword					applicationfactory.loaded, loaded
 		 */
 		public final function get loaded():Boolean {
-			for ( var i:uint = 0; i < this._loaders.length; i++ ) {
+			for ( var i:uint = 0; i < this._loaders.length; ++i ) {
 				if ( !this._loaded[ i ] ) return false;
 			}
 			return true;
@@ -608,7 +608,7 @@ package by.blooddy.factory {
 		 * @private
 		 */
 		public override function addChildAt(child:DisplayObject, index:int):DisplayObject {
-			if ( this._showPreloader ) index++;
+			if ( this._showPreloader ) ++index;
 			return super.addChildAt( child, index );
 		}
 

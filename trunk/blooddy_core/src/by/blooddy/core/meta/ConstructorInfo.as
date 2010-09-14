@@ -71,11 +71,11 @@ package by.blooddy.core.meta {
 			return this._parameters.slice();
 		}
 		
-		public override function toXML():XML {
+		public override function toXML(local:Boolean=false):XML {
 			var xml:XML = <constructor />;
 			var i:uint, l:uint = this._parameters.length;
-			for ( i=0; i<l; i++ ) {
-				xml.appendChild( this._parameters[ i ].toXML() );
+			for ( i=0; i<l; ++i ) {
+				xml.appendChild( this._parameters[ i ].toXML( local ) );
 			}
 			return xml;
 		}

@@ -113,7 +113,7 @@ package by.blooddy.core.net {
 				}
 			} else {
 //				var l:uint = bytes.length;
-//				for ( var i:uint = 0; i<l; i++ ) {
+//				for ( var i:uint = 0; i<l; ++i ) {
 //					if ( i[i]
 //				}
 			}
@@ -233,7 +233,7 @@ internal final class MP3Frame {
 //					frame = new MP3Frame( tmp );
 //					i += frame.length;
 //				} else {
-//					i ++;
+//					++i;
 //				}
 //			}
 
