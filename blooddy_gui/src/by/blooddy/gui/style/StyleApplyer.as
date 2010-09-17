@@ -58,7 +58,6 @@ package by.blooddy.gui.style {
 		private static function isSelector(selector:CSSSelector, target:DisplayObject):Boolean {
 			var s:AttributeSelector = selector.selector;
 			var c:Class;
-			var sc:Vector.<String>;
 			do {
 				switch ( true ) {
 					case s is IDSelector:
@@ -69,11 +68,8 @@ package by.blooddy.gui.style {
 						if ( !c || !( target is c ) ) return false;
 						break;
 					case s is ClassSelector:
-						if ( !sc ) {
-							if ( !( target is IStyleable ) ) return false;
-							sc = ( target as IStyleable ).styleClassList;
-						}
-						if ( sc.indexOf( ( s as ClassSelector ).value ) < 0 ) return false;
+						if ( !( target is IStyleable ) ) return false;
+						if ( ( target as IStyleable ).styleClass == ( s as ClassSelector ).value ) return false;
 						break;
 					case s is PseudoSelector:
 						if ( !( target is IStatable ) || ( target as IStatable ).state != ( s as PseudoSelector ).value ) return false;
@@ -128,7 +124,7 @@ package by.blooddy.gui.style {
 		/**
 		 * @private
 		 */
-		private const _hash_tag:Object =		new Object();
+		private const _hash_tag:Dictionary =	new Dictionary();
 
 		/**
 		 * @private
@@ -193,12 +189,9 @@ package by.blooddy.gui.style {
 			tmp = this._hash_id[ target.name ];
 			if ( tmp ) filterSelector( tmp, rules, target );
 			// tag
-			var c:Class;
-			var n:String;
-			for ( n in this._hash_tag ) {
-				c = ClassAlias.getClass( n );
+			for ( var c:* in this._hash_tag ) {
 				if ( target is c ) {
-					filterSelector( this._hash_tag[ n ], rules, target );
+					filterSelector( this._hash_tag[ c ], rules, target );
 				}
 			}
 			// class
@@ -214,6 +207,7 @@ package by.blooddy.gui.style {
 			}
 
 			// сделаем из правил один большое declaration
+			var n:String;
 			var declarations:Object = new Object();
 			var value:CSSValue;
 			var info:StyleInfo = StyleInfo.getInfo( target );
