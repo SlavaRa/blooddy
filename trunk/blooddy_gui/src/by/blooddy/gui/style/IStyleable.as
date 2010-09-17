@@ -28,8 +28,6 @@ package by.blooddy.gui.style {
 		
 		function get styleClass():String;
 
-		function get styleClassList():Vector.<String>;
-
 	}
 	
 }

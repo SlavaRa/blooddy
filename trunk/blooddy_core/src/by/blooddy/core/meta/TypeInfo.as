@@ -734,17 +734,15 @@ package by.blooddy.core.meta {
 						} else {
 							p._owner = this;
 							p._name = new QName( uri, localName );
+							list_p.push( p );
+							if ( pp ) { // что бы не было дублей надо подчистят список родителя
+								if ( !list_pp ) list_pp = parent._list_properties.slice();
+								i = list_pp.indexOf( pp );
+								list_pp.splice( i, 1 );
+							}
 						}
 					} else {
 						p = pp;
-					}
-					if ( p !== pp ) { // добавляем только наши свойства
-						if ( pp ) { // что бы не было дублей надо подчистят список родителя
-							if ( !list_pp ) list_pp = parent._list_properties.slice();
-							i = list_pp.lastIndexOf( pp );
-							list_pp.splice( i, 1 );
-						}
-						list_p.push( p );
 					}
 					hash[ n ] = p;
 				}
@@ -790,17 +788,15 @@ package by.blooddy.core.meta {
 						} else {
 							m._owner = this;
 							m._name = new QName( uri, localName );
+							list_m.push( m ); // добавляем в списки только наших
+							if ( mm ) { // что бы не было дублей надо подчистят список родителя
+								if ( !list_mm ) list_mm = parent._list_methods.slice();
+								i = list_mm.indexOf( mm );
+								list_mm.splice( i, 1 );
+							}
 						}
 					} else {
 						m = mm;
-					}
-					if ( m !== mm ) { // добавляем в списки только наших
-						if ( mm ) {
-							if ( !list_mm ) list_mm = parent._list_methods.slice();
-							i = list_mm.lastIndexOf( mm );
-							list_mm.splice( i, 1 );
-						}
-						list_m.push( m );
 					}
 					hash[ n ] = m;
 				}
@@ -986,20 +982,24 @@ package by.blooddy.core.meta {
 
 			if ( !this._list_members ) {
 				
-				if ( parent && parent._list_members.length > 0 ) {
-
-					this._list_members = this._list_members_local.concat( parent._list_members );
-
-				} else if ( ( list_pp && list_pp.length > 0 ) || ( list_mm && list_mm.length > 0 ) ) {
+				if ( ( list_pp && list_pp.length > 0 ) || ( list_mm && list_mm.length > 0 ) ) {
 					
 					this._list_members = this._list_members_local.slice();
+
+					if ( !list_pp && parent ) list_pp = parent._list_properties;
 					if ( list_pp && list_pp.length > 0 ) {
 						this._list_members = this._list_members.concat( Vector.<MemberInfo>( list_pp ) );
 					}
+
+					if ( !list_mm && parent ) list_mm = parent._list_methods;
 					if ( list_mm && list_mm.length > 0 ) {
 						this._list_members = this._list_members.concat( Vector.<MemberInfo>( list_mm ) );
 					}
 
+				} else if ( parent && parent._list_members.length > 0 ) {
+					
+					this._list_members = this._list_members_local.concat( parent._list_members );
+					
 				} else {
 
 					this._list_members = this._list_members_local;
