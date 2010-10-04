@@ -122,7 +122,7 @@ private class TMP {
 
 		Memory.memory = mem;
 
-		tmp.clear();
+		//tmp.clear();
 		
 		return result;
 
@@ -164,12 +164,12 @@ private class TMP {
 			Memory.setByte( j++, ( c << 6 ) |   d        );
 			
 			if ( insertNewLines && j % 57 == 0 && Memory.getByte( i++ ) != 10 ) {
-				throwError();
+				Error.throwError( VerifyError, 1509 );
 			}
 
 		}
 
-		if ( i != bytesLength ) throwError();
+		if ( i != bytesLength ) Error.throwError( VerifyError, 1509 );
 
 		a = getByte( i++ );
 		b = getByte( i++ );
@@ -183,7 +183,7 @@ private class TMP {
 				Memory.setByte( j++, ( c << 6 ) | d );
 			}
 		} else {
-			if ( getByte2( i++ ) != -1 ) throwError();
+			if ( getByte2( i++ ) != -1 ) Error.throwError( VerifyError, 1509 );
 		}
 
 		Memory.memory = mem;
@@ -192,7 +192,7 @@ private class TMP {
 		bytes.writeBytes( tmp, Z2, j - Z2 );
 		bytes.position = 0;
 
-		tmp.clear();
+		//tmp.clear();
 
 		return bytes;
 	}
@@ -208,9 +208,9 @@ private class TMP {
 	 */
 	private static inline function getByte(index:UInt):Int {
 		var v:Int = Memory.getByte( index );
-		if ( v & 0x80 != 0 ) throwError();
+		if ( v & 0x80 != 0 ) Error.throwError( VerifyError, 1509 );
 		v = Memory.getByte( v );
-		if ( v == 0x40 ) throwError();
+		if ( v == 0x40 ) Error.throwError( VerifyError, 1509 );
 		return v;
 	}
 
@@ -219,21 +219,14 @@ private class TMP {
 	 */
 	private static inline function getByte2(index:UInt):Int {
 		var v:Int = Memory.getByte( index );
-		if ( v & 0x80 != 0 ) throwError();
+		if ( v & 0x80 != 0 ) Error.throwError( VerifyError, 1509 );
 		if ( v != 61 ) {
 			v = Memory.getByte( v );
-			if ( v == 0x40 ) throwError();
+			if ( v == 0x40 ) Error.throwError( VerifyError, 1509 );
 		} else {
 			v = -1;
 		}
 		return v;
-	}
-
-	/**
-	 * @private
-	 */
-	private static inline function throwError():Void {
-		Error.throwError( Error, 0 );
 	}
 
 }

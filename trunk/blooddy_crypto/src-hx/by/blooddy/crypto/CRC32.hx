@@ -11,7 +11,7 @@ import flash.utils.ByteArray;
 
 /**
  * @author	BlooDHounD
- * @version	2.0
+ * @version	1.0
  */
 class CRC32 {
 
@@ -92,7 +92,7 @@ private class TMP {
 
 			Memory.memory = mem;
 
-			tmp.clear();
+			//tmp.clear();
 
 			return c ^ 0xFFFFFFFF;
 

@@ -166,7 +166,7 @@ private class TMP {
 		bytes.writeBytes( tmp );
 		bytes.position = 0;
 
-		tmp.clear();
+		//tmp.clear();
 
 		return bytes;
 	}
