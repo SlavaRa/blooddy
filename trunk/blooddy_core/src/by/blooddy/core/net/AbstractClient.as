@@ -56,8 +56,8 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		flash_proxy override function getProperty(name:*):* {
-			if ( super.flash_proxy::hasProperty( name ) ) {
-				return super.flash_proxy::getProperty( name );
+			if ( super.hasProperty( name ) ) {
+				return super.getProperty( name );
 			} else {
 				var n:String = name.toString();
 				var result:* = this._hash[ n ];
@@ -65,7 +65,7 @@ package by.blooddy.core.net {
 					var app:AbstractClient = this;
 					this._hash[ n ] = result = function(...rest):* {
 						rest.unshift( n );
-						return app.flash_proxy::callProperty.apply( null, rest );
+						return app.callProperty.apply( null, rest );
 					};
 				}
 				return result;
@@ -76,9 +76,9 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		flash_proxy override function callProperty(name:*, ...rest):* {
-			if ( super.flash_proxy::hasProperty( name ) ) {
+			if ( super.hasProperty( name ) ) {
 				rest.unshift( name );
-				return super.flash_proxy::callProperty.apply( this, rest );
+				return super.callProperty.apply( this, rest );
 			} else {
 				return super.dispatchEvent( new CommandEvent( CommandEvent.COMMAND, false, false, new Command( name.toString(), rest ) ) );
 			}

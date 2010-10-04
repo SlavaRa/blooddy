@@ -8,6 +8,8 @@ package by.blooddy.core.utils.proxy {
 
 	import flash.utils.ByteArray;
 	import flash.utils.flash_proxy;
+	import flash.utils.getQualifiedClassName;
+	import flash.utils.Dictionary;
 
 	use namespace flash_proxy;
 
@@ -40,22 +42,10 @@ package by.blooddy.core.utils.proxy {
 		public function ProxyObject(target:Object) {
 			super();
 
-			switch ( typeof target ) {
-				case 'object':
-				case 'function':
-					if ( target ) {
-						break;
-					}
-				default:
-					throw new ArgumentError();
-			}
+			if ( typeof target != 'object' ) throw new TypeError();
+			if ( !target ) throw new ArgumentError();
 
 			this._target = target;
-
-			// составим ключи
-			for ( var i:Object in this._target ) {
-				this._keys.push( i );
-			}
 
 		}
 
@@ -68,32 +58,22 @@ package by.blooddy.core.utils.proxy {
 		/**
 		 * @private
 		 */
-		$protected_px var _parent:ProxyObject;
-
-		/**
-		 * @private
-		 */
-		private var _lock:Boolean = false;
-
-		/**
-		 * @private
-		 */
 		private var _target:Object;
 
 		/**
 		 * @private
 		 */
-		private var _name:*;
+		private var _keys:Array;
 
 		/**
 		 * @private
 		 */
-		private const _keys:Array = new Array();
+		private const _proxies:Object = new Object();
 
 		/**
 		 * @private
 		 */
-		private const _hash:Object = new Object();
+		private var _parents:Dictionary;
 
 		//--------------------------------------------------------------------------
 		//
@@ -111,114 +91,130 @@ package by.blooddy.core.utils.proxy {
 		//
 		//--------------------------------------------------------------------------
 
+		flash_proxy override function hasProperty(name:*):Boolean {
+			return name in this._proxies || name in this._target;
+		}
+		
 		flash_proxy override function getProperty(name:*):* {
-			if ( name in this._hash ) {
-				return this._hash[ name ];
+			if ( name in this._proxies ) {
+
+				return this._proxies[ name ];
+
 			} else if ( name in this._target ) {
-				
+
 				var value:* = this._target[ name ];
-				if ( value && typeof value == 'object' ) {
+				if (
+					value &&
+					typeof value == 'object' &&
+					!( value is Array ) &&
+					!( value is Date ) &&
+					!( value is ByteArray )
+				) {
 
-					if (
-						!( value is Array ) &&
-						!( value is Date ) &&
-						!( value is ByteArray )
-					) {
-
-						var p:ProxyObject = new ProxyObject( value );
-						p._parent = this;
-						p._name = name;
-						this._hash[ name ] = value = p;
-
-					}
+					value = this.setProxyProperty( name, value );
 
 				}
 				return value;
+
+			}
+		}
+		
+		flash_proxy override function setProperty(name:*, value:*):void {
+
+			if ( this._target[ name ] === value ) return;
+
+			if ( value is ProxyObject ) {
+
+				var p:ProxyObject = value as ProxyObject;
 				
-			}
-			return undefined;
-			/*
-			
-			if ( !name || super.hasProperty( name ) ) {
-				return super.getProperty( name );
-			} else if ( name in this._hash ) {
-				return this._hash[ name ]; // FIXED: развлетление хэшей!
-			} else if ( name in this._target ) {
-				var value:* = this._target[ name ];
-				if ( value
-					value is Number ||
-					value is String ||
-					value is Boolean ||
-					value is Array ||
-					value is Date ||
-					value is ByteArray
-				) return value;
-				else if ( value is Object ) {
-					this._hash[ name ] = new ProxyObject( value, this, name );
-					return this._hash[ name ];
-				} else {
-					return super.getProperty( name );
+				if ( name in this._proxies ) {
+					if ( this._proxies[ name ] === p ) return;
+					else this.deleteProxyProperty( name );
 				}
+
+				this._proxies[ name ] = p;
+				if ( !p._parents ) p._parents = new Dictionary();
+				p._parents[ this ] = name;
+
+				if ( p._target != this._target[ name ] ) {
+
+					this._target[ name ] = p._target;
+					this.bubble( name );
+
+				}
+				
+			} else {
+
+				this._target[ name ] = value;
+	
+				if ( name in this._proxies ) {
+					this.deleteProxyProperty( name );
+				}
+	
+				if (
+					value &&
+					typeof value == 'object' &&
+					!( value is Array ) &&
+					!( value is Date ) &&
+					!( value is ByteArray )
+				) {
+
+					this.setProxyProperty( name, value );
+
+				}
+
+				this.bubble( name );
+
 			}
-			return undefined;*/
-		}
 
-		flash_proxy override function hasProperty(name:*):Boolean {
-			return ( name in this._target || super.hasProperty( name ) );
 		}
-
+		
 		flash_proxy override function deleteProperty(name:*):Boolean {
-			if ( name in this._hash ) {
-				delete this._hash[ name ];
+			var result:Boolean;
+			if ( name in this._target ) {
+				result = delete this._target[ name ];
 			}
-			var result:Boolean = delete this._target[ name ];
 			if ( result ) {
-				if ( this._keys ) {
-					this._keys.splice( this._keys.indexOf( name ), 1 );
+				if ( name in this._proxies ) {
+					this.deleteProxyProperty( name );
+					if ( this._keys.pop() != name ) {
+						this._keys = null;
+					}
 				}
-//				if ( !this._lock ) this.bubbleUpdate( name );
+				this.bubble( name );
 			}
 			return result;
 		}
 
-		flash_proxy override function nextName(index:int):String {
-			return this._keys[ index - 1 ];
+		flash_proxy override function callProperty(name:*, ...rest):* {
+			var f:* = this._target[ name ];
+			if ( f ) {
+				if ( f is Function ) {
+					return ( f as Function ).apply( null, rest );
+				}
+				Error.throwError( TypeError, 1006, name );
+			}
+			Error.throwError( ReferenceError, 1069, name, getQualifiedClassName( this._target ) );
 		}
 
 		flash_proxy override function nextNameIndex(index:int):int {
-			return ( index < this._keys.length ? index+1 : 0 );
+			if ( !this._keys ) {
+				this._keys = new Array();
+				for ( var i:Object in this._target ) {
+					this._keys.push( i );
+				}
+			}
+			return ( !index ? this._keys.length : index - 1 );
+		}
+		
+		flash_proxy override function nextName(index:int):String {
+			return ( this._keys ? this._keys[ index - 1 ] : null );
 		}
 
 		flash_proxy override function nextValue(index:int):* {
-			return this.getProperty( this._keys[ index - 1 ] );
-		}
-
-		flash_proxy override function setProperty(name:*, value:*):void {
-			if ( this._target[ name ] === value ) return;
-			if ( this.hasProperty( name ) ) {
-				this._lock = true;
-				this.deleteProperty( name );
-				this._lock = false;
+			if ( this._keys ) {
+				return this.getProperty( this._keys[ index - 1 ] );
 			}
-			if ( value != null ) {
-				this._target[ name ] = value;
-				if (
-					value is Number ||
-					value is String ||
-					value is Boolean ||
-					value is Array ||
-					value is Date ||
-					value is ByteArray
-				) {
-					//
-				} else if ( value is Object ){
-//					this._hash[ name ] = new ProxyObject( value, this, name );
-				} else {
-					throw new ArgumentError();
-				}
-				this._keys.push( name ); // добавили новый ключ
-			}
-			if ( !this._lock ) this.bubbleUpdate( name );
 		}
 
 		//--------------------------------------------------------------------------
@@ -227,32 +223,47 @@ package by.blooddy.core.utils.proxy {
 		//
 		//--------------------------------------------------------------------------
 
-		protected function bubbleUpdate(...propertyPath):Boolean {
-			if ( this._parent ) {
-				propertyPath.unshift( this._name );
-				return this._parent.bubbleUpdate.apply( this._parent, propertyPath );
+		$protected_px function bubble(name:String, path:Vector.<String>=null, hash:Dictionary=null):void {
+			if ( !hash ) hash = new Dictionary();
+			else if ( this in hash ) return; // рекурсии нас не интерисуют
+			if ( !path ) path = new Vector.<String>();
+			path.push( name );
+			hash[ this ] = true;
+			for ( var o:Object in this._parents ) {
+				( o as ProxyObject ).bubble( this._parents[ o ], path, hash );
 			}
-			return false;
+			delete hash[ this ];
 		}
 
-		protected function captureUpdate(...propertyPath):Boolean {
-			var name:* = propertyPath[0];
-			if ( this.hasProperty( name ) ) {
-				if ( propertyPath.length > 1 ) {
-					var value:* = this.getProperty( name );
-					if ( value is ProxyObject ) {
-						propertyPath.shift();
-						( value as ProxyObject ).captureUpdate.apply( value, propertyPath );
-					} else {
-						throw new ArgumentError();
-					}
-				} else { // последний элемент
-					this.setProperty( name, this._target[ name ] );
-				}
-			}
-			return false;
-		}
+		//--------------------------------------------------------------------------
+		//
+		//  Private methods
+		//
+		//--------------------------------------------------------------------------
 
+		/**
+		 * @private
+		 */
+		private function setProxyProperty(name:*, value:*):ProxyObject {
+			var p:ProxyObject = new ProxyObject( value );
+			p._parents = new Dictionary();
+			p._parents[ this ] = name;
+			this._proxies[ name ] = p;
+			if ( this._keys ) {
+				this._keys.push( name );
+			}
+			return p;
+		}
+		
+		/**
+		 * @private
+		 */
+		private function deleteProxyProperty(name:*):void {
+			var p:ProxyObject = this._proxies[ name ];
+			delete p._parents[ this ];
+			delete this._proxies[ name ];
+		}
+		
 	}
 
 }

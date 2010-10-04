@@ -69,12 +69,12 @@ private class TMP {
 
 		// Add JPEG headers
 		Memory.setI16( Z0, 0xD8FF ); // SOI
-		writeAPP0( Z0 +   2 );
-		writeAPP1( Z0 +  20 );
-		writeDQT(  Z0 +  92 );
-		writeSOF0( Z0 + 226, image.width, image.height );
-		writeDHT(  Z0 + 245 );
-		writeSOS(  Z0 + 665 );
+		writeAPP0( tmp, Z0 +   2 );
+		writeAPP1( tmp, Z0 +  20 );
+		writeDQT(  tmp, Z0 +  92 );
+		writeSOF0( tmp, Z0 + 226, image.width, image.height );
+		writeDHT(  tmp, Z0 + 245 );
+		writeSOS(  tmp, Z0 + 665 );
 
 		var _byteout:Int = Z0 + 679;
 		var _bytepos:Int = 7;
@@ -92,7 +92,7 @@ private class TMP {
 		do {
 			_x = 0;
 			do {
-				if ( tmp.length - _byteout < 2048 ) {
+				if ( tmp.length - _byteout < 2048 ) { // у памяти есть свойство заканчиваться
 					tmp.length += 4096;
 				}
 				rgb2yuv( image, _x, _y );
@@ -133,7 +133,7 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static inline function writeAPP0(p:UInt):Void {
+	private static inline function writeAPP0(tmp:ByteArray, p:UInt):Void {
 		Memory.setI16(	p     ,	0xE0FF		);	// marker
 		Memory.setI16(	p +  2,	0x1000		);	// length
 		Memory.setI32(	p +  4,	0x4649464A	);	// JFIF
@@ -147,7 +147,7 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static inline function writeAPP1(p:UInt):Void {
+	private static inline function writeAPP1(tmp:ByteArray, p:UInt):Void {
 		Memory.setI16(	p     ,	0xE1FF		);	// marker
 		Memory.setI16(	p +  2,	0x4600		);	// length
 
@@ -164,7 +164,6 @@ private class TMP {
 		Memory.setI32(  p + 28, 0x0000001A	);	// value offset
 		Memory.setI32(  p + 32, 0x00000000	);	//
 
-		var tmp:ByteArray = Memory.memory;
 		tmp.position = p + 36;
 		tmp.writeMultiByte( 'by.blooddy.crypto.image.JPEGEncoder', 'x-ascii' ); // length=35
 
@@ -175,11 +174,10 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static inline function writeDQT(p:UInt):Void {
+	private static inline function writeDQT(tmp:ByteArray, p:UInt):Void {
 		Memory.setI16(	p     ,	0xDBFF		);	// marker
 		Memory.setI16(	p +  2,	0x8400		);	// length
 
-		var tmp:ByteArray = Memory.memory;
 		tmp.position = p + 4;
 		tmp.writeBytes( tmp, Z2, 130 );
 
@@ -190,7 +188,7 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static inline function writeSOF0(p:UInt, width:UInt, height:UInt):Void {
+	private static inline function writeSOF0(tmp:ByteArray, p:UInt, width:UInt, height:UInt):Void {
 		Memory.setI16(	p     ,	0xC0FF		);	// marker
 		Memory.setI16(	p +  2,	0x1100		);	// length, truecolor YUV JPG
 		Memory.setByte(	p +  4,	0x08		);	// precision
@@ -211,11 +209,10 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static inline function writeDHT(p:UInt):Void {
+	private static inline function writeDHT(tmp:ByteArray, p:UInt):Void {
 		Memory.setI16(	p      ,	0xC4FF		);	// marker
 		Memory.setI16(	p +   2,	0xA201		);	// length
 
-		var tmp:ByteArray = Memory.memory;
 		tmp.position = p + 4;
 		tmp.writeBytes( tmp, Z2 + 1218, 416 );
 
@@ -228,7 +225,7 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static inline function writeSOS(p:UInt):Void {
+	private static inline function writeSOS(tmp:ByteArray, p:UInt):Void {
 		Memory.setI16(	p     ,	0xDAFF		);	// marker
 		Memory.setI16(	p +  2,	0x0C00		);	// length
 		Memory.setByte(	p +  4,	0x03		);	// nrofcomponents
@@ -241,7 +238,7 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static inline function rgb2yuv(img:BitmapData, _x:UInt, _y:UInt):Void {
+	private static inline function rgb2yuv(image:BitmapData, _x:UInt, _y:UInt):Void {
 
 		var pos:UInt = 0;
 
@@ -256,7 +253,7 @@ private class TMP {
 		do {
 			do {
 
-				c = img.getPixel( _x, _y );
+				c = image.getPixel( _x, _y );
 
 				r =   c >>> 16         ;
 				g = ( c >>   8 ) & 0xFF;

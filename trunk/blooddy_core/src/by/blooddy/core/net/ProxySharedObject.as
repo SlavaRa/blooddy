@@ -40,6 +40,14 @@ package by.blooddy.core.net {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Namespaces
+		//
+		//--------------------------------------------------------------------------
+		
+		use namespace $protected_px;
+		
+		//--------------------------------------------------------------------------
+		//
 		//  Class variables
 		//
 		//--------------------------------------------------------------------------
@@ -145,8 +153,16 @@ package by.blooddy.core.net {
 		/**
 		 * @inheritDoc
 		 */
-		protected override function bubbleUpdate(...propertyPath):Boolean {
-			return this._dispatcher.dispatchEvent( new Event( propertyPath.join( '.' ) ) );
+		$protected_px override function bubble(name:String, path:Vector.<String>=null, hash:Dictionary=null):void {
+			var text:String;
+			if ( path ) {
+				path.push( name );
+				path.reverse();
+				text = path.join( '.' );
+			} else {
+				text = name;
+			}
+			this._dispatcher.dispatchEvent( new Event( text ) );
 		}
 
 	}

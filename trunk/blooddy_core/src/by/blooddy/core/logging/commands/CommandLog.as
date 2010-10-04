@@ -68,7 +68,6 @@ package by.blooddy.core.logging.commands {
 		}
 
 		public override function toString():String {
-			var d:Date = new Date( super.time );
 			return DateUtils.timeToString( super.time, true, ":", true, true ) + "@ " + this._command;
 		}
 		

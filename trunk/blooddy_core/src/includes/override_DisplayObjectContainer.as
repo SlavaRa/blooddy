@@ -58,7 +58,7 @@
 	 * @private
 	 */
 	public override function get textSnapshot():TextSnapshot {
-		throw new TextSnapshot();
+		return null;
 	}
 
 	//--------------------------------------------------------------------------

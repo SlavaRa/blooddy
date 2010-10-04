@@ -15,17 +15,16 @@ package by.blooddy.gui.parser.component {
 	import by.blooddy.core.blooddy;
 	import by.blooddy.core.events.net.loading.LoaderEvent;
 	import by.blooddy.core.managers.resource.IResourceManager;
-	import by.blooddy.core.managers.resource.ResourceManager;
 	import by.blooddy.core.net.MIME;
 	import by.blooddy.core.net.domain;
 	import by.blooddy.core.net.loading.IProcessable;
 	import by.blooddy.gui.parser.css.CSSOptimizer;
+	import by.blooddy.gui.style.StyleApplyer;
 	
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.system.Capabilities;
 	import flash.utils.Dictionary;
-	import by.blooddy.gui.style.StyleApplyer;
 
 	//--------------------------------------
 	//  Events
@@ -64,7 +63,7 @@ package by.blooddy.gui.parser.component {
 		/**
 		 * Constructor.
 		 */
-		public function ComponentParser(manager:IResourceManager=null) {
+		public function ComponentParser() {
 			super();
 		}
 
@@ -79,11 +78,6 @@ package by.blooddy.gui.parser.component {
 		 */
 		private var _source:XML;
 		
-		/**
-		 * @private
-		 */
-		private var _resourceManager:IResourceManager;
-
 		/**
 		 * @private
 		 */
@@ -135,9 +129,8 @@ package by.blooddy.gui.parser.component {
 
 			this._source = xml;
 
-			this._resourceManager = manager || ResourceManager.manager;
 			this._cssManager = CSSManager.getManager( manager );
-			this._cssManager.addEventListener( LoaderEvent.LOADER_INIT, trace );
+			this._cssManager.addEventListener( LoaderEvent.LOADER_INIT, super.dispatchEvent );
 
 			this._content = null;
 			this._errors = new Vector.<Error>();
@@ -257,7 +250,10 @@ package by.blooddy.gui.parser.component {
 			// body
 			list = this._source.blooddy::body;
 			if ( list.length() > 0 ) {
-				//trace( list[ 0 ].toXMLString() );
+				list = list[ 0 ].*;
+				if ( list.length() > 0 ) {
+					//trace( list.toXMLString() );
+				}
 			}
 
 			// если всё загружено, то конец
@@ -273,7 +269,6 @@ package by.blooddy.gui.parser.component {
 
 			this._cssManager.removeEventListener( LoaderEvent.LOADER_INIT, super.dispatchEvent );
 			this._cssManager = null;
-			this._resourceManager = null;
 
 			var asset:StyleAsset;
 			var media:CSSMedia;

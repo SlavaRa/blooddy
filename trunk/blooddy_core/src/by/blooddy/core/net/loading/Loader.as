@@ -309,7 +309,7 @@ package by.blooddy.core.net.loading {
 
 				} else {
 
-					this.handler_error( new SecurityErrorEvent( SecurityErrorEvent.SECURITY_ERROR, false, false, e.toString() ) );
+					this.handler_loader_error( new SecurityErrorEvent( SecurityErrorEvent.SECURITY_ERROR, false, false, e.toString() ) );
 
 				}
 

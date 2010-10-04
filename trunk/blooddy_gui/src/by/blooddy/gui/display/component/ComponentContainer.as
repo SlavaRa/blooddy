@@ -189,11 +189,11 @@ package by.blooddy.gui.display.component {
 			var xml:XML = new XML( super.getResource( asset.url ) );
 			if ( xml ) {
 
-				var parser:ComponentParser = new ComponentParser( super.getResourceManager() );
+				var parser:ComponentParser = new ComponentParser();
 				parser.addEventListener( Event.COMPLETE,			this.handler_parser_complete );
 				parser.addEventListener( ErrorEvent.ERROR,			this.handler_parser_error );
 				parser.addEventListener( LoaderEvent.LOADER_INIT,	this.handler_loaderInit );
-				parser.parse( xml );
+				parser.parse( xml, super.getResourceManager() );
 				this._queue[ parser ] = asset;
 
 			} else {

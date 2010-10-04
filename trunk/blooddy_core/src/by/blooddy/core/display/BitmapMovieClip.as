@@ -391,7 +391,7 @@ package by.blooddy.core.display {
 		 * @private
 		 */
 		private function $removeBitmapAt(index:Number):BitmapData {
-			this._totalFrames--;
+			--this._totalFrames;
 			return this._list.splice( index, 1 )[0].bmp;
 		}
 
