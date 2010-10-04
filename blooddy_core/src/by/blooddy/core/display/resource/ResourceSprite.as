@@ -233,7 +233,7 @@ package by.blooddy.core.display.resource {
 			if ( !this._manager ) throw new ArgumentError( 'спрайт не имеет связи с ResourceManager' );
 			var def:ResourceLinker = this._resources[ resource ];
 			if ( !def ) throw new ArgumentError( 'неизвестный ресурс' );
-			def.count--;
+			--def.count;
 			if ( !def.count ) {
 				delete this._resources[ resource ];
 			}

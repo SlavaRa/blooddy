@@ -49,7 +49,6 @@ package by.blooddy.core.managers.remote {
 		}
 	
 		public function getDefinition(name:String):Object {
-			var l:uint = this._loaders.length;
 			var app:ApplicationDomain, result:Object;
 			for each ( var loader:ModuleLoader in this._loaders ) {
 				app = loader.loaderInfo.applicationDomain;

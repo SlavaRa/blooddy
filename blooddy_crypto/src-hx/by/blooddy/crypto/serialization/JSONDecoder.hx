@@ -20,7 +20,7 @@ class JSONDecoder {
 
 	public static function decode(value:String):Dynamic {
 
-		if ( value.length <= 0 ) return untyped __global__["undefined"];
+		if ( value == null || value.length <= 0 ) return untyped __global__["undefined"];
 		
 		var mem:ByteArray = Memory.memory;
 

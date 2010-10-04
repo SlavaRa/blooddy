@@ -245,7 +245,7 @@ package by.blooddy.core.managers.resource {
 		 */
 		private static function handler_queue_complete(event:Event=null):void {
 			unregisterQueue( event.target as ResourceLoaderAsset );
-			_loading--;
+			--_loading;
 		 	if ( _loading < _maxLoading || _LOADING_QUEUE.length > 0 ) {
 		 		enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, updateQueue );
 			}

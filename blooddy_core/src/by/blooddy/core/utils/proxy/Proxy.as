@@ -6,11 +6,11 @@
 
 package by.blooddy.core.utils.proxy {
 
-	import by.blooddy.core.meta.TypeInfo;
 	import by.blooddy.core.utils.ClassUtils;
 	
 	import flash.utils.Proxy;
 	import flash.utils.flash_proxy;
+	import flash.utils.getQualifiedClassName;
 
 	use namespace flash_proxy;
 
@@ -71,28 +71,85 @@ package by.blooddy.core.utils.proxy {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @inheritDoc
+		 */
 		flash_proxy override function hasProperty(name:*):Boolean {
-			return	name in this._prototype ||
-					TypeInfo.getInfo( this ).hasMember( name ) || // из-за бага приходится проводить полную проверку
-					super.hasProperty( name );
+			return name in this._prototype;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		flash_proxy override function getProperty(name:*):* {
 			if ( name in this._prototype ) {
 				if ( name == 'constructor' ) return this._constructor;
 				return this._prototype[ name ];
 			}
-			return super.getProperty( name );
 		}
 
-		flash_proxy override function callProperty(name:*, ...rest):* {
-			if ( name in this._prototype ) {
-				return this._prototype[ name ].apply( this, rest );
-			}
-			rest.unshift( name );
-			return super.callProperty.apply( this, rest );
+		/**
+		 * @inheritDoc
+		 * 
+		 * @throws	ReferenceError
+		 */
+		flash_proxy override function setProperty(name:*, value:*):void {
+			Error.throwError( ReferenceError, 1056, name, getQualifiedClassName( this ) );
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		flash_proxy override function deleteProperty(name:*):Boolean {
+			return false;
 		}
 		
+		/**
+		 * @inheritDoc
+		 * 
+		 * @throws	TypeError
+		 * @throws	ReferenceError
+		 */
+		flash_proxy override function callProperty(name:*, ...rest):* {
+			var f:* = this._prototype[ name ];
+			if ( f ) {
+				if ( f is Function ) {
+					return ( f as Function ).apply( this, rest );
+				}
+				Error.throwError( TypeError, 1006, name );
+			}
+			Error.throwError( ReferenceError, 1069, name, getQualifiedClassName( this ) );
+		}
+
+		/**
+		 * @inheritDoc
+		 * 
+		 * @throws	TypeError
+		 */
+		flash_proxy override function getDescendants(name:*):* {
+			Error.throwError( TypeError, 1016, getQualifiedClassName( this ) );
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		flash_proxy override function nextNameIndex(index:int):int {
+			return 0;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		flash_proxy override function nextName(index:int):String {
+			return null;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		flash_proxy override function nextValue(index:int):* {
+		}
+
 	}
 
 }

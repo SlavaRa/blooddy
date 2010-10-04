@@ -244,8 +244,8 @@ private class TMP {
 	 * @private
 	 * rotation is separate from addition to prevent recomputation
 	 */
-	private static inline function rol(num:Int, cnt:Int):Int {
-		return ( num << cnt ) | ( num >>> ( 32 - cnt ) );
+	private static inline function rol(a:Int, s:Int):Int {
+		return ( a << s ) | ( a >>> ( 32 - s ) );
 	}
 
 	/**

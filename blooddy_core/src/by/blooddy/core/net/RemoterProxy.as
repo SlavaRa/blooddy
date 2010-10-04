@@ -81,9 +81,9 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		flash_proxy override function getProperty(name:*):* {
-			if ( !name || super.flash_proxy::hasProperty( name ) ) {
-				return super.flash_proxy::getProperty( name );
-			} else {
+			if ( super.hasProperty( name ) ) {
+				return super.getProperty( name );
+			} else if ( name ) {
 				var n:String = name.toString();
 				var result:* = this._hash[ n ];
 				if ( result == null ) {
@@ -100,10 +100,10 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		flash_proxy override function callProperty(name:*, ...rest):* {
-			if ( !name || super.flash_proxy::hasProperty( name ) ) {
+			if ( super.hasProperty( name ) ) {
 				rest.unshift( name );
-				return super.flash_proxy::callProperty.apply( this, rest );
-			} else {
+				return super.callProperty.apply( this, rest );
+			} else if ( name ) {
 				if ( !name ) throw new ReferenceError();
 				return this.call( name.toString(), rest );
 			}

@@ -8,13 +8,23 @@ package by.blooddy.crypto.image;
 
 import flash.display.BitmapData;
 import flash.geom.Point;
-import flash.Vector;
 
 /**
  * @author	BlooDHounD
  * @version	1.0
  */
 class ImageHelper {
+
+	//--------------------------------------------------------------------------
+	//
+	//  Class constants
+	//
+	//--------------------------------------------------------------------------
+
+	/**
+	 * @private
+	 */
+	public static inline var _TRANSPARENT:UInt = 0xFF000000;
 
 	//--------------------------------------------------------------------------
 	//
@@ -32,8 +42,26 @@ class ImageHelper {
 	 * @return			прозрачна или нет?
 	 */
 	public static inline function isTransparent(image:BitmapData):Bool {
-		return	image.transparent &&
-				image.clone().threshold( image, image.rect, new Point(), '!=', 0xFF000000, 0, 0xFF000000, true ) != 0; // не все пиксели не прозрачны
+		return image.transparent && (
+			isPixelTransparent( image, 0,           0            ) ||
+			isPixelTransparent( image, image.width, image.height ) ||
+			isPixelTransparent( image, image.width, 0            ) ||
+			isPixelTransparent( image, 0,           image.height ) ||
+			image.clone().threshold( image, image.rect, new Point(), '!=', 0xFF000000, 0, 0xFF000000, true ) != 0
+		);
+	}
+
+	//--------------------------------------------------------------------------
+	//
+	//  Private class methods
+	//
+	//--------------------------------------------------------------------------
+
+	/**
+	 * @private
+	 */
+	private static inline function isPixelTransparent(image:BitmapData, x:UInt, y:UInt):Bool {
+		return ( image.getPixel32( x, y ) < _TRANSPARENT );
 	}
 
 }

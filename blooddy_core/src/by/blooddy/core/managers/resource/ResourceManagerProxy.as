@@ -230,7 +230,7 @@ package by.blooddy.core.managers.resource {
 		public function trashResource(resource:Object, time:uint=3*60*1E3):void {
 			var def:ResourceLinker = this._resources[ resource ];
 			if ( !def ) throw new ArgumentError( 'Ресурс не был создан.', 5101 );
-			def.count--;
+			--def.count;
 			if ( !def.count ) {
 				delete this._resources[ resource ];
 			}
@@ -247,7 +247,7 @@ package by.blooddy.core.managers.resource {
 				}
 			}
 			var usage:ResourceUsage = this._resourceUsages[ def.bundleName ] as ResourceUsage;
-			usage.count--;
+			--usage.count;
 			if ( usage.count <= 0 ) usage.lastUse = getTimer();
 		}
 

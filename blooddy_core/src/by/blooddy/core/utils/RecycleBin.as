@@ -75,7 +75,7 @@ package by.blooddy.core.utils {
 			var rcs:Vector.<ResourceContainer> = this._hash[ key ] as Vector.<ResourceContainer>;
 			if ( !rcs ) this._hash[ key ] = rcs = new Vector.<ResourceContainer>();
 			time += getTimer();
-			for ( var i:int = rcs.length - 1; i >= 0; i-- ) {
+			for ( var i:int = rcs.length - 1; i >= 0; --i ) {
 				if ( rcs[ i ].time > time ) break;
 			}
 			if ( this._length == 0 ) {
@@ -98,7 +98,7 @@ package by.blooddy.core.utils {
 		public function takeOut(key:String):Object {
 			var rcs:Vector.<ResourceContainer> = this._hash[ key ] as Vector.<ResourceContainer>;
 			if ( rcs && rcs.length > 0 ) {
-				this._length--;
+				--this._length;
 				if ( this._length == 0 ) {
 					_TIMER.removeEventListener( TimerEvent.TIMER, this.handler_timer );
 				}
@@ -155,7 +155,7 @@ package by.blooddy.core.utils {
 			var rc:ResourceContainer;
 			for each ( rcs in this._hash ) {
 				l = rcs.length;
-				for ( i = l-1; i >= 0; i-- ) {
+				for ( i = l-1; i >= 0; --i ) {
 					rc = rcs[ i ];
 					// если условие проходит, то всё что там лежит совсем не старое
 					if ( rc.time > time ) break;

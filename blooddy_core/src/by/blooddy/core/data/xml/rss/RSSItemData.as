@@ -211,7 +211,6 @@ package by.blooddy.core.data.xml.rss {
 			this._pubDate =		XMLUtils.parseListToDate( xml.pubDate );
 
 			var list:XMLList;
-			var prop:IRSSElementAsset;
 
 			list = xml.category;
 			if ( list.length() > 0 ) {
