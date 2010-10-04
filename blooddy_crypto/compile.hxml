@@ -1,4 +1,5 @@
 -cp src-hx
+-cp ../blooddy_haxe/src-hx
 -main Main
 -swf libs/blooddy_crypto.swc
 -swf-version 10
