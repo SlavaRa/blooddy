@@ -37,6 +37,7 @@ package by.blooddy.code.json {
 		public static const NULL:uint =				++i;
 		public static const TRUE:uint =				++i;
 		public static const FALSE:uint =			++i;
+		public static const NAN:uint =				++i;
 		public static const COLON:uint =			++i;
 		public static const LEFT_BRACE:uint =		++i;
 		public static const RIGHT_BRACE:uint =		++i;

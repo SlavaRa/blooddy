@@ -10,6 +10,7 @@ package by.blooddy.gui.parser.css {
 	import by.blooddy.code.css.definition.CSSMedia;
 	import by.blooddy.code.css.definition.values.CSSValue;
 	import by.blooddy.code.css.definition.values.ComplexValue;
+	import by.blooddy.code.css.definition.values.AbstractCollectionValue;
 	import by.blooddy.code.css.definition.values.CollectionValue;
 	
 	/**
@@ -78,7 +79,7 @@ package by.blooddy.gui.parser.css {
 						v = v2;
 						h = true;
 					}
-				} else if ( ( v as Object ).constructor === CollectionValue ) {
+				} else if ( v is CollectionValue ) {
 					values = ( v as CollectionValue ).values.slice();
 					l = values.length;
 					h2 = false;

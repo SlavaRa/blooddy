@@ -7,6 +7,7 @@
 package by.blooddy.gui.style.meta {
 
 	import by.blooddy.code.css.definition.values.NumberValue;
+	import by.blooddy.core.meta.AbstractInfo;
 	import by.blooddy.core.meta.MemberInfo;
 	import by.blooddy.core.meta.PropertyInfo;
 	import by.blooddy.core.meta.TypeInfo;
@@ -24,7 +25,15 @@ package by.blooddy.gui.style.meta {
 	 * @langversion				3.0
 	 * @created					25.05.2010 0:21:43
 	 */
-	public class StyleInfo {
+	public class StyleInfo extends AbstractInfo {
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Namespaces
+		//
+		//--------------------------------------------------------------------------
+		
+		use namespace $protected_info;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -84,6 +93,11 @@ package by.blooddy.gui.style.meta {
 		/**
 		 * @private
 		 */
+		private var _name:QName;
+
+		/**
+		 * @private
+		 */
 		private const _styles:Object = new Object();
 
 		//--------------------------------------------------------------------------
@@ -92,8 +106,46 @@ package by.blooddy.gui.style.meta {
 		//
 		//--------------------------------------------------------------------------
 
-		public function getStyle(name:*):AbstractStyle {
+		public function getStyle(name:String):AbstractStyle {
 			return this._styles[ name ];
+		}
+
+		public override function toXML(local:Boolean=false):XML {
+
+			var xml:XML = <styles name={ this._name } />;
+			var x:XML;
+			var s:AbstractStyle;
+			var n:String;
+			
+			if ( local ) {
+
+				for ( n in this._styles ) {
+					
+					s = this._styles[ n ];
+					if ( !s || s._owner !== this ) continue;
+					x = s.toXML( true );
+					x.@name = n;
+					xml.appendChild( x );
+					
+				}
+			
+			} else {
+
+				for ( n in this._styles ) {
+				
+					s = this._styles[ n ];
+					if ( !s ) continue;
+					x = s.toXML( false );
+					x.@name = n;
+					if ( s._owner !== this ) {
+						x.@declaredBy = s._owner._name;
+					}
+					xml.appendChild( x );
+					
+				}
+				
+			}
+			return xml;
 		}
 
 		//--------------------------------------------------------------------------
@@ -107,13 +159,17 @@ package by.blooddy.gui.style.meta {
 		 */
 		private function parseType(type:TypeInfo):void {
 
+			this._name = type.name;
+
 			var n:String;
+			var hash:Object;
 
 			var parent:StyleInfo;
 			if ( type.parent ) {
 				parent = getInfo( type.parent.target );
-				for ( n in parent._styles ) {
-					this._styles[ n ] = parent._styles[ n ];
+				hash = parent._styles;
+				for ( n in hash ) {
+					this._styles[ n ] = hash[ n ];
 				}
 			}
 
@@ -124,6 +180,7 @@ package by.blooddy.gui.style.meta {
 			var s:SimpleStyle;
 			var c:CollectionStyle;
 			var name:String;
+			var q:QName;
 			
 			// обрабатываем свойства
 			var metaT:XMLList = type.getMetadata( true );
@@ -142,8 +199,10 @@ package by.blooddy.gui.style.meta {
 
 			var t:Class;
 			
-			for each ( var prop:PropertyInfo in type.getProperties( false ) ) {
+			for each ( var prop:PropertyInfo in type.getProperties( true ) ) {
+				q = prop.name;
 
+				if ( q.uri ) continue;
 				name = prop.name.toString();
 				if ( name in this._styles ) continue; // exclude
 
@@ -195,8 +254,9 @@ package by.blooddy.gui.style.meta {
 				}
 
 				if ( t ) {
-					
+
 					s = new SimpleStyle();
+					s._owner = this;
 					s.type = t;
 					
 					if ( metaP && t === NumberValue ) { // нумбер полей может быть указанно PercentProxy
@@ -242,11 +302,12 @@ package by.blooddy.gui.style.meta {
 						if ( list.length() > 0 ) {
 
 							c = new CollectionStyle();
+							c._owner = this;
 							for each ( xml in list ) {
 								c.styles.push( xml );
 							}
 							if ( c.styles.length > 0 ) {
-								this._styles[ n ] = c;
+								this._styles[ name ] = c;
 							}
 
 						}

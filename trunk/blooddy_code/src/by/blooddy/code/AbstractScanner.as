@@ -244,7 +244,10 @@ package by.blooddy.code {
 		protected final function readString():String {
 			var pos:uint = this._position;
 			var to:uint = this.readCharCode();
-			if ( to != Char.SINGLE_QUOTE && to != Char.DOUBLE_QUOTE ) return null;
+			if ( to != Char.SINGLE_QUOTE && to != Char.DOUBLE_QUOTE ) {
+				this._position = pos; // откатываемся
+				return null;
+			}
 			var p:uint = pos + 1;
 			var result:String = '';
 			var c:uint, t:String;
@@ -313,9 +316,6 @@ package by.blooddy.code {
 						break;
 					default:		// oct
 						this._position--;
-						t = this.readOct();
-						if ( t != null ) return s + parseInt( t, 8 );
-						else return '0';
 				}
 
 			} else if ( c == Char.DOT ) {
@@ -323,41 +323,24 @@ package by.blooddy.code {
 				t = this.readDec();
 				if ( t != null ) return s + '.' + t + ( this.readExp() || '' );
 
-			} else {
-
-				this._position--;
-				t = this.readDec();
-
-				if ( t != null ) {
-					s += t;
-					if ( this.readCharCode() == Char.DOT ) {
-						t = this.readDec();
-						if ( t != null ) s += '.' + t;
-					} else {
-						this._position--;
-					}
-					return s + ( this.readExp() || '' );
-				}
-
 			}
+
+			this._position--;
+			t = this.readDec();
+
+			if ( t != null ) {
+				s += t;
+				if ( this.readCharCode() == Char.DOT ) {
+					t = this.readDec();
+					if ( t != null ) s += '.' + t;
+				} else {
+					this._position--;
+				}
+				return s + ( this.readExp() || '' );
+			}
+
 			this._position = pos;
 			return null;
-		}
-		
-		/**
-		 * @private
-		 */
-		private function readOct():String {
-			var pos:uint = this._position;
-			var c:uint;
-			do {
-				c = this.readCharCode();
-			} while (
-				c >= Char.ZERO && c <= Char.SEVEN
-			);
-			this._position--;
-			if ( this._position == pos ) return null;
-			return this._source.substring( pos, this._position );
 		}
 		
 		/**

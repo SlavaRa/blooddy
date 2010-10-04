@@ -127,16 +127,14 @@ package by.blooddy.gui.style {
 		}
 
 		public static function getClassByQName(type:QName):Class {
-			switch ( type ) {
-				case _NAME_NUMBER:		return NumberValue;
-				case _NAME_BOOLEAN:		return BooleanValue;
-				case _NAME_STRING:		return StringValue;
-				case _NAME_RECT:		return RectValue;
-				case _NAME_POINT:		return PointValue;
-				case _NAME_FILTER:		return BitmapFilterValue;
-				case _NAME_ARRAY:		return ArrayValue;
-				case _NAME_MATRIX:		return MatrixValue;
-			}
+			if		( type ==_NAME_NUMBER )		return NumberValue;
+			else if	( type ==_NAME_BOOLEAN )	return BooleanValue;
+			else if	( type ==_NAME_STRING )		return StringValue;
+			else if	( type ==_NAME_RECT )		return RectValue;
+			else if	( type ==_NAME_POINT )		return PointValue;
+			else if	( type ==_NAME_FILTER )		return BitmapFilterValue;
+			else if	( type ==_NAME_ARRAY )		return ArrayValue;
+			else if	( type ==_NAME_MATRIX )		return MatrixValue;
 			return null;
 		}
 		

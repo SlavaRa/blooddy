@@ -1,31 +1,33 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  © 2010 BlooDHounD
+//  (C) 2010 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.gui.style.meta {
-	
+package by.blooddy.code.css.definition.values {
+
+	[ExcludeClass]
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					25.08.2010 14:10:00
+	 * @created					07.05.2010 0:50:17
 	 */
-	public class CollectionStyle extends AbstractStyle {
-		
+	public class AbstractCollectionValue extends CSSValue {
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
-		 * Constructor.
+		 * Constructor
 		 */
-		public function CollectionStyle() {
+		public function AbstractCollectionValue(values:Vector.<CSSValue>) {
 			super();
+			this.values = values;
 		}
 
 		//--------------------------------------------------------------------------
@@ -34,20 +36,20 @@ package by.blooddy.gui.style.meta {
 		//
 		//--------------------------------------------------------------------------
 		
-		public const styles:Vector.<String> = new Vector.<String>();
-		
+		public var values:Vector.<CSSValue>;
+
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
 		//
 		//--------------------------------------------------------------------------
 
-		public override function toXML(local:Boolean=false):XML {
-			var xml:XML = <proxy />;
-			for each ( var n:String in this.styles ) {
-				xml.appendChild( <style name={ n } /> );
-			}
-			return xml;
+		public function valueOf():Vector.<CSSValue> {
+			return this.values;
+		}
+
+		public function toString():String {
+			return this.values.join( ' ' );
 		}
 
 	}

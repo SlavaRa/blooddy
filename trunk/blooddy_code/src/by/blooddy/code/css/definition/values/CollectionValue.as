@@ -11,46 +11,23 @@ package by.blooddy.code.css.definition.values {
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					07.05.2010 0:50:17
+	 * @created					19.09.2010 1:13:21
 	 */
-	public class CollectionValue extends CSSValue {
-
+	public class CollectionValue extends AbstractCollectionValue {
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-
+		
 		/**
 		 * Constructor
 		 */
 		public function CollectionValue(values:Vector.<CSSValue>) {
-			super();
-			this.values = values;
+			super( values );
 		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Properties
-		//
-		//--------------------------------------------------------------------------
 		
-		public var values:Vector.<CSSValue>;
-
-		//--------------------------------------------------------------------------
-		//
-		//  Methods
-		//
-		//--------------------------------------------------------------------------
-
-		public function valueOf():Vector.<CSSValue> {
-			return this.values;
-		}
-
-		public function toString():String {
-			return this.values.join( ' ' );
-		}
-
 	}
 	
 }

@@ -14,6 +14,7 @@ package by.blooddy.core.meta {
 	import flash.utils.Dictionary;
 	import flash.utils.describeType;
 	import flash.utils.getDefinitionByName;
+	import flash.utils.getQualifiedClassName;
 	
 	/**
 	 * @author					BlooDHounD
@@ -59,6 +60,90 @@ package by.blooddy.core.meta {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Private class variables
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		 * @private
+		 * специальное исключение для Object, из-за ебанутости FP
+		 */
+		private static function getObjectInfo():TypeInfo {
+			
+			var xml:XML = describeType( Object ).factory[ 0 ];
+
+			_privateCall = true;
+			var result:TypeInfo = new TypeInfo();
+			_privateCall = false;
+
+			result._targetPrototype = Object.prototype;
+			result._target = Object;
+			
+			result._name = new QName( getQualifiedClassName( Object ) );
+			
+			result._constructor = _EMPTY_CONSTRUCTOR;
+			
+			result._metadata =
+			result._metadata_local = _EMPTY_METADATA;
+			
+			result._hash_superclasses = _EMPTY_HASH;
+			result._list_superclasses = _EMPTY_LIST_QNAME;
+			result._hash_interfaces = _EMPTY_HASH;
+			result._list_interfaces = _EMPTY_LIST_QNAME;
+			result._list_interfaces_local = _EMPTY_LIST_QNAME;
+			result._hash_types = _EMPTY_HASH;
+			result._list_types = _EMPTY_LIST_QNAME;
+			
+			// methods
+			var n:String;
+			var uri:String;
+			var localName:String;
+			
+			var hash:Object = new Object();
+			var list_p:Vector.<PropertyInfo> = new Vector.<PropertyInfo>();
+			var list_m:Vector.<MethodInfo> = new Vector.<MethodInfo>();
+			var m:MemberInfo;
+			var list:XMLList = xml.*.( n = name(), n == 'method' || n == 'accessor' || n == 'variable' || n == 'constant' );
+			for each ( var x:XML in list ) {
+				// имя свойства
+				uri = x.@uri;
+				localName = x.@name;
+				if ( uri )	n = uri + '::' + localName;
+				else		n = localName;
+				// описаловка
+				switch ( x.localName() ) {
+					case 'method':
+						m = new MethodInfo();
+						list_m.push( m as MethodInfo );
+						break;
+					default:
+						m = new PropertyInfo();
+						list_p.push( m as PropertyInfo );
+						break;
+				}
+				m.parseXML( x );
+				m._owner = result;
+				m._name = new QName( uri, localName );
+				hash[ n ] = m;
+			}			
+			
+			result._list_properties =
+			result._list_properties_local = ( list_p.length > 0 ? list_p : _EMPTY_LIST_PROPERTIES );
+
+			result._list_methods = 
+			result._list_methods_local = ( list_m.length > 0 ? list_m : _EMPTY_LIST_METHODS );
+
+			result._list_members =
+			result._list_members_local = Vector.<MemberInfo>( list_p ).concat( Vector.<MemberInfo>( list_m ) );
+
+			result._hash_members = hash;
+			
+			return result;
+			
+		}
+		
+		//--------------------------------------------------------------------------
+		//
 		//  Class variables
 		//
 		//--------------------------------------------------------------------------
@@ -67,11 +152,6 @@ package by.blooddy.core.meta {
 		 * @private
 		 */
 		private static var _privateCall:Boolean = false;
-
-		/**
-		 * @private
-		 */
-		private static const _HASH:Dictionary = new Dictionary( true );
 
 		/**
 		 * @private
@@ -103,6 +183,12 @@ package by.blooddy.core.meta {
 		 */
 		private static const _EMPTY_CONSTRUCTOR:ConstructorInfo = new ConstructorInfo();
 		_EMPTY_CONSTRUCTOR.parseXML( new XML() );
+		
+		/**
+		 * @private
+		 */
+		private static const _HASH:Dictionary = new Dictionary( true );
+		_HASH[ Object ] = getObjectInfo();
 		
 		//--------------------------------------------------------------------------
 		//
@@ -567,10 +653,10 @@ package by.blooddy.core.meta {
 				// иначе пытаемся склеить, если родительский не пуст
 				if ( list_interfaces.length > 0 ) {
 
-					if ( parent._list_interfaces.length > 0 ) {
-						this._list_interfaces =		list_interfaces.concat( parent._list_interfaces );
-					} else {
+					if ( parent._list_interfaces === _EMPTY_LIST_QNAME ) {
 						this._list_interfaces =		list_interfaces;
+					} else {
+						this._list_interfaces =		list_interfaces.concat( parent._list_interfaces );
 					}
 					this._hash_interfaces =			hash_interfaces;
 					this._list_interfaces_local =	list_interfaces;
@@ -609,16 +695,16 @@ package by.blooddy.core.meta {
 			}
 
 			// types
-			if ( this._list_interfaces.length <= 0 ) {
-				
+			if ( list_interfaces.length <= 0 ) {
+
 				this._list_types = this._list_superclasses;
 				this._hash_types = this._hash_superclasses;
-				
-			} else if ( this._list_superclasses.length <= 0 ) {
-					
+
+			} else if ( this._list_superclasses === _EMPTY_LIST_QNAME ) {
+
 				this._list_types = this._list_interfaces;
 				this._hash_types = this._hash_interfaces;
-				
+
 			} else {
 
 				this._list_types = this._list_interfaces.concat( this._list_superclasses );
@@ -632,7 +718,6 @@ package by.blooddy.core.meta {
 
 			// members
 			// надо распарсить всех наших многочленов
-			var dn:String;
 
 			var uri:String;
 			var localName:String;
@@ -650,6 +735,8 @@ package by.blooddy.core.meta {
 			var info:TypeInfo;
 
 			var o:Object;
+
+			var hash_p:Object = new Object();
 
 			// соберём свойства описанные в XML
 			if ( parent ) { // для классов
@@ -696,8 +783,8 @@ package by.blooddy.core.meta {
 					if ( uri )	n = uri + '::' + localName;
 					else		n = localName;
 					// ищем свойство у родителя
-					if ( n in parent._hash_members ) {
-						p = parent._hash_members[ n ];
+					if ( n in hash_p ) {
+						p = hash_p[ n ];
 					} else {
 						p = new PropertyInfo();
 						p.parseXML( x );
@@ -717,13 +804,12 @@ package by.blooddy.core.meta {
 					if ( uri )	n = uri + '::' + localName;
 					else		n = localName;
 					// ищем свойство у родителя
-					if ( n in parent._hash_members ) {
-						pp = parent._hash_members[ n ];
+					if ( n in hash_p ) {
+						pp = hash_p[ n ];
 					} else {
 						pp = null;
 					}
-					dn = x.@declaredBy.toString();
-					if ( !dn || dn == name ) { // это свойство объявленно/переопределнно у нас
+					if ( x.@declaredBy == name ) { // это свойство объявленно/переопределнно у нас
 						p = new PropertyInfo();
 						p._parent = pp || ( impl[ n ] as PropertyInfo );
 						p.parseXML( x );
@@ -773,13 +859,12 @@ package by.blooddy.core.meta {
 					if ( uri )	n = uri + '::' + localName;
 					else		n = localName;
 					// ищем метод у родителя
-					if ( n in parent._hash_members ) {
-						mm = parent._hash_members[ n ] as MethodInfo;
+					if ( n in hash_p ) {
+						mm = hash_p[ n ] as MethodInfo;
 					} else {
 						mm = null;
 					}
-					dn = x.@declaredBy.toString();
-					if ( !dn || dn == name ) { // метод объявлен у нас
+					if ( x.@declaredBy == name ) { // метод объявлен у нас
 						m = new MethodInfo();
 						m._parent = mm || ( impl[ n ] as MethodInfo );
 						m.parseXML( x );
@@ -864,27 +949,17 @@ package by.blooddy.core.meta {
 
 				}
 
-				var cns:String; // для проверки кривых ns
-				cns = ( this._name.uri ? this._name.uri + ':' : '' ) + this._name.localName;
-
 				// properties
 				// variable & constant у интерфейсов отсутсвуют. у Object тоже
 				// accessor
 				list = xml.accessor;
 				for each ( x in list ) {
 					// имя свойства
-					uri = x.@uri;
-					localName = x.@name;
-					if ( uri && uri != cns ) {
-						n = uri + '::' + localName;
-					} else {
-						uri = '';
-						n = localName;
-					}
+					n = x.@name;
 					p = new PropertyInfo();
 					p.parseXML( x );
 					p._owner = this;
-					p._name = new QName( uri, localName );
+					p._name = new QName( n );
 					list_p.push( p );
 					hash[ n ] = p;
 				}
@@ -913,18 +988,11 @@ package by.blooddy.core.meta {
 				list = xml.method;
 				for each ( x in list ) {
 					// имя свойства
-					uri = x.@uri;
-					localName = x.@name;
-					if ( uri && uri != cns ) {
-						n = uri + '::' + localName;
-					} else {
-						uri = '';
-						n = localName;
-					}
+					n = x.@name;
 					m = new MethodInfo();
 					m.parseXML( x );
 					m._owner = this;
-					m._name = new QName( uri, localName );
+					m._name = new QName( n );
 					list_m.push( m );
 					hash[ n ] = m;
 				}
@@ -972,7 +1040,7 @@ package by.blooddy.core.meta {
 				this._list_members_local = _EMPTY_LIST_MEMBERS;
 				if ( parent ) {
 					this._list_members = parent._list_members;
-					this._hash_members = parent._hash_members;
+					this._hash_members = hash_p;
 				} else {
 					this._list_members = _EMPTY_LIST_MEMBERS;
 					this._hash_members = _EMPTY_HASH;
@@ -1010,9 +1078,9 @@ package by.blooddy.core.meta {
 			// бывают случаи, когда мемберы из родителя не попадают в описательную XML
 			if ( parent ) {
 				if ( this._hash_members === hash ) {
-					for ( n in parent._hash_members ) {
+					for ( n in hash_p ) {
 						if ( !( n in hash ) ) {
-							hash[ n ] = parent._hash_members[ n ];
+							hash[ n ] = hash_p[ n ];
 						}
 					}
 				}

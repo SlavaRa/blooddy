@@ -16,26 +16,66 @@ package by.blooddy.core.utils {
 	 */
 	public class CallerQueue {
 
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+		
 		public function CallerQueue() {
 			super();
 		}
 
+		//--------------------------------------------------------------------------
+		//
+		//  Variables
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
 		private const _queue:Array = new Array();
 
+		//--------------------------------------------------------------------------
+		//
+		//  Properties
+		//
+		//--------------------------------------------------------------------------
+
+		public function get length():uint {
+			return this._queue.length;
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Methods
+		//
+		//--------------------------------------------------------------------------
+		
 		public function addQueue(handler:Function, ...args):void {
 			this.addCallerQueue( new Caller( handler, args ) );
 		}
 
 		public function addCallerQueue(caller:Caller):void {
 			if ( this._queue.push( caller ) == 1 ) {
-				enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.call, false, int.MAX_VALUE );
+				enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame, false, int.MAX_VALUE );
 			}
 		}
 
-		private function call(event:Event=null):void {
+		//--------------------------------------------------------------------------
+		//
+		//  Private methods
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private function handler_enterFrame(event:Event):void {
 			( this._queue.shift() as Caller ).call();
 			if ( this._queue.length <= 0 ) {
-				enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.call ); 
+				enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame ); 
 			}
 		}
 

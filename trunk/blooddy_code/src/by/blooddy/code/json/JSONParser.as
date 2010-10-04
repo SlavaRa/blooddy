@@ -107,6 +107,7 @@ package by.blooddy.code.json {
 				case JSONToken.TRUE:		return true;
 				case JSONToken.FALSE:		return false;
 				case JSONToken.UNDEFINED:	return undefined;
+				case JSONToken.NAN:			return Number.NaN;
 
 				case JSONToken.LEFT_BRACE:		// {
 					var o:Object = new Object();

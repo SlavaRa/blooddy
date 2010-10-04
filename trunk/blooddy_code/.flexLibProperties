@@ -34,13 +34,14 @@
     <classEntry path="by.blooddy.code.AbstractParser"/>
     <classEntry path="by.blooddy.code.net.AbstractLoadableParser"/>
     <classEntry path="by.blooddy.code.css.definition.selectors.ISelector"/>
-    <classEntry path="by.blooddy.code.css.definition.values.CollectionValue"/>
+    <classEntry path="by.blooddy.code.css.definition.values.AbstractCollectionValue"/>
     <classEntry path="by.blooddy.code.css.definition.values.ArrayValue"/>
     <classEntry path="by.blooddy.code.css.definition.selectors.TextAttributeSelector"/>
     <classEntry path="by.blooddy.code.phpon.PHPONScanner"/>
     <classEntry path="by.blooddy.code.phpon.PHPONParser"/>
     <classEntry path="by.blooddy.code.phpon.PHPONToken"/>
     <classEntry path="by.blooddy.code.phpon.PHPON"/>
+    <classEntry path="by.blooddy.code.css.definition.values.CollectionValue"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

@@ -25,6 +25,7 @@ package by.blooddy.gui.parser.component {
 	import flash.events.Event;
 	import flash.system.Capabilities;
 	import flash.utils.Dictionary;
+	import by.blooddy.gui.style.StyleApplyer;
 
 	//--------------------------------------
 	//  Events
@@ -303,6 +304,9 @@ package by.blooddy.gui.parser.component {
 			}
 
 			var rules:Vector.<CSSRule> = CSSOptimizer.optimize( medias, mediaNames );
+			if ( rules.length > 0 ) {
+				this._content.applyer = new StyleApplyer( rules );
+			}
 
 			super.stop();
 		}
