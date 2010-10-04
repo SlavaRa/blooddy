@@ -12,7 +12,7 @@ import flash.utils.ByteArray;
 
 /**
  * @author	BlooDHounD
- * @version	2.0
+ * @version	1.0
  */
 class MD5 {
 
@@ -35,7 +35,7 @@ class MD5 {
 		var bytes:ByteArray = new ByteArray();
 		bytes.writeUTFBytes( s );
 		var result:String = hashBytes( bytes );
-		bytes.clear();
+		//bytes.clear();
 		return result;
 	}
 
@@ -48,9 +48,10 @@ class MD5 {
 	 *
 	 * @keyword					md5.hash, hash
 	 */
-	public static function hashBytes(data:ByteArray):String {
-		return TMP.hashBytes( data );
+	public static function hashBytes(bytes:ByteArray):String {
+		return TMP.hashBytes( bytes );
 	}
+
 }
 
 /**
@@ -227,9 +228,10 @@ private class TMP {
 
 		Memory.memory = mem;
 
-		tmp.clear();
+		//tmp.clear();
 
 		return result;
+
 	}
 
 	//--------------------------------------------------------------------------

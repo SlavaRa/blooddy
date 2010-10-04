@@ -10,11 +10,11 @@ package by.blooddy.crypto.image {
 	import flash.display.BitmapData;
 	
 	/**
-	 * Encodes image data using 
+	 * Encodes image data using
 	 * <a href="http://www.w3.org/Graphics/JPEG/itu-t81.pdf">JPEG</a> compression method.
-	 * 
+	 *
 	 * @author					BlooDHounD
-	 * @version					1.0
+	 * @version					2.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
 	 */
@@ -30,7 +30,7 @@ package by.blooddy.crypto.image {
 		 * Creates a JPEG image from the specified <code>BitmapData</code>.
 		 *
 		 * @param	image	The <code>BitmapData</code> to be encoded.
-		 * 
+		 *
 		 * @param	quality	The compression level, possible values are 1 through 100 inclusive.
 		 *
 		 * @return 			a <code>ByteArray</code> representing the JPEG encoded image data.

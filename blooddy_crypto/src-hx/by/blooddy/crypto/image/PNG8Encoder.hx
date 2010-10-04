@@ -51,6 +51,7 @@ private class TMP {
 
 		var mem:ByteArray = Memory.memory;
 
+		var transparent:Bool = ImageHelper.isTransparent( image );
 		var width:UInt = image.width;
 		var height:UInt = image.height;
 
@@ -70,18 +71,17 @@ private class TMP {
 
 		// PLTE
 		// tRNS
-		if ( image.transparent ) {
-			writeColors( bytes, chunk, palette, true );
+		if ( transparent ) {
+			writePalette( bytes, chunk, palette, true );
 		} else {
-			writeColors( bytes, chunk, palette, false );
+			writePalette( bytes, chunk, palette, false );
 		}
 
-		// IDAT
 		// IDAT
 		if ( len2 < 1024 ) chunk.length = 1024;
 		else chunk.length = len2;
 		Memory.memory = chunk;
-		if ( image.transparent ) {
+		if ( transparent ) {
 			if ( len < 4 + 4 * 256 ) Memory.fill( len, min( 4 + 4 * 256, len2 ), 0x00 ); // мы случайно могли наследить
 			writeIDATContent( image, palette, filter, len, true );
 		} else {
@@ -105,7 +105,7 @@ private class TMP {
 
 		Memory.memory = mem;
 
-		chunk.clear();
+		//chunk.clear();
 
 		bytes.position = 0;
 
@@ -121,19 +121,12 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	private static inline function min(v1:UInt, v2:UInt):UInt {
-		return ( v1 < v2 ? v1 : v2 );
-	}
-
-	/**
-	 * @private
-	 */
-	private static inline function writeColors(bytes:ByteArray, chunk:ByteArray, palette:IPalette, transparent:Bool):Void {
+	private static inline function writePalette(bytes:ByteArray, chunk:ByteArray, palette:IPalette, transparent:Bool):Void {
 		chunk.length = 1024 + 4;
 		Memory.memory = chunk;
 
 		var colors:Vector<UInt> = palette.getColors();
-		var l:UInt = colors.length;
+		var l:UInt = min( colors.length, 256 );
 
 		var i:UInt = 4;
 		var j:UInt = 4 + 3 * 256;
@@ -276,6 +269,13 @@ private class TMP {
 				Error.throwError( ArgumentError, 2008, 'filter' );
 
 		}
+	}
+
+	/**
+	 * @private
+	 */
+	private static inline function min(v1:UInt, v2:UInt):UInt {
+		return ( v1 < v2 ? v1 : v2 );
 	}
 
 }

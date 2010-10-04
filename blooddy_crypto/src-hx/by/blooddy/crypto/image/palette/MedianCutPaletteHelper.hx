@@ -6,6 +6,7 @@
 
 package by.blooddy.crypto.image.palette;
 
+import by.blooddy.crypto.image.ImageHelper;
 import by.blooddy.system.Memory;
 import flash.display.BitmapData;
 import flash.Error;
@@ -26,9 +27,9 @@ class MedianCutPaletteHelper {
 	//--------------------------------------------------------------------------
 
 	public static function createTable(image:BitmapData, ?maxColors:UInt = 256):Array<Dynamic> {
-		if ( image == null ) Error.throwError( TypeError, 2006 );
+		if ( image == null ) Error.throwError( TypeError, 2007 );
 		if ( maxColors < 2 || maxColors > 256 ) Error.throwError( RangeError, 2006 );
-		if ( image.transparent ) {
+		if ( ImageHelper.isTransparent( image ) ) {
 			return TMP.createTable( image, maxColors, true );
 		} else {
 			return TMP.createTable( image, maxColors, false );
@@ -278,7 +279,7 @@ private class TMP {
 		}
 
 		y = 0;
-		var hash:Array<Null<UInt>> = new Array<Null<UInt>>();
+		var hash:Array<UInt> = new Array<UInt>();
 		var list:Vector<UInt> = new Vector<UInt>();
 		len = colorCount * BLOCK;
 		i = 0;
@@ -296,7 +297,7 @@ private class TMP {
 
 		Memory.memory = mem;
 
-		tmp.clear();
+		//tmp.clear();
 
 		return [ list, hash ];
 	}

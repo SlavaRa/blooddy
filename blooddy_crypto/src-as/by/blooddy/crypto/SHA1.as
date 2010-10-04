@@ -10,14 +10,15 @@ package by.blooddy.crypto {
 	
 	/**
 	 * Encodes and decodes binary data using 
-	 * <a herf="http://tools.ietf.org/html/rfc1321">MD5 (Message Digest)</a> algorithm.
+	 * <a herf="http://www.faqs.org/rfcs/rfc3174.html">SHA1 (Secure Hash Algorithm)</a> algorithm.
 	 * 
 	 * @author					BlooDHounD
-	 * @version					1.0
+	 * @version					2.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
+	 * @created					03.10.2010 21:07:00
 	 */
-	public class MD5 {
+	public class SHA1 {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -26,27 +27,27 @@ package by.blooddy.crypto {
 		//--------------------------------------------------------------------------
 		
 		/**
-		 * Performs MD5 hash algorithm on a String.
+		 * Performs SHA1 hash algorithm on a String.
 		 *
 		 * @param	str		The string to hash.
 		 *
 		 * @return			A string containing the hash value of <code>source</code>.
 		 *
-		 * @keyword			md5.hash, hash
+		 * @keyword			sha1.hash, hash
 		 */
 		public static native function hash(str:String):String;
 		
 		/**
-		 * Performs MD5 hash algorithm on a <code>ByteArray</code>.
+		 * Performs SHA1 hash algorithm on a <code>ByteArray</code>.
 		 *
 		 * @param	data	The <code>ByteArray</code> data to hash.
 		 *
 		 * @return			A string containing the hash value of data.
 		 *
-		 * @keyword			md5.hash, hash
+		 * @keyword			sha1.hashBytes, hashBytes
 		 */
 		public static native function hashBytes(data:ByteArray):String;
-
+		
 	}
 	
 }

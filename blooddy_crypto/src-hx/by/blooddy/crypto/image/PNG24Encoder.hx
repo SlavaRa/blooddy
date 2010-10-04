@@ -24,12 +24,6 @@ class PNG24Encoder {
 	//
 	//--------------------------------------------------------------------------
 
-	/**
-	 * Created a PNG image from the specified BitmapData
-	 *
-	 * @param	image	The BitmapData that will be converted into the PNG format.
-	 * @return			a ByteArray representing the PNG encoded image data.
-	 */
 	public static function encode(image:BitmapData, ?filter:UInt=0):ByteArray {
 		return TMP.encode( image, filter );
 	}
@@ -49,10 +43,13 @@ private class TMP {
 
 	public static inline function encode(image:BitmapData, filter:UInt):ByteArray {
 
+		var mem:ByteArray = Memory.memory;
+
+		var transparent:Bool = ImageHelper.isTransparent( image );
 		var width:UInt = image.width;
 		var height:UInt = image.height;
 
-		var len:UInt = ( width * height ) * ( image.transparent ? 4 : 3 ) + height;
+		var len:UInt = ( width * height ) * ( transparent ? 4 : 3 ) + height;
 		var len2:UInt = len + width * 4;
 
 		// Create output byte array
@@ -63,16 +60,15 @@ private class TMP {
 		PNGEncoderHelper.writeSignature( bytes );
 
 		// IHDR
-		PNGEncoderHelper.writeIHDR( bytes, chunk, width, height, 0x08, ( image.transparent ? 0x06 : 0x02 ) );
+		PNGEncoderHelper.writeIHDR( bytes, chunk, width, height, 0x08, ( transparent ? 0x06 : 0x02 ) );
 
 		// IDAT
 		if ( len2 < 1024 ) chunk.length = 1024;
 		else chunk.length = len2;
-		var mem:ByteArray = Memory.memory;
 		Memory.memory = chunk;
 		if ( len < 17 ) Memory.fill( len, 17, 0x00 ); // если битмапка очень маленькая, то мы случайно могли наследить
-		if ( image.transparent )	writeIDATContent( image, filter, len, true );
-		else						writeIDATContent( image, filter, len, false );
+		if ( transparent )	writeIDATContent( image, filter, len, true );
+		else				writeIDATContent( image, filter, len, false );
 		Memory.memory = mem;
 		chunk.length = len;
 		chunk.compress();
@@ -88,7 +84,7 @@ private class TMP {
 		// IEND
 		PNGEncoderHelper.writeIEND( bytes, chunk );
 
-		chunk.clear();
+		//chunk.clear();
 
 		bytes.position = 0;
 
@@ -106,10 +102,10 @@ private class TMP {
 		var c:UInt;
 		var i:UInt = 0, j:UInt;
 
-		var r:UInt, g:UInt, b:UInt;
+		var r:UInt,	g:UInt, b:UInt;
 		var r0:UInt, g0:UInt, b0:UInt;
-		var r2:UInt, g2:UInt, b2:UInt;
 		var r1:UInt, g1:UInt, b1:UInt;
+		var r2:UInt, g2:UInt, b2:UInt;
 		var a:UInt, a0:UInt = 0, a1:UInt, a2:UInt = 0;
 
 		switch ( filter ) {
@@ -146,7 +142,7 @@ private class TMP {
 							}
 						} while ( ++x < width );
 					} while ( ++y < height );
-				}			
+				}
 
 
 			case PNGEncoderHelper.SUB:
