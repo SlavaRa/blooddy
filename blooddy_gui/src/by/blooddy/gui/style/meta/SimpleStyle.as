@@ -5,6 +5,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.gui.style.meta {
+
+	import flash.utils.getQualifiedClassName;
 	
 	/**
 	 * @author					BlooDHounD
@@ -40,6 +42,22 @@ package by.blooddy.gui.style.meta {
 		 * имя стиля для прокси-записи
 		 */
 		public var proxy:String;
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Methods
+		//
+		//--------------------------------------------------------------------------
+
+		//--------------------------------------------------------------------------
+		//
+		//  Methods
+		//
+		//--------------------------------------------------------------------------
+		
+		public override function toXML(local:Boolean=false):XML {
+			return <style type={ getQualifiedClassName( this.type ) } />;
+		}
 		
 	}
 	

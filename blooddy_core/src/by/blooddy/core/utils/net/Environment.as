@@ -56,6 +56,15 @@ package by.blooddy.core.utils.net {
 		public static function get browserVersion():String {
 			return _browserVersion;
 		}
+
+		/**
+		 * @private
+		 */
+		private static var _domain:String;
+
+		public static function get domain():String {
+			return _domain;
+		}
 		
 		//--------------------------------------------------------------------------
 		//
@@ -68,6 +77,7 @@ package by.blooddy.core.utils.net {
 		 */
 		private static function init():void {
 			if ( ExternalInterface.available ) {
+
 				var o:Object;
 				try {
 					o = ExternalInterface.call(
@@ -78,7 +88,8 @@ package by.blooddy.core.utils.net {
 									'an:n.appName,' +
 									'av:n.appVersion,' +
 									'ua:n.userAgent,' +
-									'op:(w.opera?w.opera.version():0)' +
+									'op:(w.opera?w.opera.version():0),' +
+									'domain:location.hostname' +
 								'}' +
 							'}catch(e){' +
 							'}' +
@@ -86,6 +97,7 @@ package by.blooddy.core.utils.net {
 					);
 				} catch ( e:Error ) {
 				}
+
 				if ( o ) {
 
 					var m:Array;
@@ -118,6 +130,8 @@ package by.blooddy.core.utils.net {
 						if ( m ) _browserVersion = m[ 1 ];
 
 					}
+
+					_domain = o.domain;
 
 				}
 			}

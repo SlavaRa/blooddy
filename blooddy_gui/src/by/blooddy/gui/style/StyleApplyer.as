@@ -19,12 +19,26 @@ package by.blooddy.gui.style {
 	import by.blooddy.code.css.definition.values.CollectionValue;
 	import by.blooddy.core.utils.ClassAlias;
 	import by.blooddy.gui.display.state.IStatable;
+	import by.blooddy.gui.style.meta.AbstractStyle;
+	import by.blooddy.gui.style.meta.CollectionStyle;
+	import by.blooddy.gui.style.meta.SimpleStyle;
 	import by.blooddy.gui.style.meta.StyleInfo;
 	
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
+	import flash.events.AsyncErrorEvent;
 	import flash.events.Event;
+	import flash.events.EventDispatcher;
 	import flash.utils.Dictionary;
+	
+	//--------------------------------------
+	//  Events
+	//--------------------------------------
+	
+	/**
+	 * @eventType			flash.events.AsyncErrorEvent.ASYNC_ERROR
+	 */
+	[Event( name="asyncError", type="flash.events.AsyncErrorEvent" )]
 	
 	/**
 	 * @author					BlooDHounD
@@ -33,7 +47,7 @@ package by.blooddy.gui.style {
 	 * @langversion				3.0
 	 * @created					15.05.2010 16:46:29
 	 */
-	public class StyleApplyer {
+	public class StyleApplyer extends EventDispatcher {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -101,8 +115,41 @@ package by.blooddy.gui.style {
 		/**
 		 * Constructor
 		 */
-		public function StyleApplyer() {
+		public function StyleApplyer(rules:Vector.<CSSRule>) {
 			super();
+			// сортируем правила
+			var s:AttributeSelector;
+			var tmp:Vector.<CSSRule>;
+			var v:*;
+			for each ( var rule:CSSRule in rules ) {
+				s = rule.selector.selector;
+				switch ( true ) {
+					case s is TagSelector:
+						v = ClassAlias.getClass( ( s as TagSelector ).value );
+						if ( v ) {
+							tmp = this._hash_tag[ v ];
+							if ( !tmp ) this._hash_tag[ v ] = tmp = new Vector.<CSSRule>();
+						} else {
+							tmp = null;
+						}
+						break;
+					case s is IDSelector:
+						v = ( s as IDSelector ).value;
+						tmp = this._hash_id[ v ];
+						if ( !tmp ) this._hash_id[ v ] = tmp = new Vector.<CSSRule>();
+						break;
+					case s is ClassSelector:
+						v = ( s as ClassSelector ).value;
+						tmp = this._hash_class[ v ];
+						if ( !tmp ) this._hash_class[ v ] = tmp = new Vector.<CSSRule>();
+						break;
+					case s is PseudoSelector:
+						v = ( s as PseudoSelector ).value;
+						tmp = this._hash_pseudo[ v ];
+						if ( !tmp ) this._hash_pseudo[ v ] = tmp = new Vector.<CSSRule>();
+						break;
+				}
+			}
 		}
 		
 		//--------------------------------------------------------------------------
@@ -182,59 +229,126 @@ package by.blooddy.gui.style {
 		 * @private
 		 */
 		private function apply(target:DisplayObject):void {
-			// собираем список правил
-			var rules:Vector.<CSSRule> = new Vector.<CSSRule>();
-			var tmp:Vector.<CSSRule>;
-			// id
-			tmp = this._hash_id[ target.name ];
-			if ( tmp ) filterSelector( tmp, rules, target );
-			// tag
-			for ( var c:* in this._hash_tag ) {
-				if ( target is c ) {
-					filterSelector( this._hash_tag[ c ], rules, target );
+
+			var declarations:Object; // TODO: get from cache
+
+			if ( !declarations ) {
+
+				// собираем список правил
+				var rules:Vector.<CSSRule> = new Vector.<CSSRule>();
+				var tmp:Vector.<CSSRule>;
+				// id
+				tmp = this._hash_id[ target.name ];
+				if ( tmp ) filterSelector( tmp, rules, target );
+				// tag
+				var n:String;
+				var o:*;
+				for ( o in this._hash_tag ) {
+					if ( target is o ) {
+						filterSelector( this._hash_tag[ o ], rules, target );
+					}
 				}
-			}
-			// class
-			if ( target is IStyleable ) {
-				tmp = this._hash_class[ ( target as IStyleable ).styleClass ];
-				if ( tmp ) filterSelector( tmp, rules, target );
-			}
+				// class
+				if ( target is IStyleable ) {
+					tmp = this._hash_class[ ( target as IStyleable ).styleClass ];
+					if ( tmp ) filterSelector( tmp, rules, target );
+				}
+				// pseudo
+				if ( target is IStatable ) {
+					tmp = this._hash_pseudo[ ( target as IStatable ).state ];
+					if ( tmp ) filterSelector( tmp, rules, target );
+				}
 
-			// pseudo
-			if ( target is IStatable ) {
-				tmp = this._hash_pseudo[ ( target as IStatable ).state ];
-				if ( tmp ) filterSelector( tmp, rules, target );
-			}
+				if ( rules.length > 0 ) {
 
-			// сделаем из правил один большое declaration
-			var n:String;
-			var declarations:Object = new Object();
-			var value:CSSValue;
-			var info:StyleInfo = StyleInfo.getInfo( target );
-			for each ( var rule:CSSRule in rules ) {
-				
-				for ( n in rule.declarations ) {
-					
-					value = rule.declarations[ n ];
-					if ( value is CollectionValue ) {
+					// сделаем из правил один большое declaration
+					declarations = new Object();
 
-
-					} else {
-
-						//info.getStyle(
-
+					var info:StyleInfo = StyleInfo.getInfo( target );
+					var v:CSSValue;
+					var value:CSSValue;
+					var values:Vector.<CSSValue>;
+					var style:AbstractStyle;
+					var styles:Vector.<String>;
+					var i:uint, j:uint, l:uint, k:uint;
+		
+					for each ( var rule:CSSRule in rules ) {
+						
+						for ( n in rule.declarations ) {
+		
+							value = rule.declarations[ n ];
+							style = info.getStyle( n );
+							switch ( true ) {
+		
+								case style is SimpleStyle:
+									if ( value is ( style as SimpleStyle ).type ) {
+										declarations[ n ] = ( value as Object ).valueOf();
+									}
+									break;
+		
+								case style is CollectionStyle:
+									styles = ( style as CollectionStyle ).styles;
+									if ( value is CollectionValue ) {
+		
+										values = ( value as CollectionValue ).values;
+										k = styles.length;
+										l = values.length;
+										j = 0;
+										for ( i=0; i<l; i++ ) {
+											v = values[ i ];
+											for ( ; j<k; j++ ) {
+												n = styles[ j ];
+												if ( v is ( info.getStyle( n ) as SimpleStyle ).type ) {
+													declarations[ n ] = ( v as Object ).valueOf();
+													break;
+												}
+											}
+										}
+		
+									} else {
+		
+										l = values.length;
+										for ( j=0; j<k; j++ ) {
+											n = styles[ j ];
+											if ( value is ( info.getStyle( n ) as SimpleStyle ).type ) {
+												declarations[ n ] = ( v as Object ).valueOf();
+												break;
+											}
+										}
+		
+									}
+									break;
+		
+							}
+	
+						}
+	
 					}
 
 				}
-				
+
+				// TODO: save declarations to cache
+
+			}
+
+			if ( declarations ) {
+
+				for ( n in declarations ) {
+					try {
+						target[ n ] = declarations[ n ];
+					} catch ( e:Error ) {
+						super.dispatchEvent( new AsyncErrorEvent( AsyncErrorEvent.ASYNC_ERROR, false, false, e.toString(), e ) );
+					}
+				}
+
 			}
 
 			// childs
 			if ( target is DisplayObjectContainer ) {
 				var cont:DisplayObjectContainer = target as DisplayObjectContainer;
-				var l:uint = cont.numChildren;
+				l = cont.numChildren;
 				var child:DisplayObject;
-				for ( var i:uint = 0; i<l; ++i ) {
+				for ( i=0; i<l; ++i ) {
 					child = cont.getChildAt( i );
 					if ( child ) this.apply( child );
 				}

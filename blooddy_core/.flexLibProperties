@@ -88,7 +88,6 @@
     <classEntry path="by.blooddy.core.logging.LoggerProxy"/>
     <classEntry path="by.blooddy.core.logging.TextLog"/>
     <classEntry path="by.blooddy.core.logging.commands.CommandLog"/>
-    <classEntry path="by.blooddy.core.managers.CookieManager"/>
     <classEntry path="by.blooddy.core.managers.KeyboardManager"/>
     <classEntry path="by.blooddy.core.managers.drag.DragManager"/>
     <classEntry path="by.blooddy.core.managers.drag.DragObject"/>

@@ -5,7 +5,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.gui.style.meta {
-	
+
+	import by.blooddy.core.meta.AbstractInfo;
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -13,7 +15,15 @@ package by.blooddy.gui.style.meta {
 	 * @langversion				3.0
 	 * @created					25.08.2010 13:56:44
 	 */
-	public class AbstractStyle {
+	public class AbstractStyle extends AbstractInfo {
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Namespaces
+		//
+		//--------------------------------------------------------------------------
+		
+		use namespace $protected_info;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -28,6 +38,18 @@ package by.blooddy.gui.style.meta {
 			super();
 		}
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Properties
+		//
+		//--------------------------------------------------------------------------
+		
+		$protected_info var _owner:StyleInfo;
+		
+		public function get owner():StyleInfo {
+			return this._owner;
+		}
+
 	}
 	
 }

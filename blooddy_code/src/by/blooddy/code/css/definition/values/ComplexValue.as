@@ -13,7 +13,7 @@ package by.blooddy.code.css.definition.values {
 	 * @langversion				3.0
 	 * @created					15.04.2010 2:29:37
 	 */
-	public class ComplexValue extends CollectionValue {
+	public class ComplexValue extends AbstractCollectionValue {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -45,7 +45,7 @@ package by.blooddy.code.css.definition.values {
 
 		public override function toString():String {
 			for each ( var v:CSSValue in this.values ) {
-				if ( v is CollectionValue ) {
+				if ( v is AbstractCollectionValue ) {
 					throw new ArgumentError();
 				}
 			}

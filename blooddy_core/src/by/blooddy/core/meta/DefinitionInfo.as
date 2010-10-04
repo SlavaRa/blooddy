@@ -41,7 +41,7 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		private static const _EMPTY_METADATA:XMLList = new XMLList();
+		protected static const _EMPTY_METADATA:XMLList = new XMLList();
 
 		//--------------------------------------------------------------------------
 		//
@@ -135,7 +135,7 @@ package by.blooddy.core.meta {
 				} else {
 
 					this._metadata_local =	meta.copy();
-					if ( this._parent._metadata.length() <= 0 ) {
+					if ( this._parent._metadata === _EMPTY_METADATA ) {
 						this._metadata = this._metadata_local;
 					} else {
 						this._metadata = meta.copy() + this._parent._metadata;

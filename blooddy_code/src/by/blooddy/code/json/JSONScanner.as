@@ -68,7 +68,11 @@ package by.blooddy.code.json {
 					case Char.DOUBLE_QUOTE:
 						this._position--;
 						t = this.readString();
-						if ( t != null ) return this.makeToken( JSONToken.STRING_LITERAL, t );
+						if ( t != null ) {
+							return this.makeToken( JSONToken.STRING_LITERAL, t );
+						} else {
+							return this.makeToken( JSONToken.UNKNOWN, String.fromCharCode( c ) );
+						}
 						break;
 
 					case Char.SLASH:
@@ -79,18 +83,18 @@ package by.blooddy.code.json {
 								this._position -= 2;
 								t = this.readBlockComment();
 								if ( t != null ) return this.makeToken( JSONToken.BLOCK_COMMENT, t );
-								++this._position;
-								break;
+								this._position += 2;
 							default:
 								--this._position;
 						}
-						break;
+						return this.makeToken( JSONToken.UNKNOWN, '/' );
 
 					default:
 						if ( ( c >= Char.ZERO && c <= Char.NINE ) || c == Char.DASH || c == Char.DOT ) {
-							this._position--;
+							--this._position;
 							t = this.readNumber();
 							if ( t != null ) return this.makeToken( JSONToken.NUMBER_LITERAL, t );
+							++this._position;
 						} else if ( c == Char.n && this._source.substr( this._position, 3 ) == 'ull' ) {
 							this._position += 3;
 							return this.makeToken( JSONToken.NULL, 'null' );
@@ -103,6 +107,9 @@ package by.blooddy.code.json {
 						} else if ( c == Char.u && this._source.substr( this._position, 8 ) == 'ndefined' ) {
 							this._position += 8;
 							return this.makeToken( JSONToken.UNDEFINED, 'undefined' );
+						} else if ( c == Char.N && this._source.substr( this._position, 2 ) == 'aN' ) {
+							this._position += 2;
+							return this.makeToken( JSONToken.NAN, 'NaN' );
 						} else if (
 							( c >= Char.a && c <= Char.z ) ||
 							( c >= Char.A && c <= Char.Z ) ||
