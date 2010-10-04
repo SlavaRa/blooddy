@@ -15,6 +15,8 @@ import by.blooddy.crypto.image.PNG24Encoder;
 import by.blooddy.crypto.image.PNG8Encoder;
 import by.blooddy.crypto.compression.LZW;
 import by.blooddy.crypto.MD5;
+import by.blooddy.crypto.serialization.JSONDecoder;
+import by.blooddy.utils.MemoryScanner;
 
 /**
  * @author	BlooDHounD
@@ -38,6 +40,7 @@ class Main {
 		PNG24Encoder;
 		MedianCutPaletteHelper;
 		LZW;
+		JSONDecoder;
 	}
 
 }

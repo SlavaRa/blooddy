@@ -22,7 +22,7 @@ package by.blooddy.crypto.image {
 	 * @see	by.blooddy.crypto.image.PNGFilter
 	 * 
 	 * @author					BlooDHounD
-	 * @version					1.0
+	 * @version					2.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
 	 * @created					05.07.2010 17:44:26
