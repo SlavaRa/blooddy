@@ -24,29 +24,33 @@ class JSONDecoder {
 		
 		var mem:ByteArray = Memory.memory;
 
-		var _memory:ByteArray = new ByteArray();
-		_memory.writeUTFBytes( value );
-		_memory.writeByte( 0 ); // EOF
-		if ( _memory.length < 1024 ) {
-			_memory.length = 1024;
+		var tmp:ByteArray = new ByteArray();
+		tmp.writeUTFBytes( value );
+		tmp.writeByte( 0 ); // EOF
+		if ( tmp.length < 1024 ) {
+			tmp.length = 1024;
 		}
-		Memory.memory = _memory;
+		Memory.memory = tmp;
 
-		var	_position:UInt = 0,
-			_tk:UInt = 0,
-			_tt:String = null;
+		var position:UInt = 0;
 		
-		var readValue = null;
+		var readValue:ByteArray->Dynamic = null;
 
-		readValue = function():Dynamic {
+		readValue = function(_memory:ByteArray):Dynamic {
 
 			var pos:UInt;
+			var	_position:UInt = position;
+
+			var	_tk:UInt = 0,
+				_tt:String = null;
 
 			TMP.readToken( _memory, _position, _tk, _tt );
 
 			if ( _tk == TMP.STRING_LITERAL ) {
+				position = _position;
 				return _tt;
 			} else if ( _tk == TMP.NUMBER_LITERAL ) {
+				position = _position;
 				var n:Float = untyped __global__["parseFloat"]( _tt );
 				if ( n % 1 == 0 && n >= -2147483648 ) {	// int.MIN_VALUE
 					if ( n <= 2147483647 ) {			// int.MAX_VALUE
@@ -57,14 +61,19 @@ class JSONDecoder {
 				}
 				return n;
 			} else if ( _tk == TMP.NULL ) {
+				position = _position;
 				return null;
 			} else if ( _tk == TMP.TRUE ) {
+				position = _position;
 				return true;
 			} else if ( _tk == TMP.FALSE ) {
+				position = _position;
 				return false;
 			} else if ( _tk == TMP.UNDEFINED ) {
+				position = _position;
 				return untyped __global__["undefined"];
 			} else if ( _tk == TMP.NAN ) {
+				position = _position;
 				return untyped __global__["Number"].NaN;
 			} else if ( _tk == TMP.LEFT_BRACE ) {		// {
 
@@ -74,6 +83,7 @@ class JSONDecoder {
 				pos = _position;
 				TMP.readToken( _memory, _position, _tk, _tt );
 				if ( _tk == TMP.RIGHT_BRACE ) {
+					position = _position;
 					return o;
 				} else {
 					_position = pos;
@@ -93,10 +103,13 @@ class JSONDecoder {
 
 					TMP.readFixSimpleToken( _position, TMP.COLON );
 
-					untyped { o[ key ] = readValue(); }
+					position = _position;
+					untyped { o[ key ] = readValue( _memory ); }
+					_position = position;
 
 					TMP.readToken( _memory, _position, _tk, _tt );
 					if ( _tk == TMP.RIGHT_BRACE ) {		// }
+						position = _position;
 						return o;
 					} else if ( _tk != TMP.COMMA ) {	// ,
 						Error.throwError( SyntaxError, 1509 ); // throw new ParserError( 'ожидалась запятая либо завершение объекта, а не ' + tok );
@@ -113,6 +126,7 @@ class JSONDecoder {
 					TMP.readToken( _memory, _position, _tk, _tt );
 
 					if ( _tk == TMP.RIGHT_BRACKET ) {	// ]
+						position = _position;
 						return arr;
 					} else if ( _tk == TMP.COMMA ) {	// ,
 						arr.push( untyped __global__["undefined"] );
@@ -120,10 +134,13 @@ class JSONDecoder {
 
 						_position = pos;
 
-						arr.push( readValue() );
+						position = _position;
+						arr.push( readValue( _memory ) );
+						_position = position;
 
 						TMP.readToken( _memory, _position, _tk, _tt );
 						if ( _tk == TMP.RIGHT_BRACKET ) {	// ]
+							position = _position;
 							return arr;
 						} else if ( _tk != TMP.COMMA ) {	// ,
 							Error.throwError( SyntaxError, 1509 ); // throw new ParserError( 'ожидалась запятая либо завершение массива, а не ' + tok );
@@ -137,9 +154,9 @@ class JSONDecoder {
 			return untyped __global__["undefined"];
 		}
 
-		var result:Dynamic = readValue();
+		var result:Dynamic = readValue( tmp );
 
-		TMP.readFixSimpleToken( _position, TMP.EOF );
+		TMP.readFixSimpleToken( position, TMP.EOF );
 		
 		Memory.memory = mem;
 

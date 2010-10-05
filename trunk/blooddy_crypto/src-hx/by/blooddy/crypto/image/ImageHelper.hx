@@ -47,7 +47,7 @@ class ImageHelper {
 			isPixelTransparent( image, image.width, image.height ) ||
 			isPixelTransparent( image, image.width, 0            ) ||
 			isPixelTransparent( image, 0,           image.height ) ||
-			image.clone().threshold( image, image.rect, new Point(), '!=', 0xFF000000, 0, 0xFF000000, true ) != 0
+			image.clone().threshold( image, image.rect, new Point(), '!=', _TRANSPARENT, 0, _TRANSPARENT, true ) != 0
 		);
 	}
 

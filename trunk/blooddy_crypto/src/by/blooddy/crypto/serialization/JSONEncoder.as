@@ -138,7 +138,11 @@ package by.blooddy.crypto.serialization {
 							} else if ( value is Vector.<Number> ) { // array
 
 								bytes.writeByte( 91 );	// bytes.writeUTFBytes( '[' );
-								l = value.length;
+								l = value.length - 1;
+								while ( l >= 0 && !isFinite( value[ l ] ) ) {
+									--l;
+								}
+								++l;
 								if ( l > 0 ) {
 									if ( isFinite( value[ 0 ] ) )	bytes.writeUTFBytes( value[ 0 ] );
 									else							bytes.writeBytes( _NULL );
