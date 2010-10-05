@@ -1,6 +1,7 @@
 <flex-config>
 
 	<includes>
+		<symbol>by.blooddy.crypto.SHA1</symbol>
 		<symbol>by.blooddy.crypto.MD5</symbol>
 		<symbol>by.blooddy.crypto.Base64</symbol>
 		<symbol>by.blooddy.crypto.CRC32</symbol>

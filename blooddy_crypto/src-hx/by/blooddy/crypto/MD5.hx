@@ -22,15 +22,6 @@ class MD5 {
 	//
 	//--------------------------------------------------------------------------
 
-	/**
-	 * Performs the MD5 hash algorithm on a String.
-	 *
-	 * @param		s			The string to hash
-	 *
-	 * @return					A string containing the hash value of s
-	 *
-	 * @keyword					md5.hash, hash
-	 */
 	public static function hash(s:String):String {
 		var bytes:ByteArray = new ByteArray();
 		bytes.writeUTFBytes( s );
@@ -39,15 +30,6 @@ class MD5 {
 		return result;
 	}
 
-	/**
-	 * Performs the MD5 hash algorithm on a ByteArray.
-	 *
-	 * @param	data			The ByteArray data to hash
-	 *
-	 * @return					A string containing the hash value of data
-	 *
-	 * @keyword					md5.hash, hash
-	 */
 	public static function hashBytes(bytes:ByteArray):String {
 		return TMP.hashBytes( bytes );
 	}
@@ -94,11 +76,10 @@ private class TMP {
 
 	public static inline function hashBytes(bytes:ByteArray):String {
 
-		var len:UInt = bytes.length;
 		var mem:ByteArray = Memory.memory;
 
-		var i:UInt = len << 3;
-		var bytesLength:UInt = ( ( ( ( i + 64 ) >>> 9 ) << 4 ) + 15 ) << 2; // длинна для подсчёта в блоков
+		var i:UInt = bytes.length << 3;
+		var bytesLength:UInt = ( ( ( ( i + 64 ) >>> 9 ) << 4 ) + 15 ) << 2; // длинна для подсчёта в блоках
 
 		// копируем массив
 		var tmp:ByteArray = ByteArrayUtils.createByteArray( bytesLength + 4 );
@@ -203,8 +184,6 @@ private class TMP {
 			i += 64;
 
 		} while ( i < bytesLength );
-
-		bytesLength += 4;
 
 		tmp.position = 0;
 		tmp.writeUTFBytes( '0123456789abcdef' );
