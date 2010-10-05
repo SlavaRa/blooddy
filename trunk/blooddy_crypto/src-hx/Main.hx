@@ -16,6 +16,7 @@ import by.blooddy.crypto.image.PNG8Encoder;
 import by.blooddy.crypto.compression.LZW;
 import by.blooddy.crypto.MD5;
 import by.blooddy.crypto.serialization.JSONDecoder;
+import by.blooddy.crypto.SHA1;
 import by.blooddy.utils.MemoryScanner;
 
 /**
@@ -31,6 +32,7 @@ class Main {
 	//--------------------------------------------------------------------------
 
 	static function main() {
+		SHA1;
 		MD5;
 		Base64;
 		CRC32;

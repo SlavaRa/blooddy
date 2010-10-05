@@ -47,30 +47,163 @@ private class TMP {
 	//
 	//--------------------------------------------------------------------------
 
-	public static function hashBytes(bytes:ByteArray):String {
+	private static inline var Z0:UInt = 80 * 4;
 
-		var len:UInt = bytes.length;
+	//--------------------------------------------------------------------------
+	//
+	//  Class methods
+	//
+	//--------------------------------------------------------------------------
+
+	public static inline function hashBytes(bytes:ByteArray):String {
+
 		var mem:ByteArray = Memory.memory;
 
-		var i:UInt = len << 3;
-		var bytesLength:UInt = ( ( ( ( i + 64 ) >>> 9 ) << 4 ) + 15 ) << 2; // длинна для подсчёта в блоков
+		var i:UInt = bytes.length << 3;
+		var bytesLength:UInt = Z0 + ( ( ( ( ( i + 64 ) >>> 9 ) << 4 ) + 15 ) << 2 ); // длинна для подсчёта в блоках
 
 		// копируем массив
 		var tmp:ByteArray = ByteArrayUtils.createByteArray( bytesLength + 4 );
+		tmp.position = Z0;
 		tmp.writeBytes( bytes );
 
 		// помещаем в пямять
 		if ( tmp.length < 1024 ) tmp.length = 1024;
 		Memory.memory = tmp;
 
-		Memory.memory = mem;
+		Memory.setI32( Z0 + ( ( i >>> 5 ) << 2 ), Memory.getI32( Z0 + ( ( i >>> 5 ) << 2 ) ) | ( 0x80 << ( i % 32 ) ) );
+		setBI32( bytesLength, i );
 
-		var result:String = tmp.readUTFBytes( 32 );
+		var h0:Int = 0x67452301;
+		var h1:Int = 0xEFCDAB89;
+		var h2:Int = 0x98BADCFE;
+		var h3:Int = 0x10325476;
+		var h4:Int = 0xC3D2E1F0;
+
+		var a:Int;
+		var b:Int;
+		var c:Int;
+		var d:Int;
+		var e:Int;
+
+		var t:UInt;
+		var v:Int;
+
+		i = Z0;
+		do {
+
+			// 6.1.c
+			a = h0;
+			b = h1;
+			c = h2;
+			d = h3;
+			e = h4;
+
+			t = 0;
+
+			phase( a, b, c, d, e, i, t, 16 );
+			phase( a, b, c, d, e, i, t, 20 );
+			phase( a, b, c, d, e, i, t, 40 );
+			phase( a, b, c, d, e, i, t, 60 );
+			phase( a, b, c, d, e, i, t, 80 );
+
+			// 6.1.e
+			h0 += a;
+			h1 += b;
+			h2 += c;
+			h3 += d;
+			h4 += e;
+
+			i += 16 * 4;
+
+		} while ( i < bytesLength );
+
+		tmp.position = 0;
+		tmp.writeUTFBytes( '0123456789abcdef' );
+
+		setBI32( 16, h0 );
+		setBI32( 20, h1 );
+		setBI32( 24, h2 );
+		setBI32( 28, h3 );
+		setBI32( 32, h4 );
+
+		b = 36;
+		i = 16;
+		do {
+			a = Memory.getByte( i );
+			Memory.setByte( b++, Memory.getByte( ( a >>> 4 ) & 0xF ) );
+			Memory.setByte( b++, Memory.getByte(   a         & 0xF ) );
+		} while ( ++i < 36 );
+
+		tmp.position = 36;
+
+		var result:String = tmp.readUTFBytes( 40 );
+
+		Memory.memory = mem;
 
 		//tmp.clear();
 
 		return result;
 
+	}
+
+	//--------------------------------------------------------------------------
+	//
+	//  Private class methods
+	//
+	//--------------------------------------------------------------------------
+
+	/**
+	 * @private
+	 */
+	private static inline function phase(a:Int, b:Int, c:Int, d:Int, e:Int, i:UInt, t:UInt, max:UInt):Void {
+		var v:Int;
+		do {
+
+			if ( max <= 16 ) {
+				// 6.1.a
+				v =	( Memory.getByte( i + t + 0 ) << 24 ) |
+					( Memory.getByte( i + t + 1 ) << 16 ) |
+					( Memory.getByte( i + t + 2 ) <<  8 ) |
+					  Memory.getByte( i + t + 3 )         ;
+			} else {
+				// 6.1.b
+				v = Memory.getI32( t - 3 * 4 ) ^ Memory.getI32( t - 8 * 4 ) ^ Memory.getI32( t - 14 * 4 ) ^ Memory.getI32( t - 16 * 4 );
+				v = ( v << 1 ) | ( v >>> 31 );
+			}
+			Memory.setI32( t, v );
+
+			// 6.1.d
+			if ( max <= 20 ) {
+				v += 0x5A827999 + e + ( ( a << 5 ) | ( a >>> 27 ) ) + ( ( b & c ) | ( ~b & d ) );
+			} else if ( max <= 40 ) {
+				v += 0x6ED9EBA1 + e + ( ( a << 5 ) | ( a >>> 27 ) ) + ( b ^ c ^ d );
+			} else if ( max <= 60 ) {
+				v += 0x8F1BBCDC + e + ( ( a << 5 ) | ( a >>> 27 ) ) + ( ( b & c ) | ( b & d ) | ( c & d ) );
+			} else if ( max <= 80 ) {
+				v += 0xCA62C1D6 + e + ( ( a << 5 ) | ( a >>> 27 ) ) + ( b ^ c ^ d );
+			}
+
+			e = d;
+			d = c;
+			c = ( b << 30 ) | ( b >>> 2 );
+			b = a;
+			a = v;
+
+			t += 4;
+
+		} while ( t < max * 4 );
+
+	}
+
+	/**
+	 * @private
+	 */
+	private static inline function setBI32(address:UInt, value:Int):Void {
+		Memory.setByte( address + 0, value >> 24 );
+		Memory.setByte( address + 1, value >> 16 );
+		Memory.setByte( address + 2, value >>  8 );
+		Memory.setByte( address + 3, value       );
 	}
 
 }
