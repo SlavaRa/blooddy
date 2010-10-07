@@ -20,145 +20,179 @@ class JSONDecoder {
 
 	public static function decode(value:String):Dynamic {
 
-		if ( value == null || value.length <= 0 ) return untyped __global__["undefined"];
-		
-		var mem:ByteArray = Memory.memory;
+		if ( value == null ) Error.throwError( TypeError, 2007, 'value' );
 
-		var tmp:ByteArray = new ByteArray();
-		tmp.writeUTFBytes( value );
-		tmp.writeByte( 0 ); // EOF
-		if ( tmp.length < 1024 ) {
-			tmp.length = 1024;
-		}
-		Memory.memory = tmp;
+		var result:Dynamic = untyped __global__["undefined"];
 
-		var position:UInt = 0;
-		
-		var readValue:ByteArray->Dynamic = null;
+		if ( value.length > 0 ) {
 
-		readValue = function(_memory:ByteArray):Dynamic {
+			var mem:ByteArray = Memory.memory;
 
-			var pos:UInt;
-			var	_position:UInt = position;
+			var tmp:ByteArray = new ByteArray();
+			tmp.writeUTFBytes( value );
+			tmp.writeByte( 0 ); // EOF
+			if ( tmp.length < 1024 ) {
+				tmp.length = 1024;
+			}
+			Memory.memory = tmp;
 
-			var	_tk:UInt = 0,
-				_tt:String = null;
+			var _position:UInt = 0;
+			var c:UInt = TMP.readNotSpaceCharCode( _position );
 
-			TMP.readToken( _memory, _position, _tk, _tt );
+			if ( c != Char.EOS ) {
 
-			if ( _tk == TMP.STRING_LITERAL ) {
-				position = _position;
-				return _tt;
-			} else if ( _tk == TMP.NUMBER_LITERAL ) {
-				position = _position;
-				var n:Float = untyped __global__["parseFloat"]( _tt );
-				if ( n % 1 == 0 && n >= -2147483648 ) {	// int.MIN_VALUE
-					if ( n <= 2147483647 ) {			// int.MAX_VALUE
-						return untyped __global__["int"]( n );
-					} else if ( n <= 4294967295 ) {		 // uint.MAX_VALUE
-						return untyped __global__["uint"]( n );
-					}
-				}
-				return n;
-			} else if ( _tk == TMP.NULL ) {
-				position = _position;
-				return null;
-			} else if ( _tk == TMP.TRUE ) {
-				position = _position;
-				return true;
-			} else if ( _tk == TMP.FALSE ) {
-				position = _position;
-				return false;
-			} else if ( _tk == TMP.UNDEFINED ) {
-				position = _position;
-				return untyped __global__["undefined"];
-			} else if ( _tk == TMP.NAN ) {
-				position = _position;
-				return untyped __global__["Number"].NaN;
-			} else if ( _tk == TMP.LEFT_BRACE ) {		// {
+				var position:UInt = _position - 1;
+				
+				var readValue:ByteArray->Dynamic = null;
 
-				var o:Object = new Object();
-				var key:String = null;
+				readValue = function(_memory:ByteArray):Dynamic {
 
-				pos = _position;
-				TMP.readToken( _memory, _position, _tk, _tt );
-				if ( _tk == TMP.RIGHT_BRACE ) {
-					position = _position;
-					return o;
-				} else {
-					_position = pos;
-				}
+					var pos:UInt;
+					var	_position:UInt = position;
+					var result:Dynamic = untyped __global__["undefined"];
 
-				do {
+					var	_tk:UInt = 0,
+						_tt:String = null;
 
 					TMP.readToken( _memory, _position, _tk, _tt );
 
-					if ( _tk == TMP.STRING_LITERAL || _tk == TMP.IDENTIFIER ) {
-						key = _tt;
+					if ( _tk == TMP.STRING_LITERAL ) {
+
+						result = _tt;
+
 					} else if ( _tk == TMP.NUMBER_LITERAL ) {
-						key = ( untyped __global__["parseFloat"]( _tt ) ).toString();
-					} else {
-						Error.throwError( SyntaxError, 1509 ); // throw new ParserError( 'ожидался ключ объекта, а не ' + tok );
-					}
 
-					TMP.readFixSimpleToken( _position, TMP.COLON );
+						result = untyped __global__["parseFloat"]( _tt );
 
-					position = _position;
-					untyped { o[ key ] = readValue( _memory ); }
-					_position = position;
-
-					TMP.readToken( _memory, _position, _tk, _tt );
-					if ( _tk == TMP.RIGHT_BRACE ) {		// }
-						position = _position;
-						return o;
-					} else if ( _tk != TMP.COMMA ) {	// ,
-						Error.throwError( SyntaxError, 1509 ); // throw new ParserError( 'ожидалась запятая либо завершение объекта, а не ' + tok );
-					}
-
-				} while ( true );
-
-			} else if ( _tk == TMP.LEFT_BRACKET ) {		// [
-
-				var arr:Array<Dynamic> = new Array<Dynamic>();
-				do {
-
-					pos = _position;
-					TMP.readToken( _memory, _position, _tk, _tt );
-
-					if ( _tk == TMP.RIGHT_BRACKET ) {	// ]
-						position = _position;
-						return arr;
-					} else if ( _tk == TMP.COMMA ) {	// ,
-						arr.push( untyped __global__["undefined"] );
-					} else {
-
-						_position = pos;
-
-						position = _position;
-						arr.push( readValue( _memory ) );
-						_position = position;
+					} else if ( _tk == TMP.DASH ) {
 
 						TMP.readToken( _memory, _position, _tk, _tt );
-						if ( _tk == TMP.RIGHT_BRACKET ) {	// ]
-							position = _position;
-							return arr;
-						} else if ( _tk != TMP.COMMA ) {	// ,
-							Error.throwError( SyntaxError, 1509 ); // throw new ParserError( 'ожидалась запятая либо завершение массива, а не ' + tok );
+						if ( _tk == TMP.NUMBER_LITERAL ) {
+							result = - untyped __global__["parseFloat"]( _tt );
+						} else if ( _tk == TMP.NULL ) {
+							result = 0; // -null
+						} else if (
+							_tk == TMP.UNDEFINED ||
+							_tk == TMP.NAN
+						) {
+							result = untyped __global__["Number"].NaN; // -undefined
+						} else {
+							Error.throwError( SyntaxError, 1509 );
 						}
+
+					} else if ( _tk == TMP.NULL ) {
+
+						result = null;
+
+					} else if ( _tk == TMP.TRUE ) {
+
+						result = true;
+
+					} else if ( _tk == TMP.FALSE ) {
+
+						result = false;
+
+					} else if ( _tk == TMP.UNDEFINED ) {
+
+						//result = untyped __global__["undefined"];
+
+					} else if ( _tk == TMP.NAN ) {
+
+						result = untyped __global__["Number"].NaN;
+
+					} else if ( _tk == TMP.LEFT_BRACE ) {		// {
+
+						var o:Object = new Object();
+						var key:String = null;
+
+						pos = _position;
+						TMP.readToken( _memory, _position, _tk, _tt );
+
+						if ( _tk != TMP.RIGHT_BRACE ) {
+
+							do {
+
+								if ( _tk == TMP.STRING_LITERAL || _tk == TMP.IDENTIFIER ) {
+									key = _tt;
+								} else if ( _tk == TMP.NUMBER_LITERAL ) {
+									key = ( untyped __global__["parseFloat"]( _tt ) ).toString();
+								} else if ( _tk == TMP.UNDEFINED ) {
+									key = 'undefined';
+								} else if ( _tk == TMP.NAN ) {
+									key = 'NaN';
+								} else {
+									Error.throwError( SyntaxError, 1509 ); // throw new ParserError( 'ожидался ключ объекта, а не ' + tok );
+								}
+
+								TMP.readFixSimpleToken( _position, TMP.COLON );
+
+								position = _position;
+								untyped { o[ key ] = readValue( _memory ); }
+								_position = position;
+
+								TMP.readToken( _memory, _position, _tk, _tt );
+								if ( _tk == TMP.RIGHT_BRACE ) {		// }
+									break;
+								} else if ( _tk != TMP.COMMA ) {	// ,
+									Error.throwError( SyntaxError, 1509 ); // throw new ParserError( 'ожидалась запятая либо завершение объекта, а не ' + tok );
+								}
+
+								TMP.readToken( _memory, _position, _tk, _tt );
+
+							} while ( true );
+						}
+
+						result = o;
+
+					} else if ( _tk == TMP.LEFT_BRACKET ) {		// [
+
+						var arr:Array<Dynamic> = new Array<Dynamic>();
+						do {
+
+							pos = _position;
+							TMP.readToken( _memory, _position, _tk, _tt );
+
+							if ( _tk == TMP.RIGHT_BRACKET ) {	// ]
+								break;
+							} else if ( _tk == TMP.COMMA ) {	// ,
+								arr.push( untyped __global__["undefined"] );
+							} else {
+
+								_position = pos;
+
+								position = _position;
+								arr.push( readValue( _memory ) );
+								_position = position;
+
+								TMP.readToken( _memory, _position, _tk, _tt );
+								if ( _tk == TMP.RIGHT_BRACKET ) {	// ]
+									break;
+								} else if ( _tk != TMP.COMMA ) {	// ,
+									Error.throwError( SyntaxError, 1509 ); // throw new ParserError( 'ожидалась запятая либо завершение массива, а не ' + tok );
+								}
+							}
+
+						} while ( true );
+						result = arr;
+
+					} else {
+						Error.throwError( SyntaxError, 1509 );
 					}
 
-				} while ( true );
+					position = _position;
+					return result;
+
+				}
+
+				result = readValue( tmp );
+
+				TMP.readFixSimpleToken( position, TMP.EOF );
 
 			}
-			Error.throwError( SyntaxError, 1509 );
-			return untyped __global__["undefined"];
+			
+			Memory.memory = mem;
+
 		}
-
-		var result:Dynamic = readValue( tmp );
-
-		TMP.readFixSimpleToken( position, TMP.EOF );
-		
-		Memory.memory = mem;
 
 		return result;
 	}
@@ -177,23 +211,22 @@ private class TMP {
 	//--------------------------------------------------------------------------
 
 	public static inline var EOF:UInt =				Char.EOS;
+	public static inline var UNKNOWN:UInt =			1;
 	public static inline var UNDEFINED:UInt =		1;
 	public static inline var NULL:UInt =			2;
 	public static inline var TRUE:UInt =			3;
 	public static inline var FALSE:UInt =			4;
 	public static inline var NAN:UInt =				5;
+	public static inline var NUMBER_LITERAL:UInt =	6;
+	public static inline var STRING_LITERAL:UInt =	7;
+	public static inline var IDENTIFIER:UInt =		8;
+	public static inline var COMMA:UInt =			Char.COMMA;
+	public static inline var DASH:UInt =			Char.DASH;
 	public static inline var COLON:UInt =			Char.COLON;
-	public static inline var LEFT_BRACE:UInt =		Char.LEFT_BRACE;
-	public static inline var RIGHT_BRACE:UInt =		Char.RIGHT_BRACE;
 	public static inline var LEFT_BRACKET:UInt =	Char.LEFT_BRACKET;
 	public static inline var RIGHT_BRACKET:UInt =	Char.RIGHT_BRACKET;
-	public static inline var COMMA:UInt =			Char.COMMA;
-	public static inline var NUMBER_LITERAL:UInt =	12;
-	public static inline var STRING_LITERAL:UInt =	13;
-	public static inline var IDENTIFIER:UInt =		14;
-	public static inline var BLOCK_COMMENT:UInt =	15;
-	public static inline var LINE_COMMENT:UInt =	16;
-	public static inline var UNKNOWN:UInt =			17;
+	public static inline var LEFT_BRACE:UInt =		Char.LEFT_BRACE;
+	public static inline var RIGHT_BRACE:UInt =		Char.RIGHT_BRACE;
 
 	//--------------------------------------------------------------------------
 	//
@@ -201,24 +234,134 @@ private class TMP {
 	//
 	//--------------------------------------------------------------------------
 
-	public static inline function readToken(_memory:ByteArray, _position:UInt, _tk:UInt, _tt:String):Void {
-		do {
-			_readToken( _memory, _position, _tk, _tt );
-		} while ( _tk == LINE_COMMENT || _tk == BLOCK_COMMENT );
+	public static inline function readFixSimpleToken(_position:UInt, kind:UInt):Void {
+		if ( readNotSpaceCharCode( _position ) != kind ) {
+			Error.throwError( SyntaxError, 1509 );
+		}
 	}
 
-	public static inline function readFixSimpleToken(_position:UInt, kind:UInt):Void {
+	public static inline function readNotSpaceCharCode(_position:UInt):UInt {
 		var c:UInt;
 		do {
 			c = MemoryScanner.readCharCode( _position );
-			if ( isNotSpace( c ) ) {
-				if ( c == kind ) {
-					break;
-				} else {
-					Error.throwError( SyntaxError, 1509 );
+			if (
+				c != Char.CARRIAGE_RETURN &&
+				c != Char.NEWLINE &&
+				c != Char.SPACE &&
+				c != Char.TAB &&
+				c != Char.VERTICAL_TAB &&
+				c != Char.BACKSPACE &&
+				c != Char.FORM_FEED
+			) {
+				if ( c == Char.SLASH ) {
+					c = MemoryScanner.readCharCode( _position );
+					if ( c == Char.SLASH ) {			// //
+						MemoryScanner.skipLine( _position );
+						continue;
+					} else if ( c == Char.ASTERISK ) {	// /*
+						_position -= 2;
+						if ( MemoryScanner.skipBlockComment( _position ) != _position ) {
+							continue;
+						}
+					}
+					--_position;
+					c = Char.SLASH;
 				}
+				break;
 			}
 		} while ( true );
+		return c;
+	}
+
+	/**
+	 * @private
+	 */
+	public static inline function readToken(_memory:ByteArray, _position:UInt, _tk:UInt, _tt:String):Void {
+		var t:String;
+		var c:UInt = readNotSpaceCharCode( _position );
+		if (
+			c == Char.COMMA ||
+			c == Char.COLON ||
+			c == Char.LEFT_BRACE ||
+			c == Char.RIGHT_BRACE ||
+			c == Char.LEFT_BRACKET ||
+			c == Char.RIGHT_BRACKET ||
+			c == Char.DASH ||
+			c == Char.EOS
+		) {
+			_tk = c;
+		} else if ( c == Char.SINGLE_QUOTE || c == Char.DOUBLE_QUOTE ) {
+			--_position;
+			t = MemoryScanner.readString( _memory, _position );
+			if ( t != null ) {
+				_tk = STRING_LITERAL;
+				_tt = t;
+			} else {
+				_tk = UNKNOWN;
+			}
+		} else if ( ( c >= Char.ZERO && c <= Char.NINE ) || c == Char.DOT ) {
+			--_position;
+			t = MemoryScanner.readNumber( _memory, _position );
+			if ( t != null ) {
+				_tk = NUMBER_LITERAL;
+				_tt = t;
+			} else {
+				_tk = UNKNOWN;
+			}
+		} else {
+			
+			var pos:UInt = _position - 1;
+			if (
+				c == Char.n &&
+				MemoryScanner.readCharCode( _position ) == Char.u &&
+				MemoryScanner.readCharCode( _position ) == Char.l &&
+				MemoryScanner.readCharCode( _position ) == Char.l
+			) {
+				_tk = NULL;
+			} else if (
+				c == Char.t &&
+				MemoryScanner.readCharCode( _position ) == Char.r &&
+				MemoryScanner.readCharCode( _position ) == Char.u &&
+				MemoryScanner.readCharCode( _position ) == Char.e
+			) {
+				_tk = TRUE;
+			} else if (
+				c == Char.f &&
+				MemoryScanner.readCharCode( _position ) == Char.a &&
+				MemoryScanner.readCharCode( _position ) == Char.l &&
+				MemoryScanner.readCharCode( _position ) == Char.s &&
+				MemoryScanner.readCharCode( _position ) == Char.e
+			) {
+				_tk = FALSE;
+			} else if (
+				c == Char.u &&
+				MemoryScanner.readCharCode( _position ) == Char.n &&
+				MemoryScanner.readCharCode( _position ) == Char.d &&
+				MemoryScanner.readCharCode( _position ) == Char.e &&
+				MemoryScanner.readCharCode( _position ) == Char.f &&
+				MemoryScanner.readCharCode( _position ) == Char.i &&
+				MemoryScanner.readCharCode( _position ) == Char.n &&
+				MemoryScanner.readCharCode( _position ) == Char.e &&
+				MemoryScanner.readCharCode( _position ) == Char.d
+			) {
+				_tk = UNDEFINED;
+			} else if (
+				c == Char.N &&
+				MemoryScanner.readCharCode( _position ) == Char.a &&
+				MemoryScanner.readCharCode( _position ) == Char.N
+			) {
+				_tk = NAN;
+			} else {
+				_position = pos;
+				t = MemoryScanner.readIdentifier( _memory, _position );
+				if ( t != null ) {
+					_tk = IDENTIFIER;
+					_tt = t;
+				} else {
+					_tk = UNKNOWN;
+				}
+			}
+		}
 	}
 
 	//--------------------------------------------------------------------------
@@ -226,177 +369,6 @@ private class TMP {
 	//  Private class methods
 	//
 	//--------------------------------------------------------------------------
-
-	/**
-	 * @private
-	 */
-	private static inline function isNotSpace(c:UInt):Bool {
-		return (
-			c != Char.CARRIAGE_RETURN &&
-			c != Char.NEWLINE &&
-			c != Char.SPACE &&
-			c != Char.TAB &&
-			c != Char.VERTICAL_TAB &&
-			c != Char.LS &&
-			c != Char.PS &&
-			c != Char.BACKSPACE &&
-			c != Char.FORM_FEED
-		);
-	}
-
-	/**
-	 * @private
-	 */
-	private static inline function _readToken(_memory:ByteArray, _position:UInt, _tk:UInt, _tt:String):Void {
-		var t:String;
-		var pos:UInt;
-		var c:UInt;
-		do {
-			c = MemoryScanner.readCharCode( _position );
-			if ( isNotSpace( c ) ) {
-				if (
-					c == Char.COMMA ||
-					c == Char.COLON ||
-					c == Char.LEFT_BRACE ||
-					c == Char.RIGHT_BRACE ||
-					c == Char.LEFT_BRACKET ||
-					c == Char.RIGHT_BRACKET ||
-					c == Char.EOS
-				) {
-					_tk = c;
-					// makeToken( _tk, _tt, EOF, '\x00' );
-					// makeToken( _tk, _tt, COLON, ':' );
-					// makeToken( _tk, _tt, LEFT_BRACE, '{' );
-					// makeToken( _tk, _tt, RIGHT_BRACE, '}' );
-					// makeToken( _tk, _tt, LEFT_BRACKET, '[' );
-					// makeToken( _tk, _tt, RIGHT_BRACKET, ']' );
-					// makeToken( _tk, _tt, COMMA, ',' );
-				} else if ( c == Char.SINGLE_QUOTE || c == Char.DOUBLE_QUOTE ) {
-					--_position;
-					t = MemoryScanner.readString( _memory, _position );
-					if ( t != null ) {
-						makeToken( _tk, _tt, STRING_LITERAL, t );
-					} else {
-						_tk = UNKNOWN;		// makeToken( _tk, _tt, UNKNOWN, String.fromCharCode( c ) );
-					}
-				} else if ( c == Char.SLASH ) {
-					c = MemoryScanner.readCharCode( _position );
-					if ( c == Char.SLASH ) {			// //
-						MemoryScanner.skipLine( _position );
-						_tk = LINE_COMMENT;
-						//makeToken( _tk, _tt, LINE_COMMENT, MemoryScanner.readLine( _memory, _position ) );
-						break;
-					} else if ( c == Char.ASTERISK ) {	// /*
-						_position -= 2;
-						pos = MemoryScanner.skipBlockComment( _position );
-						if ( pos != _position ) {
-							_tk = BLOCK_COMMENT;
-							break;
-						}
-						//t = MemoryScanner.readBlockComment( _memory, _position );
-						//if ( t != null ) {
-							//makeToken( _tk, _tt, BLOCK_COMMENT, t );
-							//break;
-						//}
-						++_position;
-					} else {
-						--_position;
-					}
-					_tk = UNKNOWN;			// makeToken( _tk, _tt, UNKNOWN, '/' );
-				} else {
-					if ( ( c >= Char.ZERO && c <= Char.NINE ) || c == Char.DASH || c == Char.DOT ) {
-						--_position;
-						t = MemoryScanner.readNumber( _memory, _position );
-						if ( t != null ) {
-							makeToken( _tk, _tt, NUMBER_LITERAL, t );
-							break;
-						}
-						++_position;
-					} else if ( c == Char.n ) {
-						pos = _position;
-						if (
-							MemoryScanner.readCharCode( _position ) == Char.u &&
-							MemoryScanner.readCharCode( _position ) == Char.l &&
-							MemoryScanner.readCharCode( _position ) == Char.l
-						) {
-							_tk = NULL;		// makeToken( _tk, _tt, NULL, 'null' );
-							break;
-						}
-						_position = pos;
-					} else if ( c == Char.t ) {
-						pos = _position;
-						if (
-							MemoryScanner.readCharCode( _position ) == Char.r &&
-							MemoryScanner.readCharCode( _position ) == Char.u &&
-							MemoryScanner.readCharCode( _position ) == Char.e
-						) {
-							_tk = TRUE;		// makeToken( _tk, _tt, TRUE, 'true' );
-							break;
-						}
-						_position = pos;
-					} else if ( c == Char.f ) {
-						pos = _position;
-						if (
-							MemoryScanner.readCharCode( _position ) == Char.a &&
-							MemoryScanner.readCharCode( _position ) == Char.l &&
-							MemoryScanner.readCharCode( _position ) == Char.s &&
-							MemoryScanner.readCharCode( _position ) == Char.e
-						) {
-							_tk = FALSE;	// makeToken( _tk, _tt, FALSE, 'false' );
-							break;
-						}
-						_position = pos;
-					} else if ( c == Char.u ) {
-						pos = _position;
-						if (
-							MemoryScanner.readCharCode( _position ) == Char.n &&
-							MemoryScanner.readCharCode( _position ) == Char.d &&
-							MemoryScanner.readCharCode( _position ) == Char.e &&
-							MemoryScanner.readCharCode( _position ) == Char.f &&
-							MemoryScanner.readCharCode( _position ) == Char.i &&
-							MemoryScanner.readCharCode( _position ) == Char.n &&
-							MemoryScanner.readCharCode( _position ) == Char.e &&
-							MemoryScanner.readCharCode( _position ) == Char.d
-						) {
-							_tk = UNDEFINED;// makeToken( _tk, _tt, UNDEFINED, 'undefined' );
-							break;
-						}
-						_position = pos;
-					} else if ( c == Char.N ) {
-						pos = _position;
-						if (
-							MemoryScanner.readCharCode( _position ) == Char.a &&
-							MemoryScanner.readCharCode( _position ) == Char.N
-						) {
-							_tk = NAN;		// makeToken( _tk, _tt, NAN, 'NaN' );
-							break;
-						}
-						_position = pos;
-					} else if (
-						( c >= Char.a && c <= Char.z ) ||
-						( c >= Char.A && c <= Char.Z ) ||
-						c == Char.DOLLAR ||
-						c == Char.UNDER_SCORE
-					) {
-						--_position;
-						makeToken( _tk, _tt, IDENTIFIER, MemoryScanner.readIdentifier( _memory, _position ) );
-						break;
-					} else { // попробуем прочитайть полный чаркод
-						pos = --_position;
-						c = MemoryScanner.readCharCode( _position, false );
-						if ( c > 0x7F ) {
-							_position = pos;
-							makeToken( _tk, _tt, IDENTIFIER, MemoryScanner.readIdentifier( _memory, _position ) );
-							break;
-						}
-					}
-					_tk = UNKNOWN;			// makeToken( _tk, _tt, UNKNOWN, String.fromCharCode( c ) );
-					break;
-				}
-				break;
-			}
-		} while ( true );
-	}
 
 	/**
 	 * @private

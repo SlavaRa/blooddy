@@ -204,14 +204,7 @@ private class TMP {
 		var pos:UInt = _position;
 		var c:UInt = readCharCode( _position );
 		var t:String;
-		var s:String;
 		var result:String = null;
-		if ( c == Char.DASH ) {
-			s = '-';
-			c = readCharCode( _position );
-		} else {
-			s = '';
-		}
 		if ( c == Char.ZERO ) {
 
 			c = readCharCode( _position );
@@ -255,6 +248,8 @@ private class TMP {
 					t = readDec( _memory, _position );
 					if ( t != null ) {
 						result += '.' + t;
+					} else {
+						--_position;
 					}
 				} else {
 					--_position;
@@ -270,7 +265,7 @@ private class TMP {
 			_position = pos;
 			return null;
 		} else {
-			return s + result;
+			return result;
 		}
 	}
 
@@ -372,6 +367,7 @@ private class TMP {
 			}
 			var t:String = readDec( _memory, _position );
 			if ( t == null ) {
+				--_position;
 				return null;
 			} else {
 				return 'e' + prefix + t;
@@ -418,7 +414,7 @@ private class TMP {
 			}
 		} while ( ++i < length );
 		if ( i != length ) {
-			_position -= i;
+			_position -= i + 1;
 			return null;
 		} else {
 			_memory.position = _position - length;
