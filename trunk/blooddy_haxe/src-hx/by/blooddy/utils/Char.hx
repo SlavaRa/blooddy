@@ -22,13 +22,21 @@ class Char {
 	public static inline var CARRIAGE_RETURN:UInt =	13;		// \r
 
 	public static inline var SPACE:UInt =			32;		//
+	public static inline var BANG:UInt =			33;		// !
 	public static inline var DOUBLE_QUOTE:UInt =	34;		// "
 	public static inline var HASH:UInt =			35;		// #
 	public static inline var DOLLAR:UInt =			36;		// $;
+	public static inline var PERCENT:UInt =			37;		// %
+	public static inline var AMPERSAND:UInt =		38;		// &
 	public static inline var SINGLE_QUOTE:UInt =	39;		// '
 	public static inline var LEFT_PAREN:UInt =		40;		// (
 	public static inline var RIGHT_PAREN:UInt =		41;		// )
+	public static inline var ASTERISK:UInt =		42;		// *
+	public static inline var PLUS:UInt =			43;		// +
 	public static inline var COMMA:UInt =			44;		// ,
+	public static inline var DASH:UInt =			45;		// -
+	public static inline var DOT:UInt =				46;		// .
+	public static inline var SLASH:UInt =			47;		// /
 	public static inline var ZERO:UInt =			48;		// 0
 	public static inline var ONE:UInt =				49;		// 1
 	public static inline var TWO:UInt =				50;		// 2
@@ -39,18 +47,10 @@ class Char {
 	public static inline var SEVEN:UInt =			55;		// 7
 	public static inline var EIGHT:UInt =			56;		// 8
 	public static inline var NINE:UInt =			57;		// 9
-	public static inline var DOT:UInt =				46;		// .
-	public static inline var BANG:UInt =			33;		// !
-	public static inline var EQUAL:UInt =			61;		// =
-	public static inline var PERCENT:UInt =			37;		// %
-	public static inline var AMPERSAND:UInt =		38;		// &
-	public static inline var ASTERISK:UInt =		42;		// *
-	public static inline var PLUS:UInt =			43;		// +
-	public static inline var DASH:UInt =			45;		// -
-	public static inline var SLASH:UInt =			47;		// /
 	public static inline var COLON:UInt =			58;		// :
 	public static inline var SEMI_COLON:UInt =		59;		// ;
 	public static inline var LEFT_ANGLE:UInt =		60;		// <
+	public static inline var EQUAL:UInt =			61;		// =
 	public static inline var RIGHT_ANGLE:UInt =		62;		// >
 	public static inline var QUESTION_MARK:UInt =	63;		// ?
 	public static inline var AT:UInt =				64;		// @

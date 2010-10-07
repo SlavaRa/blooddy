@@ -30,6 +30,17 @@ package by.blooddy.crypto.serialization {
 		/**
 		 * @private
 		 */
+		private static const _SETTINGS:Object = {
+			ignoreComments: true,
+			ignoreProcessingInstructions: false,
+			ignoreWhitespace: true,
+			prettyIndent: false,
+			prettyPrinting: false
+		}
+		
+		/**
+		 * @private
+		 */
 		private static const _TRUE:ByteArray = new ByteArray();
 		_TRUE.writeUTFBytes( 'true' );
 
@@ -44,6 +55,12 @@ package by.blooddy.crypto.serialization {
 		 */
 		private static const _NULL:ByteArray = new ByteArray();
 		_NULL.writeUTFBytes( 'null' );
+
+		/**
+		 * @private
+		 */
+		private static const _STRING:ByteArray = new ByteArray();
+		_STRING.writeUTFBytes( '""' );
 		
 		//--------------------------------------------------------------------------
 		//
@@ -59,8 +76,11 @@ package by.blooddy.crypto.serialization {
 		 * @throws	flash.errors.StackOverflowError
 		 */
 		public static function encode(value:*):String {
+			var settings:Object = XML.settings();
 			var bytes:ByteArray = new ByteArray();
+			XML.setSettings( _SETTINGS );
 			writeValue( bytes, value, new Dictionary() );
+			XML.setSettings( settings );
 			bytes.position = 0;
 			return bytes.readUTFBytes( bytes.length );
 		}
@@ -96,7 +116,11 @@ package by.blooddy.crypto.serialization {
 					if ( value ) {
 						if ( value is XMLDocument ) {
 
-							writeString( bytes, ( value as XMLDocument ).toString() );
+							if ( value.childNodes.length > 0 ) {
+								writeString( bytes, ( new XML( value ) ).toXMLString() );
+							} else {
+								bytes.writeBytes( _STRING );
+							}
 
 						} else { 
 
@@ -164,36 +188,40 @@ package by.blooddy.crypto.serialization {
 								if ( value.constructor !== Object ) {
 									
 									var xml:XML = describeType( value );
-									var x:XML, list:XMLList;
-									var v:*;
 									
-									for each ( x in xml.*.(
-										n = name(),
-										(
+									var list:XMLList;
+									var v:*;
+									for each ( n in xml.*.(
+											n = name(),
 											(
-												name() == 'accessor' &&
-												@access.charAt( 0 ) == 'r'
-											) ||
-											n == 'variable' ||
-											n == 'constant'
-										) && (
-											list = metadata,
-											list.length() <= 0 ||
-											list.( @name == 'Transient' ).length() <= 0
-										)
-									)
+												(
+													name() == 'accessor' &&
+													@access.charAt( 0 ) == 'r'
+												) ||
+												n == 'variable' ||
+												n == 'constant'
+											) &&
+											attribute( 'uri' ).length() <= 0 &&
+											(
+												list = metadata,
+												list.length() <= 0 ||
+												list.( @name == 'Transient' ).length() <= 0
+											)
+										).@name
 									) {
-										n = x.@name;
 										try {
+
 											v = value[ n ];
+
+											if ( f )	bytes.writeByte( 44 );	// bytes.writeUTFBytes( ',' );
+											else		f = true;
+											writeString( bytes, n );
+											bytes.writeByte( 58 );	// bytes.writeUTFBytes( ':' );
+											writeValue( bytes, v, hash );
+
 										} catch ( e:* ) {
 											// skip
 										}
-										if ( f )	bytes.writeByte( 44 );	// bytes.writeUTFBytes( ',' );
-										else		f = true;
-										writeString( bytes, n );
-										bytes.writeByte( 58 );	// bytes.writeUTFBytes( ':' );
-										writeValue( bytes, v, hash );
 									}
 									
 								}
@@ -237,8 +265,8 @@ package by.blooddy.crypto.serialization {
 					case 11/*VERTICAL_TAB*/:	s = '\\v';	break;
 					case  8/*BACKSPACE*/:		s = '\\b';	break;
 					case 12/*FORM_FEED*/:		s = '\\f';	break;
-					case 82/*BACK_SLASH*/:		s = '\\\\';	break;
-					case 34/*DOUBLE_QUOTE*/:	s = '\\"';	break;
+					case 92/*BACK_SLASH*/:		s = '\\\\';	break;
+					case 34/*DOUBLE_QUOTE*/:	s = '\\\"';	break;
 					default:
 						if ( c < 32 ) {
 							s = '\\x' + ( c < 16 ? '0' : '' ) + c.toString( 16 );
