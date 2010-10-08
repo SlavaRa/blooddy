@@ -22,34 +22,7 @@ class JPEGEncoder {
 	//
 	//--------------------------------------------------------------------------
 
-	public static function encode(image:BitmapData, ?quality:UInt=60):ByteArray {
-		return TMP.encode( image, quality );
-	}
-
-}
-
-/**
- * @private
- */
-private class TMP {
-
-	//--------------------------------------------------------------------------
-	//
-	//  Private class variables
-	//
-	//--------------------------------------------------------------------------
-
-	private static inline var Z2:UInt = 256 + 512 * 3;		// промежуточные таблицы
-
-	private static inline var Z0:UInt = Z2 + 199817;		// начало записи для результата
-
-	//--------------------------------------------------------------------------
-	//
-	//  Class methods
-	//
-	//--------------------------------------------------------------------------
-
-	public static inline function encode(image:BitmapData, quality:UInt):ByteArray {
+	public static inline function encode(image:BitmapData, ?quality:UInt=60):ByteArray {
 
 		var mem:ByteArray = Memory.memory;
 
@@ -59,7 +32,7 @@ private class TMP {
 		var tmp:ByteArray = new ByteArray();
 
 		var table:ByteArray = JPEGTable.getTable( quality );
-		tmp.position = Z2;
+		tmp.position = TMP.Z2;
 		tmp.writeBytes( table );
 		//table.clear();
 
@@ -68,15 +41,15 @@ private class TMP {
 		Memory.memory = tmp;
 
 		// Add JPEG headers
-		Memory.setI16( Z0, 0xD8FF ); // SOI
-		writeAPP0( tmp, Z0 +   2 );
-		writeAPP1( tmp, Z0 +  20 );
-		writeDQT(  tmp, Z0 +  92 );
-		writeSOF0( tmp, Z0 + 226, image.width, image.height );
-		writeDHT(  tmp, Z0 + 245 );
-		writeSOS(  tmp, Z0 + 665 );
+		Memory.setI16( TMP.Z0, 0xD8FF ); // SOI
+		TMP.writeAPP0( tmp, TMP.Z0 +   2 );
+		TMP.writeAPP1( tmp, TMP.Z0 +  20 );
+		TMP.writeDQT(  tmp, TMP.Z0 +  92 );
+		TMP.writeSOF0( tmp, TMP.Z0 + 226, image.width, image.height );
+		TMP.writeDHT(  tmp, TMP.Z0 + 245 );
+		TMP.writeSOS(  tmp, TMP.Z0 + 665 );
 
-		var _byteout:Int = Z0 + 679;
+		var _byteout:Int = TMP.Z0 + 679;
 		var _bytepos:Int = 7;
 		var _bytenew:Int = 0;
 
@@ -95,10 +68,10 @@ private class TMP {
 				if ( tmp.length - _byteout < 2048 ) { // у памяти есть свойство заканчиваться
 					tmp.length += 4096;
 				}
-				rgb2yuv( image, _x, _y );
-				DCY = processDU( _byteout, _bytepos, _bytenew, 256 + 512 * 0, Z2 + 130, DCY, Z2 + 1218 + 416,  Z2 + 1218 + 452  );
-				DCU = processDU( _byteout, _bytepos, _bytenew, 256 + 512 * 1, Z2 + 642, DCU, Z2 + 1218 + 1205, Z2 + 1218 + 1241 );
-				DCV = processDU( _byteout, _bytepos, _bytenew, 256 + 512 * 2, Z2 + 642, DCV, Z2 + 1218 + 1205, Z2 + 1218 + 1241 );
+				TMP.rgb2yuv( image, _x, _y );
+				DCY = TMP.processDU( _byteout, _bytepos, _bytenew, 256 + 512 * 0, TMP.Z2 + 130, DCY, TMP.Z2 + 1218 + 416,  TMP.Z2 + 1218 + 452  );
+				DCU = TMP.processDU( _byteout, _bytepos, _bytenew, 256 + 512 * 1, TMP.Z2 + 642, DCU, TMP.Z2 + 1218 + 1205, TMP.Z2 + 1218 + 1241 );
+				DCV = TMP.processDU( _byteout, _bytepos, _bytenew, 256 + 512 * 2, TMP.Z2 + 642, DCV, TMP.Z2 + 1218 + 1205, TMP.Z2 + 1218 + 1241 );
 				_x += 8;
 			} while ( _x < width );
 			_y += 8;
@@ -108,7 +81,7 @@ private class TMP {
 		var _bytepos:Int;
 		if ( Memory.getI32( 4 ) >= 0 ) {
 			_bytepos = Memory.getI32( 4 ) + 1;
-			writeBits( _byteout, _bytepos, _bytenew, _bytepos, ( 1 << _bytepos ) - 1 );
+			TMP.writeBits( _byteout, _bytepos, _bytenew, _bytepos, ( 1 << _bytepos ) - 1 );
 		}
 
 		Memory.setI16( _byteout, 0xD9FF ); //EOI
@@ -116,7 +89,7 @@ private class TMP {
 		Memory.memory = mem;
 
 		var bytes:ByteArray = new ByteArray();
-		bytes.writeBytes( tmp, Z0, _byteout - Z0 + 2 );
+		bytes.writeBytes( tmp, TMP.Z0, _byteout - TMP.Z0 + 2 );
 		bytes.position = 0;
 
 		//tmp.clear();
@@ -124,16 +97,30 @@ private class TMP {
 		return bytes;
 	}
 
+}
+
+/**
+ * @private
+ */
+private class TMP {
+
 	//--------------------------------------------------------------------------
 	//
-	//  Private class methods
+	//  Private class variables
 	//
 	//--------------------------------------------------------------------------
 
-	/**
-	 * @private
-	 */
-	private static inline function writeAPP0(tmp:ByteArray, p:UInt):Void {
+	public static inline var Z2:UInt = 256 + 512 * 3;	// промежуточные таблицы
+
+	public static inline var Z0:UInt = Z2 + 199817;		// начало записи для результата
+
+	//--------------------------------------------------------------------------
+	//
+	//  Class methods
+	//
+	//--------------------------------------------------------------------------
+
+	public static inline function writeAPP0(tmp:ByteArray, p:UInt):Void {
 		Memory.setI16(	p     ,	0xE0FF		);	// marker
 		Memory.setI16(	p +  2,	0x1000		);	// length
 		Memory.setI32(	p +  4,	0x4649464A	);	// JFIF
@@ -144,10 +131,7 @@ private class TMP {
 		Memory.setI16(	p + 16,	0x0000		);	// thumbn
 	}
 
-	/**
-	 * @private
-	 */
-	private static inline function writeAPP1(tmp:ByteArray, p:UInt):Void {
+	public static inline function writeAPP1(tmp:ByteArray, p:UInt):Void {
 		Memory.setI16(	p     ,	0xE1FF		);	// marker
 		Memory.setI16(	p +  2,	0x4600		);	// length
 
@@ -171,10 +155,7 @@ private class TMP {
 
 	}
 
-	/**
-	 * @private
-	 */
-	private static inline function writeDQT(tmp:ByteArray, p:UInt):Void {
+	public static inline function writeDQT(tmp:ByteArray, p:UInt):Void {
 		Memory.setI16(	p     ,	0xDBFF		);	// marker
 		Memory.setI16(	p +  2,	0x8400		);	// length
 
@@ -185,10 +166,7 @@ private class TMP {
 		Memory.setByte( p + 69,	0x01		);
 	}
 	
-	/**
-	 * @private
-	 */
-	private static inline function writeSOF0(tmp:ByteArray, p:UInt, width:UInt, height:UInt):Void {
+	public static inline function writeSOF0(tmp:ByteArray, p:UInt, width:UInt, height:UInt):Void {
 		Memory.setI16(	p     ,	0xC0FF		);	// marker
 		Memory.setI16(	p +  2,	0x1100		);	// length, truecolor YUV JPG
 		Memory.setByte(	p +  4,	0x08		);	// precision
@@ -206,10 +184,7 @@ private class TMP {
 		Memory.setI32(	p + 16,	0x00011103	);	// IdV, HVV, QTV
 	}
 
-	/**
-	 * @private
-	 */
-	private static inline function writeDHT(tmp:ByteArray, p:UInt):Void {
+	public static inline function writeDHT(tmp:ByteArray, p:UInt):Void {
 		Memory.setI16(	p      ,	0xC4FF		);	// marker
 		Memory.setI16(	p +   2,	0xA201		);	// length
 
@@ -222,10 +197,7 @@ private class TMP {
 		Memory.setByte(	p + 241,	0x11		);	// HTUACinfo
 	}
 
-	/**
-	 * @private
-	 */
-	private static inline function writeSOS(tmp:ByteArray, p:UInt):Void {
+	public static inline function writeSOS(tmp:ByteArray, p:UInt):Void {
 		Memory.setI16(	p     ,	0xDAFF		);	// marker
 		Memory.setI16(	p +  2,	0x0C00		);	// length
 		Memory.setByte(	p +  4,	0x03		);	// nrofcomponents
@@ -235,10 +207,7 @@ private class TMP {
 		Memory.setI32(	p + 11,	0x00003f00	);	// Ss, Se, Bf
 	}
 
-	/**
-	 * @private
-	 */
-	private static inline function rgb2yuv(image:BitmapData, _x:UInt, _y:UInt):Void {
+	public static inline function rgb2yuv(image:BitmapData, _x:UInt, _y:UInt):Void {
 
 		var pos:UInt = 0;
 
@@ -272,10 +241,7 @@ private class TMP {
 
 	}
 
-	/**
-	 * @private
-	 */
-	private static inline function processDU(_byteout:Int, _bytepos:Int, _bytenew:Int, CDU:UInt, fdtbl:UInt, DC:Int, HTDC:UInt, HTAC:UInt):Int {
+	public static inline function processDU(_byteout:Int, _bytepos:Int, _bytenew:Int, CDU:UInt, fdtbl:UInt, DC:Int, HTDC:UInt, HTAC:UInt):Int {
 		
 		fDCTQuant( CDU, fdtbl );
 
@@ -329,6 +295,32 @@ private class TMP {
 		}
 		return DC;
 	}
+
+	public static inline function writeBits(_byteout:Int, _bytepos:Int, _bytenew:Int, len:Int, val:Int):Void {
+		while ( --len >= 0 ) {
+			if ( val & ( 1 << len ) != 0 ) {
+				_bytenew |= 1 << _bytepos;
+			}
+			_bytepos--;
+			if ( _bytepos < 0 ) {
+				if ( _bytenew == 0xFF ) {
+					Memory.setI16( _byteout, 0x00FF );
+					_byteout += 2;
+				} else {
+					Memory.setByte( _byteout, _bytenew );
+					_byteout++;
+				}
+				_bytepos = 7;
+				_bytenew = 0;
+			}
+		}
+	}
+	
+	//--------------------------------------------------------------------------
+	//
+	//  Private class methods
+	//
+	//--------------------------------------------------------------------------
 
 	/**
 	 * @private
@@ -490,27 +482,4 @@ private class TMP {
 		writeBits( _byteout, _bytepos, _bytenew, Memory.getByte( addres ), Memory.getUI16( addres + 1 ));
 	}
 
-	/**
-	 * @private
-	 */
-	private static inline function writeBits(_byteout:Int, _bytepos:Int, _bytenew:Int, len:Int, val:Int):Void {
-		while ( --len >= 0 ) {
-			if ( val & ( 1 << len ) != 0 ) {
-				_bytenew |= 1 << _bytepos;
-			}
-			_bytepos--;
-			if ( _bytepos < 0 ) {
-				if ( _bytenew == 0xFF ) {
-					Memory.setI16( _byteout, 0x00FF );
-					_byteout += 2;
-				} else {
-					Memory.setByte( _byteout, _bytenew );
-					_byteout++;
-				}
-				_bytepos = 7;
-				_bytenew = 0;
-			}
-		}
-	}
-	
 }

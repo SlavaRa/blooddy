@@ -22,44 +22,16 @@ class CRC32 {
 	//--------------------------------------------------------------------------
 
 	public static function hash(bytes:ByteArray):UInt {
-		return TMP.hash( bytes );
-	}
-
-}
-
-/**
- * @private
- */
-private class TMP {
-
-	//--------------------------------------------------------------------------
-	//
-	//  Class variables
-	//
-	//--------------------------------------------------------------------------
-
-	/**
-	 * @private
-	 */
-	private static inline var Z0:UInt = 256 * 4;
-
-	//--------------------------------------------------------------------------
-	//
-	//  Class methods
-	//
-	//--------------------------------------------------------------------------
-
-	public static inline function hash(bytes:ByteArray):UInt {
 
 		var len:UInt = bytes.length;
 		if ( len > 0 ) {
 
-			len += Z0;
+			len += TMP.Z0;
 			
 			var mem:ByteArray = Memory.memory;
 
 			var tmp:ByteArray = new ByteArray();
-			tmp.length = Z0;
+			tmp.length = TMP.Z0;
 
 			Memory.memory = tmp;
 
@@ -81,11 +53,11 @@ private class TMP {
 
 			c = 0xFFFFFFFF;
 
-			tmp.position = Z0;
+			tmp.position = TMP.Z0;
 			tmp.length = len;
 			tmp.writeBytes( bytes );
 
-			i = Z0;
+			i = TMP.Z0;
 			do {
 				c = Memory.getI32( ( ( c ^ Memory.getByte( i ) & 0xFF ) << 2 ) ) ^ ( c >>> 8 );
 			} while ( ++i < len );
@@ -101,6 +73,22 @@ private class TMP {
 			return 0;
 			
 		}
+
 	}
+
+}
+
+/**
+ * @private
+ */
+private class TMP {
+
+	//--------------------------------------------------------------------------
+	//
+	//  Class constants
+	//
+	//--------------------------------------------------------------------------
+
+	public static inline var Z0:UInt = 256 * 4;
 
 }

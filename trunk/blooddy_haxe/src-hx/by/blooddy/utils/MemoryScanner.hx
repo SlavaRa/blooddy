@@ -9,58 +9,10 @@ package by.blooddy.utils;
 import by.blooddy.utils.Char;
 import by.blooddy.system.Memory;
 import flash.Error;
+import flash.Lib;
 import flash.utils.ByteArray;
 
 class MemoryScanner {
-
-	//--------------------------------------------------------------------------
-	//
-	//  Class methods
-	//
-	//--------------------------------------------------------------------------
-
-	public static inline function readCharCode(_position:UInt, ?single:Bool=true):UInt {
-		return TMP.readCharCode( _position, single );
-	}
-
-	public static inline function readChar(_position:UInt, ?single:Bool=true):String {
-		return TMP.readChar( _position, single );
-	}
-	
-	public static inline function readIdentifier(_memory:ByteArray, _position:UInt):String {
-		return TMP.readIdentifier( _memory, _position );
-	}
-
-	public static inline function readString(_memory:ByteArray, _position:UInt):String {
-		return TMP.readString( _memory, _position );
-	}
-
-	public static inline function readNumber(_memory:ByteArray, _position:UInt):String {
-		return TMP.readNumber( _memory, _position );
-	}
-
-	public static inline function skipBlockComment(_position:UInt):UInt {
-		return TMP.skipBlockComment( _position );
-	}
-
-	public static inline function readBlockComment(_memory:ByteArray, _position:UInt):String {
-		return TMP.readBlockComment( _memory, _position );
-	}
-
-	public static inline function skipLine(_position:UInt):Void {
-		TMP.skipLine( _position );
-	}
-
-	public static inline function readLine(_memory:ByteArray, _position:UInt):String {
-		return TMP.readLine( _memory, _position );
-	}
-
-}
-
-/**
- * @private
- */
-private class TMP {
 
 	//--------------------------------------------------------------------------
 	//
@@ -157,14 +109,14 @@ private class TMP {
 					else if	( c == Char.f )	result += '\x0C';
 					else if	( c == Char.b )	result += '\x08';
 					else if	( c == Char.x ) {
-						t = readFixedHex( _memory, _position, 2 );
+						t = TMP.readFixedHex( _memory, _position, 2 );
 						if ( t != null ) {
 							result += String.fromCharCode( untyped __global__["parseInt"]( t, 16 ) );
 						} else {
 							result += 'x';
 						}
 					} else if ( c == Char.u ) {
-						t = readFixedHex( _memory, _position, 4 );
+						t = TMP.readFixedHex( _memory, _position, 4 );
 						if ( t != null ) {
 							result += String.fromCharCode( untyped __global__["parseInt"]( t, 16 ) );
 						} else {
@@ -201,75 +153,72 @@ private class TMP {
 	}
 
 	public static inline function readNumber(_memory:ByteArray, _position:UInt):String {
+		var result:String = null;
 		var pos:UInt = _position;
 		var c:UInt = readCharCode( _position );
-		var t:String;
-		var result:String = null;
+		var p:UInt;
 		if ( c == Char.ZERO ) {
-
 			c = readCharCode( _position );
 			if ( c == Char.x || c == Char.X ) {	// hex
-				t = readHex( _memory, _position );
-				if ( t != null ) {
-					result = untyped __global__["parseInt"]( t, 16 );
-				}
-			} else if ( c == Char.DOT ) {		// float
-				t = readDec( _memory, _position );
-				if ( t != null ) {
-					result = '.' + t;
-					t = readExp( _memory, _position );
-					if ( t != null ) {
-						result += t;
-					}
+				p = _position;
+				do {
+					c = readCharCode( _position );
+				} while (
+					( c >= Char.ZERO && c <= Char.NINE ) ||
+					( c >= Char.a && c <= Char.f ) ||
+					( c >= Char.A && c <= Char.F )
+				);
+				if ( _position == p + 1 ) {
+					_position = pos + 1;
+					c = Char.ZERO;
+				} else {
+					--_position;
+					_memory.position = p;
+					result = untyped __global__["parseInt"]( _memory.readUTFBytes( _position - p ), 16 );
 				}
 			} else {
 				--_position;
+				c = Char.ZERO;
 			}
-
-		} else if ( c == Char.DOT ) {
-
-			t = readDec( _memory, _position );
-			if ( t != null ) {
-				result = '.' + t;
-				t = readExp( _memory, _position );
-				if ( t != null ) {
-					result += t;
-				}
-			}
-
 		}
-		if ( result == null ) {
-
-			--_position;
-			t = readDec( _memory, _position );
-			if ( t != null ) {
-				result = t;
-				if ( readCharCode( _position ) == Char.DOT ) {
-					t = readDec( _memory, _position );
-					if ( t != null ) {
-						result += '.' + t;
-					} else {
-						--_position;
-					}
-				} else {
+		if ( result == null ) { // не hex
+			while ( c >= Char.ZERO && c <= Char.NINE ) {
+				c = readCharCode( _position );
+			}
+			if ( c == Char.DOT ) { // float
+				p = _position;
+				do {
+					c = readCharCode( _position );
+				} while ( c >= Char.ZERO && c <= Char.NINE );
+				if ( _position == p + 1 ) {
 					--_position;
-				}
-				t = readExp( _memory, _position );
-				if ( t != null ) {
-					result += t;
+					c = Char.DOT;
 				}
 			}
-
+			if ( c == Char.e || c == Char.E ) { // exp
+				var pp:UInt = _position;
+				c = readCharCode( _position );
+				if ( c == Char.DASH || c == Char.PLUS ) { // expsing
+					c = readCharCode( _position );
+				}
+				p = _position;
+				while ( c >= Char.ZERO && c <= Char.NINE ) {
+					c = readCharCode( _position );
+				}
+				if ( _position == p ) {
+					_position = pp;
+				}
+			}
+			--_position;
+			if ( _position != pos ) {
+				_memory.position = pos;
+				result = _memory.readUTFBytes( _position - pos );
+			}
 		}
-		if ( result == null ) {
-			_position = pos;
-			return null;
-		} else {
-			return result;
-		}
+		return result;
 	}
 
-	public static inline function skipBlockComment(_position:UInt):UInt {
+	public static inline function skipBlockComment(_position:UInt):Void {
 		var pos:UInt = _position;
 		if (
 			readCharCode( _position ) != Char.SLASH ||
@@ -292,11 +241,11 @@ private class TMP {
 				}
 			} while ( true );
 		}
-		return pos;
 	}
 
 	public static inline function readBlockComment(_memory:ByteArray, _position:UInt):String {
-		var pos:UInt = skipBlockComment( _position );
+		var pos:UInt = _position;
+		skipBlockComment( _position );
 		if ( pos == _position ) {
 			return null;
 		} else {
@@ -320,91 +269,27 @@ private class TMP {
 		return _memory.readUTFBytes( _position - pos );
 	}
 
+}
+
+/**
+ * @private
+ */
+private class TMP {
+
 	//--------------------------------------------------------------------------
 	//
-	//  Private class methods
+	//  Class methods
 	//
 	//--------------------------------------------------------------------------
 
 	/**
 	 * @private
 	 */
-	private static inline function readDec(_memory:ByteArray, _position:UInt):String {
-		var pos:UInt = _position;
-		var c:UInt;
-		do {
-			c = readCharCode( _position );
-		} while (
-			c >= Char.ZERO && c <= Char.NINE
-		);
-		--_position;
-		if ( _position == pos ) {
-			return null;
-		} else {
-			_memory.position = pos;
-			return _memory.readUTFBytes( _position - pos );
-		}
-	}
-
-	/**
-	 * @private
-	 */
-	private static inline function readExp(_memory:ByteArray, _position:UInt):String {
-		var c:UInt = readCharCode( _position );
-		if ( c != Char.e && c != Char.E ) {
-			--_position;
-			return null;
-		} else {
-			var prefix:String;
-			c = readCharCode( _position );
-			if ( c == Char.DASH ) {
-				prefix = '-';
-			} else {
-				prefix = '';
-				if ( c != Char.PLUS ) {
-					--_position;
-				}
-			}
-			var t:String = readDec( _memory, _position );
-			if ( t == null ) {
-				--_position;
-				return null;
-			} else {
-				return 'e' + prefix + t;
-			}
-		}
-	}
-
-	/**
-	 * @private
-	 */
-	private static inline function readHex(_memory:ByteArray, _position:UInt):String {
-		var pos:UInt = _position;
-		var c:UInt;
-		do {
-			c = readCharCode( _position );
-		} while (
-			( c >= Char.ZERO && c <= Char.NINE ) ||
-			( c >= Char.a && c <= Char.f ) ||
-			( c >= Char.A && c <= Char.F )
-		);
-		--_position;
-		if ( _position == pos ) {
-			return null;
-		} else {
-			_memory.position = pos;
-			return _memory.readUTFBytes( _position - pos );
-		}
-	}
-	
-	/**
-	 * @private
-	 */
-	private static inline function readFixedHex(_memory:ByteArray, _position:UInt, length:UInt):String {
+	public static inline function readFixedHex(_memory:ByteArray, _position:UInt, length:UInt):String {
 		var c:UInt;
 		var i:UInt = 0;
 		do {
-			c = readCharCode( _position );
+			c = MemoryScanner.readCharCode( _position );
 			if (
 				( c < Char.ZERO || c > Char.NINE ) &&
 				( c < Char.a || c > Char.f ) &&
