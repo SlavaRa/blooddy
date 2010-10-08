@@ -289,7 +289,7 @@ private class TMP {
 			x = Memory.getI32( t + 17 );
 			z = Memory.getI32( t + 21 ) + x;
 			do {
-				y++;
+				++y;
 				hash[ Memory.getI32( x ) >>> 0 ] = i;
 				x += 4;
 			} while ( x < z );

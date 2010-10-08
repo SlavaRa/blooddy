@@ -6,6 +6,8 @@
 
 package by.blooddy.crypto.serialization;
 
+import flash.xml.XMLList;
+
 /**
  * @author	BlooDHounD
  * @version	1.0
@@ -18,6 +20,6 @@ extern class SerializationHelper {
 	//
 	//--------------------------------------------------------------------------
 
-	public static function getPropertyNames(o:Object):Object;
+	public static function getPropertyNames(o:Object):XMLList;
 
 }

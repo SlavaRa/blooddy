@@ -149,12 +149,12 @@ class MD5 {
 		Memory.setI32( 24, c );
 		Memory.setI32( 28, d );
 
-		b = 32;
+		b = 32 - 1;
 		i = 16;
 		do {
 			a = Memory.getByte( i );
-			Memory.setByte( b++, Memory.getByte( ( a >>> 4 ) & 0xF ) );
-			Memory.setByte( b++, Memory.getByte(   a         & 0xF ) );
+			Memory.setByte( ++b, Memory.getByte( a >>> 4 ) );
+			Memory.setByte( ++b, Memory.getByte( a & 0xF ) );
 		} while ( ++i < 32 );
 
 		tmp.position = 32;

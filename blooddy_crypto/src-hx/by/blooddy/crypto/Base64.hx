@@ -33,7 +33,7 @@ class Base64 {
 		tmp.writeBytes( bytes );
 		
 		var rest:UInt = len % 3;
-		var bytesLength:UInt = TMP.Z1 + len - rest;
+		var bytesLength:UInt = TMP.Z1 + len - rest - 1;
 
 		var resultLength:UInt = ( Std.int( len / 3 ) << 2 ) + ( rest > 0 ? 4 : 0 );
 		tmp.length += resultLength + ( insertNewLines ? Std.int( resultLength / 76 ) : 0 );
@@ -41,15 +41,15 @@ class Base64 {
 		if ( tmp.length < 1024 ) tmp.length = 1024;
 		Memory.memory = tmp;
 
-		var i:UInt = TMP.Z1;
+		var i:UInt = TMP.Z1 - 1;
 		var j:UInt = TMP.Z1 + len;
 		var chunk:Int;
 
 		while ( i < bytesLength ) {
 
-			chunk =	Memory.getByte( i++ ) << 16 |
-					Memory.getByte( i++ ) << 8  |
-					Memory.getByte( i++ )       ;
+			chunk =	Memory.getByte( ++i ) << 16 |
+					Memory.getByte( ++i ) << 8  |
+					Memory.getByte( ++i )       ;
 
 			Memory.setI32( j,
 				Memory.getByte(   chunk >>> 18          )       |
@@ -59,7 +59,7 @@ class Base64 {
 			);
 			j += 4;
 
-			if ( insertNewLines && ( i - TMP.Z1 ) % 57 == 0 ) {
+			if ( insertNewLines && ( i - TMP.Z1 + 1 ) % 57 == 0 ) {
 				Memory.setByte( j++, 10 );
 			}
 
@@ -68,7 +68,7 @@ class Base64 {
 		switch ( rest ) {
 
 			case 1:
-				chunk = Memory.getByte( i++ );
+				chunk = Memory.getByte( ++i );
 				Memory.setI32( j,
 					Memory.getByte(   chunk >>> 2      )      |
 					Memory.getByte( ( chunk & 3 ) << 4 ) << 8 |
@@ -76,8 +76,8 @@ class Base64 {
 				);
 
 			case 2:
-				chunk =	Memory.getByte( i++ ) << 8 |
-						Memory.getByte( i++ )      ;
+				chunk =	Memory.getByte( ++i ) << 8 |
+						Memory.getByte( ++i )      ;
 				Memory.setI32( j,
 					Memory.getByte(   chunk >>> 10          )       |
 					Memory.getByte( ( chunk >>>  4 ) & 0x3F ) <<  8 |
@@ -107,15 +107,15 @@ class Base64 {
 		tmp.writeUTFBytes( '\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x40\x3e\x40\x40\x40\x3f\x34\x35\x36\x37\x38\x39\x3a\x3b\x3c\x3d\x40\x40\x40\x40\x40\x40\x40\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x40\x40\x40\x40\x40\x40\x1a\x1b\x1c\x1d\x1e\x1f\x20\x21\x22\x23\x24\x25\x26\x27\x28\x29\x2a\x2b\x2c\x2d\x2e\x2f\x30\x31\x32\x33\x40\x40\x40\x40\x40' );
 		tmp.writeUTFBytes( str );
 
-		var bytesLength:UInt = tmp.length - 4;
+		var bytesLength:UInt = tmp.length - 4 - 1;
 
 		if ( tmp.length < 1024 ) tmp.length = 1024;
 		Memory.memory = tmp;
 
 		var insertNewLines:Bool = Memory.getByte( TMP.Z2 + 76 ) == 10;
 
-		var i:UInt = TMP.Z2;
-		var j:UInt = TMP.Z2;
+		var i:UInt = TMP.Z2 - 1;
+		var j:UInt = TMP.Z2 - 1;
 
 		var a:Int;
 		var b:Int;
@@ -124,16 +124,16 @@ class Base64 {
 
 		while ( i < bytesLength ) {
 
-			a = TMP.getByte( i++ );
-			b = TMP.getByte( i++ );
-			c = TMP.getByte( i++ );
-			d = TMP.getByte( i++ );
+			a = TMP.getByte( ++i );
+			b = TMP.getByte( ++i );
+			c = TMP.getByte( ++i );
+			d = TMP.getByte( ++i );
 
-			Memory.setByte( j++, ( a << 2 ) | ( b >> 4 ) );
-			Memory.setByte( j++, ( b << 4 ) | ( c >> 2 ) );
-			Memory.setByte( j++, ( c << 6 ) |   d        );
+			Memory.setByte( ++j, ( a << 2 ) | ( b >> 4 ) );
+			Memory.setByte( ++j, ( b << 4 ) | ( c >> 2 ) );
+			Memory.setByte( ++j, ( c << 6 ) |   d        );
 			
-			if ( insertNewLines && j % 57 == 0 && Memory.getByte( i++ ) != 10 ) {
+			if ( insertNewLines && ( j - TMP.Z2 + 1 ) % 57 == 0 && Memory.getByte( ++i ) != 10 ) {
 				Error.throwError( VerifyError, 1509 );
 			}
 
@@ -141,25 +141,25 @@ class Base64 {
 
 		if ( i != bytesLength ) Error.throwError( VerifyError, 1509 );
 
-		a = TMP.getByte( i++ );
-		b = TMP.getByte( i++ );
-		Memory.setByte( j++, ( a << 2 ) | ( b >> 4 ) );
+		a = TMP.getByte( ++i );
+		b = TMP.getByte( ++i );
+		Memory.setByte( ++j, ( a << 2 ) | ( b >> 4 ) );
 
-		c = TMP.getByte( i++, true );
+		c = TMP.getByte( ++i, true );
 		if ( c != -1 ) {
-			Memory.setByte( j++, ( b << 4 ) | ( c >> 2 ) );
-			d = TMP.getByte( i++, true );
+			Memory.setByte( ++j, ( b << 4 ) | ( c >> 2 ) );
+			d = TMP.getByte( ++i, true );
 			if ( d != -1 ) {
-				Memory.setByte( j++, ( c << 6 ) | d );
+				Memory.setByte( ++j, ( c << 6 ) | d );
 			}
 		} else {
-			if ( TMP.getByte( i++, true ) != -1 ) Error.throwError( VerifyError, 1509 );
+			if ( TMP.getByte( ++i, true ) != -1 ) Error.throwError( VerifyError, 1509 );
 		}
 
 		Memory.memory = mem;
 
 		var bytes:ByteArray = new ByteArray();
-		bytes.writeBytes( tmp, TMP.Z2, j - TMP.Z2 );
+		bytes.writeBytes( tmp, TMP.Z2, j - TMP.Z2 + 1 );
 		bytes.position = 0;
 
 		//tmp.clear();
@@ -190,8 +190,8 @@ private class TMP {
 	//
 	//--------------------------------------------------------------------------
 
-	public static inline function getByte(index:UInt, ?ext:Bool=false):Int {
-		var v:Int = Memory.getByte( index );
+	public static inline function getByte(i:UInt, ?ext:Bool=false):Int {
+		var v:Int = Memory.getByte( i );
 		if ( v & 0x80 != 0 ) Error.throwError( VerifyError, 1509 );
 		if ( ext && v == 61 ) {
 			v = -1;
