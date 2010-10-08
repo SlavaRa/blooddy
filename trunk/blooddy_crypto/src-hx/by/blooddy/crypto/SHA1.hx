@@ -102,12 +102,12 @@ class SHA1 {
 		TMP.setBI32( 28, h3 );
 		TMP.setBI32( 32, h4 );
 
-		b = 36;
+		b = 36 - 1;
 		i = 16;
 		do {
 			a = Memory.getByte( i );
-			Memory.setByte( b++, Memory.getByte( ( a >>> 4 ) & 0xF ) );
-			Memory.setByte( b++, Memory.getByte(   a         & 0xF ) );
+			Memory.setByte( ++b, Memory.getByte( a >>> 4 ) );
+			Memory.setByte( ++b, Memory.getByte( a & 0xF ) );
 		} while ( ++i < 36 );
 
 		tmp.position = 36;

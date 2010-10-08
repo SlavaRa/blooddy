@@ -46,7 +46,7 @@ package by.blooddy.crypto.serialization {
 		//
 		//--------------------------------------------------------------------------
 
-		public static function getPropertyNames(o:Object):Object {
+		public static function getPropertyNames(o:Object):XMLList {
 			if ( typeof o != 'object' || !o ) Error.throwError( TypeError, 2007, 'o' );
 			var isClass:Boolean = o is Class;
 			var list:XMLList;

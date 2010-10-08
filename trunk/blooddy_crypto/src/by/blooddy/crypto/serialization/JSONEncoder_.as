@@ -19,7 +19,7 @@ package by.blooddy.crypto.serialization {
 	 * @langversion				3.0
 	 * @created					01.10.2010 15:53:47
 	 */
-	public class JSONEncoder {
+	public class JSONEncoder_ {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -188,7 +188,6 @@ package by.blooddy.crypto.serialization {
 								if ( value.constructor !== Object ) {
 									
 									var v:*;
-
 									for each ( n in SerializationHelper.getPropertyNames( value ) ) {
 										try {
 
