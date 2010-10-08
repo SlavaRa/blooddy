@@ -30,7 +30,7 @@ package by.blooddy.crypto.image {
 		/**
 		 * Does not modify the scanline.
 		 */
-		public static const NONE:uint =		0;
+		public static const NONE:int =		0;
 
 		/**
 		 * Writes the byte as a difference of the given pixel and the previous pixel:
@@ -50,7 +50,7 @@ package by.blooddy.crypto.image {
 		 * (two-byte grayscale sample, plus two-byte alpha sample).</li>
 		 * </ul>
 		 */
-		public static const SUB:uint =		1;
+		public static const SUB:int =		1;
 
 		/**
 		 * Writes the byte as a difference of the given pixel and the pixel above it:
@@ -64,7 +64,7 @@ package by.blooddy.crypto.image {
 		 * <li>and <code>Prior(x)</code> refers to the unfiltered bytes of the prior scanline.</li>
 		 * <ul>
 		 */
-		public static const UP:uint =		2;
+		public static const UP:int =		2;
 
 		/**
 		 * Writes the byte based on the average calculated from the pixel above and 
@@ -80,7 +80,7 @@ package by.blooddy.crypto.image {
 		 * scanline, and bpp is defined as for the Sub filter.</li>
 		 * </ul>
 		 */
-		public static const AVERAGE:uint =	3;
+		public static const AVERAGE:int =	3;
 
 		/**
 		 * Writes the byte based on the output of a linear function that takes upper
@@ -105,7 +105,7 @@ package by.blooddy.crypto.image {
 		 * exactly, without overflow. Arithmetic modulo 256 is to be used only for 
 		 * the final step of subtracting the function result from the target byte value. 
 		 */
-		public static const PAETH:uint =	4;
+		public static const PAETH:int =		4;
 
 	}
 

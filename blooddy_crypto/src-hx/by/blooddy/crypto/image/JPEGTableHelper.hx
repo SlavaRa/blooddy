@@ -30,62 +30,6 @@ class JPEGTableHelper {
 	 *	 642:	fdtbl_UV					[8]{64}
 	 * 	1154:
 	 */
-	public static function createQuantTable(?quality:UInt=60):ByteArray {
-		return TMP.createQuantTable( quality );
-	}
-
-	/**
-	 *	   0:	ZigZag						[1]{64}
-	 *	  64:
-	 */
-	public static function createZigZagTable():ByteArray {
-		return TMP.createZigZagTable();
-	}
-
-	/**
-	 *	   0:	0							[1]{1}
-	 *	   1:	std_dc_luminance_nrcodes	[1]{16}
-	 *	  17:	std_dc_luminance_values		[1]{12}
-	 *	  29:	0							[1]{1}
-	 *	  30:	std_ac_luminance_nrcodes	[1]{16}
-	 *	  47:	std_ac_luminance_values		[1]{162}
-	 *	 208:	0							[1]{1}
-	 *	 209:	std_dc_chrominance_nrcodes	[1]{16}
-	 *	 225:	std_dc_chrominance_values	[1]{12}
-	 *	 237:	0							[1]{1}
-	 *	 238:	std_ac_chrominance_nrcodes	[1]{16}
-	 *	 254:	std_ac_chrominance_values	[1]{162}
-	 *	 416:	YDC_HT						[1,2]{12}
-	 *	 452:	YAC_HT						[1,2]{251}
-	 *	1205:	UVDC_HT						[1,2]{12}
-	 *	1241:	UVAC_HT						[1,2]{251}
-	 *	1994:
-	 */
-	public static function createHuffmanTable():ByteArray {
-		return TMP.createHuffmanTable();
-	}
-
-	/**
-	 *	     0:	cat							[1,2]{65534}
-	 *	196605:
-	 */
-	public static function createCategoryTable():ByteArray {
-		return TMP.createCategoryTable();
-	}
-
-}
-
-/**
- * @private
- */
-private class TMP {
-
-	//--------------------------------------------------------------------------
-	//
-	//  Class methods
-	//
-	//--------------------------------------------------------------------------
-
 	public static inline function createQuantTable(quality:UInt):ByteArray {
 
 		var sf:UInt = quality < 50 ? Std.int( 5000 / quality ) : Std.int( 200 - ( quality << 1 ) );
@@ -171,6 +115,10 @@ private class TMP {
 		return bytes;
 	}
 
+	/**
+	 *	   0:	ZigZag						[1]{64}
+	 *	  64:
+	 */
 	public static inline function createZigZagTable():ByteArray {
 		var bytes:ByteArray = new ByteArray();
 		bytes.writeUTFBytes( '\x00\x01\x05\x06\x0e\x0f\x1b\x1c\x02\x04\x07\x0d\x10\x1a\x1d\x2a\x03\x08\x0c\x11\x19\x1e\x29\x2b\x09\x0b\x12\x18\x1f\x28\x2c\x35\x0a\x13\x17\x20\x27\x2d\x34\x36\x14\x16\x21\x26\x2e\x33\x37\x3c\x15\x22\x25\x2f\x32\x38\x3b\x3d\x23\x24\x30\x31\x39\x3a\x3e\x3f' );
@@ -178,6 +126,25 @@ private class TMP {
 		return bytes;
 	}
 
+	/**
+	 *	   0:	0							[1]{1}
+	 *	   1:	std_dc_luminance_nrcodes	[1]{16}
+	 *	  17:	std_dc_luminance_values		[1]{12}
+	 *	  29:	0							[1]{1}
+	 *	  30:	std_ac_luminance_nrcodes	[1]{16}
+	 *	  47:	std_ac_luminance_values		[1]{162}
+	 *	 208:	0							[1]{1}
+	 *	 209:	std_dc_chrominance_nrcodes	[1]{16}
+	 *	 225:	std_dc_chrominance_values	[1]{12}
+	 *	 237:	0							[1]{1}
+	 *	 238:	std_ac_chrominance_nrcodes	[1]{16}
+	 *	 254:	std_ac_chrominance_values	[1]{162}
+	 *	 416:	YDC_HT						[1,2]{12}
+	 *	 452:	YAC_HT						[1,2]{251}
+	 *	1205:	UVDC_HT						[1,2]{12}
+	 *	1241:	UVAC_HT						[1,2]{251}
+	 *	1994:
+	 */
 	public static inline function createHuffmanTable():ByteArray {
 
 		var mem:ByteArray = Memory.memory;
@@ -221,10 +188,10 @@ private class TMP {
 			Memory.setI32( 254 + ( i << 2 ), arr[ i ] );
 		} while ( ++i < 41 );
 
-		computeHuffmanTable(   0, 416 );	// YDC_HT
-		computeHuffmanTable(  29, 452 );	// YAC_HT
-		computeHuffmanTable( 208, 1205 );	// UVDC_HT
-		computeHuffmanTable( 237, 1241 );	// UVAC_HT
+		TMP.computeHuffmanTable(   0, 416 );	// YDC_HT
+		TMP.computeHuffmanTable(  29, 452 );	// YAC_HT
+		TMP.computeHuffmanTable( 208, 1205 );	// UVDC_HT
+		TMP.computeHuffmanTable( 237, 1241 );	// UVAC_HT
 
 		bytes.position = 0;
 		Memory.memory = mem;
@@ -233,7 +200,8 @@ private class TMP {
 	}
 
 	/**
-	 * @private
+	 *	     0:	cat							[1,2]{65534}
+	 *	196605:
 	 */
 	public static inline function createCategoryTable():ByteArray {
 
@@ -281,17 +249,21 @@ private class TMP {
 
 		return bytes;
 	}
-	
+
+}
+
+/**
+ * @private
+ */
+private class TMP {
+
 	//--------------------------------------------------------------------------
 	//
-	//  Private class methods
+	//  Class methods
 	//
 	//--------------------------------------------------------------------------
 
-	/**
-	 * @private
-	 */
-	private static inline function computeHuffmanTable(toRead:UInt, toWrite:UInt):Void {
+	public static inline function computeHuffmanTable(toRead:UInt, toWrite:UInt):Void {
 
 		var codeValue:Int = 0;
 		var pos_in_table:Int = 0;

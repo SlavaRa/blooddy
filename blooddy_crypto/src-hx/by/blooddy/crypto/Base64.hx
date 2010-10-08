@@ -23,36 +23,6 @@ class Base64 {
 	//--------------------------------------------------------------------------
 
 	public static function encode(bytes:ByteArray, insertNewLines:Bool=false):String {
-		return TMP.encode( bytes, insertNewLines );
-	}
-
-	public static function decode(str:String):ByteArray {
-		return TMP.decode( str );
-	}
-
-}
-
-/**
- * @private
- */
-private class TMP {
-
-	//--------------------------------------------------------------------------
-	//
-	//  Class variables
-	//
-	//--------------------------------------------------------------------------
-
-	private static inline var Z1:UInt = 64;
-	private static inline var Z2:UInt = 128;
-
-	//--------------------------------------------------------------------------
-	//
-	//  Class methods
-	//
-	//--------------------------------------------------------------------------
-
-	public static inline function encode(bytes:ByteArray, insertNewLines:Bool):String {
 
 		var len:UInt = bytes.length;
 
@@ -63,7 +33,7 @@ private class TMP {
 		tmp.writeBytes( bytes );
 		
 		var rest:UInt = len % 3;
-		var bytesLength:UInt = Z1 + len - rest;
+		var bytesLength:UInt = TMP.Z1 + len - rest;
 
 		var resultLength:UInt = ( Std.int( len / 3 ) << 2 ) + ( rest > 0 ? 4 : 0 );
 		tmp.length += resultLength + ( insertNewLines ? Std.int( resultLength / 76 ) : 0 );
@@ -71,8 +41,8 @@ private class TMP {
 		if ( tmp.length < 1024 ) tmp.length = 1024;
 		Memory.memory = tmp;
 
-		var i:UInt = Z1;
-		var j:UInt = Z1 + len;
+		var i:UInt = TMP.Z1;
+		var j:UInt = TMP.Z1 + len;
 		var chunk:Int;
 
 		while ( i < bytesLength ) {
@@ -89,7 +59,7 @@ private class TMP {
 			);
 			j += 4;
 
-			if ( insertNewLines && ( i - Z1 ) % 57 == 0 ) {
+			if ( insertNewLines && ( i - TMP.Z1 ) % 57 == 0 ) {
 				Memory.setByte( j++, 10 );
 			}
 
@@ -117,7 +87,7 @@ private class TMP {
 
 		}
 
-		tmp.position = Z1 + len;
+		tmp.position = TMP.Z1 + len;
 		var result:String = tmp.readUTFBytes( tmp.bytesAvailable );
 
 		Memory.memory = mem;
@@ -128,7 +98,7 @@ private class TMP {
 
 	}
 
-	public static inline function decode(str:String):ByteArray {
+	public static function decode(str:String):ByteArray {
 
 		var len:UInt = Std.int( str.length * 0.75 );
 		var mem:ByteArray = Memory.memory;
@@ -142,10 +112,10 @@ private class TMP {
 		if ( tmp.length < 1024 ) tmp.length = 1024;
 		Memory.memory = tmp;
 
-		var insertNewLines:Bool = Memory.getByte( Z2 + 76 ) == 10;
+		var insertNewLines:Bool = Memory.getByte( TMP.Z2 + 76 ) == 10;
 
-		var i:UInt = Z2;
-		var j:UInt = Z2;
+		var i:UInt = TMP.Z2;
+		var j:UInt = TMP.Z2;
 
 		var a:Int;
 		var b:Int;
@@ -154,10 +124,10 @@ private class TMP {
 
 		while ( i < bytesLength ) {
 
-			a = getByte( i++ );
-			b = getByte( i++ );
-			c = getByte( i++ );
-			d = getByte( i++ );
+			a = TMP.getByte( i++ );
+			b = TMP.getByte( i++ );
+			c = TMP.getByte( i++ );
+			d = TMP.getByte( i++ );
 
 			Memory.setByte( j++, ( a << 2 ) | ( b >> 4 ) );
 			Memory.setByte( j++, ( b << 4 ) | ( c >> 2 ) );
@@ -171,60 +141,63 @@ private class TMP {
 
 		if ( i != bytesLength ) Error.throwError( VerifyError, 1509 );
 
-		a = getByte( i++ );
-		b = getByte( i++ );
+		a = TMP.getByte( i++ );
+		b = TMP.getByte( i++ );
 		Memory.setByte( j++, ( a << 2 ) | ( b >> 4 ) );
 
-		c = getByte2( i++ );
+		c = TMP.getByte( i++, true );
 		if ( c != -1 ) {
 			Memory.setByte( j++, ( b << 4 ) | ( c >> 2 ) );
-			d = getByte2( i++ );
+			d = TMP.getByte( i++, true );
 			if ( d != -1 ) {
 				Memory.setByte( j++, ( c << 6 ) | d );
 			}
 		} else {
-			if ( getByte2( i++ ) != -1 ) Error.throwError( VerifyError, 1509 );
+			if ( TMP.getByte( i++, true ) != -1 ) Error.throwError( VerifyError, 1509 );
 		}
 
 		Memory.memory = mem;
 
 		var bytes:ByteArray = new ByteArray();
-		bytes.writeBytes( tmp, Z2, j - Z2 );
+		bytes.writeBytes( tmp, TMP.Z2, j - TMP.Z2 );
 		bytes.position = 0;
 
 		//tmp.clear();
 
 		return bytes;
+
 	}
+
+}
+
+/**
+ * @private
+ */
+private class TMP {
 
 	//--------------------------------------------------------------------------
 	//
-	//  Private class methods
+	//  Class constants
 	//
 	//--------------------------------------------------------------------------
 
-	/**
-	 * @private
-	 */
-	private static inline function getByte(index:UInt):Int {
-		var v:Int = Memory.getByte( index );
-		if ( v & 0x80 != 0 ) Error.throwError( VerifyError, 1509 );
-		v = Memory.getByte( v );
-		if ( v == 0x40 ) Error.throwError( VerifyError, 1509 );
-		return v;
-	}
+	public static inline var Z1:UInt = 64;
+	public static inline var Z2:UInt = 128;
 
-	/**
-	 * @private
-	 */
-	private static inline function getByte2(index:UInt):Int {
+	//--------------------------------------------------------------------------
+	//
+	//  Class methods
+	//
+	//--------------------------------------------------------------------------
+
+	public static inline function getByte(index:UInt, ?ext:Bool=false):Int {
 		var v:Int = Memory.getByte( index );
 		if ( v & 0x80 != 0 ) Error.throwError( VerifyError, 1509 );
-		if ( v != 61 ) {
+		if ( ext && v == 61 ) {
+			v = -1;
+		} else {
 			v = Memory.getByte( v );
 			if ( v == 0x40 ) Error.throwError( VerifyError, 1509 );
-		} else {
-			v = -1;
 		}
 		return v;
 	}

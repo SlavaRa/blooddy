@@ -18,6 +18,12 @@ import flash.utils.ByteArray;
  */
 class JSONDecoder {
 
+	//--------------------------------------------------------------------------
+	//
+	//  Class methods
+	//
+	//--------------------------------------------------------------------------
+
 	public static function decode(value:String):Dynamic {
 
 		if ( value == null ) Error.throwError( TypeError, 2007, 'value' );
@@ -43,12 +49,11 @@ class JSONDecoder {
 
 				var position:UInt = _position - 1;
 				
-				var readValue:ByteArray->Dynamic = null;
+				var readValue:ByteArray->UInt->Dynamic = null;
 
-				readValue = function(_memory:ByteArray):Dynamic {
+				readValue = function(_memory:ByteArray, _position:UInt):Dynamic {
 
 					var pos:UInt;
-					var	_position:UInt = position;
 					var result:Dynamic = untyped __global__["undefined"];
 
 					var	_tk:UInt = 0,
@@ -115,7 +120,7 @@ class JSONDecoder {
 								if ( _tk == TMP.STRING_LITERAL || _tk == TMP.IDENTIFIER ) {
 									key = _tt;
 								} else if ( _tk == TMP.NUMBER_LITERAL ) {
-									key = ( untyped __global__["parseFloat"]( _tt ) ).toString();
+									key = untyped __global__["parseFloat"]( _tt ).toString();
 								} else if ( _tk == TMP.UNDEFINED ) {
 									key = 'undefined';
 								} else if ( _tk == TMP.NAN ) {
@@ -126,8 +131,7 @@ class JSONDecoder {
 
 								TMP.readFixSimpleToken( _position, TMP.COLON );
 
-								position = _position;
-								untyped { o[ key ] = readValue( _memory ); }
+								untyped { o[ key ] = readValue( _memory, _position ); }
 								_position = position;
 
 								TMP.readToken( _memory, _position, _tk, _tt );
@@ -160,8 +164,7 @@ class JSONDecoder {
 
 								_position = pos;
 
-								position = _position;
-								arr.push( readValue( _memory ) );
+								arr.push( readValue( _memory, _position ) );
 								_position = position;
 
 								TMP.readToken( _memory, _position, _tk, _tt );
@@ -184,9 +187,10 @@ class JSONDecoder {
 
 				}
 
-				result = readValue( tmp );
+				result = readValue( tmp, position );
+				_position = position;
 
-				TMP.readFixSimpleToken( position, TMP.EOF );
+				TMP.readFixSimpleToken( _position, TMP.EOF );
 
 			}
 			
@@ -260,7 +264,9 @@ private class TMP {
 						continue;
 					} else if ( c == Char.ASTERISK ) {	// /*
 						_position -= 2;
-						if ( MemoryScanner.skipBlockComment( _position ) != _position ) {
+						c = _position;
+						MemoryScanner.skipBlockComment( _position );
+						if ( c != _position ) {
 							continue;
 						}
 					}

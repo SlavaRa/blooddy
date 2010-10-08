@@ -187,28 +187,9 @@ package by.blooddy.crypto.serialization {
 								
 								if ( value.constructor !== Object ) {
 									
-									var xml:XML = describeType( value );
-									
-									var list:XMLList;
 									var v:*;
-									for each ( n in xml.*.(
-											n = name(),
-											(
-												(
-													name() == 'accessor' &&
-													@access.charAt( 0 ) == 'r'
-												) ||
-												n == 'variable' ||
-												n == 'constant'
-											) &&
-											attribute( 'uri' ).length() <= 0 &&
-											(
-												list = metadata,
-												list.length() <= 0 ||
-												list.( @name == 'Transient' ).length() <= 0
-											)
-										).@name
-									) {
+
+									for each ( n in SerializationHelper.getPropertyNames( value ) ) {
 										try {
 
 											v = value[ n ];

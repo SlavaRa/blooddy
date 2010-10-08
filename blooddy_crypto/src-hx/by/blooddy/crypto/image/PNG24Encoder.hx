@@ -24,24 +24,7 @@ class PNG24Encoder {
 	//
 	//--------------------------------------------------------------------------
 
-	public static function encode(image:BitmapData, ?filter:UInt=0):ByteArray {
-		return TMP.encode( image, filter );
-	}
-
-}
-
-/**
- * @private
- */
-private class TMP {
-
-	//--------------------------------------------------------------------------
-	//
-	//  Class methods
-	//
-	//--------------------------------------------------------------------------
-
-	public static inline function encode(image:BitmapData, filter:UInt):ByteArray {
+	public static function encode(image:BitmapData, ?filter:Int=0):ByteArray {
 
 		var mem:ByteArray = Memory.memory;
 
@@ -67,8 +50,8 @@ private class TMP {
 		else chunk.length = len2;
 		Memory.memory = chunk;
 		if ( len < 17 ) Memory.fill( len, 17, 0x00 ); // если битмапка очень маленькая, то мы случайно могли наследить
-		if ( transparent )	writeIDATContent( image, filter, len, true );
-		else				writeIDATContent( image, filter, len, false );
+		if ( transparent )	TMP.writeIDATContent( image, filter, len, true );
+		else				TMP.writeIDATContent( image, filter, len, false );
 		Memory.memory = mem;
 		chunk.length = len;
 		chunk.compress();
@@ -89,12 +72,23 @@ private class TMP {
 		bytes.position = 0;
 
 		return bytes;
+
 	}
 
-	/**
-	 * @private
-	 */
-	private static inline function writeIDATContent(image:BitmapData, filter:UInt, offset:UInt, transparent:Bool):Void {
+}
+
+/**
+ * @private
+ */
+private class TMP {
+
+	//--------------------------------------------------------------------------
+	//
+	//  Class methods
+	//
+	//--------------------------------------------------------------------------
+
+	public static inline function writeIDATContent(image:BitmapData, filter:Int, len:UInt, transparent:Bool):Void {
 		var width:UInt = image.width;
 		var height:UInt = image.height;
 
@@ -182,7 +176,7 @@ private class TMP {
 			
 			case PNGEncoderHelper.UP:
 				do {
-					j = offset;
+					j = len;
 					Memory.setByte( i++, PNGEncoderHelper.UP );
 					x = 0;
 					do {
@@ -201,7 +195,7 @@ private class TMP {
 			
 			case PNGEncoderHelper.AVERAGE:
 				do {
-					j = offset;
+					j = len;
 					Memory.setByte( i++, PNGEncoderHelper.AVERAGE );
 					if ( transparent ) {
 						a0 = 0;
@@ -243,7 +237,7 @@ private class TMP {
 			case PNGEncoderHelper.PAETH:
 				do {
 
-					j = offset;
+					j = len;
 					Memory.setByte( i++, PNGEncoderHelper.PAETH );
 					if ( transparent ) {
 						a0 = 0;

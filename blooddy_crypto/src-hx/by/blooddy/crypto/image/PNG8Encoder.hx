@@ -27,27 +27,11 @@ class PNG8Encoder {
 	//
 	//--------------------------------------------------------------------------
 
-	public static function encode(image:BitmapData, ?palette:IPalette=null, ?filter:UInt=0):ByteArray {
+	public static function encode(image:BitmapData, ?palette:IPalette=null, ?filter:Int=0):ByteArray {
+
 		if ( palette == null ) {
 			palette = new MedianCutPalette( image );
 		}
-		return TMP.encode( image, palette, filter );
-	}
-
-}
-
-/**
- * @private
- */
-private class TMP {
-	
-	//--------------------------------------------------------------------------
-	//
-	//  Class methods
-	//
-	//--------------------------------------------------------------------------
-
-	public static inline function encode(image:BitmapData, palette:IPalette, filter:UInt):ByteArray {
 
 		var mem:ByteArray = Memory.memory;
 
@@ -72,9 +56,9 @@ private class TMP {
 		// PLTE
 		// tRNS
 		if ( transparent ) {
-			writePalette( bytes, chunk, palette, true );
+			TMP.writePalette( bytes, chunk, palette, true );
 		} else {
-			writePalette( bytes, chunk, palette, false );
+			TMP.writePalette( bytes, chunk, palette, false );
 		}
 
 		// IDAT
@@ -82,11 +66,11 @@ private class TMP {
 		else chunk.length = len2;
 		Memory.memory = chunk;
 		if ( transparent ) {
-			if ( len < 4 + 4 * 256 ) Memory.fill( len, min( 4 + 4 * 256, len2 ), 0x00 ); // мы случайно могли наследить
-			writeIDATContent( image, palette, filter, len, true );
+			if ( len < 4 + 4 * 256 ) Memory.fill( len, TMP.min( 4 + 4 * 256, len2 ), 0x00 ); // мы случайно могли наследить
+			TMP.writeIDATContent( image, palette, filter, len, true );
 		} else {
-			if ( len < 4 + 3 * 256 ) Memory.fill( len, min( 4 + 3 * 256, len2 ), 0x00 ); // мы случайно могли наследить
-			writeIDATContent( image, palette, filter, len, false );
+			if ( len < 4 + 3 * 256 ) Memory.fill( len, TMP.min( 4 + 3 * 256, len2 ), 0x00 ); // мы случайно могли наследить
+			TMP.writeIDATContent( image, palette, filter, len, false );
 		}
 		Memory.memory = mem;
 		chunk.length = len;
@@ -110,18 +94,23 @@ private class TMP {
 		bytes.position = 0;
 
 		return bytes;
+
 	}
 
+}
+
+/**
+ * @private
+ */
+private class TMP {
+	
 	//--------------------------------------------------------------------------
 	//
-	//  Private class methods
+	//  Class methods
 	//
 	//--------------------------------------------------------------------------
 
-	/**
-	 * @private
-	 */
-	private static inline function writePalette(bytes:ByteArray, chunk:ByteArray, palette:IPalette, transparent:Bool):Void {
+	public static inline function writePalette(bytes:ByteArray, chunk:ByteArray, palette:IPalette, transparent:Bool):Void {
 		chunk.length = 1024 + 4;
 		Memory.memory = chunk;
 
@@ -159,10 +148,7 @@ private class TMP {
 		}
 	}
 	
-	/**
-	 * @private
-	 */
-	private static inline function writeIDATContent(image:BitmapData, palette:IPalette, filter:UInt, offset:UInt, transparent:Bool):Void {
+	public static inline function writeIDATContent(image:BitmapData, palette:IPalette, filter:Int, len:UInt, transparent:Bool):Void {
 		var width:UInt = image.width;
 		var height:UInt = image.height;
 
@@ -206,7 +192,7 @@ private class TMP {
 
 			case PNGEncoderHelper.UP:
 				do {
-					j = offset;
+					j = len;
 					Memory.setByte( i++, PNGEncoderHelper.UP );
 					x = 0;
 					do {
@@ -221,7 +207,7 @@ private class TMP {
 			
 			case PNGEncoderHelper.AVERAGE:
 				do {
-					j = offset;
+					j = len;
 					Memory.setByte( i++, PNGEncoderHelper.AVERAGE );
 					c0 = 0;
 					x = 0;
@@ -243,7 +229,7 @@ private class TMP {
 			case PNGEncoderHelper.PAETH:
 				do {
 
-					j = offset;
+					j = len;
 					Memory.setByte( i++, PNGEncoderHelper.PAETH );
 					c0 = 0;
 					c2 = 0;
@@ -271,10 +257,7 @@ private class TMP {
 		}
 	}
 
-	/**
-	 * @private
-	 */
-	private static inline function min(v1:UInt, v2:UInt):UInt {
+	public static inline function min(v1:UInt, v2:UInt):UInt {
 		return ( v1 < v2 ? v1 : v2 );
 	}
 
