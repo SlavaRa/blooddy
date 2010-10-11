@@ -28,6 +28,7 @@
       <libraryPathEntry kind="1" linkType="1" path="${FLEXUNIT_LIB_LOCATION}/version4libs/FlexProject/"/>
       <libraryPathEntry kind="1" linkType="1" path="${FLEXUNIT_LOCALE_LOCATION}/version4locale/"/>
       <libraryPathEntry kind="3" linkType="1" path="/blooddy_crypto/bin-debug/blooddy_crypto.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="/blooddy_core/bin-debug/blooddy_core.swc" useDefaultLinkType="false"/>
     </libraryPath>
     <sourceAttachmentPath/>
   </compiler>
