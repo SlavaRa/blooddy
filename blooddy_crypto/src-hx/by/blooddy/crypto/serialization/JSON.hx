@@ -32,7 +32,7 @@ class JSON {
 	public static function encode(value:Dynamic):String {
 
 		var set:Object = XML.settings();
-		XML.setSettings( untyped {
+		XML.setSettings( {
 			ignoreComments: true,
 			ignoreProcessingInstructions: false,
 			ignoreWhitespace: true,
@@ -54,9 +54,9 @@ class JSON {
 		var cvdouble:Class<Float> = untyped __as__( new Vector<Float>(), Object ).constructor;
 		var cvobject:Class<Dynamic> = untyped __as__( new Vector<Dynamic>(), Object ).constructor;
 
-		var writeValue:Dictionary->ByteArray->UInt->Dynamic->Void = null;
+		var writeValue:Dictionary->ByteArray->UInt->Dynamic->Dynamic = null;
 
-		writeValue = function(hash:Dictionary, _memory:ByteArray, _position:UInt, value:Dynamic):Void {
+		writeValue = function(hash:Dictionary, _memory:ByteArray, _position:UInt, value:Dynamic):Dynamic {
 			if ( _memory.bytesAvailable < 2048 ) {
 				_memory.length += 4096;
 			}
@@ -320,16 +320,12 @@ class JSON {
 							
 							do {
 
-								TMP.readToken( _memory, _position, _tk, _tt, 0xE300 );
+								TMP.readToken( _memory, _position, _tk, _tt, 0x9F00 );
 
 								if ( _tk == TMP.STRING_LITERAL || _tk == TMP.IDENTIFIER ) {
 									key = _tt;
 								} else if ( _tk == TMP.NUMBER_LITERAL ) {
 									key = untyped __global__["parseFloat"]( _tt ).toString();
-								} else if ( _tk == TMP.UNDEFINED ) {
-									key = 'undefined';
-								} else if ( _tk == TMP.NAN ) {
-									key = 'NaN';
 								} else {
 									TMP.throwSyntaxError( mem );
 								}

@@ -8,33 +8,9 @@
 			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600">
 	<fx:Script>
 		<![CDATA[
-			import by.blooddy.crypto.CRC32Test;
-			import by.blooddy.crypto.serialization.JSONTest;
-			import by.blooddy.crypto.serialization.JSONEncoderTest;
 			import by.blooddy.crypto.blooddy_crypto_test;
-			import by.blooddy.crypto.serialization.JSONDecoderTest;
-			import by.blooddy.crypto.SHA1Test;
-			import by.blooddy.crypto.MD5Test;
-			
-			private var by_blooddy_crypto_CRC32Test_obj:by.blooddy.crypto.CRC32Test;
-			
-			
-			private var by_blooddy_crypto_serialization_JSONTest_obj:by.blooddy.crypto.serialization.JSONTest;
-			
-			
-			private var by_blooddy_crypto_serialization_JSONEncoderTest_obj:by.blooddy.crypto.serialization.JSONEncoderTest;
-			
 			
 			private var by_blooddy_crypto_blooddy_crypto_test_obj:by.blooddy.crypto.blooddy_crypto_test;
-			
-			
-			private var by_blooddy_crypto_serialization_JSONDecoderTest_obj:by.blooddy.crypto.serialization.JSONDecoderTest;
-			
-			
-			private var by_blooddy_crypto_SHA1Test_obj:by.blooddy.crypto.SHA1Test;
-			
-			
-			private var by_blooddy_crypto_MD5Test_obj:by.blooddy.crypto.MD5Test;
 			
 		]]>
 	</fx:Script>

@@ -8,7 +8,6 @@
     <classEntry path="by.blooddy.crypto.image.palette.IPalette"/>
     <classEntry path="by.blooddy.crypto.image.palette.LevelsPalette"/>
     <classEntry path="by.blooddy.crypto.image.palette.MedianCutPalette"/>
-    <classEntry path="by.blooddy.crypto.serialization.JSONEncoder_"/>
     <classEntry path="by.blooddy.crypto.serialization.SerializationHelper"/>
   </includeClasses>
   <includeResources/>

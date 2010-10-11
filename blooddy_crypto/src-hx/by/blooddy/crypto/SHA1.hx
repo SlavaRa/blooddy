@@ -47,7 +47,7 @@ class SHA1 {
 		Memory.memory = tmp;
 
 		Memory.setI32( TMP.Z0 + ( ( i >>> 5 ) << 2 ), Memory.getI32( TMP.Z0 + ( ( i >>> 5 ) << 2 ) ) | ( 0x80 << ( i % 32 ) ) );
-		TMP.setBI32( bytesLength, i );
+		Memory.setBI32( bytesLength, i );
 
 		var h0:Int = 0x67452301;
 		var h1:Int = 0xEFCDAB89;
@@ -62,7 +62,6 @@ class SHA1 {
 		var e:Int;
 
 		var t:UInt;
-		var v:Int;
 
 		i = TMP.Z0;
 		do {
@@ -96,11 +95,11 @@ class SHA1 {
 		tmp.position = 0;
 		tmp.writeUTFBytes( '0123456789abcdef' );
 
-		TMP.setBI32( 16, h0 );
-		TMP.setBI32( 20, h1 );
-		TMP.setBI32( 24, h2 );
-		TMP.setBI32( 28, h3 );
-		TMP.setBI32( 32, h4 );
+		Memory.setBI32( 16, h0 );
+		Memory.setBI32( 20, h1 );
+		Memory.setBI32( 24, h2 );
+		Memory.setBI32( 28, h3 );
+		Memory.setBI32( 32, h4 );
 
 		b = 36 - 1;
 		i = 16;
@@ -181,13 +180,6 @@ private class TMP {
 
 		} while ( t < max * 4 );
 
-	}
-
-	public static inline function setBI32(address:UInt, value:Int):Void {
-		Memory.setByte( address + 0, value >> 24 );
-		Memory.setByte( address + 1, value >> 16 );
-		Memory.setByte( address + 2, value >>  8 );
-		Memory.setByte( address + 3, value       );
 	}
 
 }
