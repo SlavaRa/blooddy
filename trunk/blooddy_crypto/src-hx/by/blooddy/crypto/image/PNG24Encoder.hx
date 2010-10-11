@@ -26,6 +26,9 @@ class PNG24Encoder {
 
 	public static function encode(image:BitmapData, ?filter:Int=0):ByteArray {
 
+		if ( image == null ) Error.throwError( TypeError, 2007, 'image' );
+		if ( filter < 0 || filter > 4 ) Error.throwError( ArgumentError, 2008, 'filter' );
+
 		var mem:ByteArray = Memory.memory;
 
 		var transparent:Bool = ImageHelper.isTransparent( image );
@@ -285,10 +288,6 @@ private class TMP {
 
 					} while ( ++x < width );
 				} while ( ++y < height );
-
-
-			default:
-				Error.throwError( ArgumentError, 2008, 'filter' );
 
 		}
 

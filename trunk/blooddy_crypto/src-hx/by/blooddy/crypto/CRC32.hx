@@ -26,38 +26,18 @@ class CRC32 {
 		var len:UInt = bytes.length;
 		if ( len > 0 ) {
 
-			len += TMP.Z0;
+			len += 1024;
 			
 			var mem:ByteArray = Memory.memory;
 
-			var tmp:ByteArray = new ByteArray();
-			tmp.length = TMP.Z0;
-
-			Memory.memory = tmp;
-
-			var c:UInt;
-			var j:UInt;
-			var i:UInt = 0;
-			do {
-				c = i;
-				j = 0;
-				do {
-					if ( c & 1 == 1 ) {
-						c = 0xEDB88320 ^ ( c >>> 1 );
-					} else {
-						c >>>= 1;
-					}
-				} while ( ++j < 8 );
-				Memory.setI32( i << 2, c );
-			} while ( ++i < 256 );
-
-			c = 0xFFFFFFFF;
-
-			tmp.position = TMP.Z0;
-			tmp.length = len;
+			var tmp:ByteArray = CRC32Table.getTable();
+			tmp.position = 1024;
 			tmp.writeBytes( bytes );
 
-			i = TMP.Z0;
+			Memory.memory = tmp;
+			
+			var c:UInt = 0xFFFFFFFF;
+			var i:UInt = 1024;
 			do {
 				c = Memory.getI32( ( ( c ^ Memory.getByte( i ) & 0xFF ) << 2 ) ) ^ ( c >>> 8 );
 			} while ( ++i < len );
@@ -75,20 +55,5 @@ class CRC32 {
 		}
 
 	}
-
-}
-
-/**
- * @private
- */
-private class TMP {
-
-	//--------------------------------------------------------------------------
-	//
-	//  Class constants
-	//
-	//--------------------------------------------------------------------------
-
-	public static inline var Z0:UInt = 256 * 4;
 
 }

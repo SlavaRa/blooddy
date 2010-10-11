@@ -4,15 +4,15 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.crypto.serialization;
+package by.blooddy.crypto;
 
-import flash.xml.XMLList;
+import flash.utils.ByteArray;
 
 /**
  * @author	BlooDHounD
  * @version	1.0
  */
-extern class SerializationHelper {
+extern class CRC32Table {
 
 	//--------------------------------------------------------------------------
 	//
@@ -20,6 +20,6 @@ extern class SerializationHelper {
 	//
 	//--------------------------------------------------------------------------
 
-	public static function getPropertyNames(o:Object):XMLList;
+	public static function getTable():ByteArray;
 
 }

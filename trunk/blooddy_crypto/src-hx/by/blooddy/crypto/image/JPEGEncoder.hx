@@ -8,6 +8,7 @@ package by.blooddy.crypto.image;
 
 import by.blooddy.system.Memory;
 import flash.display.BitmapData;
+import flash.Error;
 import flash.utils.ByteArray;
 
 /**
@@ -23,6 +24,8 @@ class JPEGEncoder {
 	//--------------------------------------------------------------------------
 
 	public static inline function encode(image:BitmapData, ?quality:UInt=60):ByteArray {
+
+		if ( image == null ) Error.throwError( TypeError, 2007, 'image' );
 
 		var mem:ByteArray = Memory.memory;
 

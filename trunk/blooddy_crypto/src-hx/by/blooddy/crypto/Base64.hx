@@ -124,36 +124,36 @@ class Base64 {
 
 		while ( i < bytesLength ) {
 
-			a = TMP.getByte( ++i );
-			b = TMP.getByte( ++i );
-			c = TMP.getByte( ++i );
-			d = TMP.getByte( ++i );
+			a = TMP.getByte( mem, ++i );
+			b = TMP.getByte( mem, ++i );
+			c = TMP.getByte( mem, ++i );
+			d = TMP.getByte( mem, ++i );
 
 			Memory.setByte( ++j, ( a << 2 ) | ( b >> 4 ) );
 			Memory.setByte( ++j, ( b << 4 ) | ( c >> 2 ) );
 			Memory.setByte( ++j, ( c << 6 ) |   d        );
 			
 			if ( insertNewLines && ( j - TMP.Z2 + 1 ) % 57 == 0 && Memory.getByte( ++i ) != 10 ) {
-				Error.throwError( VerifyError, 1509 );
+				TMP.throwError( mem );
 			}
 
 		}
 
-		if ( i != bytesLength ) Error.throwError( VerifyError, 1509 );
+		if ( i != bytesLength ) TMP.throwError( mem );
 
-		a = TMP.getByte( ++i );
-		b = TMP.getByte( ++i );
+		a = TMP.getByte( mem, ++i );
+		b = TMP.getByte( mem, ++i );
 		Memory.setByte( ++j, ( a << 2 ) | ( b >> 4 ) );
 
-		c = TMP.getByte( ++i, true );
+		c = TMP.getByte( mem, ++i, true );
 		if ( c != -1 ) {
 			Memory.setByte( ++j, ( b << 4 ) | ( c >> 2 ) );
-			d = TMP.getByte( ++i, true );
+			d = TMP.getByte( mem, ++i, true );
 			if ( d != -1 ) {
 				Memory.setByte( ++j, ( c << 6 ) | d );
 			}
 		} else {
-			if ( TMP.getByte( ++i, true ) != -1 ) Error.throwError( VerifyError, 1509 );
+			if ( TMP.getByte( mem, ++i, true ) != -1 ) TMP.throwError( mem );
 		}
 
 		Memory.memory = mem;
@@ -190,16 +190,21 @@ private class TMP {
 	//
 	//--------------------------------------------------------------------------
 
-	public static inline function getByte(i:UInt, ?ext:Bool=false):Int {
+	public static inline function getByte(mem:ByteArray, i:UInt, ?ext:Bool=false):Int {
 		var v:Int = Memory.getByte( i );
-		if ( v & 0x80 != 0 ) Error.throwError( VerifyError, 1509 );
+		if ( v & 0x80 != 0 ) throwError( mem );
 		if ( ext && v == 61 ) {
 			v = -1;
 		} else {
 			v = Memory.getByte( v );
-			if ( v == 0x40 ) Error.throwError( VerifyError, 1509 );
+			if ( v == 0x40 ) throwError( mem );
 		}
 		return v;
 	}
 
+	public static inline function throwError(mem:ByteArray):Void {
+		Memory.memory = mem;
+		Error.throwError( VerifyError, 1509 );
+	}
+	
 }
