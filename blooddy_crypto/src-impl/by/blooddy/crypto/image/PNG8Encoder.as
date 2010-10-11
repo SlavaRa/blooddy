@@ -43,6 +43,7 @@ package by.blooddy.crypto.image {
 		 *
 		 * @return					The sequence of bytes containing the encoded image.
 		 *
+		 * @throws	TypeError		
 		 * @throws	ArgumentError	No such filter.
 		 *
 		 * @see 					by.blooddy.crypto.image.palette.IPalette

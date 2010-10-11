@@ -11,7 +11,6 @@ import by.blooddy.system.Memory;
 import flash.display.BitmapData;
 import flash.Error;
 import flash.utils.ByteArray;
-import flash.utils.Endian;
 import flash.Vector;
 
 /**
@@ -27,7 +26,7 @@ class MedianCutPaletteHelper {
 	//--------------------------------------------------------------------------
 
 	public static function createTable(image:BitmapData, ?maxColors:UInt = 256):Array<Dynamic> {
-		if ( image == null ) Error.throwError( TypeError, 2007 );
+		if ( image == null ) Error.throwError( TypeError, 2007, 'image' );
 		if ( maxColors < 2 || maxColors > 256 ) Error.throwError( RangeError, 2006 );
 		if ( ImageHelper.isTransparent( image ) ) {
 			return TMP.createTable( image, maxColors, true );

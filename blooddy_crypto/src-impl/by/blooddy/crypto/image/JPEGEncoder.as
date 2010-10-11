@@ -29,11 +29,13 @@ package by.blooddy.crypto.image {
 		/**
 		 * Creates a JPEG image from the specified <code>BitmapData</code>.
 		 *
-		 * @param	image	The <code>BitmapData</code> to be encoded.
+		 * @param	image		The <code>BitmapData</code> to be encoded.
 		 *
-		 * @param	quality	The compression level, possible values are 1 through 100 inclusive.
+		 * @param	quality		The compression level, possible values are 1 through 100 inclusive.
 		 *
-		 * @return 			a <code>ByteArray</code> representing the JPEG encoded image data.
+		 * @return 				a <code>ByteArray</code> representing the JPEG encoded image data.
+		 *
+		 * @throws	TypeError
 		 */
 		public static native function encode(image:BitmapData, quality:uint=60):ByteArray;
 		

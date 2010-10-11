@@ -7,6 +7,7 @@
 package by.blooddy.crypto.image;
 
 import by.blooddy.crypto.CRC32;
+import flash.Error;
 import flash.utils.ByteArray;
 
 /**

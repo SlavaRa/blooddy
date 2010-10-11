@@ -29,6 +29,9 @@ class PNG8Encoder {
 
 	public static function encode(image:BitmapData, ?palette:IPalette=null, ?filter:Int=0):ByteArray {
 
+		if ( image == null ) Error.throwError( TypeError, 2007, 'image' );
+		if ( filter < 0 || filter > 4 ) Error.throwError( ArgumentError, 2008, 'filter' );
+
 		if ( palette == null ) {
 			palette = new MedianCutPalette( image );
 		}
@@ -249,10 +252,6 @@ private class TMP {
 
 					} while ( ++x < width );
 				} while ( ++y < height );
-
-
-			default:
-				Error.throwError( ArgumentError, 2008, 'filter' );
 
 		}
 	}
