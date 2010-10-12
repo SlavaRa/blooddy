@@ -110,5 +110,12 @@ class Memory {
 			setByte( i, value );
 		} while ( ++i < end ) ;
 	}
-	
+
+	public static inline function setBI32(address:UInt, value:Int):Void {
+		setByte( address + 0, value >> 24 );
+		setByte( address + 1, value >> 16 );
+		setByte( address + 2, value >>  8 );
+		setByte( address + 3, value       );
+	}
+
 }

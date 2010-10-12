@@ -22,6 +22,8 @@ package by.blooddy.crypto {
 		public var crc32:CRC32Test;
 		public var md5:MD5Test;
 		public var sha1:SHA1Test;
+		public var sha256:SHA256Test;
+		public var sha224:SHA224Test;
 		public var json:JSONTest;
 
 	}

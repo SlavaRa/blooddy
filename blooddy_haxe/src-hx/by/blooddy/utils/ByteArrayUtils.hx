@@ -14,6 +14,12 @@ import flash.utils.ByteArray;
  */
 class ByteArrayUtils {
 
+	//--------------------------------------------------------------------------
+	//
+	//  Class methods
+	//
+	//--------------------------------------------------------------------------
+
 	public static inline function createByteArray(?length:UInt=0):ByteArray {
 		var result:ByteArray = new ByteArray();
 		result.length = length;

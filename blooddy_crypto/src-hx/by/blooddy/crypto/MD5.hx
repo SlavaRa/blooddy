@@ -8,6 +8,7 @@ package by.blooddy.crypto;
 
 import by.blooddy.system.Memory;
 import by.blooddy.utils.ByteArrayUtils;
+import by.blooddy.utils.IntUtils;
 import flash.utils.ByteArray;
 
 /**
@@ -155,7 +156,7 @@ class MD5 {
 			a = Memory.getByte( i );
 			Memory.setByte( ++b, Memory.getByte( a >>> 4 ) );
 			Memory.setByte( ++b, Memory.getByte( a & 0xF ) );
-		} while ( ++i < 32 );
+		} while ( ++i < 16 + 4 * 4 );
 
 		tmp.position = 32;
 
@@ -210,7 +211,7 @@ private class TMP {
 	 */
 	public static inline function FF(a:Int, b:Int, c:Int, d:Int, x:Int, s:Int, t:Int):Int {
 		a += ( ( b & c ) | ( ( ~b ) & d ) ) + x + t;
-		return rol( a, s ) +  b;
+		return IntUtils.rol( a, s ) +  b;
 	}
 
 	/**
@@ -218,7 +219,7 @@ private class TMP {
 	 */
 	public static inline function GG(a:Int, b:Int, c:Int, d:Int, x:Int, s:Int, t:Int):Int {
 		a += ( ( b & d ) | ( c & ( ~d ) ) ) + x + t;
-		return rol( a, s ) +  b;
+		return IntUtils.rol( a, s ) +  b;
 	}
 
 	/**
@@ -226,7 +227,7 @@ private class TMP {
 	 */
 	public static inline function HH(a:Int, b:Int, c:Int, d:Int, x:Int, s:Int, t:Int):Int {
 		a += ( b ^ c ^ d ) + x + t;
-		return rol( a, s ) +  b;
+		return IntUtils.rol( a, s ) +  b;
 	}
 
 	/**
@@ -234,21 +235,7 @@ private class TMP {
 	 */
 	public static inline function II(a:Int, b:Int, c:Int, d:Int, x:Int, s:Int, t:Int):Int {
 		a += ( c ^ ( b | ( ~d ) ) ) + x + t;
-		return rol( a, s ) +  b;
-	}
-
-	//--------------------------------------------------------------------------
-	//
-	//  Private class methods
-	//
-	//--------------------------------------------------------------------------
-
-	/**
-	 * @private
-	 * rotation is separate from addition to prevent recomputation
-	 */
-	private static inline function rol(a:Int, s:Int):Int {
-		return ( a << s ) | ( a >>> ( 32 - s ) );
+		return IntUtils.rol( a, s ) +  b;
 	}
 
 }

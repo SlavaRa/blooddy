@@ -17,6 +17,8 @@ import by.blooddy.crypto.image.PNG8Encoder;
 import by.blooddy.crypto.MD5;
 import by.blooddy.crypto.serialization.JSON;
 import by.blooddy.crypto.SHA1;
+import by.blooddy.crypto.SHA224;
+import by.blooddy.crypto.SHA256;
 
 /**
  * @author	BlooDHounD
@@ -32,6 +34,8 @@ class Main {
 
 	static function main() {
 		SHA1;
+		SHA256;
+		SHA224;
 		MD5;
 		Base64;
 		CRC32;
