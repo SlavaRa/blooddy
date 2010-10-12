@@ -8,6 +8,7 @@ package by.blooddy.crypto;
 
 import by.blooddy.system.Memory;
 import by.blooddy.utils.ByteArrayUtils;
+import by.blooddy.utils.IntUtils;
 import flash.utils.ByteArray;
 
 /**
@@ -38,7 +39,7 @@ class SHA1 {
 		var bytesLength:UInt = TMP.Z0 + ( ( ( ( ( i + 64 ) >>> 9 ) << 4 ) + 15 ) << 2 ); // длинна для подсчёта в блоках
 
 		// копируем массив
-		var tmp:ByteArray = ByteArrayUtils.createByteArray( bytesLength + 4 );
+		var tmp:ByteArray = ByteArrayUtils.createByteArray( TMP.Z0 );
 		tmp.position = TMP.Z0;
 		tmp.writeBytes( bytes );
 
@@ -107,11 +108,11 @@ class SHA1 {
 			a = Memory.getByte( i );
 			Memory.setByte( ++b, Memory.getByte( a >>> 4 ) );
 			Memory.setByte( ++b, Memory.getByte( a & 0xF ) );
-		} while ( ++i < 36 );
+		} while ( ++i < 16 + 5 * 4 );
 
 		tmp.position = 36;
 
-		var result:String = tmp.readUTFBytes( 40 );
+		var result:String = tmp.readUTFBytes( 5 * 8 );
 
 		Memory.memory = mem;
 
@@ -143,38 +144,43 @@ private class TMP {
 	//--------------------------------------------------------------------------
 
 	public static inline function phase(a:Int, b:Int, c:Int, d:Int, e:Int, i:UInt, t:UInt, max:UInt):Void {
-		var v:Int;
+		var w:Int;
 		do {
 
 			if ( max <= 16 ) {
 				// 6.1.a
-				v =	( Memory.getByte( i + t + 0 ) << 24 ) |
+				w =	( Memory.getByte( i + t + 0 ) << 24 ) |
 					( Memory.getByte( i + t + 1 ) << 16 ) |
 					( Memory.getByte( i + t + 2 ) <<  8 ) |
 					  Memory.getByte( i + t + 3 )         ;
 			} else {
 				// 6.1.b
-				v = Memory.getI32( t - 3 * 4 ) ^ Memory.getI32( t - 8 * 4 ) ^ Memory.getI32( t - 14 * 4 ) ^ Memory.getI32( t - 16 * 4 );
-				v = ( v << 1 ) | ( v >>> 31 );
+				w = IntUtils.rol(
+						Memory.getI32( t -  3 * 4 ) ^
+						Memory.getI32( t -  8 * 4 ) ^
+						Memory.getI32( t - 14 * 4 ) ^
+						Memory.getI32( t - 16 * 4 ) ,
+						1
+					);
 			}
-			Memory.setI32( t, v );
+			Memory.setI32( t, w );
 
 			// 6.1.d
 			if ( max <= 20 ) {
-				v += 0x5A827999 + e + ( ( a << 5 ) | ( a >>> 27 ) ) + ( ( b & c ) | ( ~b & d ) );
+				w += 0x5A827999 + e + ( ( a << 5 ) | ( a >>> 27 ) ) + ( ( b & c ) | ( ~b & d ) );
 			} else if ( max <= 40 ) {
-				v += 0x6ED9EBA1 + e + ( ( a << 5 ) | ( a >>> 27 ) ) + ( b ^ c ^ d );
+				w += 0x6ED9EBA1 + e + ( ( a << 5 ) | ( a >>> 27 ) ) + ( b ^ c ^ d );
 			} else if ( max <= 60 ) {
-				v += 0x8F1BBCDC + e + ( ( a << 5 ) | ( a >>> 27 ) ) + ( ( b & c ) | ( b & d ) | ( c & d ) );
+				w += 0x8F1BBCDC + e + ( ( a << 5 ) | ( a >>> 27 ) ) + ( ( b & c ) | ( b & d ) | ( c & d ) );
 			} else if ( max <= 80 ) {
-				v += 0xCA62C1D6 + e + ( ( a << 5 ) | ( a >>> 27 ) ) + ( b ^ c ^ d );
+				w += 0xCA62C1D6 + e + ( ( a << 5 ) | ( a >>> 27 ) ) + ( b ^ c ^ d );
 			}
 
 			e = d;
 			d = c;
 			c = ( b << 30 ) | ( b >>> 2 );
 			b = a;
-			a = v;
+			a = w;
 
 			t += 4;
 

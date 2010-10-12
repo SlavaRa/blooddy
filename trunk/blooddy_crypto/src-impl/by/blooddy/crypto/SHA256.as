@@ -5,20 +5,20 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.crypto {
-
+	
 	import flash.utils.ByteArray;
 	
 	/**
 	 * Encodes and decodes binary data using 
-	 * <a herf="http://www.faqs.org/rfcs/rfc3174.html">SHA-1 (Secure Hash Algorithm)</a> algorithm.
+	 * <a herf="http://www.faqs.org/rfcs/rfc4634.html">SHA-256 (Secure Hash Algorithm)</a> algorithm.
 	 * 
 	 * @author					BlooDHounD
 	 * @version					2.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					03.10.2010 21:07:00
+	 * @created					12.10.2010 18:00:37
 	 */
-	public class SHA1 {
+	public class SHA256 {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -27,7 +27,7 @@ package by.blooddy.crypto {
 		//--------------------------------------------------------------------------
 		
 		/**
-		 * Performs SHA-1 hash algorithm on a String.
+		 * Performs SHA-256 hash algorithm on a String.
 		 *
 		 * @param	str		The string to hash.
 		 *
@@ -38,7 +38,7 @@ package by.blooddy.crypto {
 		public static native function hash(str:String):String;
 		
 		/**
-		 * Performs SHA-1 hash algorithm on a <code>ByteArray</code>.
+		 * Performs SHA-256 hash algorithm on a <code>ByteArray</code>.
 		 *
 		 * @param	data	The <code>ByteArray</code> data to hash.
 		 *

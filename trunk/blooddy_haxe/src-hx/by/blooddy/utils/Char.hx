@@ -12,6 +12,12 @@ package by.blooddy.utils;
  */
 class Char {
 
+	//--------------------------------------------------------------------------
+	//
+	//  Class constants
+	//
+	//--------------------------------------------------------------------------
+
 	public static inline var EOS:UInt =				0;
 
 	public static inline var BACKSPACE:UInt =		8;		// \b

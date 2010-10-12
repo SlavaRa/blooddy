@@ -12,6 +12,10 @@ import flash.Error;
 import flash.Lib;
 import flash.utils.ByteArray;
 
+/**
+ * @author	BlooDHounD
+ * @version	1.0
+ */
 class MemoryScanner {
 
 	//--------------------------------------------------------------------------
