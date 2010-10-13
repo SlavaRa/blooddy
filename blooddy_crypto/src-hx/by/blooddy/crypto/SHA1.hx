@@ -39,7 +39,7 @@ class SHA1 {
 		var bytesLength:UInt = TMP.Z0 + ( ( ( ( ( i + 64 ) >>> 9 ) << 4 ) + 15 ) << 2 ); // длинна для подсчёта в блоках
 
 		// копируем массив
-		var tmp:ByteArray = ByteArrayUtils.createByteArray( TMP.Z0 );
+		var tmp:ByteArray = ByteArrayUtils.createByteArray( bytesLength + 4 );
 		tmp.position = TMP.Z0;
 		tmp.writeBytes( bytes );
 

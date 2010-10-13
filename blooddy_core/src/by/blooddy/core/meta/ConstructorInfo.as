@@ -58,6 +58,11 @@ package by.blooddy.core.meta {
 		 */
 		private var _parameters:Vector.<ParameterInfo>;
 		
+		/**
+		 * @private
+		 */
+		private var _parameters_required:Vector.<ParameterInfo>;
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
@@ -67,8 +72,12 @@ package by.blooddy.core.meta {
 		/**
 		 * @inheritDoc
 		 */
-		public function getParameters():Vector.<ParameterInfo> {
-			return this._parameters.slice();
+		public function getParameters(required:Boolean=false):Vector.<ParameterInfo> {
+			if ( required ) {
+				return this._parameters_required.slice();
+			} else {
+				return this._parameters.slice();
+			}
 		}
 		
 		public override function toXML(local:Boolean=false):XML {
@@ -90,13 +99,18 @@ package by.blooddy.core.meta {
 			var list:XMLList = xml.parameter;
 			if ( list.length() <= 0 ) {
 				this._parameters = _EMPTY_PARAMETERS;
+				this._parameters_required = _EMPTY_PARAMETERS;
 			} else {
 				this._parameters = new Vector.<ParameterInfo>();
+				this._parameters_required = new Vector.<ParameterInfo>();
 				var p:ParameterInfo;
 				for each ( xml in list ) {
 					p = new ParameterInfo();
 					p.parseXML( xml );
 					this._parameters.push( p );
+					if ( !p.optional ) {
+						this._parameters_required.push( p );
+					}
 				}
 			}
 		}

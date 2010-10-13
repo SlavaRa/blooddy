@@ -1,5 +1,9 @@
 <flex-config>
 
+	<compiler>
+		<debug>false</debug>
+	</compiler>
+
 	<includes>
 		<symbol>by.blooddy.crypto.image.JPEGEncoder</symbol>
 		<symbol>by.blooddy.crypto.image.PNG8Encoder</symbol>
