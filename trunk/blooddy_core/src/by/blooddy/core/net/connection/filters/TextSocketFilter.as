@@ -81,16 +81,14 @@ package by.blooddy.core.net.connection.filters {
 					if ( c == 0 ) {
 						bytes.position = 0;
 						data = bytes.readUTFBytes( bytes.length );
-						bytes.length = 0;
 						return this.getCommandFromString( data, io );
 					}
 					bytes.writeByte( c );
 				}
 
-			} catch ( e:Error ) {
+			} finally {
 
 				bytes.length = 0;
-				throw e;
 
 			}
 

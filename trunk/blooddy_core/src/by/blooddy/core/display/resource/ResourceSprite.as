@@ -145,7 +145,7 @@ package by.blooddy.core.display.resource {
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Protected methods
+		//  $protected_rs methods
 		//
 		//--------------------------------------------------------------------------
 
@@ -171,10 +171,19 @@ package by.blooddy.core.display.resource {
 			return int.MIN_VALUE;
 		}
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
+		
 		protected final function hasManager():Boolean {
 			return Boolean( this._manager );
 		}
-		
+
+		/**
+		 * @event	loaderInit
+		 */
 		protected final function loadResourceBundle(bundleName:String, priority:int=0.0):ILoadable {
 			if ( !this._manager ) throw new ArgumentError( 'спрайт не имеет связи с ResourceManager' );
 			var loader:ILoadable = this._manager.loadResourceBundle( bundleName, priority );

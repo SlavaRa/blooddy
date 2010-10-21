@@ -85,7 +85,7 @@ internal function $copyObject(hash:Dictionary, source:Object, target:Object=null
 			try {
 				value = $copyObject( hash, source[ key ] );
 				target[ key ] = value;
-			} catch ( e:Error ) {
+			} catch ( e:* ) {
 			}
 		}
 		for ( key in source ) {
@@ -93,7 +93,7 @@ internal function $copyObject(hash:Dictionary, source:Object, target:Object=null
 				try {
 					value = $copyObject( hash, source[ key ] );
 					target[ key ] = value;
-				} catch ( e:Error ) {
+				} catch ( e:* ) {
 				}
 			}
 		}

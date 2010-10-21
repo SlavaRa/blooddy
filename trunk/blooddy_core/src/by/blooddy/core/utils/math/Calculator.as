@@ -75,22 +75,17 @@ package by.blooddy.core.utils.math {
 		 * @keyword					сalculator.calculate, calculate
 		 */
 		public static function calculate(expression:String, varibles:Object=null):Number {
-			try {
-				_varibles = varibles;
-				expression = "("+expression+")"; // в скобки берём что бы сам вызвал функцию
-				var m:Boolean = false;
-				while ( ( m = _methodExp.test(expression) ) || _bracketExp.test( expression ) ) {
-					if (m) {
-						expression = expression.replace(_methodExp, methodPhase);
-					} else {
-						expression = expression.replace(_bracketExp, bracketPhase);
-					}
+			_varibles = varibles;
+			expression = "("+expression+")"; // в скобки берём что бы сам вызвал функцию
+			var m:Boolean = false;
+			while ( ( m = _methodExp.test(expression) ) || _bracketExp.test( expression ) ) {
+				if (m) {
+					expression = expression.replace(_methodExp, methodPhase);
+				} else {
+					expression = expression.replace(_bracketExp, bracketPhase);
 				}
-				return Number(expression);
-			} catch (e:EvalError) {
-				throw e;
 			}
-			throw new EvalError();
+			return Number(expression);
 		}
 
 		//--------------------------------------------------------------------------

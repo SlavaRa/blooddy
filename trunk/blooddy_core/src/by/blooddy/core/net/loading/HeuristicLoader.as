@@ -286,7 +286,7 @@ package by.blooddy.core.net.loading {
 						);
 						this._contentType = MIME.TEXT;
 						this.clear_input();
-					} catch ( e:Error ) { // не вышло :(
+					} catch ( e:* ) { // не вышло :(
 						this._contentType = MIME.BINARY;
 						this._content = bytes;
 					}
@@ -351,7 +351,8 @@ package by.blooddy.core.net.loading {
 		 * создаёт лоадер для загрузки
 		 */
 		private function create_loader(url:Boolean=false, open:Boolean=false):LoaderAsset {
-			var result:LoaderAsset = new LoaderAsset( this, this._loaderContext );
+			var result:LoaderAsset = new LoaderAsset( this._loaderContext );
+			result._target = this;
 			if ( open ) {	// событие уже могло быть послано
 				result.addEventListener( Event.OPEN,					super.dispatchEvent );
 			}
@@ -383,7 +384,8 @@ package by.blooddy.core.net.loading {
 		 * создаём звук для загрузки
 		 */
 		private function create_sound(open:Boolean=false):SoundAsset {
-			var result:SoundAsset = new SoundAsset( this, this._loaderContext );
+			var result:SoundAsset = new SoundAsset( this._loaderContext );
+			result._target = this;
 			if ( open ) {
 				result.addEventListener( Event.OPEN,					super.dispatchEvent );
 			}
@@ -415,7 +417,7 @@ package by.blooddy.core.net.loading {
 				this._stream.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_stream_init_securityError );
 				try {
 					this._stream.close();
-				} catch ( e:Error ) {
+				} catch ( e:* ) {
 				}
 				this._stream = null;
 			}
@@ -427,6 +429,7 @@ package by.blooddy.core.net.loading {
 		 */
 		private function clear_loader():void {
 			if ( this._loader ) {
+				this._loader._target = null;
 				this._loader.removeEventListener( Event.OPEN,							super.dispatchEvent );
 				this._loader.removeEventListener( HTTPStatusEvent.HTTP_STATUS,			super.dispatchEvent );
 				this._loader.removeEventListener( ProgressEvent.PROGRESS,				super.progressHandler );
@@ -452,6 +455,7 @@ package by.blooddy.core.net.loading {
 		 */
 		private function clear_sound():void {
 			if ( this._sound ) {
+				this._sound._target = null;
 				this._sound.removeEventListener( Event.OPEN,						super.dispatchEvent );
 				this._sound.removeEventListener( HTTPStatusEvent.HTTP_STATUS,		super.dispatchEvent );
 				this._sound.removeEventListener( ProgressEvent.PROGRESS,			super.progressHandler );
@@ -460,7 +464,7 @@ package by.blooddy.core.net.loading {
 				this._sound.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_common_error );
 				this._sound.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_common_error );
 				if ( this._sound.complete ) {
-					this._sound.unload();
+					this._sound._unload();
 				} else {
 					this._sound._close();
 				}
@@ -633,7 +637,7 @@ package by.blooddy.core.net.loading {
 						);
 						this.clear_input();
 						break;
-					} catch ( e:Error ) {
+					} catch ( e:* ) {
 						this._contentType = MIME.BINARY;
 					}
 
@@ -700,7 +704,7 @@ package by.blooddy.core.net.loading {
 					);
 					this._contentType = MIME.TEXT;
 					this.clear_input();
-				} catch ( e:Error ) { // не вышло :(
+				} catch ( e:* ) { // не вышло :(
 					this._contentType = MIME.BINARY;
 					this._content = this._input;
 					this._input = null;
@@ -770,9 +774,8 @@ internal final class LoaderAsset extends Loader {
 	 * @private
 	 * Constructor
 	 */
-	public function LoaderAsset(target:HeuristicLoader, loaderContext:LoaderContext) {
+	public function LoaderAsset(loaderContext:LoaderContext) {
 		super( null, loaderContext );
-		this._target = target;
 	}
 
 	//--------------------------------------------------------------------------
@@ -784,7 +787,7 @@ internal final class LoaderAsset extends Loader {
 	/**
 	 * @private
 	 */
-	private var _target:HeuristicLoader;
+	internal var _target:HeuristicLoader;
 
 	//--------------------------------------------------------------------------
 	//
@@ -795,8 +798,28 @@ internal final class LoaderAsset extends Loader {
 	/**
 	 * @private
 	 */
+	public override function close():void {
+		this._target.close();
+	}
+	
+	/**
+	 * @private
+	 */
 	public override function unload():void {
 		this._target.unload();
+	}
+
+	//--------------------------------------------------------------------------
+	//
+	//  Internal methods
+	//
+	//--------------------------------------------------------------------------
+	
+	/**
+	 * @private
+	 */
+	internal function _close():void {
+		super.close();
 	}
 
 	/**
@@ -805,21 +828,7 @@ internal final class LoaderAsset extends Loader {
 	internal function _unload():void {
 		super.unload();
 	}
-
-	/**
-	 * @private
-	 */
-	public override function close():void {
-		this._target.close();
-	}
-
-	/**
-	 * @private
-	 */
-	internal function _close():void {
-		super.close();
-	}
-
+	
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -847,9 +856,8 @@ internal final class SoundAsset extends SoundLoader {
 	 * @private
 	 * Constructor
 	 */
-	public function SoundAsset(target:HeuristicLoader, loaderContext:LoaderContext) {
+	public function SoundAsset(loaderContext:LoaderContext) {
 		super( null, loaderContext );
-		this._target = target;
 	}
 
 	//--------------------------------------------------------------------------
@@ -861,7 +869,7 @@ internal final class SoundAsset extends SoundLoader {
 	/**
 	 * @private
 	 */
-	private var _target:HeuristicLoader;
+	internal var _target:HeuristicLoader;
 
 	//--------------------------------------------------------------------------
 	//
@@ -879,8 +887,28 @@ internal final class SoundAsset extends SoundLoader {
 	/**
 	 * @private
 	 */
+	public override function unload():void {
+		this._target.unload();
+	}
+	
+	//--------------------------------------------------------------------------
+	//
+	//  Internal methods
+	//
+	//--------------------------------------------------------------------------
+	
+	/**
+	 * @private
+	 */
 	internal function _close():void {
 		super.close();
 	}
 
+	/**
+	 * @private
+	 */
+	internal function _unload():void {
+		super.unload();
+	}
+	
 }

@@ -182,7 +182,7 @@ package by.blooddy.core.net.loading {
 				this._stream.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.completeHandler );
 				try {
 					this._stream.close();
-				} catch ( e:Error ) {
+				} catch ( e:* ) {
 				}
 				this._stream = null;
 			}

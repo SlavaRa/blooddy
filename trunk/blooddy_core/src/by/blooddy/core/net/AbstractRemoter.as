@@ -179,13 +179,13 @@ package by.blooddy.core.net {
 
 				try { // отлавливаем ошибки выполнения
 					return this.$callInputCommand( command );
-				} catch ( e:Error ) {
+				} catch ( e:* ) {
 					if ( this._logging ) {
-						this._logger.addLog( new InfoLog( ( e.getStackTrace() || e.toString() ), InfoLog.ERROR ) );
-						trace( e.getStackTrace() || e.toString() );
+						this._logger.addLog( new InfoLog( ( e is Error ? ( e.getStackTrace() || e.toString() ) : String( e ) ), InfoLog.ERROR ) );
+						trace( e is Error ? ( e.getStackTrace() || e.toString() ) : String( e ) );
 					}
 					if ( super.hasEventListener( AsyncErrorEvent.ASYNC_ERROR ) || !this._unassisted ) {
-						super.dispatchEvent( new AsyncErrorEvent( AsyncErrorEvent.ASYNC_ERROR, false, false, e.toString(), e ) );
+						super.dispatchEvent( new AsyncErrorEvent( AsyncErrorEvent.ASYNC_ERROR, false, false, String( e ), e as Error ) );
 					}
 				}
 

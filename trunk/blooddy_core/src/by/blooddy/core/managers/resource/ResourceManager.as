@@ -189,17 +189,15 @@ package by.blooddy.core.managers.resource {
 		 * @private
 		 */
 		private static function addLoaderQueue(asset:ResourceLoaderAsset, priority:int):void {
+			asset.queue = new QueueItem( asset, priority );
 			if ( priority >= LoaderPriority.HIGHEST ) {
-				registerQueue( asset );
-				asset.$load();
-				++_loading;
+				_LOADING_QUEUE.unshift( asset.queue );
 			} else {
-				asset.queue = new QueueItem( asset, priority );
-				_LOADING_QUEUE.push( asset.queue );
+				_LOADING_QUEUE.push( asset.queue ); // TODO: splice to the num
 				_LOADING_QUEUE.sortOn( _SORT_FIELDS, _SORT_OPTIONS );
-			 	if ( _loading < _maxLoading ) {
-			 		enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, updateQueue );
-				}
+			}
+		 	if ( _loading < _maxLoading ) {
+		 		enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, updateQueue );
 			}
 		}
 
@@ -532,6 +530,7 @@ import flash.display.BitmapData;
 import flash.errors.IllegalOperationError;
 import flash.events.Event;
 import flash.events.IOErrorEvent;
+import flash.events.SecurityErrorEvent;
 import flash.media.Sound;
 import flash.net.URLRequest;
 import flash.system.ApplicationDomain;
@@ -555,6 +554,14 @@ internal const _DEFAULT_BUNDLE:DefaultResourceBundle = new DefaultResourceBundle
  */
 internal final class ResourceLoaderAsset extends ResourceLoader {
 
+	//--------------------------------------------------------------------------
+	//
+	//  Namespaces
+	//
+	//--------------------------------------------------------------------------
+	
+	use namespace $protected_load;
+	
 	//--------------------------------------------------------------------------
 	//
 	//  Class properties
@@ -634,21 +641,6 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 		throw new IllegalOperationError();
 	}
 
-	internal function $load():void {
-		var url:String;
-		if ( !baseURL || _URL.test( this._url ) ) {
-			url = this._url;
-		} else {
-			url = baseURL + '/' + this._url;
-		}
-		super.loaderContext = new LoaderContext( new ApplicationDomain( ApplicationDomain.currentDomain ), ignoreSecurityDomain );
-		try { // так как запуск отложен, то и ошибку надо генерировать в виде события
-			super.load( new URLRequest( url ) );
-		} catch ( e:Error ) {
-			super.dispatchEvent( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, e.toString() ) );
-		}
-	}
-
 	[Deprecated( message="метод запрещен", replacement="$load" )]
 	public override function loadBytes(request:ByteArray):void {
 		throw new IllegalOperationError();
@@ -659,15 +651,38 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 		throw new IllegalOperationError();
 	}
 
-	internal function $close():void {
-		super.close();
-	}
-
 	[Deprecated( message="метод запрещен", replacement="$unload" )]
 	public override function unload():void {
 		throw new IllegalOperationError();
 	}
 
+	//--------------------------------------------------------------------------
+	//
+	//  Internal methods
+	//
+	//--------------------------------------------------------------------------
+	
+	internal function $load():void {
+		var url:String;
+		if ( !baseURL || _URL.test( this._url ) ) {
+			url = this._url;
+		} else {
+			url = baseURL + '/' + this._url;
+		}
+		super.loaderContext = new LoaderContext( new ApplicationDomain( ApplicationDomain.currentDomain ), ignoreSecurityDomain );
+		try { // так как запуск отложен, то и ошибку надо генерировать в виде события
+			super.load( new URLRequest( url ) );
+		} catch ( e:SecurityError ) {
+			super.completeHandler( new SecurityErrorEvent( SecurityErrorEvent.SECURITY_ERROR, false, false, String( e ) ) );
+		} catch ( e:* ) {
+			super.completeHandler( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, String( e ) ) );
+		}
+	}
+	
+	internal function $close():void {
+		super.close();
+	}
+	
 	internal function $unload():void {
 		super.unload();
 	}

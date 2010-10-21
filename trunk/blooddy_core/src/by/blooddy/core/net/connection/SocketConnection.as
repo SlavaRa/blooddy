@@ -424,7 +424,7 @@ package by.blooddy.core.net.connection {
 
 					command = this._filter.readCommand( this._inputBuffer, NetCommand.INPUT );
 
-				} catch ( e:Error ) {
+				} catch ( e:* ) {
 
 					command = null;
 
@@ -434,12 +434,17 @@ package by.blooddy.core.net.connection {
 					this._inputBuffer.length = 0;
 
 					if ( super.logging ) {
-						super.logger.addLog( new InfoLog( ( e.getStackTrace() || e.toString() ), InfoLog.FATAL ) );
-						trace( e.getStackTrace() || e.toString() );
+						super.logger.addLog(
+							new InfoLog(
+								( e is Error ? ( e.getStackTrace() || e.toString() ) : String( e ) ),
+								InfoLog.FATAL
+							)
+						);
+						trace( e is Error ? ( e.getStackTrace() || e.toString() ) : String( e ) );
 						trace( ByteArrayUtils.dump( data ) );
 					}
 
-					if ( super.dispatchEvent( new SerializeErrorEvent( SerializeErrorEvent.SERIALIZE_ERROR, false, true, e.toString(), e, data ) ) ) {
+					if ( super.dispatchEvent( new SerializeErrorEvent( SerializeErrorEvent.SERIALIZE_ERROR, false, true, String( e ), e as Error, data ) ) ) {
 						this.close();
 					}
 
