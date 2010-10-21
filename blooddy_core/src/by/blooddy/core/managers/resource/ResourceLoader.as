@@ -155,7 +155,7 @@ package by.blooddy.core.managers.resource {
 					) {
 						try {
 							resource = new resourceClass( 0, 0 );
-						} catch ( e:Error ) {
+						} catch ( e:* ) {
 							resource = new resourceClass();
 						}
 					} else if ( 

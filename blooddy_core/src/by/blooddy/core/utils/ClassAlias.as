@@ -102,10 +102,10 @@ package by.blooddy.core.utils {
 				if ( !result ) {
 					try {
 						result = getDefinitionByName( name ) as Class;
-					} catch ( e:Error ) {
+					} catch ( e:* ) {
 						try {
 							result = getClassByAlias( name );
-						} catch ( e:Error ) {
+						} catch ( e:* ) {
 						}
 					}
 					if ( result ) {

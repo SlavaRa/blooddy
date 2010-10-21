@@ -135,7 +135,7 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 */
 		$protected_load static const _URL:RegExp = ( domain == 'localhost' ? null : new RegExp( '^(?:(?!\\w+://)|https?://(?:www\\.)?' + domain.replace( /\./g, '\\.' ) + ')', 'i' ) );
-		
+
 		/**
 		 * @private
 		 */
@@ -191,9 +191,8 @@ package by.blooddy.core.net.loading {
 		
 		/**
 		 * @private
-		 * состояние загрзщика
 		 */
-		private var _id:String;
+//		private var _id:String;
 		
 		/**
 		 * @private
@@ -304,11 +303,11 @@ package by.blooddy.core.net.loading {
 		public function load(request:URLRequest):void {
 			if ( this._state != _STATE_IDLE ) throw new ArgumentError();
 			//else if ( this._state > _STATE_PROGRESS ) this.clear();
-			if ( NetMonitor.isActive() && !NetMonitor.isURLRequestAdjusted( request ) ) {
-				this._id = UIDUtils.createUID();
-				NetMonitor.monitorInvocation( this._id, request, this );
-				NetMonitor.adjustURLRequest( this._id, request );
-			}
+//			if ( NetMonitor.isActive() && !NetMonitor.isURLRequestAdjusted( request ) ) {
+//				this._id = UIDUtils.createUID();
+//				NetMonitor.monitorInvocation( this._id, request, this );
+//				NetMonitor.adjustURLRequest( this._id, request );
+//			}
 			this.$load( request );
 			this._url = URLUtils.createAbsoluteURL( _ROOT, request.url );
 			this._state = _STATE_PROGRESS;
@@ -422,7 +421,32 @@ package by.blooddy.core.net.loading {
 			}
 			this.$dispatchEvent( new ProgressEvent( ProgressEvent.PROGRESS, false, false, this._bytesLoaded, this._bytesTotal ) );
 		}
-		
+
+		/**
+		 * @private
+		 * слушает прогресс, и обвноляет его, если _frameReady установлен в true.
+		 */
+		$protected_load function progressHandler(event:ProgressEvent):void {
+			if ( !this._frameReady ) return;
+			this.updateProgress( event.bytesLoaded, event.bytesTotal );
+		}
+
+		/**
+		 * @private
+		 */
+		$protected_load function completeHandler(event:Event):void {
+			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
+			this._state = ( event is ErrorEvent ? _STATE_ERROR : _STATE_COMPLETE );
+//			if ( this._id && NetMonitor.isActive() ) {
+//				if ( this._state == _STATE_COMPLETE ) {
+//					NetMonitor.monitorResult( this._id, this.$getAbstractContent() );
+//				} else {
+//					NetMonitor.monitorFault( this._id, ( event as ErrorEvent ).text );
+//				}
+//			}
+			this.$dispatchEvent( event );
+		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Private methods
@@ -448,7 +472,7 @@ package by.blooddy.core.net.loading {
 			}
 			return super.dispatchEvent( event );
 		}
-		
+
 		/**
 		 * @private
 		 * очисщает данные
@@ -460,7 +484,7 @@ package by.blooddy.core.net.loading {
 				this._input.clear();
 				this._input = null;
 			}
-			this._id = null;
+//			this._id = null;
 			this._url = null;
 			this._bytesLoaded = 0;
 			this._bytesTotal = 0;
@@ -497,31 +521,6 @@ package by.blooddy.core.net.loading {
 			this._input = null;
 		}
 		
-		/**
-		 * @private
-		 * слушает прогресс, и обвноляет его, если _frameReady установлен в true.
-		 */
-		$protected_load function progressHandler(event:ProgressEvent):void {
-			if ( !this._frameReady ) return;
-			this.updateProgress( event.bytesLoaded, event.bytesTotal );
-		}
-		
-		/**
-		 * @private
-		 */
-		$protected_load function completeHandler(event:Event):void {
-			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
-			this._state = ( event is ErrorEvent ? _STATE_ERROR : _STATE_COMPLETE );
-			if ( this._id && NetMonitor.isActive() ) {
-				if ( this._state == _STATE_COMPLETE ) {
-					NetMonitor.monitorResult( this._id, this.$getAbstractContent() );
-				} else {
-					NetMonitor.monitorFault( this._id, ( event as ErrorEvent ).text );
-				}
-			}
-			this.$dispatchEvent( event );
-		}
-
 	}
 
 }

@@ -173,8 +173,8 @@ package by.blooddy.core.net.loading {
 		 */
 		$protected_load override function $load(request:URLRequest):void {
 			this._loader = this.create_loader( true, true );
-			this._loaderInfo = this._loader.$loaderInfo;
-			this._loader.$load( request, this.create_loaderContext( _URL && _URL.test( request.url ) ) );
+			this._loaderInfo = this._loader._loaderInfo;
+			this._loader._load( request, this.create_loaderContext( _URL && _URL.test( request.url ) ) );
 		}
 
 		/**
@@ -182,8 +182,8 @@ package by.blooddy.core.net.loading {
 		 */
 		$protected_load override function $loadBytes(bytes:ByteArray):void {
 			this._loader = this.create_loader();
-			this._loaderInfo = this._loader.$loaderInfo;
-			this._loader.$loadBytes( bytes, this.create_loaderContext() );
+			this._loaderInfo = this._loader._loaderInfo;
+			this._loader._loadBytes( bytes, this.create_loaderContext() );
 		}
 
 		/**
@@ -191,7 +191,6 @@ package by.blooddy.core.net.loading {
 		 */
 		$protected_load override function $unload():Boolean {
 			var unload:Boolean = Boolean( this._content || this._loader );
-			this.clear_loader();
 			if ( this._content ) {
 				if ( this._content is DisplayObject ) {
 					var d:DisplayObject = this._content as DisplayObject;
@@ -203,6 +202,7 @@ package by.blooddy.core.net.loading {
 				}
 				this._content = undefined;
 			}
+			this.clear_loader();
 			this._contentType = null;
 			return unload;
 		}
@@ -218,8 +218,9 @@ package by.blooddy.core.net.loading {
 		 * создаёт лоадер для загрузки
 		 */
 		private function create_loader(open:Boolean=false, security:Boolean=false):LoaderAsset {
-			var result:LoaderAsset = new LoaderAsset( this );
-			var li:LoaderInfo = result.$loaderInfo;
+			var result:LoaderAsset = new LoaderAsset();
+			result._target = this;
+			var li:LoaderInfo = result._loaderInfo;
 			if ( open ) {	// событие уже могло быть послано
 				li.addEventListener( Event.OPEN,				super.dispatchEvent,			false, int.MAX_VALUE );
 			}
@@ -232,6 +233,7 @@ package by.blooddy.core.net.loading {
 			}
 			li.addEventListener( Event.COMPLETE,				this.handler_loader_complete,	false, int.MAX_VALUE );
 			li.addEventListener( IOErrorEvent.IO_ERROR,			this.handler_loader_error,		false, int.MAX_VALUE );
+			// TODO: uncatch errors
 			return result;
 		}
 
@@ -263,6 +265,7 @@ package by.blooddy.core.net.loading {
 		 */
 		private function clear_loader():void {
 			if ( this._loader ) {
+				this._loader._target = null;
 				var li:LoaderInfo = this._loaderInfo;
 				li.removeEventListener( Event.OPEN,						super.dispatchEvent );
 				li.removeEventListener( HTTPStatusEvent.HTTP_STATUS,	super.dispatchEvent );
@@ -272,13 +275,14 @@ package by.blooddy.core.net.loading {
 				li.removeEventListener( Event.COMPLETE,					this.handler_security_complete );
 				li.removeEventListener( Event.COMPLETE,					this.handler_loader_complete );
 				li.removeEventListener( IOErrorEvent.IO_ERROR,			this.handler_loader_error );
+				// TODO: uncatch errors
 				try {
-					this._loader.$close();
-				} catch ( e:Error ) {
+					this._loader._close();
+				} catch ( e:* ) {
 				}
 				try {
-					this._loader.$unload();
-				} catch ( e:Error ) {
+					this._loader._unload();
+				} catch ( e:* ) {
 				}
 				this._loader = null;
 			}
@@ -296,7 +300,7 @@ package by.blooddy.core.net.loading {
 		private function handler_security_init(event:Event):void {
 			try {
 
-				this._loader.$content;
+				this._loader._content;
 				this.handler_init( event );
 
 			} catch ( e:SecurityError ) {
@@ -320,7 +324,7 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 */
 		private function handler_init(event:Event):void {
-			var content:DisplayObject = this._loader.$content;
+			var content:DisplayObject = this._loader._content;
 
 			_JUNK.addChild( content );
 			_JUNK.removeChild( content );
@@ -385,10 +389,10 @@ package by.blooddy.core.net.loading {
 		 */
 		private function handler_security_complete(event:Event):void {
 			var loader:LoaderAsset = this.create_loader();
-			loader.$loadBytes( this._loaderInfo.bytes, this.create_loaderContext() );
+			loader._loadBytes( this._loaderInfo.bytes, this.create_loaderContext() );
 			this.clear_loader();	// очищаем старый лоадер
 			this._loader = loader;	// записываем новый
-			this._loaderInfo = this._loader.$loaderInfo;
+			this._loaderInfo = this._loader._loaderInfo;
 		}
 
 		/**
@@ -430,7 +434,12 @@ import flash.events.Event;
 import flash.net.URLRequest;
 import flash.system.LoaderContext;
 import flash.utils.ByteArray;
-import flash.utils.getTimer;
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Helper constant: _JUNK
+//
+////////////////////////////////////////////////////////////////////////////////
 
 /**
  * @private
@@ -463,21 +472,7 @@ internal final class LoaderAsset extends flash.display.Loader {
 	/**
 	 * @private
 	 */
-	private static var _lastLoader:LoaderAsset;
-
-	//--------------------------------------------------------------------------
-	//
-	//  Private class methods
-	//
-	//--------------------------------------------------------------------------
-
-	/**
-	 * @private
-	 */
-	private static function do$unload():void {
-		_lastLoader.$unloadAndStop( true );
-		_lastLoader = null;
-	}
+	private static var _waitGC:Boolean = false;
 
 	//--------------------------------------------------------------------------
 	//
@@ -488,9 +483,8 @@ internal final class LoaderAsset extends flash.display.Loader {
 	/**
 	 * @private
 	 */
-	public function LoaderAsset(target:by.blooddy.core.net.loading.Loader) {
+	public function LoaderAsset() {
 		super();
-		this._target = target;
 		super.addEventListener( Event.ADDED, this.handler_added, false, int.MAX_VALUE, true );
 	}
 
@@ -503,7 +497,7 @@ internal final class LoaderAsset extends flash.display.Loader {
 	/**
 	 * @private
 	 */
-	private var _target:by.blooddy.core.net.loading.Loader;
+	internal var _target:by.blooddy.core.net.loading.Loader;
 
 	//--------------------------------------------------------------------------
 	//
@@ -511,7 +505,7 @@ internal final class LoaderAsset extends flash.display.Loader {
 	//
 	//--------------------------------------------------------------------------
 
-	[Deprecated( message="свойство запрещено", replacement="$content" )]
+	[Deprecated( message="свойство запрещено", replacement="_content" )]
 	/**
 	 * @private
 	 */
@@ -520,14 +514,7 @@ internal final class LoaderAsset extends flash.display.Loader {
 		return null;
 	}
 
-	/**
-	 * @private
-	 */
-	internal function get $content():DisplayObject {
-		return super.content;
-	}
-
-	[Deprecated( message="свойство запрещено", replacement="$loaderInfo" )]
+	[Deprecated( message="свойство запрещено", replacement="_loaderInfo" )]
 	/**
 	 * @private
 	 */
@@ -536,10 +523,23 @@ internal final class LoaderAsset extends flash.display.Loader {
 		return null;
 	}
 
+	//--------------------------------------------------------------------------
+	//
+	//  Internal properties
+	//
+	//--------------------------------------------------------------------------
+	
 	/**
 	 * @private
 	 */
-	internal function get $loaderInfo():LoaderInfo {
+	internal function get _content():DisplayObject {
+		return super.content;
+	}
+	
+	/**
+	 * @private
+	 */
+	internal function get _loaderInfo():LoaderInfo {
 		return super.contentLoaderInfo;
 	}
 
@@ -549,7 +549,7 @@ internal final class LoaderAsset extends flash.display.Loader {
 	//
 	//--------------------------------------------------------------------------
 
-	[Deprecated( message="метод запрещен", replacement="$load" )]
+	[Deprecated( message="метод запрещен", replacement="_load" )]
 	/**
 	 * @private
 	 */
@@ -557,26 +557,12 @@ internal final class LoaderAsset extends flash.display.Loader {
 		Error.throwError( IllegalOperationError, 1001, 'load' );
 	}
 
-	/**
-	 * @private
-	 */
-	internal function $load(request:URLRequest, context:LoaderContext=null):void {
-		super.load( request, context );
-	}
-
-	[Deprecated( message="метод запрещен", replacement="$loadBytes" )]
+	[Deprecated( message="метод запрещен", replacement="_loadBytes" )]
 	/**
 	 * @private
 	 */
 	public override function loadBytes(bytes:ByteArray, context:LoaderContext=null):void {
 		Error.throwError( IllegalOperationError, 1001, 'loadBytes' );
-	}
-
-	/**
-	 * @private
-	 */
-	internal function $loadBytes(bytes:ByteArray, context:LoaderContext=null):void {
-		super.loadBytes( bytes, context );
 	}
 
 	/**
@@ -589,24 +575,8 @@ internal final class LoaderAsset extends flash.display.Loader {
 	/**
 	 * @private
 	 */
-	internal function $unload():void {
-		if ( _lastLoader ) {
-			_lastLoader.$unloadAndStop( false );
-		} else {
-			setTimeout( do$unload, _GC_CALL_TIMEOUT );
-		}
-		_lastLoader = this;
-	}
-
-	/**
-	 * @private
-	 */
 	public override function unloadAndStop(gc:Boolean=true):void {
 		this._target.unload();
-	}
-
-	private function $unloadAndStop(gc:Boolean=true):void {
-		super.unloadAndStop( gc );
 	}
 
 	/**
@@ -616,13 +586,59 @@ internal final class LoaderAsset extends flash.display.Loader {
 		this._target.close();
 	}
 
+	//--------------------------------------------------------------------------
+	//
+	//  Internal methods
+	//
+	//--------------------------------------------------------------------------
+	
 	/**
 	 * @private
 	 */
-	internal function $close():void {
+	internal function _load(request:URLRequest, context:LoaderContext=null):void {
+		super.load( request, context );
+	}
+	
+	/**
+	 * @private
+	 */
+	internal function _loadBytes(bytes:ByteArray, context:LoaderContext=null):void {
+		super.loadBytes( bytes, context );
+	}
+	
+	/**
+	 * @private
+	 */
+	internal function _close():void {
 		super.close();
 	}
 
+	/**
+	 * @private
+	 */
+	internal function _unload():void {
+		if ( _waitGC ) {
+			super.unloadAndStop( false );
+		} else {
+			_waitGC = true;
+			setTimeout( this._unloadAndGC, _GC_CALL_TIMEOUT );
+		}
+	}
+	
+	//--------------------------------------------------------------------------
+	//
+	//  Private methods
+	//
+	//--------------------------------------------------------------------------
+
+	/**
+	 * @private
+	 */
+	private function _unloadAndGC():void {
+		super.unloadAndStop( true );
+		_waitGC = false;
+	}
+	
 	//--------------------------------------------------------------------------
 	//
 	//  Event handlers

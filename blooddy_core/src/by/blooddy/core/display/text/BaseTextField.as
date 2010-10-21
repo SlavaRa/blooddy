@@ -94,6 +94,7 @@ package by.blooddy.core.display.text {
 					var loader:LoaderInfo = ( event.target as Loader ).contentLoaderInfo;
 					loader.removeEventListener( Event.COMPLETE,			this.handler_complete );
 					loader.removeEventListener( IOErrorEvent.IO_ERROR,	this.handler_complete );
+					// TODO: uncatch errors
 				}
 			}
 		}
@@ -105,6 +106,7 @@ package by.blooddy.core.display.text {
 			var loader:LoaderInfo = event.target as LoaderInfo;
 			loader.removeEventListener( Event.COMPLETE,			this.handler_complete );
 			loader.removeEventListener( IOErrorEvent.IO_ERROR,	this.handler_complete );
+			// TODO: uncatch errors
 		}
 		
 	}

@@ -317,7 +317,7 @@ package by.blooddy.core.net {
 
 			try {
 				this._conn1.load( this._request );
-			} catch ( e:Error ) {
+			} catch ( e:* ) {
 				this._host = null;
 				this._port = 0;
 				throw e;
@@ -890,7 +890,7 @@ internal final class URLStreamAsset extends URLStream {
 		this._connected = false;
 		try {
 			super.close();
-		} catch ( e:Error ) {
+		} catch ( e:* ) {
 		}
 	}
 

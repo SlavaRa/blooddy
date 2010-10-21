@@ -95,7 +95,7 @@ package by.blooddy.core.utils.net {
 							'}' +
 						'}'
 					);
-				} catch ( e:Error ) {
+				} catch ( e:* ) {
 				}
 
 				if ( o ) {

@@ -31,6 +31,7 @@ package by.blooddy.core.display {
 import flash.display.Bitmap;
 import flash.display.DisplayObject;
 import flash.display.DisplayObjectContainer;
+import flash.display.Loader;
 import flash.display.MovieClip;
 import flash.display.Shape;
 import flash.display.SimpleButton;
@@ -59,6 +60,7 @@ internal function $dispose(child:DisplayObject, safe:Boolean):void {
 		if ( child is MovieClip ) {
 			( child as MovieClip ).stop();
 		}
+		( child as Sprite ).hitArea = null;
 	} else if ( child is Shape ) {
 		( child as Shape ).graphics.clear();
 	} else if ( child is Bitmap ) {
@@ -69,16 +71,49 @@ internal function $dispose(child:DisplayObject, safe:Boolean):void {
 			( child as Bitmap ).bitmapData = null;
 		}
 	} else if ( child is TextField ) {
+		( child as TextField ).htmlText = '';
 		( child as TextField ).text = '';
 		( child as TextField ).styleSheet = null;
 	} else if ( child is SimpleButton ) {
-		with ( child as SimpleButton ) {
-			upState = null;
-			downState = null;
-			overState = null;
-			hitTestState = null;
+		var button:SimpleButton = child as SimpleButton;
+		child = button.upState;
+		if ( child ) {
+			button.upState = null;
+			$dispose( child, safe );
+		}
+		child = button.overState;
+		if ( child ) {
+			button.overState = null;
+			$dispose( child, safe );
+		}
+		child = button.downState;
+		if ( child ) {
+			button.downState = null;
+			$dispose( child, safe );
+		}
+		child = button.hitTestState;
+		if ( child ) {
+			button.hitTestState = null;
+			$dispose( child, safe );
+		}
+	} else if ( child is Loader ) {
+		var loader:Loader = child as Loader;
+		
+		try {
+			child = loader.content;
+		} catch ( e:* ) {
+		}
+		if ( child ) {
+			$dispose( loader.content, safe );
+		}
+		try {
+			loader.close();
+		} catch ( e:* ) {
+		}
+		try {
+			loader.unloadAndStop( false );
+		} catch ( e:* ) {
 		}
 	}
-	// TODO: все остальные типы
 	child.mask = null;
 }

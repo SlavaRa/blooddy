@@ -140,8 +140,8 @@ package by.blooddy.core.net.loading {
 							?	new URLVariables( s )
 							:	s
 						);
-					} catch ( e:Error ) {
-						super.completeHandler( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, e.toString() ) );
+					} catch ( e:* ) {
+						super.completeHandler( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, String( e ) ) );
 						return; // выходим :(
 					} finally {
 						bytes.clear();
@@ -166,13 +166,13 @@ package by.blooddy.core.net.loading {
 		 */
 		$protected_load override function $unload():Boolean {
 			var unload:Boolean = Boolean( this._content || this._stream );
-			this.clear_stream();
 			if ( this._content ) {
 				if ( this._content is ByteArray ) {
 					( this._content as ByteArray ).clear();
 				}
 				this._content = undefined;
 			}
+			this.clear_stream();
 			return unload;
 		}
 		

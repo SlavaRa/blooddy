@@ -93,7 +93,7 @@ package by.blooddy.core.net.loading {
 		 * 
 		 */
 		public function get content():Sound {
-			return ( this._sound && this._sound.$inited ? this._sound : null );
+			return ( this._sound && this._sound._inited ? this._sound : null );
 		}
 
 		//----------------------------------
@@ -139,7 +139,7 @@ package by.blooddy.core.net.loading {
 		 */
 		$protected_load override function $load(request:URLRequest):void {
 			this._sound = this.create_sound();
-			this._sound.$load( request, this.create_soundLoaderContext() );
+			this._sound._load( request, this.create_soundLoaderContext() );
 		}
 
 		/**
@@ -153,7 +153,7 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 */
 		$protected_load override function $unload():Boolean {
-			var unload:Boolean = Boolean( this._sound );
+			var unload:Boolean = this._sound && this._sound._inited;
 			this.clear_sound();
 			return unload;
 		}
@@ -169,7 +169,8 @@ package by.blooddy.core.net.loading {
 		 * создаём звук для загрузки
 		 */
 		private function create_sound():SoundAsset {
-			var result:SoundAsset = new SoundAsset( this );
+			var result:SoundAsset = new SoundAsset();
+			result._target = this;
 			result.addEventListener( Event.OPEN,						super.dispatchEvent );
 			result.addEventListener( Event.ID3,							super.dispatchEvent );
 			result.addEventListener( ProgressEvent.PROGRESS,			this.progressHandler );
@@ -185,6 +186,7 @@ package by.blooddy.core.net.loading {
 		 */
 		private function clear_sound():void {
 			if ( this._sound ) {
+				this._sound._target = null;
 				this._sound.removeEventListener( Event.OPEN,						super.dispatchEvent );
 				this._sound.removeEventListener( Event.ID3,							super.dispatchEvent );
 				this._sound.removeEventListener( ProgressEvent.PROGRESS,			this.progressHandler );
@@ -193,14 +195,11 @@ package by.blooddy.core.net.loading {
 				this._sound.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_sound_error );
 				this._sound.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_sound_error );
 				try {
-					this._sound.$close();
-				} catch ( e:Error ) {
+					this._sound._close();
+				} catch ( e:* ) {
 				}
-				for ( var o:Object in this._sound.$hash ) {
-					( o as SoundChannel ).stop();
-					delete this._sound.$hash[ o ];
-				}
-				this._sound.$inited = false;
+				this._sound._unload();
+				this._sound._inited = false;
 				this._sound = null;
 			}
 		}
@@ -226,8 +225,8 @@ package by.blooddy.core.net.loading {
 
 		$protected_load override function progressHandler(event:ProgressEvent):void {
 			super.progressHandler( event );
-			if ( this._sound.isBuffering && !this._sound.$inited ) {
-				this._sound.$inited = true;
+			if ( this._sound.isBuffering && !this._sound._inited ) {
+				this._sound._inited = true;
 				this._sound.removeEventListener( ProgressEvent.PROGRESS,	this.progressHandler );
 				this._sound.addEventListener( ProgressEvent.PROGRESS,		super.progressHandler );
 				if ( super.hasEventListener( Event.INIT ) ) {
@@ -243,8 +242,8 @@ package by.blooddy.core.net.loading {
 		private function handler_sound_complete(event:Event):void {
 			var bytesTotal:uint = this._sound.bytesLoaded;
 			super.updateProgress( bytesLoaded, bytesLoaded );
-			if ( !this._sound.$inited && super.hasEventListener( Event.INIT ) ) {
-				this._sound.$inited = true;
+			if ( !this._sound._inited && super.hasEventListener( Event.INIT ) ) {
+				this._sound._inited = true;
 				super.dispatchEvent( new Event( Event.INIT ) );
 			}
 			super.completeHandler( event );
@@ -305,11 +304,10 @@ internal final class SoundAsset extends Sound {
 	 * @private
 	 * Constructor
 	 */
-	public function SoundAsset(target:SoundLoader) {
+	public function SoundAsset() {
 		if ( !true ) { // суки из адобы, вызывают load в любом случаи. идиоты.
 			super();
 		}
-		this._target = target;
 	}
 	
 	//--------------------------------------------------------------------------
@@ -321,17 +319,17 @@ internal final class SoundAsset extends Sound {
 	/**
 	 * @private
 	 */
-	internal var $inited:Boolean = false;
+	internal var _target:SoundLoader;
 	
 	/**
 	 * @private
 	 */
-	internal var $hash:Dictionary = new Dictionary( true );
+	internal var _inited:Boolean = false;
 	
 	/**
 	 * @private
 	 */
-	private var _target:SoundLoader;
+	private var _hash:Dictionary = new Dictionary( true );
 	
 	//--------------------------------------------------------------------------
 	//
@@ -340,25 +338,18 @@ internal final class SoundAsset extends Sound {
 	//--------------------------------------------------------------------------
 
 	public override function play(startTime:Number=0, loops:int=0, sndTransform:SoundTransform=null):SoundChannel {
-		if ( !this.$inited ) throw new IOError(); 
+		if ( !this._inited ) throw new IOError(); 
 		var channel:SoundChannel = super.play( startTime, loops, sndTransform );
-		this.$hash[ channel ] = true;
+		this._hash[ channel ] = true;
 		return channel;
 	}
 
-	[Deprecated( message="метод запрещен", replacement="$load" )]
+	[Deprecated( message="метод запрещен", replacement="_load" )]
 	/**
 	 * @private
 	 */
 	public override function load(request:URLRequest, context:SoundLoaderContext=null):void {
 		Error.throwError( IllegalOperationError, 1001, 'load' );
-	}
-	
-	/**
-	 * @private
-	 */
-	internal function $load(request:URLRequest, context:SoundLoaderContext=null):void {
-		super.load( request, context );
 	}
 	
 	[Deprecated( message="метод запрещен" )]
@@ -367,7 +358,7 @@ internal final class SoundAsset extends Sound {
 	 */
 	public override function extract(target:ByteArray, length:Number, startPosition:Number=-1):Number {
 		Error.throwError( IllegalOperationError, 1001, 'extract' );
-		return 0;
+		return Number.NaN;
 	}
 
 	/**
@@ -377,11 +368,34 @@ internal final class SoundAsset extends Sound {
 		this._target.close();
 	}
 	
+	//--------------------------------------------------------------------------
+	//
+	//  Internal methods
+	//
+	//--------------------------------------------------------------------------
+	
 	/**
 	 * @private
 	 */
-	internal function $close():void {
+	internal function _load(request:URLRequest, context:SoundLoaderContext=null):void {
+		super.load( request, context );
+	}
+	
+	/**
+	 * @private
+	 */
+	internal function _close():void {
 		super.close();
 	}
 
+	/**
+	 * @private
+	 */
+	internal function _unload():void {
+		for ( var o:Object in this._hash ) {
+			( o as SoundChannel ).stop();
+			delete this._hash[ o ];
+		}
+	}
+	
 }
