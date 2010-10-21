@@ -10,7 +10,7 @@ package by.blooddy.crypto.serialization {
 	import flash.utils.describeType;
 	import flash.utils.getQualifiedClassName;
 
-//	[ExcludeClass]
+	[ExcludeClass]
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
