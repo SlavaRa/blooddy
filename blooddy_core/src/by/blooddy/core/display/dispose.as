@@ -50,17 +50,36 @@ import flash.text.TextField;
 internal function $dispose(child:DisplayObject, safe:Boolean):void {
 	if ( !child ) return;
 	if ( child is DisplayObjectContainer ) {
-		var container:DisplayObjectContainer = child as DisplayObjectContainer;
-		while ( container.numChildren ) {
-			$dispose( container.removeChildAt( 0 ), safe );
+		if ( child is Loader ) {
+			var loader:Loader = child as Loader;
+			try {
+				child = loader.content;
+			} catch ( e:* ) {
+			}
+			if ( child ) {
+				$dispose( loader.content, safe );
+			}
+			try {
+				loader.close();
+			} catch ( e:* ) {
+			}
+			try {
+				loader.unloadAndStop( false );
+			} catch ( e:* ) {
+			}
+		} else {
+			var container:DisplayObjectContainer = child as DisplayObjectContainer;
+			while ( container.numChildren ) {
+				$dispose( container.removeChildAt( 0 ), safe );
+			}
+			if ( child is Sprite ) {
+				( child as Sprite ).graphics.clear();
+				if ( child is MovieClip ) {
+					( child as MovieClip ).stop();
+				}
+				( child as Sprite ).hitArea = null;
+			}
 		}
-	}
-	if ( child is Sprite ) {
-		( child as Sprite ).graphics.clear();
-		if ( child is MovieClip ) {
-			( child as MovieClip ).stop();
-		}
-		( child as Sprite ).hitArea = null;
 	} else if ( child is Shape ) {
 		( child as Shape ).graphics.clear();
 	} else if ( child is Bitmap ) {
@@ -95,24 +114,6 @@ internal function $dispose(child:DisplayObject, safe:Boolean):void {
 		if ( child ) {
 			button.hitTestState = null;
 			$dispose( child, safe );
-		}
-	} else if ( child is Loader ) {
-		var loader:Loader = child as Loader;
-		
-		try {
-			child = loader.content;
-		} catch ( e:* ) {
-		}
-		if ( child ) {
-			$dispose( loader.content, safe );
-		}
-		try {
-			loader.close();
-		} catch ( e:* ) {
-		}
-		try {
-			loader.unloadAndStop( false );
-		} catch ( e:* ) {
 		}
 	}
 	child.mask = null;

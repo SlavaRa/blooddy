@@ -51,11 +51,9 @@
     <classEntry path="by.blooddy.core.display.resource.ResourceSprite"/>
     <classEntry path="by.blooddy.core.display.text.BaseTextField"/>
     <classEntry path="by.blooddy.core.errors.display.resource.ResourceError"/>
-    <classEntry path="by.blooddy.core.events.AccumulativeEventDispatcher"/>
     <classEntry path="by.blooddy.core.events.DynamicErrorEvent"/>
     <classEntry path="by.blooddy.core.events.DynamicEvent"/>
     <classEntry path="by.blooddy.core.events.EventDispatcherProxy"/>
-    <classEntry path="by.blooddy.core.events.ParserErrorEvent"/>
     <classEntry path="by.blooddy.core.events.commands.CommandEvent"/>
     <classEntry path="by.blooddy.core.events.data.DataBaseEvent"/>
     <classEntry path="by.blooddy.core.events.display.resource.ResourceErrorEvent"/>
@@ -210,6 +208,7 @@
     <classEntry path="parseBoolean"/>
     <classEntry path="by.blooddy.core.utils.net.Environment"/>
     <classEntry path="by.blooddy.core.meta.RDFDescriber"/>
+    <classEntry path="by.blooddy.core.events.CallbackProxy"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

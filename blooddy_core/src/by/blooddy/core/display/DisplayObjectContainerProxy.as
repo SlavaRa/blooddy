@@ -10,7 +10,9 @@ package by.blooddy.core.display {
 	
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
+	import flash.errors.IllegalOperationError;
 	import flash.utils.flash_proxy;
+	import flash.utils.getQualifiedClassName;
 	
 	use namespace flash_proxy;
 	
@@ -114,30 +116,65 @@ package by.blooddy.core.display {
 		}
 
 		flash_proxy override function setProperty(name:*, value:*):void {
-			if ( super.isAttribute( name ) ) {
-				this._container[ name ] = value;
-			}
-			super.setProperty( name, value );
-		}
-
-		flash_proxy override function getDescendants(name:*):* {
 			if ( !super.isAttribute( name ) ) {
-				if ( name is QName ) name = name.toString();
-				else if ( ( !name is String ) ) throw new ArgumentError();
-				var result:DisplayObject;
-				if ( this._container.name == name ) {
-					result = this._container;
-				} else if ( this._container.numChildren > 0 ) {
-					result = this._container.getChildByName( name );
-					if ( !result ) {
-						result = getChildByName( this._container, name );
-					}
-				}
-				return result;
+				Error.throwError( IllegalOperationError, 0 );
 			}
-			return super.getDescendants( name );
+			this._container[ name ] = value;
 		}
 
+		flash_proxy override function deleteProperty(name:*):Boolean {
+			if ( !super.isAttribute( name ) ) {
+				Error.throwError( IllegalOperationError, 0 );
+			}
+			return delete this._container[ name ];
+		}
+		
+		flash_proxy override function callProperty(name:*, ...rest):* {
+			if ( !super.isAttribute( name ) ) {
+				Error.throwError( IllegalOperationError, 0 );
+			}
+			var f:* = this._container[ name ];
+			if ( f ) {
+				if ( f is Function ) {
+					return ( f as Function ).apply( this._container, rest );
+				}
+				Error.throwError( TypeError, 1006, name );
+			}
+			Error.throwError( ReferenceError, 1069, name, getQualifiedClassName( this._container ) );
+		}
+		
+		flash_proxy override function getDescendants(name:*):* {
+			if ( super.isAttribute( name ) ) {
+				Error.throwError( IllegalOperationError, 0 );
+			}
+			if ( name is QName ) name = name.toString();
+			else if ( ( !name is String ) ) throw new ArgumentError();
+			var result:DisplayObject;
+			if ( this._container.name == name ) {
+				result = this._container;
+			} else if ( this._container.numChildren > 0 ) {
+				result = this._container.getChildByName( name );
+				if ( !result ) {
+					result = getChildByName( this._container, name );
+				}
+			}
+			return result;
+		}
+
+		flash_proxy override function nextNameIndex(index:int):int {
+			Error.throwError( IllegalOperationError, 0 );
+			return 0;
+		}
+		
+		flash_proxy override function nextName(index:int):String {
+			Error.throwError( IllegalOperationError, 0 );
+			return null;
+		}
+		
+		flash_proxy override function nextValue(index:int):* {
+			Error.throwError( IllegalOperationError, 0 );
+		}
+		
 	}
 	
 }
