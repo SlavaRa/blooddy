@@ -7,19 +7,19 @@
 package by.blooddy.core.net.loading {
 	
 	import by.blooddy.core.net.domain;
-	import by.blooddy.core.net.monitor.NetMonitor;
 	import by.blooddy.core.utils.ClassUtils;
-	import by.blooddy.core.utils.crypto.UIDUtils;
 	import by.blooddy.core.utils.enterFrameBroadcaster;
 	import by.blooddy.core.utils.net.URLUtils;
-
+	
 	import flash.display.Loader;
 	import flash.errors.IllegalOperationError;
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.HTTPStatusEvent;
+	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
+	import flash.events.SecurityErrorEvent;
 	import flash.net.URLRequest;
 	import flash.utils.ByteArray;
 
@@ -108,8 +108,8 @@ package by.blooddy.core.net.loading {
 	 * @langversion				3.0
 	 * @created					24.02.2010 21:47:24
 	 */
-	public class LoaderBase extends EventDispatcher implements ILoader {
-		
+	internal class LoaderBase extends EventDispatcher implements ILoader {
+
 		//--------------------------------------------------------------------------
 		//
 		//  Namespaces
@@ -119,7 +119,7 @@ package by.blooddy.core.net.loading {
 		protected namespace $protected_load;
 
 		use namespace $protected_load;
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class variables
@@ -296,7 +296,7 @@ package by.blooddy.core.net.loading {
 		//  Implements methods: ILoader
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -310,8 +310,7 @@ package by.blooddy.core.net.loading {
 //			}
 			this.$load( request );
 			this._url = URLUtils.createAbsoluteURL( _ROOT, request.url );
-			this._state = _STATE_PROGRESS;
-			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
+			this.start();
 		}
 
 		/**
@@ -320,6 +319,7 @@ package by.blooddy.core.net.loading {
 		public function loadBytes(bytes:ByteArray):void {
 			if ( this._state != _STATE_IDLE ) throw new ArgumentError();
 			//else if ( this._state > _STATE_PROGRESS ) this.clear();
+			this.start();
 			this._input = new ByteArray();
 			this._input.writeBytes( bytes );
 			this._input.position = 0;
@@ -367,19 +367,9 @@ package by.blooddy.core.net.loading {
 
 		/**
 		 * @private
-		 * очисщает данные
 		 */
-		$protected_load function $getAbstractContent():* {
-			return null;
-		}
-		
-		/**
-		 * @private
-		 * очисщает данные
-		 */
-		$protected_load function isIdle():Boolean {
-			return this._state == _STATE_IDLE;
-		}
+//		$protected_load function $getAbstractContent():* {
+//		}
 		
 		/**
 		 * @private
@@ -406,9 +396,26 @@ package by.blooddy.core.net.loading {
 		
 		/**
 		 * @private
+		 */
+		$protected_load final function isIdle():Boolean {
+			return this._state == _STATE_IDLE;
+		}
+
+		/**
+		 * @private
+		 * 
+		 */
+		$protected_load final function start():void {
+			this._state = _STATE_PROGRESS;
+			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
+		}
+		
+		/**
+		 * @private
 		 * обвновление прогресса
 		 */
-		$protected_load function updateProgress(bytesLoaded:uint, bytesTotal:uint):void {
+		$protected_load final function updateProgress(bytesLoaded:uint, bytesTotal:uint):void {
+			if ( this._bytesLoaded == bytesLoaded && this._bytesTotal == bytesTotal ) return;
 			this._frameReady = false;
 			if ( this._bytesLoaded < bytesLoaded ) {
 				this._bytesLoaded = bytesLoaded;
@@ -426,7 +433,7 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 * слушает прогресс, и обвноляет его, если _frameReady установлен в true.
 		 */
-		$protected_load function progressHandler(event:ProgressEvent):void {
+		$protected_load final function progressHandler(event:ProgressEvent):void {
 			if ( !this._frameReady ) return;
 			this.updateProgress( event.bytesLoaded, event.bytesTotal );
 		}
@@ -434,8 +441,14 @@ package by.blooddy.core.net.loading {
 		/**
 		 * @private
 		 */
-		$protected_load function completeHandler(event:Event):void {
+		$protected_load final function completeHandler(event:Event):void {
 			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
+			if ( event is ErrorEvent ) {
+				this._state = _STATE_ERROR;
+			} else {
+				this.updateProgress( this._bytesTotal, this._bytesTotal );
+				this._state = _STATE_COMPLETE
+			}
 			this._state = ( event is ErrorEvent ? _STATE_ERROR : _STATE_COMPLETE );
 //			if ( this._id && NetMonitor.isActive() ) {
 //				if ( this._state == _STATE_COMPLETE ) {
@@ -499,7 +512,7 @@ package by.blooddy.core.net.loading {
 		//  Event handlers
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 * устанавливает _frameReady в true. что бы избежать слишком частые обвноления со стороны загрузщиков.
@@ -507,7 +520,7 @@ package by.blooddy.core.net.loading {
 		private function handler_enterFrame(event:Event):void {
 			this._frameReady = true;
 		}
-		
+
 		/**
 		 * @private
 		 */

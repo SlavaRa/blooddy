@@ -154,7 +154,7 @@ package by.blooddy.factory {
 				new URLRequest( url ),
 				new LoaderContext( false, ApplicationDomain.currentDomain, ( URL && URL.test( url ) ? SecurityDomain.currentDomain : null ) )
 			);
-			super.addChild( this._loader );
+			super.parent.addChild( this._loader );
 
 		}
 
@@ -192,12 +192,18 @@ package by.blooddy.factory {
 		 */
 		private function handler_loader_init(event:Event):void {
 			var info:LoaderInfo = event.target as LoaderInfo;
-			var c:Class = info.applicationDomain.getDefinition( 'by.blooddy.factory::ApplicationFactory' ) as Class;
-			if ( !c || !( info.content is c ) ) {
-				throw new InvalidSWFError();
+			if (
+				info.applicationDomain.hasDefinition( 'by.blooddy.factory::ApplicationFactory' ) &&
+				info.content is ( info.applicationDomain.getDefinition( 'by.blooddy.factory::ApplicationFactory' ) as Class ) 
+			) {
+				this._factory = info.content as MovieClip;
+				this._factory.addEventListener( Event.INIT, this.handler_factory_init );
+			} else {
+				this._loader.$lockStage();
+				this._loader = null;
+				super.removeEventListener( Event.REMOVED_FROM_STAGE, this.handler_removedFromStage );
+				super.parent.removeChild( this );
 			}
-			this._factory = info.content as MovieClip;
-			this._factory.addEventListener( Event.INIT, this.handler_factory_init );
 		}
 
 		/**
@@ -206,7 +212,7 @@ package by.blooddy.factory {
 		private function handler_factory_init(event:Event):void {
 			this._factory.removeEventListener( Event.INIT, this.handler_factory_init );
 			this._factory = null;
-			super.removeChild( this._loader );
+			super.parent.removeChild( this._loader );
 			this._loader.$lockStage();
 			this._loader = null;
 			super.removeEventListener( Event.REMOVED_FROM_STAGE, this.handler_removedFromStage );

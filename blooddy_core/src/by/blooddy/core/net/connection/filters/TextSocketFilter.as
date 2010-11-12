@@ -7,7 +7,7 @@
 package by.blooddy.core.net.connection.filters {
 	
 	import by.blooddy.core.net.NetCommand;
-	import by.blooddy.core.utils.crypto.UIDUtils;
+	import by.blooddy.core.utils.UIDUtils;
 	
 	import flash.errors.IllegalOperationError;
 	import flash.utils.IDataInput;

@@ -175,8 +175,7 @@
     <classEntry path="by.blooddy.core.utils.StringUtils"/>
     <classEntry path="by.blooddy.core.utils.WeakRef"/>
     <classEntry path="by.blooddy.core.utils.copyObject"/>
-    <classEntry path="by.blooddy.core.utils.crypto.Adler32"/>
-    <classEntry path="by.blooddy.core.utils.crypto.UIDUtils"/>
+    <classEntry path="by.blooddy.core.utils.UIDUtils"/>
     <classEntry path="by.blooddy.core.utils.css.ColorUtils"/>
     <classEntry path="by.blooddy.core.utils.deferredCall"/>
     <classEntry path="by.blooddy.core.utils.dispose"/>
@@ -209,6 +208,8 @@
     <classEntry path="by.blooddy.core.utils.net.Environment"/>
     <classEntry path="by.blooddy.core.meta.RDFDescriber"/>
     <classEntry path="by.blooddy.core.events.CallbackProxy"/>
+    <classEntry path="by.blooddy.core.utils.SimpleActivityListener"/>
+    <classEntry path="by.blooddy.core.net.loading.ZIPLoader"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

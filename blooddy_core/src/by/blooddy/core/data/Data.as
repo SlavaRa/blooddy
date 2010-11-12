@@ -60,7 +60,7 @@ package by.blooddy.core.data {
 		/**
 		 * @private
 		 */
-		private static const $internal_data:Namespace = DataBaseNativeEvent[ '$internal_data' ];
+		private static const $internal_data:Namespace = DataBaseNativeEvent.$internal_data;
 		
 		protected namespace $protected_data;
 

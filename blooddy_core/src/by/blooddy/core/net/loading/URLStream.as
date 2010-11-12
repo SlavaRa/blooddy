@@ -157,10 +157,10 @@ package by.blooddy.core.net.loading {
 			if ( _HTTP_RESPONSE_STATUS ) {
 				result.addEventListener( _HTTP_RESPONSE_STATUS,			super.dispatchEvent );
 			}
-			result.addEventListener( ProgressEvent.PROGRESS,			this.progressHandler );
-			result.addEventListener( Event.COMPLETE,					this.completeHandler );
-			result.addEventListener( IOErrorEvent.IO_ERROR,				this.completeHandler );
-			result.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.completeHandler );
+			result.addEventListener( ProgressEvent.PROGRESS,			this.handler_stream_progress );
+			result.addEventListener( Event.COMPLETE,					this.handler_stream_complete );
+			result.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_stream_complete );
+			result.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_stream_complete );
 			return result;
 		}
 
@@ -175,11 +175,11 @@ package by.blooddy.core.net.loading {
 				if ( _HTTP_RESPONSE_STATUS ) {
 					this._stream.removeEventListener( _HTTP_RESPONSE_STATUS,			super.dispatchEvent );
 				}
-				this._stream.removeEventListener( ProgressEvent.PROGRESS,				this.progressHandler );
 				this._stream.removeEventListener( ProgressEvent.PROGRESS,				super.progressHandler );
-				this._stream.removeEventListener( Event.COMPLETE,						this.completeHandler );
-				this._stream.removeEventListener( IOErrorEvent.IO_ERROR,				this.completeHandler );
-				this._stream.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.completeHandler );
+				this._stream.removeEventListener( ProgressEvent.PROGRESS,				this.handler_stream_progress );
+				this._stream.removeEventListener( Event.COMPLETE,						this.handler_stream_complete );
+				this._stream.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_stream_complete );
+				this._stream.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_stream_complete );
 				try {
 					this._stream.close();
 				} catch ( e:* ) {
@@ -210,19 +210,19 @@ package by.blooddy.core.net.loading {
 		/**
 		 * @private
 		 */
-		$protected_load override function progressHandler(event:ProgressEvent):void {
+		private function handler_stream_progress(event:ProgressEvent):void {
 			super.progressHandler( event );
 			if ( super.hasEventListener( Event.INIT ) ) {
 				super.dispatchEvent( new Event( Event.INIT ) );
 			}
-			this._stream.removeEventListener( ProgressEvent.PROGRESS,	this.progressHandler );
+			this._stream.removeEventListener( ProgressEvent.PROGRESS,	this.handler_stream_progress );
 			this._stream.addEventListener( ProgressEvent.PROGRESS,		super.progressHandler );
 		}
-
+		
 		/**
 		 * @private
 		 */
-		$protected_load override function completeHandler(event:Event):void {
+		private function handler_stream_complete(event:Event):void {
 			this._connected = false;
 			super.completeHandler( event );
 		}

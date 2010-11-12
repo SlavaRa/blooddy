@@ -173,7 +173,7 @@ package by.blooddy.core.net.loading {
 			result._target = this;
 			result.addEventListener( Event.OPEN,						super.dispatchEvent );
 			result.addEventListener( Event.ID3,							super.dispatchEvent );
-			result.addEventListener( ProgressEvent.PROGRESS,			this.progressHandler );
+			result.addEventListener( ProgressEvent.PROGRESS,			this.handler_sound_progress );
 			result.addEventListener( Event.COMPLETE,					this.handler_sound_complete );
 			result.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_sound_error );
 			result.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_sound_error );
@@ -189,8 +189,8 @@ package by.blooddy.core.net.loading {
 				this._sound._target = null;
 				this._sound.removeEventListener( Event.OPEN,						super.dispatchEvent );
 				this._sound.removeEventListener( Event.ID3,							super.dispatchEvent );
-				this._sound.removeEventListener( ProgressEvent.PROGRESS,			this.progressHandler );
 				this._sound.removeEventListener( ProgressEvent.PROGRESS,			super.progressHandler );
+				this._sound.removeEventListener( ProgressEvent.PROGRESS,			this.handler_sound_progress );
 				this._sound.removeEventListener( Event.COMPLETE,					this.handler_sound_complete );
 				this._sound.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_sound_error );
 				this._sound.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_sound_error );
@@ -223,11 +223,14 @@ package by.blooddy.core.net.loading {
 		//
 		//--------------------------------------------------------------------------
 
-		$protected_load override function progressHandler(event:ProgressEvent):void {
+		/**
+		 * @private
+		 */
+		private function handler_sound_progress(event:ProgressEvent):void {
 			super.progressHandler( event );
 			if ( this._sound.isBuffering && !this._sound._inited ) {
 				this._sound._inited = true;
-				this._sound.removeEventListener( ProgressEvent.PROGRESS,	this.progressHandler );
+				this._sound.removeEventListener( ProgressEvent.PROGRESS,	this.handler_sound_progress );
 				this._sound.addEventListener( ProgressEvent.PROGRESS,		super.progressHandler );
 				if ( super.hasEventListener( Event.INIT ) ) {
 					super.dispatchEvent( new Event( Event.INIT ) );
@@ -241,7 +244,7 @@ package by.blooddy.core.net.loading {
 		 */
 		private function handler_sound_complete(event:Event):void {
 			var bytesTotal:uint = this._sound.bytesLoaded;
-			super.updateProgress( bytesLoaded, bytesLoaded );
+			super.updateProgress( bytesTotal, bytesTotal );
 			if ( !this._sound._inited && super.hasEventListener( Event.INIT ) ) {
 				this._sound._inited = true;
 				super.dispatchEvent( new Event( Event.INIT ) );

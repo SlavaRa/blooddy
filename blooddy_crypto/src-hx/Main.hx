@@ -6,6 +6,7 @@
 
 package;
 
+import by.blooddy.crypto.Adler32;
 import by.blooddy.crypto.Base64;
 import by.blooddy.crypto.compression.LZW;
 import by.blooddy.crypto.CRC32;
@@ -39,6 +40,7 @@ class Main {
 		MD5;
 		Base64;
 		CRC32;
+		Adler32;
 		JPEGEncoder;
 		JPEGTableHelper;
 		PNG8Encoder;

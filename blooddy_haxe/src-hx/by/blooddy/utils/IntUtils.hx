@@ -30,4 +30,9 @@ class IntUtils {
 	public static inline function ror(x:Int, n:Int):Int {
 		return ( x << ( 32 - n ) ) | ( x >>> n );
 	}
+
+	public static inline function abs(x:Int):UInt {
+		return ( x < 0 ? -x : x );
+	}
+
 }
