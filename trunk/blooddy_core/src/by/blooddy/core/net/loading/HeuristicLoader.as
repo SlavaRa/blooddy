@@ -39,6 +39,11 @@ package by.blooddy.core.net.loading {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @private
+		 */
+		private static const $internal_zip:Namespace = ZIPLoader.$internal_zip;
+
 		use namespace $protected_load;
 
 		//--------------------------------------------------------------------------
@@ -47,6 +52,11 @@ package by.blooddy.core.net.loading {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @private
+		 */
+		private static const _XML:RegExp = /^\s*<.*>\s*$/;
+		
 		/**
 		 * @private
 		 */
@@ -90,16 +100,22 @@ package by.blooddy.core.net.loading {
 
 		/**
 		 * @private
-		 * сюда грзится swf, а так же картинки
+		 * сюда грузится swf, а так же картинки
 		 */
 		private var _loader:LoaderAsset;
 
 		/**
 		 * @private
-		 * сюда грзятся звуки
+		 * сюда грузятся звуки
 		 */
 		private var _sound:SoundAsset;
 
+		/**
+		 * @private
+		 * сюда грузятся zip
+		 */
+		private var _zip:ZIPAsset;
+		
 		/**
 		 * @private
 		 * буфер загруженных данных
@@ -248,7 +264,9 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 */
 		$protected_load override function $loadBytes(bytes:ByteArray):void {
-			var bytesTotal:uint = bytes.length;
+			if ( !this._contentType ) {
+				this._contentType = MIME.analyseBytes( bytes ); // пытаемся узнать что за говно мы грузим
+			}
 			switch ( this._contentType ) {
 				
 				case MIME.FLASH:
@@ -265,38 +283,22 @@ package by.blooddy.core.net.loading {
 					break;
 				
 				case MIME.ZIP:
-					// TODO: ZIP
+					this._zip = this.create_zip();
+					this._zip.loadBytes( bytes );
 					break;
 				
-				case MIME.BINARY:
-					this._content = bytes;
-					if ( super.hasEventListener( Event.INIT ) ) {
-						super.dispatchEvent( new Event( Event.INIT ) );
-					}
-					super.updateProgress( bytesTotal, bytesTotal );
-					super.completeHandler( new Event( Event.COMPLETE ) );
-					break;
-				
-				default:
-					// а вот хз, что это
-					try { // попытаемся узреть в нём текст
-						this._content = ( bytes.length > 0
-							?	bytes.readUTFBytes( bytes.length )
-							:	''
-						);
-						this._contentType = MIME.TEXT;
-						this.clear_input();
-					} catch ( e:* ) { // не вышло :(
-						this._contentType = MIME.BINARY;
+				default:	// а вот хз, что это
+
+					if ( this._contentType == MIME.BINARY ) {
 						this._content = bytes;
+					} else {
+						this.parseUnknownData( bytes );
 					}
 					
 					if ( super.hasEventListener( Event.INIT ) ) {
 						super.dispatchEvent( new Event( Event.INIT ) );
 					}
-					super.updateProgress( bytesTotal, bytesTotal );
 					super.completeHandler( new Event( Event.COMPLETE ) );
-					break;
 				
 			}
 		}
@@ -305,7 +307,7 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 */
 		$protected_load override function $unload():Boolean {
-			var unload:Boolean = Boolean( this._content || this._stream || this._loader || this._sound || this._input );
+			var unload:Boolean = Boolean( this._content || this._stream || this._loader || this._sound || this._zip || this._input );
 			this.clear_asset();
 			this._request = null;
 			if ( this._content ) {
@@ -359,7 +361,7 @@ package by.blooddy.core.net.loading {
 			result.addEventListener( HTTPStatusEvent.HTTP_STATUS,		super.dispatchEvent );
 			result.addEventListener( ProgressEvent.PROGRESS,			super.progressHandler );
 			result.addEventListener( Event.INIT,						this.handler_loader_init );
-			result.addEventListener( Event.COMPLETE,					this.handler_common_complete );
+			result.addEventListener( Event.COMPLETE,					super.completeHandler );
 			if ( url ) { // если загрущик инитиализатор, то загрузка идёт по урлу
 				result.addEventListener( IOErrorEvent.IO_ERROR,			this.handler_loader_url_ioError );
 			} else {
@@ -369,16 +371,6 @@ package by.blooddy.core.net.loading {
 			return result;
 		}
 
-		/**
-		 * @private
-		 */
-		private function clear_asset():void {
-			this.clear_stream();
-			this.clear_loader();
-			this.clear_sound();
-			this.clear_input();
-		}
-		
 		/**
 		 * @private
 		 * создаём звук для загрузки
@@ -392,7 +384,7 @@ package by.blooddy.core.net.loading {
 			result.addEventListener( HTTPStatusEvent.HTTP_STATUS,		super.dispatchEvent );
 			result.addEventListener( ProgressEvent.PROGRESS,			super.progressHandler );
 			result.addEventListener( Event.INIT,						this.handler_sound_init );
-			result.addEventListener( Event.COMPLETE,					this.handler_common_complete );
+			result.addEventListener( Event.COMPLETE,					super.completeHandler );
 			result.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_common_error );
 			result.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_common_error );
 			return result;
@@ -400,9 +392,39 @@ package by.blooddy.core.net.loading {
 
 		/**
 		 * @private
+		 * создаём звук для загрузки
+		 */
+		private function create_zip(open:Boolean=false):ZIPAsset {
+			var result:ZIPAsset = new ZIPAsset();
+			result._target = this;
+			if ( open ) {
+				result.addEventListener( Event.OPEN,					super.dispatchEvent );
+			}
+			result.addEventListener( HTTPStatusEvent.HTTP_STATUS,		super.dispatchEvent );
+			result.addEventListener( ProgressEvent.PROGRESS,			super.progressHandler );
+			result.addEventListener( Event.INIT,						this.handler_zip_init );
+			result.addEventListener( Event.COMPLETE,					super.completeHandler );
+			result.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_common_error );
+			result.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_common_error );
+			return result;
+		}
+		
+		/**
+		 * @private
+		 */
+		private function clear_asset():void {
+			this.clear_stream();
+			this.clear_loader();
+			this.clear_sound();
+			this.clear_zip();
+			this.clear_input();
+		}
+		
+		/**
+		 * @private
 		 * очищает stream
 		 */
-		private function clear_stream():void {
+		private function clear_stream(close:Boolean=true):void {
 			if ( this._stream ) {
 				this._stream.removeEventListener( Event.OPEN,							super.dispatchEvent );
 				this._stream.removeEventListener( HTTPStatusEvent.HTTP_STATUS,			super.dispatchEvent );
@@ -434,7 +456,7 @@ package by.blooddy.core.net.loading {
 				this._loader.removeEventListener( HTTPStatusEvent.HTTP_STATUS,			super.dispatchEvent );
 				this._loader.removeEventListener( ProgressEvent.PROGRESS,				super.progressHandler );
 				this._loader.removeEventListener( Event.INIT,							this.handler_loader_init );
-				this._loader.removeEventListener( Event.COMPLETE,						this.handler_common_complete );
+				this._loader.removeEventListener( Event.COMPLETE,						super.completeHandler );
 				this._loader.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_loader_url_ioError );
 				this._loader.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_loader_input_ioError );
 				this._loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_common_error );
@@ -460,7 +482,7 @@ package by.blooddy.core.net.loading {
 				this._sound.removeEventListener( HTTPStatusEvent.HTTP_STATUS,		super.dispatchEvent );
 				this._sound.removeEventListener( ProgressEvent.PROGRESS,			super.progressHandler );
 				this._sound.removeEventListener( Event.INIT,						this.handler_sound_init );
-				this._sound.removeEventListener( Event.COMPLETE,					this.handler_common_complete );
+				this._sound.removeEventListener( Event.COMPLETE,					super.completeHandler );
 				this._sound.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_common_error );
 				this._sound.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_common_error );
 				if ( this._sound.complete ) {
@@ -475,6 +497,29 @@ package by.blooddy.core.net.loading {
 
 		/**
 		 * @private
+		 * очищает sound
+		 */
+		private function clear_zip():void {
+			if ( this._zip ) {
+				this._zip._target = null;
+				this._zip.removeEventListener( Event.OPEN,							super.dispatchEvent );
+				this._zip.removeEventListener( HTTPStatusEvent.HTTP_STATUS,			super.dispatchEvent );
+				this._zip.removeEventListener( ProgressEvent.PROGRESS,				super.progressHandler );
+				this._zip.removeEventListener( Event.INIT,							this.handler_zip_init );
+				this._zip.removeEventListener( Event.COMPLETE,						super.completeHandler );
+				this._zip.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_common_error );
+				this._zip.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_common_error );
+				if ( this._zip.complete ) {
+					this._zip._unload();
+				} else {
+					this._zip._close();
+				}
+				this._zip = null;
+			}
+		}
+		
+		/**
+		 * @private
 		 * очищает буфер
 		 */
 		private function clear_input():void {
@@ -484,6 +529,68 @@ package by.blooddy.core.net.loading {
 			}
 		}
 
+		/**
+		 * @private
+		 */
+		private function parseUnknownData(bytes:ByteArray):void {
+			var l:uint = bytes.length;
+			if ( l > 0 ) {
+
+				// попытаемся узреть в нём текст
+				// TODO: переписать проверку на haXe
+				var c:uint;
+				var i:uint = ( bytes[ 0 ] == 0xEF && bytes[ 1 ] == 0xBB && bytes[ 2 ] == 0xBF ? 3 : 0 );
+				for ( ; i<l; i++ ) {
+					c = bytes[ i ];
+					if (
+						c == 0x00 ||
+						c >  0xF5 ||
+						c == 0xC0 ||
+						c == 0xC1
+					) {
+						break; // не utf8 строка
+					}
+				}
+				if ( i == l ) { // строка
+
+					this._content = bytes.readUTFBytes( bytes.length );
+
+					if ( _XML.test( this._content ) ) { // возможно это xml
+
+						try {
+							
+							this._content = new XMLList( this._content );
+							if ( ( this._content as XMLList ).length() == 1 ) {
+								this._content = this._content[ 0 ];
+							}
+							this._contentType = MIME.XML;
+							
+						} catch ( e:* ) {
+
+							this._contentType = MIME.TEXT;
+
+						}
+
+					} else {
+
+						this._contentType = MIME.TEXT;
+
+					}
+
+				} else {
+					
+					this._contentType = MIME.BINARY;
+					this._content = bytes;
+					
+				}
+				
+			} else {
+				
+				this._contentType = null;
+				
+			}
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Event handlers
@@ -493,15 +600,6 @@ package by.blooddy.core.net.loading {
 		//----------------------------------
 		//  common
 		//----------------------------------
-		
-		/**
-		 * @private
-		 */
-		private function handler_common_complete(event:Event):void {
-			var bytesTotal:uint = ( event.target as LoaderBase ).bytesTotal;
-			super.updateProgress( bytesTotal, bytesTotal );
-			super.completeHandler( event );
-		}
 		
 		/**
 		 * @private
@@ -545,8 +643,11 @@ package by.blooddy.core.net.loading {
 						break;
 
 					case MIME.ZIP:
-						// TODO: ZIP
-						//break;
+						this._zip = this.create_zip();
+						this._zip.$internal_zip::$load( this._input, this._stream, super.url );
+						this.clear_stream( false );
+						this._input = null;
+						break;
 
 					default:
 						// усё. стало всё попроще
@@ -587,7 +688,7 @@ package by.blooddy.core.net.loading {
 			this.clear_stream();	// закрываем поток
 			this.clear_input();
 			// опа :( нам это низя прочитать. ну что ж ... давайте попробуем по расширению узнать что это цаца
-			this._contentType = MIME.analyseURL( this._request.url ) || MIME.BINARY; // пытаемся узнать что за говно мы грузим
+			this._contentType = MIME.analyseURL( this._request.url ); // пытаемся узнать что за говно мы грузим
 			switch ( this._contentType ) {
 
 				case MIME.FLASH:
@@ -624,29 +725,15 @@ package by.blooddy.core.net.loading {
 			this._stream.readBytes( this._input, this._input.length );
 			this.clear_stream();
 			this._input.position = 0;
-			switch ( this._contentType ) {
 
-				case MIME.TEXT:
-				case MIME.HTML:
-				case MIME.RSS:
-				case MIME.XML:
-					try {
-						this._content = ( this._input.length > 0
-							?	this._input.readUTFBytes( this._input.length )
-							:	''
-						);
-						this.clear_input();
-						break;
-					} catch ( e:* ) {
-						this._contentType = MIME.BINARY;
-					}
+			this.parseUnknownData( this._input );
 
-				default:
-					this._content = this._input;
-					this._input = null;
-					break;
-
+			if ( this._input === this._content ) {
+				this._input = null;
+			} else {
+				this.clear_input();
 			}
+
 			if ( super.hasEventListener( Event.INIT ) ) {
 				super.dispatchEvent( new Event( Event.INIT ) );
 			}
@@ -697,22 +784,18 @@ package by.blooddy.core.net.loading {
 			if ( _ERROR_LOADER.test( event.text ) ) {
 				// загрузка не прошла. пробуем сделать из этой пижни бинарник
 				this._input.position = 0;
-				try { // попытаемся узреть в нём текст
-					this._content = ( this._input.length > 0
-						?	this._input.readUTFBytes( this._input.length )
-						:	''
-					);
-					this._contentType = MIME.TEXT;
-					this.clear_input();
-				} catch ( e:* ) { // не вышло :(
-					this._contentType = MIME.BINARY;
-					this._content = this._input;
+				
+				this.parseUnknownData( this._input );
+				
+				if ( this._input === this._content ) {
 					this._input = null;
+				} else {
+					this.clear_input();
 				}
+
 				if ( super.hasEventListener( Event.INIT ) ) {
 					super.dispatchEvent( new Event( Event.INIT ) );
 				}
-				super.updateProgress( bytesTotal, bytesTotal );
 				super.completeHandler( new Event( Event.COMPLETE ) );
 			} else {
 				super.completeHandler( event );
@@ -733,6 +816,20 @@ package by.blooddy.core.net.loading {
 			}
 		}
 
+		//----------------------------------
+		//  zip
+		//----------------------------------
+		
+		/**
+		 * @private
+		 */
+		private function handler_zip_init(event:Event):void {
+			this._content = this._zip;
+			if ( super.hasEventListener( Event.INIT ) ) {
+				super.dispatchEvent( event );
+			}
+		}
+		
 	}
 
 }
@@ -747,13 +844,13 @@ import by.blooddy.core.net.loading.HeuristicLoader;
 import by.blooddy.core.net.loading.Loader;
 import by.blooddy.core.net.loading.LoaderContext;
 import by.blooddy.core.net.loading.SoundLoader;
+import by.blooddy.core.net.loading.ZIPLoader;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  Helper class: LoaderAsset
 //
 ////////////////////////////////////////////////////////////////////////////////
-
 
 /**
  * @private
@@ -910,5 +1007,87 @@ internal final class SoundAsset extends SoundLoader {
 	internal function _unload():void {
 		super.unload();
 	}
+
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Helper class: ZIPAsset
+//
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * Вспомогательный класс.
+ * 
+ * необходим, что бы при попытки обратится через различные ссылки
+ * свойства были перекрыты
+ */
+internal final class ZIPAsset extends ZIPLoader {
 	
+	//--------------------------------------------------------------------------
+	//
+	//  Constructor
+	//
+	//--------------------------------------------------------------------------
+	
+	/**
+	 * @private
+	 * Constructor
+	 */
+	public function ZIPAsset() {
+		super( null );
+	}
+	
+	//--------------------------------------------------------------------------
+	//
+	//  Variables
+	//
+	//--------------------------------------------------------------------------
+	
+	/**
+	 * @private
+	 */
+	internal var _target:HeuristicLoader;
+	
+	//--------------------------------------------------------------------------
+	//
+	//  Methods
+	//
+	//--------------------------------------------------------------------------
+	
+	/**
+	 * @private
+	 */
+	public override function close():void {
+		this._target.close();
+	}
+	
+	/**
+	 * @private
+	 */
+	public override function unload():void {
+		this._target.unload();
+	}
+	
+	//--------------------------------------------------------------------------
+	//
+	//  Internal methods
+	//
+	//--------------------------------------------------------------------------
+	
+	/**
+	 * @private
+	 */
+	internal function _close():void {
+		super.close();
+	}
+	
+	/**
+	 * @private
+	 */
+	internal function _unload():void {
+		super.unload();
+	}
+
 }

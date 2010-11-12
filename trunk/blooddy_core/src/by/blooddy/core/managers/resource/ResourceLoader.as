@@ -64,12 +64,12 @@ package by.blooddy.core.managers.resource {
 		 * @private
 		 */
 		private static const _PROTO_SOUND:Object =			Sound.prototype;
-		
+
 		/**
 		 * @private
 		 */
 		private static const _PROTO_BYTE_ARRAY:Object =		ByteArray.prototype;
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -79,8 +79,9 @@ package by.blooddy.core.managers.resource {
 		/**
 		 * @inheritDoc
 		 */
-		public function ResourceLoader(request:URLRequest=null, loaderContext:LoaderContext=null) {
+		public function ResourceLoader(name:String=null, request:URLRequest=null, loaderContext:LoaderContext=null) {
 			super( request, loaderContext );
+			this._name = null;
 		}
 
 		//--------------------------------------------------------------------------
@@ -201,7 +202,9 @@ package by.blooddy.core.managers.resource {
 		 */
 		public override function loadBytes(bytes:ByteArray):void {
 			super.loadBytes( bytes );
-			this._name = MD5.hashBytes( bytes );
+			if ( this._name == null ) {
+				this._name = MD5.hashBytes( bytes );
+			}
 		}
 		
 		/**

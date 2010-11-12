@@ -590,7 +590,7 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 	//--------------------------------------------------------------------------
 
 	public function ResourceLoaderAsset(url:String) {
-		super();
+		super( url );
 		this._url = url;
 	}
 
@@ -616,10 +616,6 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 	private var _url:String;
 
 	public override function get url():String {
-		return this._url;
-	}
-
-	public override function get name():String {
 		return this._url;
 	}
 

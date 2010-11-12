@@ -4,7 +4,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.utils.crypto {
+package by.blooddy.core.utils {
 
 	import by.blooddy.core.net.domain;
 	import by.blooddy.crypto.MD5;

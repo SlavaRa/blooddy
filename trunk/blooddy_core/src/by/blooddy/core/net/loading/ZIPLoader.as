@@ -1,41 +1,37 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  © 2007 BlooDHounD
+//  © 2010 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.net.loading {
-
+	
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.HTTPStatusEvent;
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.events.SecurityErrorEvent;
-	import flash.net.URLLoaderDataFormat;
 	import flash.net.URLRequest;
-	import flash.net.URLStream;
-	import flash.net.URLVariables;
 	import flash.utils.ByteArray;
-
+	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
-	 * @playerversion			Flash 9
+	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * 
-	 * @keyword					urlloader
-	 * 
-	 * @see						flash.net.URLLoader
+	 * @created					08.11.2010 16:53:47
 	 */
-	public class URLLoader extends LoaderBase {
-
+	public class ZIPLoader extends LoaderBase {
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Namespaces
 		//
 		//--------------------------------------------------------------------------
 
+		internal namespace $internal_zip;
+		
 		use namespace $protected_load;
 		
 		//--------------------------------------------------------------------------
@@ -43,134 +39,68 @@ package by.blooddy.core.net.loading {
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-
+		
 		/**
-		 * Constructor
-		 * 
-		 * @param	request			Если надо, то сразу передадим и начнётся загрузка.
+		 * Constructor.
 		 */
-		public function URLLoader(request:URLRequest=null) {
+		public function ZIPLoader(request:URLRequest=null) {
 			super( request );
 		}
-
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Variblies
 		//
 		//--------------------------------------------------------------------------
-
+		
 		/**
 		 * @private
 		 */
 		private var _stream:flash.net.URLStream;
-
+		
+		/**
+		 * @private
+		 */
+		private var _input:ByteArray;
+		
 		//--------------------------------------------------------------------------
 		//
-		//  Properties
+		//  Internal methods
 		//
 		//--------------------------------------------------------------------------
-
-		//----------------------------------
-		//  content
-		//----------------------------------
 		
 		/**
 		 * @private
+		 * метод хак, существует для того что бы HeuristicLoader просто сделал
+		 * перенаправление а не начинал загрузку заново
 		 */
-		private var _content:*;
-		
-		/**
-		 * @copy			flash.net.URLLoader#data
-		 */
-		public function get content():* {
-			return this._content;
+		$internal_zip function $load(input:ByteArray, stream:flash.net.URLStream=null, url:String=null):void {
+			this.start();
+			if ( stream ) {
+				this.assign_stream( stream );
+				this._stream = stream;
+				this._input = input;
+			} else {
+				this.$loadBytes( input );
+			}
 		}
 		
-		//----------------------------------
-		//  dataFormat
-		//----------------------------------
-
-		/**
-		 * @private
-		 */
-		private var _dataFormat:String;
-		
-		/**
-		 * @copy			flash.net.URLLoader#dataFormat
-		 */
-		public function get dataFormat():String {
-			return this._dataFormat;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set dataFormat(value:String):void {
-			if ( this._dataFormat == value ) return;
-			if ( !super.isIdle() ) throw new ArgumentError();
-			this._dataFormat = value;
-		}
-
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
 
-//		$protected_load override function $getAbstractContent():* {
-//			return this._content;
-//		}
-		
 		$protected_load override function $load(request:URLRequest):void {
 			this._stream = this.create_stream();
 			this._stream.load( request );
 		}
-
+		
 		$protected_load override function $loadBytes(bytes:ByteArray):void {
-			switch ( this._dataFormat ) {
-				
-				case URLLoaderDataFormat.TEXT:
-				case URLLoaderDataFormat.VARIABLES:
-					try {
-						var s:String = ( bytes.length > 0
-							?	bytes.readUTFBytes( bytes.length )
-							:	''
-						);
-						this._content = ( this._dataFormat == URLLoaderDataFormat.VARIABLES
-							?	new URLVariables( s )
-							:	s
-						);
-					} catch ( e:* ) {
-						super.completeHandler( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, String( e ) ) );
-						return; // выходим :(
-					} finally {
-						bytes.clear();
-					}
-					break;
-				
-				default:
-					this._content = bytes;
-					break;
-
-			}
-			if ( super.hasEventListener( Event.INIT ) ) {
-				super.dispatchEvent( new Event( Event.INIT ) );
-			}
-			super.completeHandler( new Event( Event.COMPLETE ) );
 		}
 
-		/**
-		 * @private
-		 * очисщает данные
-		 */
 		$protected_load override function $unload():Boolean {
-			var unload:Boolean = Boolean( this._content || this._stream );
-			if ( this._content ) {
-				if ( this._content is ByteArray ) {
-					( this._content as ByteArray ).clear();
-				}
-				this._content = undefined;
-			}
+			var unload:Boolean = Boolean( this._stream );
 			this.clear_stream();
 			return unload;
 		}
@@ -187,16 +117,24 @@ package by.blooddy.core.net.loading {
 		 */
 		private function create_stream():flash.net.URLStream {
 			var result:flash.net.URLStream = new flash.net.URLStream();
-			result.addEventListener( Event.OPEN,						super.dispatchEvent );
-			result.addEventListener( HTTPStatusEvent.HTTP_STATUS,		super.dispatchEvent );
-			if ( _HTTP_RESPONSE_STATUS ) {
-				result.addEventListener( _HTTP_RESPONSE_STATUS,			super.dispatchEvent );
-			}
-			result.addEventListener( ProgressEvent.PROGRESS,			super.progressHandler );
-			result.addEventListener( Event.COMPLETE,					this.handler_stream_complete );
-			result.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_stream_error );
-			result.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_stream_error );
+			this.assign_stream( result );
 			return result;
+		}
+		
+		/**
+		 * @private
+		 * создаёт URLStream для загрузки
+		 */
+		private function assign_stream(stream:flash.net.URLStream):void {
+			stream.addEventListener( Event.OPEN,						super.dispatchEvent );
+			stream.addEventListener( HTTPStatusEvent.HTTP_STATUS,		super.dispatchEvent );
+			if ( _HTTP_RESPONSE_STATUS ) {
+				stream.addEventListener( _HTTP_RESPONSE_STATUS,			super.dispatchEvent );
+			}
+			stream.addEventListener( ProgressEvent.PROGRESS,			this.handler_stream_progress );
+			stream.addEventListener( Event.COMPLETE,					this.handler_stream_complete );
+			stream.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_stream_error );
+			stream.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_stream_error );
 		}
 		
 		/**
@@ -213,7 +151,7 @@ package by.blooddy.core.net.loading {
 				if ( _HTTP_RESPONSE_STATUS ) {
 					this._stream.removeEventListener( _HTTP_RESPONSE_STATUS,			super.dispatchEvent );
 				}
-				this._stream.removeEventListener( ProgressEvent.PROGRESS,				super.progressHandler );
+				this._stream.removeEventListener( ProgressEvent.PROGRESS,				this.handler_stream_progress );
 				this._stream.removeEventListener( Event.COMPLETE,						this.handler_stream_complete );
 				this._stream.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_stream_error );
 				this._stream.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_stream_error );
@@ -226,7 +164,7 @@ package by.blooddy.core.net.loading {
 		//  Event handlers
 		//
 		//--------------------------------------------------------------------------
-
+		
 		/**
 		 * @private
 		 */
@@ -234,9 +172,8 @@ package by.blooddy.core.net.loading {
 			var input:ByteArray = new ByteArray();
 			this._stream.readBytes( input );
 			this.clear_stream();
-			this.$loadBytes( input );
 		}
-
+		
 		/**
 		 * @private
 		 */
@@ -244,7 +181,15 @@ package by.blooddy.core.net.loading {
 			this.clear_stream();
 			super.completeHandler( event );
 		}
-		
-	}
 
+		/**
+		 * @private
+		 */
+		private function handler_stream_progress(event:ProgressEvent):void {
+			// TODO: parse
+			super.progressHandler( event );
+		}
+
+	}
+	
 }

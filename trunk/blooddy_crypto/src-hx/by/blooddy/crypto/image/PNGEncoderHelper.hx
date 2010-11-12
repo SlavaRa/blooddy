@@ -7,6 +7,7 @@
 package by.blooddy.crypto.image;
 
 import by.blooddy.crypto.CRC32;
+import by.blooddy.utils.IntUtils;
 import flash.Error;
 import flash.utils.ByteArray;
 
@@ -79,9 +80,9 @@ class PNGEncoderHelper {
 
 	public static inline function paethPredictor(a:UInt, b:UInt, c:UInt):UInt {
 		var p:Int = a + b - c;
-		var pa:UInt = abs( p - a );
-		var pb:UInt = abs( p - b );
-		var pc:UInt = abs( p - c );
+		var pa:UInt = IntUtils.abs( p - a );
+		var pb:UInt = IntUtils.abs( p - b );
+		var pc:UInt = IntUtils.abs( p - c );
 		if ( pa <= pb && pa <= pc ) {
 			return a;
 		} else if ( pb <= pc ) {
@@ -89,19 +90,6 @@ class PNGEncoderHelper {
 		} else {
 			return c;
 		}
-	}
-
-	//--------------------------------------------------------------------------
-	//
-	//  Private class variables
-	//
-	//--------------------------------------------------------------------------
-
-	/**
-	 * @private
-	 */
-	private static inline function abs(v:Int):UInt {
-		return ( v < 0 ? -v : v );
 	}
 
 }

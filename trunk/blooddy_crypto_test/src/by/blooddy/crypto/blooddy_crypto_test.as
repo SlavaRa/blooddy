@@ -19,6 +19,7 @@ package by.blooddy.crypto {
 	public class blooddy_crypto_test {
 
 		public var base64:Base64Test;
+		public var adler32:Adler32Test;
 		public var crc32:CRC32Test;
 		public var md5:MD5Test;
 		public var sha1:SHA1Test;
