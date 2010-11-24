@@ -34,6 +34,8 @@ class CRC32 {
 			tmp.position = 1024;
 			tmp.writeBytes( bytes );
 
+			// помещаем в пямять
+			if ( tmp.length < Memory.MIN_SIZE ) tmp.length = Memory.MIN_SIZE;
 			Memory.memory = tmp;
 			
 			var c:UInt = 0xFFFFFFFF;

@@ -72,7 +72,8 @@ private class TMP {
 		var colorCount:UInt = 0;
 		var tmp:ByteArray = new ByteArray();
 		tmp.length = z + len;
-		if ( tmp.length < 1024 ) tmp.length = 1024;
+		// помещаем в пямять
+		if ( tmp.length < Memory.MIN_SIZE ) tmp.length = Memory.MIN_SIZE;
 
 		Memory.memory = tmp;
 

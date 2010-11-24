@@ -6,8 +6,8 @@
 
 package by.blooddy.crypto.image;
 
+import by.blooddy.core.utils.ByteArrayUtils;
 import by.blooddy.system.Memory;
-import by.blooddy.utils.ByteArrayUtils;
 import flash.display.BitmapData;
 import flash.Error;
 import flash.utils.ByteArray;
@@ -52,7 +52,7 @@ class PNG24Encoder {
 		if ( len2 < 1024 ) chunk.length = 1024;
 		else chunk.length = len2;
 		Memory.memory = chunk;
-		if ( len < 17 ) Memory.fill( len, 17, 0x00 ); // если битмапка очень маленькая, то мы случайно могли наследить
+		if ( len < 17 ) Memory.fill( len, 17 ); // если битмапка очень маленькая, то мы случайно могли наследить
 		if ( transparent )	TMP.writeIDATContent( image, filter, len, true );
 		else				TMP.writeIDATContent( image, filter, len, false );
 		Memory.memory = mem;

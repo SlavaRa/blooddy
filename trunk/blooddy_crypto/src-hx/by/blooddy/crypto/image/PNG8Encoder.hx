@@ -6,10 +6,11 @@
 
 package by.blooddy.crypto.image;
 
+import by.blooddy.core.utils.ByteArrayUtils;
 import by.blooddy.crypto.image.palette.IPalette;
 import by.blooddy.crypto.image.palette.MedianCutPalette;
 import by.blooddy.system.Memory;
-import by.blooddy.utils.ByteArrayUtils;
+import by.blooddy.utils.IntUtils;
 import flash.display.BitmapData;
 import flash.Error;
 import flash.utils.ByteArray;
@@ -65,14 +66,14 @@ class PNG8Encoder {
 		}
 
 		// IDAT
-		if ( len2 < 1024 ) chunk.length = 1024;
+		if ( len2 < Memory.MIN_SIZE ) chunk.length = Memory.MIN_SIZE;
 		else chunk.length = len2;
 		Memory.memory = chunk;
 		if ( transparent ) {
-			if ( len < 4 + 4 * 256 ) Memory.fill( len, TMP.min( 4 + 4 * 256, len2 ), 0x00 ); // мы случайно могли наследить
+			if ( len < 4 + 4 * 256 ) Memory.fill( len, IntUtils.min( 4 + 4 * 256, len2 ) ); // мы случайно могли наследить
 			TMP.writeIDATContent( image, palette, filter, len, true );
 		} else {
-			if ( len < 4 + 3 * 256 ) Memory.fill( len, TMP.min( 4 + 3 * 256, len2 ), 0x00 ); // мы случайно могли наследить
+			if ( len < 4 + 3 * 256 ) Memory.fill( len, IntUtils.min( 4 + 3 * 256, len2 ) ); // мы случайно могли наследить
 			TMP.writeIDATContent( image, palette, filter, len, false );
 		}
 		Memory.memory = mem;
@@ -114,11 +115,13 @@ private class TMP {
 	//--------------------------------------------------------------------------
 
 	public static inline function writePalette(bytes:ByteArray, chunk:ByteArray, palette:IPalette, transparent:Bool):Void {
-		chunk.length = 1024 + 4;
+		// помещаем в пямять
+		if ( 1024 + 4 < Memory.MIN_SIZE ) chunk.length = Memory.MIN_SIZE;
+		else chunk.length = 1024 + 4;
 		Memory.memory = chunk;
 
 		var colors:Vector<UInt> = palette.getColors();
-		var l:UInt = min( colors.length, 256 );
+		var l:UInt = IntUtils.min( colors.length, 256 );
 
 		var i:UInt = 4;
 		var j:UInt = 4 + 3 * 256;
@@ -254,10 +257,6 @@ private class TMP {
 				} while ( ++y < height );
 
 		}
-	}
-
-	public static inline function min(v1:UInt, v2:UInt):UInt {
-		return ( v1 < v2 ? v1 : v2 );
 	}
 
 }

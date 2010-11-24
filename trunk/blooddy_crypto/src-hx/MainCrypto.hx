@@ -6,8 +6,8 @@
 
 package;
 
-import by.blooddy.crypto.Adler32;
 import by.blooddy.crypto.Base64;
+import by.blooddy.crypto.compression.Deflate;
 import by.blooddy.crypto.compression.LZW;
 import by.blooddy.crypto.CRC32;
 import by.blooddy.crypto.image.JPEGEncoder;
@@ -25,7 +25,7 @@ import by.blooddy.crypto.SHA256;
  * @author	BlooDHounD
  * @version	1.0
  */
-class Main {
+class MainCrypto {
 
 	//--------------------------------------------------------------------------
 	//
@@ -40,7 +40,6 @@ class Main {
 		MD5;
 		Base64;
 		CRC32;
-		Adler32;
 		JPEGEncoder;
 		JPEGTableHelper;
 		PNG8Encoder;
@@ -48,6 +47,7 @@ class Main {
 		MedianCutPaletteHelper;
 		LZW;
 		JSON;
+		Deflate;
 	}
 
 }

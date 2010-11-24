@@ -6,8 +6,8 @@
 
 package by.blooddy.crypto;
 
+import by.blooddy.core.utils.ByteArrayUtils;
 import by.blooddy.system.Memory;
-import by.blooddy.utils.ByteArrayUtils;
 import by.blooddy.utils.IntUtils;
 import flash.utils.ByteArray;
 
@@ -44,7 +44,7 @@ class SHA1 {
 		tmp.writeBytes( bytes );
 
 		// помещаем в пямять
-		if ( tmp.length < 1024 ) tmp.length = 1024;
+		if ( tmp.length < Memory.MIN_SIZE ) tmp.length = Memory.MIN_SIZE;
 		Memory.memory = tmp;
 
 		Memory.setI32( TMP.Z0 + ( ( i >>> 5 ) << 2 ), Memory.getI32( TMP.Z0 + ( ( i >>> 5 ) << 2 ) ) | ( 0x80 << ( i % 32 ) ) );

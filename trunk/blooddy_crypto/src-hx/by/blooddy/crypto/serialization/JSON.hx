@@ -44,7 +44,8 @@ class JSON {
 
 		var tmp:ByteArray = new ByteArray();
 		tmp.writeUTFBytes( '0123456789abcdef' );
-		tmp.length = 1024;
+		// помещаем в пямять
+		if ( tmp.length < Memory.MIN_SIZE ) tmp.length = Memory.MIN_SIZE;
 		Memory.memory = tmp;
 
 		var position:UInt = 16;
@@ -239,9 +240,8 @@ class JSON {
 			var tmp:ByteArray = new ByteArray();
 			tmp.writeUTFBytes( value );
 			tmp.writeByte( 0 ); // EOF
-			if ( tmp.length < 1024 ) {
-				tmp.length = 1024;
-			}
+			// помещаем в пямять
+			if ( tmp.length < Memory.MIN_SIZE ) tmp.length = Memory.MIN_SIZE;
 			Memory.memory = tmp;
 
 			var _position:UInt = 0;

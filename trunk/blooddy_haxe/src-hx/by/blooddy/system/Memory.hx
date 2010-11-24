@@ -6,6 +6,8 @@
 
 package by.blooddy.system;
 
+import flash.Error;
+import flash.Lib;
 import flash.utils.ByteArray;
 import flash.system.ApplicationDomain;
 
@@ -23,19 +25,7 @@ class Memory {
 
 	public static inline var memory( get_memory, set_memory ):ByteArray;
 
-	/**
-	 * @private
-	 */
-	private static inline function get_memory():ByteArray {
-		return ApplicationDomain.currentDomain.domainMemory;
-	}
-
-	/**
-	 * @private
-	 */
-	private static inline function set_memory(value:ByteArray):ByteArray {
-		return ApplicationDomain.currentDomain.domainMemory = value;
-	}
+	public static inline var MIN_SIZE:UInt = ApplicationDomain.MIN_DOMAIN_MEMORY_LENGTH;
 
 	//--------------------------------------------------------------------------
 	//
@@ -95,20 +85,12 @@ class Memory {
 		return untyped __vmem_sign__( 2, value );
 	}
 
-	public static inline function fill(start:UInt, end:UInt, value:Int):Void {
-		var i:UInt = start;
-		if ( end >= 12 && end - i >= 12 ) {
-			var v:UInt = value & 0xFF;
-			v |= ( v << 8 ) | ( v << 16 ) | ( v << 24 );
-			var e:UInt = end - ( end & 7 );
-			do {
-				setI32( i, v );
-				i += 4;
-			} while ( i < end ) ;
-		}
-		do {
-			setByte( i, value );
-		} while ( ++i < end ) ;
+	public static inline function fill(start:UInt, end:UInt, ?value:Int=0):Void {
+		_fill( start, end, end - start, value );
+	}
+
+	public static inline function fill2(start:UInt, len:UInt, ?value:Int = 0):Void {
+		_fill( start, start + len, len, value );
 	}
 
 	public static inline function setBI32(address:UInt, value:Int):Void {
@@ -116,6 +98,53 @@ class Memory {
 		setByte( address + 1, value >> 16 );
 		setByte( address + 2, value >>  8 );
 		setByte( address + 3, value       );
+	}
+
+	//--------------------------------------------------------------------------
+	//
+	//  Private class methods
+	//
+	//--------------------------------------------------------------------------
+
+	/**
+	 * @private
+	 */
+	private static inline function get_memory():ByteArray {
+		return ApplicationDomain.currentDomain.domainMemory;
+	}
+
+	/**
+	 * @private
+	 */
+	private static inline function set_memory(value:ByteArray):ByteArray {
+		return ApplicationDomain.currentDomain.domainMemory = value;
+	}
+
+	/**
+	 * @private
+	 */
+	private static inline function _fill(start:UInt, end:UInt, len:UInt, value:Int):Void {
+		var i:UInt = start;
+		if ( len >= 12 ) {
+			var v:UInt;
+			if ( value == 0 ) {
+				v = 0;
+			} else {
+				v = value & 0xFF;
+				v |= ( v << 8 ) | ( v << 16 ) | ( v << 24 );
+			}
+			var e:UInt = end - ( len & 3 );
+			do {
+				setI32( i, v );
+				i += 4;
+			} while ( i < e ) ;
+		} else {
+			end = start + i;
+		}
+		while ( i < end ) {
+			setByte( i, value );
+			++i;
+		}
 	}
 
 }
