@@ -35,4 +35,12 @@ class IntUtils {
 		return ( x < 0 ? -x : x );
 	}
 
+	public static inline function min(v1:UInt, v2:UInt):UInt {
+		return ( v1 < v2 ? v1 : v2 );
+	}
+
+	public static inline function max(v1:UInt, v2:UInt):UInt {
+		return ( v1 > v2 ? v1 : v2 );
+	}
+
 }

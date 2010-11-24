@@ -33,14 +33,11 @@ class JPEGEncoder {
 		var height:UInt = image.height;
 
 		var tmp:ByteArray = new ByteArray();
-
-		var table:ByteArray = JPEGTable.getTable( quality );
 		tmp.position = TMP.Z2;
-		tmp.writeBytes( table );
-		//table.clear();
-
+		tmp.writeBytes( JPEGTable.getTable( quality ) );
 		tmp.length += 680;
-
+		// помещаем в пямять
+		if ( tmp.length < Memory.MIN_SIZE ) tmp.length = Memory.MIN_SIZE;
 		Memory.memory = tmp;
 
 		// Add JPEG headers

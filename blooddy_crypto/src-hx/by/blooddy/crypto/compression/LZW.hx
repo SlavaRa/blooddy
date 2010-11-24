@@ -16,6 +16,12 @@ import flash.utils.ByteArray;
  */
 class LZW {
 
+	//--------------------------------------------------------------------------
+	//
+	//  Class methods
+	//
+	//--------------------------------------------------------------------------
+
 	public static function compress(bytes:ByteArray):Void {
 		
 	}

@@ -1,0 +1,6 @@
+-cp ../blooddy_haxe/src-hx
+-cp src-impl
+-cp src-hx
+-main MainBytes
+-swf libs/blooddy_bytes.swc
+-swf-version 10

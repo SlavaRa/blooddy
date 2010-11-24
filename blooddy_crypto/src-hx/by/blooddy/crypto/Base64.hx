@@ -38,7 +38,8 @@ class Base64 {
 		var resultLength:UInt = ( Std.int( len / 3 ) << 2 ) + ( rest > 0 ? 4 : 0 );
 		tmp.length += resultLength + ( insertNewLines ? Std.int( resultLength / 76 ) : 0 );
 
-		if ( tmp.length < 1024 ) tmp.length = 1024;
+		// помещаем в пямять
+		if ( tmp.length < Memory.MIN_SIZE ) tmp.length = Memory.MIN_SIZE;
 		Memory.memory = tmp;
 
 		var i:UInt = TMP.Z1 - 1;
@@ -109,7 +110,8 @@ class Base64 {
 
 		var bytesLength:UInt = tmp.length - 4 - 1;
 
-		if ( tmp.length < 1024 ) tmp.length = 1024;
+		// помещаем в пямять
+		if ( tmp.length < Memory.MIN_SIZE ) tmp.length = Memory.MIN_SIZE;
 		Memory.memory = tmp;
 
 		var insertNewLines:Bool = Memory.getByte( TMP.Z2 + 76 ) == 10;

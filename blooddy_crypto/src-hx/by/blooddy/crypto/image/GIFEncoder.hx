@@ -6,10 +6,11 @@
 
 package by.blooddy.crypto.image;
 
+import by.blooddy.core.utils.ByteArrayUtils;
 import by.blooddy.crypto.image.palette.IPalette;
 import by.blooddy.crypto.image.palette.MedianCutPalette;
 import by.blooddy.system.Memory;
-import by.blooddy.utils.ByteArrayUtils;
+import by.blooddy.utils.IntUtils;
 import flash.display.BitmapData;
 import flash.Error;
 import flash.utils.ByteArray;
@@ -107,7 +108,7 @@ private class TMP {
 		Memory.memory = chunk;
 
 		var colors:Vector<UInt> = palette.getColors();
-		var l:UInt = min( colors.length, 256 );
+		var l:UInt = IntUtils.min( colors.length, 256 );
 
 		var i:UInt = 0;
 		var k:UInt = 0;
@@ -121,7 +122,7 @@ private class TMP {
 		} while ( k < l );
 		l = getPaletteLength( l );
 		if ( k < l ) {
-			Memory.fill( i, l*3, 0 );
+			Memory.fill( i, l*3 );
 		}
 		Memory.memory = null;
 		chunk.length = i;
@@ -154,13 +155,6 @@ private class TMP {
 		else if ( l >   4 )	return 8;
 		else if ( l >   2 )	return 4;
 		else				return 2;
-	}
-
-	/**
-	 * @private
-	 */
-	private static inline function min(v1:UInt, v2:UInt):UInt {
-		return ( v1 < v2 ? v1 : v2 );
 	}
 
 }

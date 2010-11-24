@@ -54,7 +54,7 @@ package by.blooddy.crypto.image {
 		 */
 		public static const SUB:int =		1;
 
-		/**
+		/*
 		 * Writes the byte as a difference of the given pixel and the pixel above it:
 		 * <pre>Up(x) = Raw(x) - Prior(x)</pre>
 		 * where 
@@ -84,7 +84,7 @@ package by.blooddy.crypto.image {
 		 */
 		public static const AVERAGE:int =	3;
 
-		/**
+		/*
 		 * Writes the byte based on the output of a linear function that takes upper
 		 * pixel, left neighbor pixel and upper-left pixels for an input. This 
 		 * function was named after it's inventor Alan Paeth.

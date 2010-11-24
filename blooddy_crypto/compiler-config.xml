@@ -5,6 +5,7 @@
 	</compiler>
 
 	<includes>
+		<symbol>by.blooddy.crypto.compression.Deflate</symbol>
 		<symbol>by.blooddy.crypto.image.JPEGEncoder</symbol>
 		<symbol>by.blooddy.crypto.image.PNG8Encoder</symbol>
 		<symbol>by.blooddy.crypto.image.PNG24Encoder</symbol>
