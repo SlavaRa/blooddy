@@ -227,7 +227,10 @@ package by.blooddy.core.managers.resource {
 		 * @private
 		 */
 		public override function toString():String {
-			return '[' + ClassUtils.getClassName( this ) + ( this.url ? ' name="' + this.url + '"' : ' object' ) + ']';
+			return '[' + ClassUtils.getClassName( this ) +
+						( super.url ? ' url="' + this.url + '"' : ' object' ) +
+						( this._name || super.url ? ' name="' + ( this._name || super.url ) + '"' : ' object' ) +
+					']';
 		}
 		
 		//--------------------------------------------------------------------------

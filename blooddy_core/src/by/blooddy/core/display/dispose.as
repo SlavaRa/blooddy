@@ -69,9 +69,9 @@ internal function $dispose(child:DisplayObject, safe:Boolean):void {
 			}
 		} else {
 			var container:DisplayObjectContainer = child as DisplayObjectContainer;
-			while ( container.numChildren ) {
-				$dispose( container.removeChildAt( 0 ), safe );
-			}
+//			while ( container.numChildren ) {
+//				$dispose( container.removeChildAt( 0 ), safe );
+//			}
 			if ( child is Sprite ) {
 				( child as Sprite ).graphics.clear();
 				if ( child is MovieClip ) {

@@ -7,6 +7,7 @@
 package by.blooddy.core.net.loading {
 
 	import by.blooddy.core.net.MIME;
+	import by.blooddy.core.utils.ByteArrayUtils;
 	import by.blooddy.core.utils.dispose;
 	import by.blooddy.core.utils.net.copyURLRequest;
 	
@@ -537,21 +538,21 @@ package by.blooddy.core.net.loading {
 			if ( l > 0 ) {
 
 				// попытаемся узреть в нём текст
-				// TODO: переписать проверку на haXe
-				var c:uint;
-				var i:uint = ( bytes[ 0 ] == 0xEF && bytes[ 1 ] == 0xBB && bytes[ 2 ] == 0xBF ? 3 : 0 );
-				for ( ; i<l; i++ ) {
-					c = bytes[ i ];
-					if (
-						c == 0x00 ||
-						c >  0xF5 ||
-						c == 0xC0 ||
-						c == 0xC1
-					) {
-						break; // не utf8 строка
-					}
-				}
-				if ( i == l ) { // строка
+//				var c:uint;
+//				var i:uint = ( bytes[ 0 ] == 0xEF && bytes[ 1 ] == 0xBB && bytes[ 2 ] == 0xBF ? 3 : 0 );
+//				for ( ; i<l; i++ ) {
+//					c = bytes[ i ];
+//					if (
+//						c == 0x00 ||
+//						c >  0xF5 ||
+//						c == 0xC0 ||
+//						c == 0xC1
+//					) {
+//						break; // не utf8 строка
+//					}
+//				}
+//				if ( i == l ) { // строка
+				if ( ByteArrayUtils.isUTFString( bytes ) ) {
 
 					this._content = bytes.readUTFBytes( bytes.length );
 

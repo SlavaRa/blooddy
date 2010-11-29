@@ -317,6 +317,8 @@ package by.blooddy.core.net.loading {
 
 				}
 
+			} catch ( e:* ) {
+				// ignore
 			}
 		}
 
@@ -324,7 +326,9 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 */
 		private function handler_init(event:Event):void {
-			var content:DisplayObject = this._loader._content;
+			var content:DisplayObject;
+			// TODO: что делать, если content null?
+			content = this._loader._content;
 
 			_JUNK.addChild( content );
 			_JUNK.removeChild( content );
