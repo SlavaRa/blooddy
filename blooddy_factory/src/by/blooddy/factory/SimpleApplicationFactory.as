@@ -174,8 +174,9 @@ package by.blooddy.factory {
 				rootClassName = super.loaderInfo.url.match( /[^\\\/]*?(?=(\.[^\.]*)?$)/ )[0] as String;
 				if ( !appd.hasDefinition( rootClassName ) ) rootClassName = null;
 			}
-			var Root:Class = appd.getDefinition( rootClassName ) as Class;
-			if ( Root ) {
+
+			if ( appd.hasDefinition( rootClassName ) ) {
+				var Root:Class = appd.getDefinition( rootClassName ) as Class;
 				// вернём stage где был
 				var stage:Stage = super.stage;
 				if ( DisplayObject.prototype.isPrototypeOf( Root.prototype ) ) {

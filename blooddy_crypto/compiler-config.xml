@@ -5,7 +5,7 @@
 	</compiler>
 
 	<includes>
-		<symbol>by.blooddy.crypto.compression.Deflate</symbol>
+		<!--symbol>by.blooddy.crypto.compression.Deflate</symbol-->
 		<symbol>by.blooddy.crypto.image.JPEGEncoder</symbol>
 		<symbol>by.blooddy.crypto.image.PNG8Encoder</symbol>
 		<symbol>by.blooddy.crypto.image.PNG24Encoder</symbol>
@@ -14,6 +14,7 @@
 		<symbol>by.blooddy.crypto.SHA224</symbol>
 		<symbol>by.blooddy.crypto.MD5</symbol>
 		<symbol>by.blooddy.crypto.Base64</symbol>
+		<symbol>by.blooddy.crypto.Adler32</symbol>
 		<symbol>by.blooddy.crypto.CRC32</symbol>
 		<symbol>by.blooddy.crypto.serialization.JSON</symbol>
 	</includes>
