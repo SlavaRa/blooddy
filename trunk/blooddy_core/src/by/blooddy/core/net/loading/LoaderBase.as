@@ -356,7 +356,7 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 */
 		public override function toString():String {
-			return '[' + ClassUtils.getClassName( this ) + ( this.url ? ' url="' + this.url + '"' : ' object' ) + ']';
+			return '[' + ClassUtils.getClassName( this ) + ( this._url ? ' url="' + this._url + '"' : ' object' ) + ']';
 		}
 		
 		//--------------------------------------------------------------------------
@@ -447,7 +447,7 @@ package by.blooddy.core.net.loading {
 				this._state = _STATE_ERROR;
 			} else {
 				this.updateProgress( this._bytesTotal, this._bytesTotal );
-				this._state = _STATE_COMPLETE
+				this._state = _STATE_COMPLETE;
 			}
 			this._state = ( event is ErrorEvent ? _STATE_ERROR : _STATE_COMPLETE );
 //			if ( this._id && NetMonitor.isActive() ) {

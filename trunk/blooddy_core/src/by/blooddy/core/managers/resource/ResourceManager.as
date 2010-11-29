@@ -707,7 +707,7 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 			try { // так как запуск отложен, то и ошибку надо генерировать в виде события
 				super.load( new URLRequest( url ) );
 			} catch ( e:SecurityError ) {
-				super.completeHandler( new SecurityErrorEvent( SecurityErrorEvent.SECURITY_ERROR, false, false, String( e ) ) );
+				super.completeHandler( new SecurityErrorEvent( SecurityErrorEvent.SECURITY_ERROR, false, false, e.toString() ) );
 			} catch ( e:* ) {
 				super.completeHandler( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, String( e ) ) );
 			} finally {

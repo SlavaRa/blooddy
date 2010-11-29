@@ -273,7 +273,7 @@ package by.blooddy.core.net.loading {
 		/**
 		 * @private
 		 */
-		private function handler_error(event:ErrorEvent):void {
+		private function handler_error(event:Event):void {
 			this.$removeProcess( event.target as IProcessable );
 		}
 

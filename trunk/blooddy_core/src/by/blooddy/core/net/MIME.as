@@ -66,51 +66,49 @@ package by.blooddy.core.net {
 		//--------------------------------------------------------------------------
 
 		public static function analyseBytes(bytes:ByteArray):String {
-			if			( bytes[0] == 67 ) { // C
-				if			( bytes[1] == 87 ) { // W
-					if			( bytes[2] == 83 ) { // S
-						// CWS // swf
-						return FLASH;
-					}
-				}
-			} else if	( bytes[0] == 70 ) { // F
-				if			( bytes[1] == 87 ) { // W
-					if			( bytes[2] == 83 ) { // S
-						// FWS // swf
-						return FLASH;
-					}
-				}
-			} else if	( bytes[0] == 71 ) { // G
-				if			( bytes[1] == 73 ) { // I
-					if			( bytes[2] == 70 ) { // F
-						// TODO: проверить коректность кодеков
-						// GIF // gif
-						return GIF;
-					}
-				}
-			} else if	( bytes[0] == 0x89 ) { // 89 50 4E 47
-				if			( bytes[1] == 0x50 ) { // P 
-					if			( bytes[2] == 0x4E ) { // N
-						if			( bytes[3] == 0x47 ) { // G
-									// ‰PNG // png
-									return PNG;
-								}
-							}
-						}
-			} else if	( bytes[0] == 0xFF ) {
-				if			( bytes[1] == 0xD8 ) {
-					// TODO: внедрить порверку по глубже
-					// jpg
-					return JPEG;
-				}
-			} else if	( bytes[0] == 73 ) { // I
-				if			( bytes[1] == 68 ) { // D
-					if			( bytes[2] == 51 ) { // 3
-						// TODO: углубить проверку
-						// ID3 // mp3
-						return MP3;
-					}
-				}
+			if (
+				(
+					bytes[0] == 67 ||	// C
+					bytes[0] == 70		// F
+				) &&
+				bytes[1] == 87 &&	// W
+				bytes[2] == 83		// S
+			) {
+				return FLASH;
+			} else if (
+				bytes[0] == 71 &&	// G
+				bytes[1] == 73 &&	// I
+				bytes[2] == 70		// F
+			) {
+				// TODO: проверить коректность кодеков
+				return GIF;
+			} else if (
+				bytes[0] == 0x89 &&	// ‰
+				bytes[1] == 0x50 &&	// P 
+				bytes[2] == 0x4E &&	// N
+				bytes[3] == 0x47	// G
+			) { 
+				return PNG;
+			} else if (
+				bytes[0] == 0xFF &&
+				bytes[1] == 0xD8
+			) {
+				// TODO: внедрить порверку по глубже
+				return JPEG;
+			} else if (
+				bytes[0] == 73 &&	// I
+				bytes[1] == 68 &&	// D
+				bytes[2] == 51		// 3
+			) {
+				// TODO: углубить проверку
+				return MP3;
+			} else if (
+				bytes[0] == 0x50 &&
+				bytes[1] == 0x4B &&
+				bytes[2] == 0x03 &&
+				bytes[3] == 0x04
+			) {
+				return ZIP;
 			} else {
 //				var l:uint = bytes.length;
 //				for ( var i:uint = 0; i<l; ++i ) {
@@ -139,6 +137,7 @@ package by.blooddy.core.net {
 						case 'html':
 						case 'htm':		return HTML;
 						case 'txt':		return TEXT;
+						case 'zip':		return ZIP;
 					}
 				}
 			}

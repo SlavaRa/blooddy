@@ -209,7 +209,6 @@
     <classEntry path="by.blooddy.core.events.CallbackProxy"/>
     <classEntry path="by.blooddy.core.utils.SimpleActivityListener"/>
     <classEntry path="by.blooddy.core.net.loading.ZIPLoader"/>
-    <classEntry path="by.blooddy.core.managers.resource.IResourceManagerStore"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
