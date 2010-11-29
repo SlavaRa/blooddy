@@ -44,6 +44,7 @@
         </excludedEntries>
       </libraryPathEntry>
       <libraryPathEntry kind="3" linkType="2" path="/blooddy_crypto/bin-debug/blooddy_crypto.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="2" path="/blooddy_bytes/bin-debug/blooddy_bytes.swc" useDefaultLinkType="false"/>
     </libraryPath>
     <sourceAttachmentPath/>
   </compiler>

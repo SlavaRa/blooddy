@@ -17,6 +17,7 @@ package by.blooddy.core.managers.resource {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.net.URLRequest;
+	import flash.utils.ByteArray;
 
 	//--------------------------------------
 	//  Events
@@ -119,26 +120,20 @@ package by.blooddy.core.managers.resource {
 		//  baseURL
 		//----------------------------------
 
-		public static function get baseURL():String {
-			return ResourceLoaderAsset.baseURL || '';
-		}
-
-		public static function set baseURL(value:String):void {
-			ResourceLoaderAsset.baseURL = value;
-		}
+		public static var baseURL:String;
 
 		//----------------------------------
-		//  baseURL
+		//  ignoreSecurityDomain
 		//----------------------------------
 		
-		public static function get ignoreSecurityDomain():Boolean {
-			return ResourceLoaderAsset.ignoreSecurityDomain;
-		}
-		
-		public static function set ignoreSecurityDomain(value:Boolean):void {
-			ResourceLoaderAsset.ignoreSecurityDomain = value;
-		}
+		public static var ignoreSecurityDomain:Boolean = true;
 
+		//----------------------------------
+		//  store
+		//----------------------------------
+		
+		public static var store:IResourceManagerStore;
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Private class methods
@@ -431,7 +426,7 @@ package by.blooddy.core.managers.resource {
 				if ( url in _HASH ) {
 					asset = _HASH[ url ];
 				} else {
-					_HASH[ url ] = asset = new ResourceLoaderAsset( url );
+					_HASH[ url ] = asset = new ResourceLoaderAsset( url, ( store ? store.getFileByName( url ) : null ) );
 					addLoaderQueue( asset, priority );
 				}
 				asset.managers[ this ] = true;
@@ -523,6 +518,7 @@ package by.blooddy.core.managers.resource {
 
 import by.blooddy.core.managers.resource.IResourceBundle;
 import by.blooddy.core.managers.resource.ResourceLoader;
+import by.blooddy.core.managers.resource.ResourceManager;
 import by.blooddy.core.net.loading.LoaderContext;
 import by.blooddy.core.utils.ClassUtils;
 
@@ -538,10 +534,53 @@ import flash.utils.ByteArray;
 import flash.utils.Dictionary;
 import flash.utils.getTimer;
 
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Helper const: _DEFAULT_BUNDLE
+//
+////////////////////////////////////////////////////////////////////////////////
+
 /**
  * @private
  */
 internal const _DEFAULT_BUNDLE:DefaultResourceBundle = new DefaultResourceBundle();
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Helper class: QueueItem
+//
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ */
+internal final class QueueItem {
+	
+	//--------------------------------------------------------------------------
+	//
+	//  Constructor
+	//
+	//--------------------------------------------------------------------------
+	
+	public function QueueItem(asset:ResourceLoaderAsset, priority:int=0.0) {
+		super();
+		this.asset = asset;
+		this.priority = priority;
+	}
+	
+	//--------------------------------------------------------------------------
+	//
+	//  Properties
+	//
+	//--------------------------------------------------------------------------
+	
+	public var asset:ResourceLoaderAsset;
+	
+	public var priority:int;
+	
+	public const time:Number = getTimer();
+	
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -564,16 +603,6 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 	
 	//--------------------------------------------------------------------------
 	//
-	//  Class properties
-	//
-	//--------------------------------------------------------------------------
-
-	public static var baseURL:String;
-
-	public static var ignoreSecurityDomain:Boolean = true;
-
-	//--------------------------------------------------------------------------
-	//
 	//  Class variables
 	//
 	//--------------------------------------------------------------------------
@@ -589,9 +618,10 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 	//
 	//--------------------------------------------------------------------------
 
-	public function ResourceLoaderAsset(url:String) {
+	public function ResourceLoaderAsset(url:String, bytes:ByteArray) {
 		super( url );
 		this._url = url;
+		this._bytes = bytes;
 	}
 
 	//--------------------------------------------------------------------------
@@ -599,6 +629,11 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 	//  Variables
 	//
 	//--------------------------------------------------------------------------
+
+	/**
+	 * @private
+	 */
+	private var _bytes:ByteArray;
 
 	internal var queue:QueueItem;
 	
@@ -659,19 +694,25 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 	//--------------------------------------------------------------------------
 	
 	internal function $load():void {
-		var url:String;
-		if ( !baseURL || _URL.test( this._url ) ) {
-			url = this._url;
+		if ( this._bytes ) {
+			super.loadBytes( this._bytes );
 		} else {
-			url = baseURL + '/' + this._url;
-		}
-		super.loaderContext = new LoaderContext( new ApplicationDomain( ApplicationDomain.currentDomain ), ignoreSecurityDomain );
-		try { // так как запуск отложен, то и ошибку надо генерировать в виде события
-			super.load( new URLRequest( url ) );
-		} catch ( e:SecurityError ) {
-			super.completeHandler( new SecurityErrorEvent( SecurityErrorEvent.SECURITY_ERROR, false, false, String( e ) ) );
-		} catch ( e:* ) {
-			super.completeHandler( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, String( e ) ) );
+			var url:String;
+			if ( !ResourceManager.baseURL || _URL.test( this._url ) ) {
+				url = this._url;
+			} else {
+				url = ResourceManager.baseURL + '/' + this._url;
+			}
+			super.loaderContext = new LoaderContext( new ApplicationDomain( ApplicationDomain.currentDomain ), ResourceManager.ignoreSecurityDomain );
+			try { // так как запуск отложен, то и ошибку надо генерировать в виде события
+				super.load( new URLRequest( url ) );
+			} catch ( e:SecurityError ) {
+				super.completeHandler( new SecurityErrorEvent( SecurityErrorEvent.SECURITY_ERROR, false, false, String( e ) ) );
+			} catch ( e:* ) {
+				super.completeHandler( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, String( e ) ) );
+			} finally {
+				this._bytes = null;
+			}
 		}
 	}
 	
@@ -682,31 +723,6 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 	internal function $unload():void {
 		super.unload();
 	}
-
-}
-
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Helper class: QueueItem
-//
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- */
-internal final class QueueItem {
-
-	public function QueueItem(asset:ResourceLoaderAsset, priority:int=0.0) {
-		super();
-		this.asset = asset;
-		this.priority = priority;
-	}
-
-	public var asset:ResourceLoaderAsset;
-	
-	public var priority:int;
-	
-	public const time:Number = getTimer();
 
 }
 

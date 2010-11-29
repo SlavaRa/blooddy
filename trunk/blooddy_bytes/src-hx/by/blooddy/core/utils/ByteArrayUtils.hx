@@ -7,7 +7,9 @@
 package by.blooddy.core.utils;
 
 import by.blooddy.system.Memory;
+import by.blooddy.utils.IntUtils;
 import flash.Error;
+import flash.Lib;
 import flash.utils.ByteArray;
 
 /**
@@ -167,5 +169,117 @@ class ByteArrayUtils {
 		}
 		return result;
 	}
+
+	public static function dump(bytes:ByteArray, offset:UInt=0, length:UInt=0):String {
+
+		offset = IntUtils.min( offset, bytes.length );
+		if ( offset >= bytes.length ) return '';
+		length = (
+			length == 0
+			?	bytes.length - offset
+			:	IntUtils.min( length, bytes.length - offset )
+		);
+
+		var rest:UInt = length & 15;
+
+		var tmp:ByteArray = new ByteArray();
+		tmp.writeUTFBytes( '0123456789ABCDEF' );
+		tmp.writeBytes( bytes, offset, length );
+		tmp.length += ( ( length >> 4 ) + ( rest == 0 ? 0 : 1 ) ) * 80;
+		length += 16;
+		if ( length <= Memory.MIN_SIZE ) {
+			tmp.length = Memory.MIN_SIZE;
+		}
+		Memory.memory = tmp;
+		
+		var i:UInt = 16;
+		var j:UInt = length;
+
+		var k:UInt;
+		var v:UInt;
+		var len:UInt;
+		var len2:UInt;
+
+		do {
+			
+			Memory.fill2( j, 80, 0x20 );
+
+			v = i - 16;
+			
+			if ( v < TMP.MASK1 ) Memory.setI32( j,     0x30303030 );
+			if ( v < TMP.MASK2 ) Memory.setI32( j + 4, 0x30303030 );
+
+			j += 8;
+			if ( v > 0 ) {
+
+				k = j;
+				do {
+					Memory.setByte( --k, Memory.getByte( v & 0xF ) );
+					v >>>= 4;
+				} while ( v > 0 );
+			}
+
+			Memory.setI16( j, 0x203A );
+			j += 2;
+
+			k = j + 50;
+
+			Memory.setByte( k++, 0x7C );
+
+			len2 = i + 8;
+			len = IntUtils.min( len2, length );
+			while ( i < len ) {
+				v = Memory.getByte( i++ );
+				Memory.setByte( j++, Memory.getByte( v >> 4 ) );
+				Memory.setByte( j++, Memory.getByte( v & 0xF ) );
+				Memory.setByte( j++, 0x20 );
+				Memory.setByte( k++, v < 32 || v > 126 ? 0x2E : v );
+			}
+			while ( i < len2 ) {
+				i++;
+				Memory.setI16( j, 0x2020 );
+				j += 2;
+				Memory.setByte( j++, 0x20 );
+				Memory.setByte( k++, 0x20 );
+			}
+			Memory.setByte( j++, 0x20 );
+			len2 = i + 8;
+			len = IntUtils.min( len2, length );
+			while ( i < len ) {
+				v = Memory.getByte( i++ );
+				Memory.setByte( j++, Memory.getByte( v >> 4 ) );
+				Memory.setByte( j++, Memory.getByte( v & 0xF ) );
+				Memory.setByte( j++, 0x20 );
+				Memory.setByte( k++, v < 32 || v > 126 ? 0x2E : v );
+			}
+			while ( i < len2 ) {
+				i++;
+				Memory.setI16( j, 0x2020 );
+				j += 2;
+				Memory.setByte( j++, 0x20 );
+				Memory.setByte( k++, 0x20 );
+			}
+			Memory.setByte( j++, 0x20 );
+
+			Memory.setByte( k++, 0x7C );
+			
+			j += 18;
+			Memory.setByte( j++, 0x0A );
+			
+		} while ( i < length );
+
+		tmp.position = length;
+
+		return tmp.readUTFBytes( tmp.bytesAvailable );
+
+	}
+//00000000:  7F FF FF FF 87 F1 99 FF  77 FF E5 FF 93 EF E5 B4  |........w.......|
+
+}
+
+private class TMP {
+
+	public static inline var MASK1:UInt = 0xFFFFFFFF;
+	public static inline var MASK2:UInt = 0x0000FFFF;
 
 }

@@ -26,6 +26,7 @@ class JPEGEncoder {
 	public static inline function encode(image:BitmapData, ?quality:UInt=60):ByteArray {
 
 		if ( image == null ) Error.throwError( TypeError, 2007, 'image' );
+		if ( quality > 100 ) Error.throwError( RangeError, 2006, 'quality' );
 
 		var mem:ByteArray = Memory.memory;
 
@@ -78,10 +79,8 @@ class JPEGEncoder {
 		} while ( _y < height );
 
 		// Do the bit alignment of the EOI marker
-		var _bytepos:Int;
-		if ( Memory.getI32( 4 ) >= 0 ) {
-			_bytepos = Memory.getI32( 4 ) + 1;
-			TMP.writeBits( _byteout, _bytepos, _bytenew, _bytepos, ( 1 << _bytepos ) - 1 );
+		if ( _bytepos >= 0 ) {
+			TMP.writeBits( _byteout, _bytepos, _bytenew, _bytepos + 1, ( 1 << ( _bytepos + 1 ) ) - 1 );
 		}
 
 		Memory.setI16( _byteout, 0xD9FF ); //EOI

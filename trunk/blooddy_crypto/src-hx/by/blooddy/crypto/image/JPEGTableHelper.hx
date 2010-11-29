@@ -7,6 +7,7 @@
 package by.blooddy.crypto.image;
 
 import by.blooddy.system.Memory;
+import flash.Error;
 import flash.utils.ByteArray;
 
 /**
@@ -32,7 +33,15 @@ class JPEGTableHelper {
 	 */
 	public static inline function createQuantTable(quality:UInt):ByteArray {
 
-		var sf:UInt = quality < 50 ? Std.int( 5000 / quality ) : Std.int( 200 - ( quality << 1 ) );
+		if ( quality > 100 ) Error.throwError( RangeError, 2006, 'quality' );
+		
+		var sf:UInt = ( quality <= 1
+			?	5000
+			:	( quality < 50
+				?	Std.int( 5000 / quality )
+				:	200 - ( quality << 1 )
+				)
+			);
 
 		var mem:ByteArray = Memory.memory;
 

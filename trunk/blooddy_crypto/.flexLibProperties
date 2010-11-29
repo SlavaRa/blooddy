@@ -9,15 +9,6 @@
     <classEntry path="by.blooddy.crypto.image.palette.LevelsPalette"/>
     <classEntry path="by.blooddy.crypto.image.palette.MedianCutPalette"/>
     <classEntry path="by.blooddy.crypto.serialization.SerializationHelper"/>
-    <classEntry path="nochump.util.zip.CRC32"/>
-    <classEntry path="nochump.util.zip.Deflater"/>
-    <classEntry path="nochump.util.zip.Inflater"/>
-    <classEntry path="nochump.util.zip.ZipConstants"/>
-    <classEntry path="nochump.util.zip.ZipEntry"/>
-    <classEntry path="nochump.util.zip.ZipError"/>
-    <classEntry path="nochump.util.zip.ZipFile"/>
-    <classEntry path="nochump.util.zip.ZipOutput"/>
-    <classEntry path="by.blooddy.crypto.compression.DeflateTable"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
