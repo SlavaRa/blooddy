@@ -6,6 +6,8 @@
 
 package by.blooddy.core.utils {
 
+	import by.blooddy.core.net.Responder;
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -30,7 +32,7 @@ package by.blooddy.core.utils {
 		 *
 		 * @keyword					iabstractremoter.call, call
 		 */
-		function call(commandName:String, ... parameters):*;
+		function call(commandName:String, responder:Responder=null, ...parameters):*;
 
 	}
 

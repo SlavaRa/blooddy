@@ -10,6 +10,7 @@ package by.blooddy.core.controllers {
 	import by.blooddy.core.commands.CommandDispatcher;
 	import by.blooddy.core.data.DataBase;
 	import by.blooddy.core.net.ProxySharedObject;
+	import by.blooddy.core.net.Responder;
 	
 	import flash.display.DisplayObjectContainer;
 
@@ -116,7 +117,8 @@ package by.blooddy.core.controllers {
 		/**
 		 * @inheritDoc
 		 */
-		public function call(commandName:String, ...arguments):* {
+		public function call(commandName:String, responder:Responder=null, ...arguments):* {
+			if ( responder ) throw new ArgumentError();
 			super.dispatchCommand( new Command( commandName, arguments ) );
 		}
 

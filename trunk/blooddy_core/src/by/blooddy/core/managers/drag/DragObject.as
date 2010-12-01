@@ -22,25 +22,6 @@ package by.blooddy.core.managers.drag {
 	import flash.system.Capabilities;
 
 	//--------------------------------------
-	//  Events
-	//--------------------------------------
-
-	/**
-	 * @eventType			platform.events.DragEvent.DRAG_STOP
-	 */
-	[Event( name="dragStop", type="platform.events.DragEvent" )]
-
-	/**
-	 * @eventType			platform.events.DragEvent.DRAG_MOVE
-	 */
-	[Event( name="dragMove", type="platform.events.DragEvent" )]
-
-	/**
-	 * @eventType			platform.events.DragEvent.DRAG_FAIL
-	 */
-	[Event( name="dragFail", type="platform.events.DragEvent" )]
-
-	//--------------------------------------
 	//  Excluded APIs
 	//--------------------------------------
 

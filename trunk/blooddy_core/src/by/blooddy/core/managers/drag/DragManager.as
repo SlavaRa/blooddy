@@ -25,22 +25,22 @@ package by.blooddy.core.managers.drag {
 	//--------------------------------------
 
 	/**
-	 * @eventType			platform.events.DragEvent.DRAG_START
+	 * @eventType			y.blooddy.core.events.managers.DragEvent.DRAG_START
 	 */
 	[Event( name="dragStart", type="by.blooddy.core.events.managers.DragEvent" )]
 
 	/**
-	 * @eventType			platform.events.DragEvent.DRAG_STOP
+	 * @eventType			y.blooddy.core.events.managers.DragEvent.DRAG_STOP
 	 */
 	[Event( name="dragStop", type="by.blooddy.core.events.managers.DragEvent" )]
 
 	/**
-	 * @eventType			platform.events.DragEvent.DRAG_MOVE
+	 * @eventType			y.blooddy.core.events.managers.DragEvent.DRAG_MOVE
 	 */
 	[Event( name="dragMove", type="by.blooddy.core.events.managers.DragEvent" )]
 
 	/**
-	 * @eventType			platform.events.DragEvent.DRAG_FAIL
+	 * @eventType			y.blooddy.core.events.managers.DragEvent.DRAG_FAIL
 	 */
 	[Event( name="dragFail", type="by.blooddy.core.events.managers.DragEvent" )]
 
@@ -60,7 +60,7 @@ package by.blooddy.core.managers.drag {
 		//
 		//--------------------------------------------------------------------------
 		
-		private static const $internal_drag:Namespace = DragObject[ '$internal_drag' ];
+		private static const $internal_drag:Namespace = DragObject.$internal_drag;
 		
 		//--------------------------------------------------------------------------
 		//

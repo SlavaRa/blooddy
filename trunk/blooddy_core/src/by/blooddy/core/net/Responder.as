@@ -22,7 +22,7 @@ package by.blooddy.core.net {
 		//
 		//--------------------------------------------------------------------------
 		
-		public function Responder(result:Function, status:Function=null) {
+		public function Responder(result:Function!, status:Function=null) {
 
 			super( result, status );
 
@@ -41,7 +41,7 @@ package by.blooddy.core.net {
 		 */
 		private var _result:Function;
 
-		internal function get result():Function {
+		public function get result():Function {
 			return this._result;
 		}
 
@@ -50,7 +50,7 @@ package by.blooddy.core.net {
 		 */
 		private var _status:Function;
 
-		internal function get status():Function {
+		public function get status():Function {
 			return this._status;
 		}
 

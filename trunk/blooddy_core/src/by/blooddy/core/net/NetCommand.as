@@ -61,7 +61,7 @@ package by.blooddy.core.net {
 		 */
 		public function NetCommand(name:String, io:String=UNKNOWN, arguments:Array=null) {
 			super( name, arguments );
-			this.setIO( io );
+			this.io = io;
 		}
 
 		//--------------------------------------------------------------------------
@@ -74,58 +74,25 @@ package by.blooddy.core.net {
 		//  system
 		//----------------------------------
 
-		/**
-		 * @private
-		 */
-		private var _system:Boolean = false;
-
-		public function get system():Boolean {
-			return this._system;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set system(value:Boolean):void {
-			this._system = value;
-		}
+		public var system:Boolean = false;
 
 		//----------------------------------
 		//  io
 		//----------------------------------
 
-		/**
-		 * @private
-		 */
-		private var _io:String;
+		public var io:String;
 
-		public function get io():String {
-			return this._io;
-		}
+		//----------------------------------
+		//  num
+		//----------------------------------
 
-		/**
-		 * @private
-		 */
-		public function set io(value:String):void {
-			this.setIO( value );
-		}
+		public var num:uint;
 
-		/**
-		 * @private
-		 */
-		private function setIO(value:String):void {
-			value = value.toLowerCase();
-			switch ( value ) {
-				case INPUT:
-				case OUTPUT:
-				case UNKNOWN:
-					break;
-				default:
-					throw new ArgumentError();
-					break;
-			}
-			this._io = value;
-		}
+		//----------------------------------
+		//  status
+		//----------------------------------
+		
+		public var status:Boolean;
 
 		//--------------------------------------------------------------------------
 		//
@@ -137,7 +104,10 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		public override function clone():Command {
-			return new NetCommand( super.name, this._io, this );
+			var result:NetCommand = new NetCommand( super.name, this._io, this );
+			result.system = this.system;
+			result.num = this.num;
+			return result;
 		}
 
 		/**

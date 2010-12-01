@@ -142,8 +142,7 @@ class Memory {
 			end = start + i;
 		}
 		while ( i < end ) {
-			setByte( i, value );
-			++i;
+			setByte( i++, value );
 		}
 	}
 

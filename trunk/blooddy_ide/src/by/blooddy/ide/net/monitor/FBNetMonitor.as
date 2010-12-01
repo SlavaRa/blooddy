@@ -227,7 +227,7 @@ package by.blooddy.ide.net.monitor {
 				request.data,
 				String( request ),
 				request.method,
-				ClassUtils.cutClassName( context.value ),
+				ClassUtils.parseClassName( context.value ),
 				ClassUtils.getClassName( loader ),
 				context
 			);
@@ -261,7 +261,7 @@ package by.blooddy.ide.net.monitor {
 				data,
 				String( data ),
 				'output',
-				ClassUtils.cutClassName( context.value ),
+				ClassUtils.parseClassName( context.value ),
 				ClassUtils.getClassName( socket ),
 				context
 			);
@@ -279,11 +279,11 @@ package by.blooddy.ide.net.monitor {
 				'',
 				'',
 				'input',
-				ClassUtils.cutClassName( context.value ),
+				ClassUtils.parseClassName( context.value ),
 				ClassUtils.getClassName( socket ),
 				context
 			);
-			this.sendResult( correlationID, data, ClassUtils.cutClassName( context.value ) );
+			this.sendResult( correlationID, data, ClassUtils.parseClassName( context.value ) );
 		}
 		
 		//--------------------------------------------------------------------------
