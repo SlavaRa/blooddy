@@ -26,7 +26,7 @@ package by.blooddy.external {
 	 * @langversion				3.0
 	 * @created					27.10.2009 23:50:26
 	 */
-	public class ExternalConnectionController extends by.blooddy.core.controllers.BaseController {
+	public class ExternalConnectionController extends BaseController {
 		
 		//--------------------------------------------------------------------------
 		//

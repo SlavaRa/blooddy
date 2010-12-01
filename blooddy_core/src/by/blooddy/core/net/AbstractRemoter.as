@@ -12,8 +12,12 @@ package by.blooddy.core.net {
 	import by.blooddy.core.logging.InfoLog;
 	import by.blooddy.core.logging.Logger;
 	import by.blooddy.core.logging.commands.CommandLog;
+	import by.blooddy.core.utils.time.AutoTimer;
 	
+	import flash.errors.ScriptTimeoutError;
 	import flash.events.AsyncErrorEvent;
+	import flash.events.TimerEvent;
+	import flash.utils.getTimer;
 
 	//--------------------------------------
 	//  Events
@@ -34,6 +38,17 @@ package by.blooddy.core.net {
 	 */
 	public class AbstractRemoter extends CommandDispatcher implements IRemoter, ILogging {
 
+		//--------------------------------------------------------------------------
+		//
+		//  Class variables
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		 * @private
+		 */
+		private static const _TIMER:AutoTimer = new AutoTimer( 60*1E3 );
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -60,6 +75,21 @@ package by.blooddy.core.net {
 		 */
 		private var _unassisted:Boolean;
 
+		/**
+		 * @private
+		 */
+		private var _responderNum:uint = 0;
+
+		/**
+		 * @private
+		 */
+		private const _responders:Object = new Object();
+
+		/**
+		 * @private
+		 */
+		private var _responderCount:uint = 0;
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Implements properties: INetConnection
@@ -133,15 +163,18 @@ package by.blooddy.core.net {
 
 		//--------------------------------------------------------------------------
 		//
-		//  Implements methods: IConnection
+		//  Implements methods: IRemoter
 		//
 		//--------------------------------------------------------------------------
 
 		/**
 		 * @inheritDoc
 		 */
-		public function call(commandName:String, ...parameters):* {
-			return this.$invokeCallOutputCommand( new Command( commandName, parameters ) );
+		public function call(commandName:String, responder:Responder=null, ...parameters):* {
+			return this.$invokeCallOutputCommand(
+				new Command( commandName, parameters ),
+				responder
+			);
 		}
 
 		//--------------------------------------------------------------------------
@@ -154,8 +187,24 @@ package by.blooddy.core.net {
 		//  output
 		//----------------------------------
 
-		protected function $invokeCallOutputCommand(command:Command!):* {
-			if ( this._logging && ( !( command is NetCommand ) || !( command as NetCommand ).system ) ) {
+		protected function $invokeCallOutputCommand(command:Command!, responder:Responder=null):* {
+			var netCommand:NetCommand;
+			if ( command is NetCommand ) {
+				netCommand = command as NetCommand;
+				if ( netCommand.status || netCommand.num != 0 ) throw new ArgumentError();
+			}
+			if ( responder ) {
+				if ( !netCommand ) {
+					command = netCommand = new NetCommand( command.name, NetCommand.OUTPUT, command );
+				}
+				netCommand.num = ++this._responderNum;
+				this._responders[ this._responderNum ] = new ResponderAsset( responder ); // сохраняем, что бы обработать в ответе
+				if ( this._responderCount == 0 ) {
+					_TIMER.addEventListener( TimerEvent.TIMER, this.handler_timer );
+				}
+				++this._responderCount;
+			}
+			if ( this._logging && ( !netCommand || !netCommand.system ) ) {
 				this._logger.addLog( new CommandLog( command ) );
 			}
 			return this.$callOutputCommand( command );
@@ -184,7 +233,7 @@ package by.blooddy.core.net {
 						this._logger.addLog( new InfoLog( ( e is Error ? ( e.getStackTrace() || e.toString() ) : String( e ) ), InfoLog.ERROR ) );
 						trace( e is Error ? ( e.getStackTrace() || e.toString() ) : String( e ) );
 					}
-					if ( super.hasEventListener( AsyncErrorEvent.ASYNC_ERROR ) || !this._unassisted ) {
+					if ( !this._unassisted || super.hasEventListener( AsyncErrorEvent.ASYNC_ERROR ) ) {
 						super.dispatchEvent( new AsyncErrorEvent( AsyncErrorEvent.ASYNC_ERROR, false, false, String( e ), e as Error ) );
 					}
 				}
@@ -199,21 +248,97 @@ package by.blooddy.core.net {
 
 		protected function $callInputCommand(command:Command):* {
 			if ( !command ) throw new ArgumentError(); // TODO: описать ошибку
-			// пытаемся выполнить что-нить
-			var result:*;
-			var has:Boolean = command.name in this._client;
-			if ( has ) {
-				result = command.call( this._client );
+			var num:uint;
+			if ( command is NetCommand ) {
+				num = ( command as NetCommand ).num;
 			}
-			// проверим нету ли хендлера на нашу комманду
-			if ( super.hasCommandListener( command.name ) ) {
-				super.dispatchCommand( command );
-			} else if ( !has ) {
+			var has:Boolean = false;
+			var result:*;
+			if ( num ) { // удалённый клиент считает, что у нас есть респондер
+
+				var responder:Responder = ( this._responders[ num ] as ResponderAsset ).responder;
+				if ( !responder ) {
+					throw new DefinitionError( 'не найден responder: ' + command );
+				}
+				delete this._responders[ num ];
+				--this._responderCount;
+				if ( this._responderCount == 0 ) {
+					_TIMER.removeEventListener( TimerEvent.TIMER, this.handler_timer );
+				}
+
+				var func:Function = ( ( command as NetCommand ).status ? responder.status : responder.result );
+				has = Boolean( func );
+				if ( has ) {
+					result = func.apply( null, command );
+				}
+
+			} else { 
+
+				// пытаемся выполнить что-нить
+				has = command.name in this._client;
+				if ( has ) {
+					result = command.call( this._client );
+				}
+				// проверим нету ли хендлера на нашу комманду
+				if ( super.hasCommandListener( command.name ) ) {
+					has = true;
+					super.dispatchCommand( command );
+				}
+
+			}
+			if ( !has ) {
 				throw new DefinitionError( 'не найдено слушетелей команды: ' + command );
 			}
 			return result;
 		}
 
+		//--------------------------------------------------------------------------
+		//
+		//  Event handlers
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		 * @private
+		 */
+		private function handler_timer(event:TimerEvent):void {
+			var time:Number = getTimer() - 30 * 1e3;
+			var e:ScriptTimeoutError;
+			for ( var num:* in this._responders ) {
+				if ( ( this._responders[ num ] as ResponderAsset ).time <= time ) {
+					delete this._responders[ num ];
+					--this._responderCount;
+				}
+				if ( !this._unassisted || super.hasEventListener( AsyncErrorEvent.ASYNC_ERROR ) ) {
+					e = new ScriptTimeoutError();
+					super.dispatchEvent( new AsyncErrorEvent( AsyncErrorEvent.ASYNC_ERROR, false, false, e.toString(), e ) );
+				}
+			}
+			if ( this._responderCount == 0 ) {
+				_TIMER.removeEventListener( TimerEvent.TIMER, this.handler_timer );
+			}
+		}
+
 	}
+
+}
+
+import by.blooddy.core.net.Responder;
+
+import flash.utils.getTimer;
+
+/**
+ * @private
+ */
+internal final class ResponderAsset {
+
+	public function ResponderAsset(responder:Responder) {
+		super();
+		this.responder = responder;
+	}
+
+	public var responder:Responder;
+
+	public const time:Number = getTimer();
 
 }

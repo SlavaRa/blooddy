@@ -116,7 +116,7 @@ package by.blooddy.core.net {
 		//--------------------------------------------------------------------------
 
 		protected function call(methodName:String, args:Array):* {
-			args.unshift( methodName );
+			args.unshift( methodName, null );
 			return this._remoter.call.apply( this._remoter, args );
 		}
 

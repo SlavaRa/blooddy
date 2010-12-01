@@ -51,7 +51,7 @@ internal final class Listener extends Caller {
 		// надо себя убить из слушателей, иначе есть риск зависнуть, к тому же нам надо выполниться всего один раз
 		( event.currentTarget as IEventDispatcher ).removeEventListener( event.type, this.handler, event.eventPhase == EventPhase.CAPTURING_PHASE );
 		// вызываемся
-		this.call();
+		super.call();
 	}
 
 }

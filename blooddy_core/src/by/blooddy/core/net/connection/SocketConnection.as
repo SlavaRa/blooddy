@@ -14,6 +14,7 @@ package by.blooddy.core.net.connection {
 	import by.blooddy.core.net.NetCommand;
 	import by.blooddy.core.net.Protocols;
 	import by.blooddy.core.net.ProxySocket;
+	import by.blooddy.core.net.Responder;
 	import by.blooddy.core.net.Socket;
 	import by.blooddy.core.net.connection.filters.ISocketFilter;
 	import by.blooddy.core.utils.ByteArrayUtils;
@@ -306,11 +307,12 @@ package by.blooddy.core.net.connection {
 		/**
 		 * @inheritDoc
 		 */
-		public override function call(commandName:String, ...parameters):* {
+		public override function call(commandName:String, responder:Responder=null, ...parameters):* {
 			if ( !this._socket || !this._socket.connected ) throw new IllegalOperationError( 'соединение не установленно' );
 			if ( !this._filter ) throw new IllegalOperationError( 'нету фильтра сообщений' );
 			return super.$invokeCallOutputCommand(
-				new NetCommand( commandName, NetCommand.OUTPUT, parameters )
+				new NetCommand( commandName, NetCommand.OUTPUT, parameters ),
+				responder
 			);
 		}
 

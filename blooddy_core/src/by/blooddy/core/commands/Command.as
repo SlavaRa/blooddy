@@ -7,8 +7,6 @@
 package by.blooddy.core.commands {
 
 	import by.blooddy.core.utils.ClassUtils;
-
-	import flash.utils.ByteArray;
 	import by.blooddy.core.utils.ObjectUtils;
 
 	/**
@@ -53,23 +51,9 @@ package by.blooddy.core.commands {
 		//----------------------------------
 
 		/**
-		 * @private
-		 */
-		private var _name:String;
-
-		/**
 		 * Имя комманды.
 		 */
-		public function get name():String {
-			return this._name;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set name(value:String):void {
-			this._name = value;
-		}
+		public var name:String;
 
 		//--------------------------------------------------------------------------
 		//

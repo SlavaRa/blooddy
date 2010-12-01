@@ -12,6 +12,7 @@ package by.blooddy.core.external {
 	import by.blooddy.core.logging.InfoLog;
 	import by.blooddy.core.net.AbstractRemoter;
 	import by.blooddy.core.net.NetCommand;
+	import by.blooddy.core.net.Responder;
 	import by.blooddy.core.net.connection.IConnection;
 	import by.blooddy.core.utils.copyObject;
 	import by.blooddy.core.utils.nextframeCall;
@@ -124,8 +125,9 @@ package by.blooddy.core.external {
 		/**
 		 * @inheritDoc
 		 */
-		public override function call(commandName:String, ...parameters):* {
+		public override function call(commandName:String, responder:Responder=null, ...parameters):* {
 			if ( !this._connected ) throw new IllegalOperationError( 'соединение не установленно' );
+			if ( responder ) throw new ArgumentError();
 			return super.$invokeCallOutputCommand(
 				new NetCommand( commandName, NetCommand.OUTPUT, parameters )
 			);
@@ -150,6 +152,7 @@ package by.blooddy.core.external {
 			delete o.currentTarget;
 			return this.call(
 				( event is ErrorEvent ? 'dispatchErrorEvent' : 'dispatchEvent' ),
+				null,
 				event.type,
 				event.cancelable,
 				o
@@ -224,7 +227,7 @@ package by.blooddy.core.external {
 					throw new IllegalOperationError( 'ExternalInterface не поддерживается' );
 				}
 				this._connected = true;
-				if ( true !== this.call( 'dispatchEvent', Event.INIT ) ) {
+				if ( true !== this.call( 'dispatchEvent', null, Event.INIT ) ) {
 					throw new IllegalOperationError( 'ExternalConnection не поддерживается' );
 				}
 				super.dispatchEvent( new Event( Event.CONNECT ) );

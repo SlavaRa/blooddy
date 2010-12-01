@@ -9,6 +9,7 @@ package by.blooddy.gui.display.component {
 	import by.blooddy.core.controllers.IBaseController;
 	import by.blooddy.core.controllers.IController;
 	import by.blooddy.core.data.DataBase;
+	import by.blooddy.core.net.Responder;
 	import by.blooddy.core.utils.ClassUtils;
 	import by.blooddy.core.utils.IAbstractRemoter;
 	import by.blooddy.gui.controller.ComponentController;
@@ -139,8 +140,8 @@ package by.blooddy.gui.display.component {
 		//
 		//--------------------------------------------------------------------------
 
-		public function call(commandName:String, ... parameters):* {
-			parameters.unshift( commandName );
+		public function call(commandName:String, responder:Responder=null, ...parameters):* {
+			parameters.unshift( commandName, responder );
 			this._baseController.call.apply( null, parameters );
 		}
 

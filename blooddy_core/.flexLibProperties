@@ -68,7 +68,6 @@
     <classEntry path="by.blooddy.core.events.net.loading.LoaderListenerEvent"/>
     <classEntry path="by.blooddy.core.events.time.TimeEvent"/>
     <classEntry path="by.blooddy.core.external.ExternalConnection"/>
-    <classEntry path="by.blooddy.core.external.HistoryExternalConnection"/>
     <classEntry path="by.blooddy.core.filters.AdjustColor"/>
     <classEntry path="by.blooddy.core.filters.compareFilters"/>
     <classEntry path="by.blooddy.core.geom.BoundsMatrix"/>
