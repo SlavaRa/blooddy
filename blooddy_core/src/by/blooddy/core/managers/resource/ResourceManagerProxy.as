@@ -65,6 +65,7 @@ package by.blooddy.core.managers.resource {
 		 */
 		public function ResourceManagerProxy() {
 			super();
+			this._resourceUsages[ '' ] = new ResourceUsage(); // added default bundle
 			this._manager.addEventListener( ResourceBundleEvent.BUNDLE_ADDED,	this.handler_bundleAdded, false, int.MAX_VALUE, true );
 			this._manager.addEventListener( ResourceBundleEvent.BUNDLE_REMOVED,	this.handler_bundleRemoved, false, int.MAX_VALUE, true );
 		}
