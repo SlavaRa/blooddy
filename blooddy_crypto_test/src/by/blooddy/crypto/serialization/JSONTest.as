@@ -283,14 +283,6 @@ package by.blooddy.crypto.serialization {
 			);
 		}
 		
-		[Test]
-		public function decode_dash_withspace():void {
-			Assert.assertEquals(
-				JSON.decode( '-  \n 5' ),
-				-   5
-			);
-		}
-		
 		[Test( expects="SyntaxError" )]
 		public function decode_dash_false():void {
 			JSON.decode( '-false' );
