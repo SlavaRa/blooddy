@@ -13,6 +13,7 @@ import flash.Error;
 import flash.errors.StackOverflowError;
 import flash.utils.ByteArray;
 import flash.utils.Dictionary;
+import flash.utils.Endian;
 import flash.Vector;
 import flash.xml.XML;
 import flash.xml.XMLDocument;
@@ -39,33 +40,26 @@ class JSON {
 			prettyIndent: false,
 			prettyPrinting: false
 		} );
-		
-		var mem:ByteArray = Memory.memory;
 
-		var tmp:ByteArray = new ByteArray();
-		tmp.writeUTFBytes( '0123456789abcdef' );
 		// помещаем в пямять
-		if ( tmp.length < Memory.MIN_SIZE ) tmp.length = Memory.MIN_SIZE;
-		Memory.memory = tmp;
+		var tmp:ByteArray = new ByteArray();
 
-		var position:UInt = 16;
+		var bytes:ByteArray = new ByteArray();
+		bytes.endian = Endian.LITTLE_ENDIAN;
 
-		var cvint:Class<Int> = untyped __as__( new Vector<Int>(), Object ).constructor;
-		var cvuint:Class<UInt> = untyped __as__( new Vector<UInt>(), Object ).constructor;
-		var cvdouble:Class<Float> = untyped __as__( new Vector<Float>(), Object ).constructor;
-		var cvobject:Class<Dynamic> = untyped __as__( new Vector<Dynamic>(), Object ).constructor;
+		var cvint:Class<Vector<Int>> = untyped __as__( new Vector<Int>(), Object ).constructor;
+		var cvuint:Class<Vector<UInt>> = untyped __as__( new Vector<UInt>(), Object ).constructor;
+		var cvdouble:Class<Vector<Float>> = untyped __as__( new Vector<Float>(), Object ).constructor;
+		var cvobject:Class<Vector<Dynamic>> = untyped __as__( new Vector<Dynamic>(), Object ).constructor;
 
-		var writeValue:Dictionary->ByteArray->UInt->Dynamic->Dynamic = null;
+		var writeValue:Dictionary->ByteArray->ByteArray->Dynamic->Dynamic = null;
 
-		writeValue = function(hash:Dictionary, _memory:ByteArray, _position:UInt, value:Dynamic):Dynamic {
-			if ( _memory.bytesAvailable < 2048 ) {
-				_memory.length += 4096;
-			}
+		writeValue = function(hash:Dictionary, bytes:ByteArray, tmp:ByteArray, value:Dynamic):Dynamic {
 			var t:String = untyped __typeof__( value );
 			if ( t == 'number' ) {
-				TMP.writeNumber( _memory, _position, value );
+				TMP.writeNumber( bytes, value );
 			} else if ( t == 'boolean' ) {
-				TMP.writeBoolean( _position, value );
+				TMP.writeBoolean( bytes, value );
 			} else {
 				if ( t == 'xml' ) {
 					value = value.toXMLString();
@@ -76,12 +70,11 @@ class JSON {
 							value = ( new XML( value ) ).toXMLString();
 							t = 'string';
 						} else {
-							TMP.writeStringEmpty( _position );
+							TMP.writeStringEmpty( bytes );
 						}
 					} else {
 
 						if ( untyped __in__( value, hash ) ) {
-							Memory.memory = mem;
 							Error.throwError( StackOverflowError, 2024 );
 						}
 						hash[ value ] = true;
@@ -93,68 +86,82 @@ class JSON {
 							( untyped __is__( value, cvobject ) )
 						) {
 
-							TMP.writeByte( _position, Char.LEFT_BRACKET );	// [
+							bytes.writeByte( Char.LEFT_BRACKET );	// [
 							l = untyped value.length - 1;
 							while ( l >= 0 && value[ l ] == null ) {
 								--l;
 							}
 							++l;
 							if ( l > 0 ) {
-								writeValue( hash, _memory, _position, value[ 0 ] );
-								_position = position;
+								writeValue( hash, bytes, tmp, value[ 0 ] );
 								while ( ++i < l ) {
-									TMP.writeByte( _position, Char.COMMA );	// ,
-									writeValue( hash, _memory, _position, value[ i ] );
-									_position = position;
+									bytes.writeByte( Char.COMMA );	// ,
+									writeValue( hash, bytes, tmp, value[ i ] );
 								}
 							}
-							TMP.writeByte( _position, Char.RIGHT_BRACKET );	// ]
+							bytes.writeByte( Char.RIGHT_BRACKET );	// ]
 
 						} else if (
 							( untyped __is__( value, cvint ) ) ||
 							( untyped __is__( value, cvuint ) )
 						) {
 
-							TMP.writeByte( _position, Char.LEFT_BRACKET );	// [
+							bytes.writeByte( Char.LEFT_BRACKET );	// [
 							l = value.length;
 							if ( l > 0 ) {
-								TMP.writeFiniteNumber( _memory, _position, value[ 0 ] );
+								TMP.writeFiniteNumber( bytes, value[ 0 ] );
 								while ( ++i < l ) {
-									TMP.writeByte( _position, Char.COMMA );	// ,
-									TMP.writeFiniteNumber( _memory, _position, value[ i ] );
+									bytes.writeByte( Char.COMMA );	// ,
+									TMP.writeFiniteNumber( bytes, value[ i ] );
 								}
 							}
-							TMP.writeByte( _position, Char.RIGHT_BRACKET );	// ]
+							bytes.writeByte( Char.RIGHT_BRACKET );	// ]
 
 						} else if (
 							( untyped __is__( value, cvdouble ) )
 						) {
 
-							TMP.writeByte( _position, Char.LEFT_BRACKET );	// [
+							bytes.writeByte( Char.LEFT_BRACKET );	// [
 							l = untyped value.length - 1;
 							while ( l >= 0 && !untyped __global__["isFinite"]( value[ l ] ) ) {
 								--l;
 							}
 							++l;
 							if ( l > 0 ) {
-								TMP.writeNumber( _memory, _position, value[ 0 ] );
+								TMP.writeNumber( bytes, value[ 0 ] );
 								while ( ++i < l ) {
-									TMP.writeByte( _position, Char.COMMA );	// ,
-									TMP.writeNumber( _memory, _position, value[ i ] );
+									bytes.writeByte( Char.COMMA );	// ,
+									TMP.writeNumber( bytes, value[ i ] );
 								}
 							}
-							TMP.writeByte( _position, Char.RIGHT_BRACKET );	// ]
+							bytes.writeByte( Char.RIGHT_BRACKET );	// ]
 
 						} else {
 
-							TMP.writeByte( _position, Char.LEFT_BRACE );	// {
+							bytes.writeByte( Char.LEFT_BRACE );	// {
 
 							var n:String;
 							var f:Bool = false;
-							var arr:Array<String>;
+							var arr:Array<Dynamic>;
 							var v:Dynamic = null;
 
 							if ( value.constructor != Object ) {
+
+								if ( untyped __is__( value, Dictionary ) ) {
+									arr = untyped __keys__( value );
+									l = arr.length;
+									i = 0;
+									while ( i < l ) {
+										v = untyped __typeof__( arr[ i ] );
+										if (
+											v != 'string' &&
+											v != 'number'
+										) {
+											Error.throwError( TypeError, 0 );
+										}
+										++i;
+									}
+								}
 
 								var h:Bool;
 								
@@ -171,12 +178,11 @@ class JSON {
 										// skip
 									}
 									if ( h ) {
-										if ( f )	TMP.writeByte( _position, Char.COMMA );	// ,
+										if ( f )	bytes.writeByte( Char.COMMA );	// ,
 										else		f = true;
-										TMP.writeString( _memory, _position, n );
-										TMP.writeByte( _position, Char.COLON );	// :
-										writeValue( hash, _memory, _position, v );
-										_position = position;
+										TMP.writeString( bytes, tmp, n );
+										bytes.writeByte( Char.COLON );	// :
+										writeValue( hash, bytes, tmp, v );
 									}
 									++i;
 								}
@@ -190,17 +196,16 @@ class JSON {
 								n = arr[ i ];
 								v = value[ untyped n ];
 								if ( !( untyped __is__( v, Function ) ) ) {
-									if ( f )	TMP.writeByte( _position, Char.COMMA );	// ,
+									if ( f )	bytes.writeByte( Char.COMMA );	// ,
 									else		f = true;
-									TMP.writeString( _memory, _position, n );
-									TMP.writeByte( _position, Char.COLON );	// :
-									writeValue( hash, _memory, _position, v );
-									_position = position;
+									TMP.writeString( bytes, tmp, n );
+									bytes.writeByte( Char.COLON );	// :
+									writeValue( hash, bytes, tmp, v );
 								}
 								++i;
 							}
 							
-							TMP.writeByte( _position, Char.RIGHT_BRACE );	// }
+							bytes.writeByte( Char.RIGHT_BRACE );	// }
 
 						}
 
@@ -209,21 +214,21 @@ class JSON {
 					}
 				}
 				if ( t == 'string' ) {
-					TMP.writeString( _memory, _position, value );
+					TMP.writeString( bytes, tmp, value );
 				} else if ( !value ) {
-					TMP.writeNull( _position );
+					TMP.writeNull( bytes );
 				}
 			}
-			position = _position;
+
 		}
 
-		writeValue( new Dictionary(), tmp, position, value );
+		writeValue( new Dictionary(), bytes, tmp, value );
 
-		Memory.memory = mem;
 		XML.setSettings( set );
 
-		tmp.position = 16;
-		return tmp.readUTFBytes( position - 16 );
+		var len:UInt = bytes.position;
+		bytes.position = 0;
+		return bytes.readUTFBytes( len );
 
 	}
 	
@@ -253,63 +258,137 @@ class JSON {
 				
 				var readValue:ByteArray->UInt->Dynamic = null;
 
-				readValue = function(_memory:ByteArray, _position:UInt):Dynamic {
+				readValue = function(memory:ByteArray, _position:UInt):Dynamic {
 
+					var t:String;
 					var pos:UInt;
 					var c:UInt;
 					var result:Dynamic = untyped __global__["undefined"];
 
-					var	_tk:UInt = 0,
-						_tt:String = null;
+					c = TMP.readNotSpaceCharCode( _position );
+					if ( c == Char.SINGLE_QUOTE || c == Char.DOUBLE_QUOTE ) {	// String
 
-					TMP.readToken( _memory, _position, _tk, _tt, 0x7F7C );
-
-					if ( _tk == TMP.STRING_LITERAL ) {
-
-						result = _tt;
-
-					} else if ( _tk == TMP.NUMBER_LITERAL ) {
-
-						result = untyped __global__["parseFloat"]( _tt );
-
-					} else if ( _tk == TMP.DASH ) {
-
-						TMP.readToken( _memory, _position, _tk, _tt, 0x6600 );
-						if ( _tk == TMP.NUMBER_LITERAL ) {
-							result = - untyped __global__["parseFloat"]( _tt );
-						} else if ( _tk == TMP.NULL ) {
-							result = 0; // -null
-						} else if (
-							_tk == TMP.UNDEFINED ||
-							_tk == TMP.NAN
-						) {
-							result = untyped __global__["Number"].NaN; // -undefined
+						--_position;
+						t = MemoryScanner.readString( memory, _position );
+						if ( t != null ) {
+							result = t;
 						} else {
 							TMP.throwSyntaxError( mem );
 						}
 
-					} else if ( _tk == TMP.NULL ) {
+					} else if ( ( c >= Char.ZERO && c <= Char.NINE ) || c == Char.DOT ) {	// Number
 
-						result = null;
+						--_position;
+						t = MemoryScanner.readNumber( memory, _position );
+						if ( t != null ) {
+							result = untyped __global__["parseFloat"]( t );
+						} else {
+							TMP.throwSyntaxError( mem );
+						}
 
-					} else if ( _tk == TMP.TRUE ) {
+					} else if ( c == Char.DASH ) {	// Number
 
-						result = true;
+						c = TMP.readNotSpaceCharCode( _position );
+						if ( ( c >= Char.ZERO && c <= Char.NINE ) || c == Char.DOT ) {
+							--_position;
+							t = MemoryScanner.readNumber( memory, _position );
+							if ( t != null ) {
+								result = -( untyped __global__["parseFloat"]( t ) );
+							} else {
+								TMP.throwSyntaxError( mem );
+							}
+						} else if ( c == Char.n ) {
+							if (
+								Memory.getByte( _position ) ==		  0x75 &&	// u
+								Memory.getUI16( _position + 1 ) ==	0x6C6C		// ll
+							) {
+								_position += 3;
+								result = 0;
+							} else {
+								TMP.throwSyntaxError( mem );
+							}
+						} else if ( c == Char.u ) {
+							if (
+								Memory.getI32( _position ) ==		0x6665646E &&	// ndef
+								Memory.getI32( _position + 4 ) ==	0x64656E69		// ined
+							) {
+								_position += 8;
+								result = untyped __global__["Number"].NaN; // -undefined
+							} else {
+								TMP.throwSyntaxError( mem );
+							}
+						} else if ( c == Char.N ) {
+							if (
+								Memory.getUI16( _position ) == 0x4E61	// aN
+							) {
+								_position += 2;
+								result = untyped __global__["Number"].NaN; // -NaN
+							} else {
+								TMP.throwSyntaxError( mem );
+							}
+						} else {
+							TMP.throwSyntaxError( mem );
+						}
 
-					} else if ( _tk == TMP.FALSE ) {
+					} else if ( c == Char.n ) {	// null
 
-						result = false;
+						if (
+							Memory.getByte( _position ) ==		0x75 &&	// u
+							Memory.getUI16( _position + 1 ) ==	0x6C6C	// ll
+						) {
+							_position += 3;
+							result = null;
+						} else {
+							TMP.throwSyntaxError( mem );
+						}
 
-					} else if ( _tk == TMP.UNDEFINED ) {
+					} else if ( c == Char.t ) {	// true
 
-						//result = untyped __global__["undefined"];
+						if (
+							Memory.getByte( _position ) ==		0x72 &&	// r
+							Memory.getUI16( _position + 1 ) ==	0x6575	// ue
+						) {
+							_position += 3;
+							result = true;
+						} else {
+							TMP.throwSyntaxError( mem );
+						}
 
-					} else if ( _tk == TMP.NAN ) {
+					} else if ( c == Char.f ) {	// false
 
-						result = untyped __global__["Number"].NaN;
+						if (
+							Memory.getI32( _position ) ==		0x65736C61	// alse
+						) {
+							_position += 4;
+							result = false;
+						} else {
+							TMP.throwSyntaxError( mem );
+						}
 
-					} else if ( _tk == TMP.LEFT_BRACE ) {		// {
+					} else if ( c == Char.u ) {	// undefined
 
+						if (
+							Memory.getI32( _position ) ==		0x6665646E &&	// ndef
+							Memory.getI32( _position + 4 ) ==	0x64656E69		// ined
+						) {
+							_position += 8;
+						} else {
+							TMP.throwSyntaxError( mem );
+						}
+
+					} else if ( c == Char.N ) {	// NaN
+
+						if (
+							Memory.getUI16( _position ) == 0x4E61	// aN
+						) {
+							_position += 2;
+							result = untyped __global__["Number"].NaN; // -NaN
+						} else {
+							TMP.throwSyntaxError( mem );
+						}
+
+					} else if ( c == Char.LEFT_BRACE ) {
+						
 						var o:Object = new Object();
 						var key:String = null;
 
@@ -320,23 +399,48 @@ class JSON {
 							
 							do {
 
-								TMP.readToken( _memory, _position, _tk, _tt, 0x9F00 );
-
-								if ( _tk == TMP.STRING_LITERAL || _tk == TMP.IDENTIFIER ) {
-									key = _tt;
-								} else if ( _tk == TMP.NUMBER_LITERAL ) {
-									key = untyped __global__["parseFloat"]( _tt ).toString();
+								c = TMP.readNotSpaceCharCode( _position );
+								if ( c == Char.SINGLE_QUOTE || c == Char.DOUBLE_QUOTE ) {
+									--_position;
+									t = MemoryScanner.readString( memory, _position );
+									if ( t != null ) {
+										key = t;
+									} else {
+										TMP.throwSyntaxError( mem );
+									}
+								} else if ( ( c >= Char.ZERO && c <= Char.NINE ) || c == Char.DOT ) {
+									--_position;
+									t = MemoryScanner.readNumber( memory, _position );
+									if ( t != null ) {
+										key = untyped __global__["parseFloat"]( t ).toString();
+									} else {
+										TMP.throwSyntaxError( mem );
+									}
+								} else if (
+									( c == Char.n && Memory.getByte( _position ) == 0x75 && Memory.getUI16( _position + 1 ) == 0x6C6C ) ||	// null
+									( c == Char.t && Memory.getByte( _position ) == 0x72 && Memory.getUI16( _position + 1 ) == 0x6575 ) ||	// true
+									( c == Char.f && Memory.getI32( _position ) == 0x65736C61 )												// false
+								) {
+									TMP.throwSyntaxError( mem );
 								} else {
+									--_position;
+									t = MemoryScanner.readIdentifier( memory, _position );
+									if ( t != null ) {
+										key = t;
+									} else {
+										TMP.throwSyntaxError( mem );
+									}
+								}
+
+								if ( TMP.readNotSpaceCharCode( _position ) != Char.COLON ) {
 									TMP.throwSyntaxError( mem );
 								}
 
-								TMP.readFixCharCode( mem, _position, Char.COLON );
-
-								o[ untyped key ] = readValue( _memory, _position );
+								o[ untyped key ] = readValue( memory, _position );
 								_position = position;
 
 								c = TMP.readNotSpaceCharCode( _position );
-								if ( c == Char.RIGHT_BRACE ) {		// }
+								if ( c == Char.RIGHT_BRACE ) {	// }
 									break;
 								} else if ( c != Char.COMMA ) {	// ,
 									TMP.throwSyntaxError( mem );
@@ -347,27 +451,25 @@ class JSON {
 
 						result = o;
 
-					} else if ( _tk == TMP.LEFT_BRACKET ) {		// [
+					} else if ( c == Char.LEFT_BRACKET ) {
 
 						var arr:Array<Dynamic> = new Array<Dynamic>();
 						do {
 
 							c = TMP.readNotSpaceCharCode( _position );
 							if ( c == Char.RIGHT_BRACKET ) {	// ]
+								arr.push( untyped __global__["undefined"] );
 								break;
-							} else if ( c == Char.COMMA ) {	// ,
+							} else if ( c == Char.COMMA ) {		// ,
 								arr.push( untyped __global__["undefined"] );
 							} else {
-
 								--_position;
-
-								arr.push( readValue( _memory, _position ) );
+								arr.push( readValue( memory, _position ) );
 								_position = position;
-
 								c = TMP.readNotSpaceCharCode( _position );
 								if ( c == Char.RIGHT_BRACKET ) {	// ]
 									break;
-								} else if ( c != Char.COMMA ) {	// ,
+								} else if ( c != Char.COMMA ) {		// ,
 									TMP.throwSyntaxError( mem );
 								}
 							}
@@ -375,8 +477,11 @@ class JSON {
 						} while ( true );
 						result = arr;
 
+
 					} else {
+
 						TMP.throwSyntaxError( mem );
+
 					}
 
 					position = _position;
@@ -387,7 +492,9 @@ class JSON {
 				result = readValue( tmp, position );
 				_position = position;
 
-				TMP.readFixCharCode( mem, _position, Char.EOS );
+				if ( TMP.readNotSpaceCharCode( _position ) != Char.EOS ) {
+					TMP.throwSyntaxError( mem );
+				}
 
 			}
 			
@@ -407,151 +514,101 @@ private class TMP {
 
 	//--------------------------------------------------------------------------
 	//
-	//  Class constants
-	//
-	//--------------------------------------------------------------------------
-
-	public static inline var EOF:UInt =				Char.EOS;
-	public static inline var UNKNOWN:UInt =			1;
-	public static inline var UNDEFINED:UInt =		1;
-	public static inline var NULL:UInt =			2;
-	public static inline var TRUE:UInt =			3;
-	public static inline var FALSE:UInt =			4;
-	public static inline var NAN:UInt =				5;
-	public static inline var NUMBER_LITERAL:UInt =	6;
-	public static inline var STRING_LITERAL:UInt =	7;
-	public static inline var IDENTIFIER:UInt =		8;
-	public static inline var COMMA:UInt =			Char.COMMA;
-	public static inline var DASH:UInt =			Char.DASH;
-	public static inline var COLON:UInt =			Char.COLON;
-	public static inline var LEFT_BRACKET:UInt =	Char.LEFT_BRACKET;
-	public static inline var RIGHT_BRACKET:UInt =	Char.RIGHT_BRACKET;
-	public static inline var LEFT_BRACE:UInt =		Char.LEFT_BRACE;
-	public static inline var RIGHT_BRACE:UInt =		Char.RIGHT_BRACE;
-
-	//--------------------------------------------------------------------------
-	//
 	//  Class methods
 	//
 	//--------------------------------------------------------------------------
 
-	public static inline function writeByte(_position:UInt, value:UInt):Void {
-		Memory.setByte( _position, value );
-		++_position;
-	}
-
-	public static inline function writeI16(_position:UInt, value:UInt):Void {
-		Memory.setI16( _position, value );
-		_position += 2;
-	}
-
-	public static inline function writeI32(_position:UInt, value:UInt):Void {
-		Memory.setI32( _position, value );
-		_position += 4;
-	}
-
-	public static inline function writeBoolean(_position:UInt, value:Bool):Void {
+	public static inline function writeBoolean(bytes:ByteArray, value:Bool):Void {
 		if ( value ) {
-			writeI32( _position, 0x65757274 );	// true
+			bytes.writeInt( 0x65757274 );	// true
 		} else {
-			writeI32( _position, 0x736C6166 );	// fals
-			writeByte( _position, 0x65 );		// e
+			bytes.writeInt( 0x736C6166 );	// fals
+			bytes.writeByte( 0x65 );		// e
 		}
 	}
 
-	public static inline function writeNull(_position:UInt):Void {
-		writeI32( _position, 0x6C6C756E );		// null
+	public static inline function writeNull(bytes:ByteArray):Void {
+		bytes.writeInt( 0x6C6C756E );		// null
 	}
 
-	public static inline function writeNumber(_memory:ByteArray, _position:UInt, value:Float):Void {
+	public static inline function writeNumber(bytes:ByteArray, value:Float):Void {
 		if ( untyped __global__["isFinite"]( value ) ) {
-			writeFiniteNumber( _memory, _position, value );
+			writeFiniteNumber( bytes, value );
 		} else {
-			writeNull( _position );
+			writeNull( bytes );
 		}
 	}
 
-	public static inline function writeFiniteNumber(_memory:ByteArray, _position:UInt, value:Float):Void {
+	public static inline function writeFiniteNumber(bytes:ByteArray, value:Float):Void {
 		if ( value >= 0 && value <= 9 && value % 1 == 0 ) {
-			writeByte( _position, Char.ZERO + untyped value ); // 0+
+			bytes.writeByte( Char.ZERO + untyped value ); // 0+
 		} else {
-			_memory.position = _position;
-			_memory.writeUTFBytes( untyped value.toString() );
-			_position = _memory.position;
+			bytes.writeUTFBytes( untyped value.toString() );
 		}
 	}
 
-	public static inline function writeStringEmpty(_position:UInt):Void {
-		writeI16( _position, 0x2222 );	// ""
+	public static inline function writeStringEmpty(bytes:ByteArray):Void {
+		bytes.writeShort( 0x2222 );	// ""
 	}
 
-	public static inline function writeString(_memory:ByteArray, _position:UInt, value:String):Void {
+	public static inline function writeString(bytes:ByteArray, tmp:ByteArray, value:String):Void {
 		if ( value.length <= 0 ) {
 
-			writeStringEmpty( _position );
+			writeStringEmpty( bytes );
 
 		} else {
 
-			writeByte( _position, Char.DOUBLE_QUOTE );
+			bytes.writeByte( Char.DOUBLE_QUOTE );
 
-			// write temp string
-			var i:UInt = _position + value.length * 6;
-			var j:UInt = i;
-			_memory.position = i;
-			_memory.writeUTFBytes( value );
-			var len:UInt = _memory.position;
-			_memory.position = _position;
+			tmp.position = 0;
+			tmp.writeUTFBytes( value );
+			var len:UInt = tmp.position;
+
+			var i:UInt = 0;
+			var j:UInt = 0;
+			var l:UInt;
 
 			var c:UInt;
-			while ( i < len ){
-				c = Memory.getByte( i );
+			do {
+				c = tmp[ i ];
 				if ( c < Char.SPACE || c == Char.DOUBLE_QUOTE || c == Char.SLASH || c == Char.BACK_SLASH ) {
-					if ( i != j ) {
-						_memory.position = _position;
-						_memory.writeBytes( _memory, j, i-j );
-						_position = _memory.position;
+					l = i - j;
+					if ( l > 0 ) {
+						bytes.writeBytes( tmp, j, l );
 					}
 					j = i + 1;
 					if ( c == Char.NEWLINE ) {
-						writeI16( _position, 0x6E5C );	// \n
+						bytes.writeShort( 0x6E5C );	// \n
 					} else if ( c == Char.CARRIAGE_RETURN ) {
-						writeI16( _position, 0x725C );	// \r
+						bytes.writeShort( 0x725C );	// \r
 					} else if ( c == Char.TAB ) {
-						writeI16( _position, 0x745C );	// \t
+						bytes.writeShort( 0x745C );	// \t
 					} else if ( c == Char.DOUBLE_QUOTE ) {
-						writeI16( _position, 0x225C );	// \"
+						bytes.writeShort( 0x225C );	// \"
 					} else if ( c == Char.SLASH ) {
-						writeI16( _position, 0x2F5C );	// \/
+						bytes.writeShort( 0x2F5C );	// \/
 					} else if ( c == Char.BACK_SLASH ) {
-						writeI16( _position, 0x5C5C );	// \\
+						bytes.writeShort( 0x5C5C );	// \\
 					} else if ( c == Char.VERTICAL_TAB ) {
-						writeI16( _position, 0x765C );	// \v
+						bytes.writeShort( 0x765C );	// \v
 					} else if ( c == Char.BACKSPACE ) {
-						writeI16( _position, 0x625C );	// \b
+						bytes.writeShort( 0x625C );	// \b
 					} else if ( c == Char.FORM_FEED ) {
-						writeI16( _position, 0x665C );	// \f
-					} else if ( c < Char.SPACE ) {
-						writeI32( _position, 0x3030755C );	// \u00
-						writeByte( _position, Memory.getByte( c >>> 4 ) );
-						writeByte( _position, Memory.getByte( c & 0xF ) );
+						bytes.writeShort( 0x665C );	// \f
+					} else {
+						bytes.writeInt( 0x3030755C );	// \u00
+						bytes.writeByte( Char.ZERO + ( c >>> 4 ) );
+						bytes.writeByte( Char.ZERO + ( c & 0xF ) );
 					}
 				}
-				++i;
-			};
-			if ( i != j ) {
-				_memory.position = _position;
-				_memory.writeBytes( _memory, j, i-j );
-				_position = _memory.position;
+			} while ( ++i < len );
+			l = i - j;
+			if ( l > 0 ) {
+				bytes.writeBytes( tmp, j, l );
 			}
 
-			writeByte( _position, Char.DOUBLE_QUOTE );	// "
+			bytes.writeByte( Char.DOUBLE_QUOTE );	// "
 
-		}
-	}
-
-	public static inline function readFixCharCode(mem:ByteArray, _position:UInt, kind:UInt):Void {
-		if ( readNotSpaceCharCode( _position ) != kind ) {
-			TMP.throwSyntaxError( mem );
 		}
 	}
 
@@ -588,112 +645,6 @@ private class TMP {
 			}
 		} while ( true );
 		return c;
-	}
-
-	/**
-	 * @private
-	 */
-	public static inline function readToken(_memory:ByteArray, _position:UInt, _tk:UInt, _tt:String, flag:UInt):Void {
-		var t:String;
-		var c:UInt = readNotSpaceCharCode( _position );
-		if (
-			( flag &   1 ==   1 && c == Char.COMMA ) ||
-			( flag &   2 ==   2 && c == Char.COLON ) ||
-			( flag &   4 ==   4 && c == Char.LEFT_BRACE ) ||
-			( flag &   8 ==   8 && c == Char.RIGHT_BRACE ) ||
-			( flag &  16 ==  16 && c == Char.LEFT_BRACKET ) ||
-			( flag &  32 ==  32 && c == Char.RIGHT_BRACKET ) ||
-			( flag &  64 ==  64 && c == Char.DASH ) ||
-			( flag & 128 == 128 && c == Char.EOS )
-		) {
-			_tk = c;
-		} else if (
-			flag & 256 == 256 &&
-			( c == Char.SINGLE_QUOTE || c == Char.DOUBLE_QUOTE )
-		) {
-			--_position;
-			t = MemoryScanner.readString( _memory, _position );
-			if ( t != null ) {
-				_tk = STRING_LITERAL;
-				_tt = t;
-			} else {
-				_tk = UNKNOWN;
-			}
-		} else if (
-			flag & 512 == 512 &&
-			( ( c >= Char.ZERO && c <= Char.NINE ) || c == Char.DOT )
-		) {
-			--_position;
-			t = MemoryScanner.readNumber( _memory, _position );
-			if ( t != null ) {
-				_tk = NUMBER_LITERAL;
-				_tt = t;
-			} else {
-				_tk = UNKNOWN;
-			}
-		} else {
-			
-			var pos:UInt = _position - 1;
-			if (
-				flag & 1024 == 1024 &&
-				c == Char.n &&
-				MemoryScanner.readCharCode( _position ) == Char.u &&
-				MemoryScanner.readCharCode( _position ) == Char.l &&
-				MemoryScanner.readCharCode( _position ) == Char.l
-			) {
-				_tk = NULL;
-			} else if (
-				flag & 2048 == 2048 &&
-				c == Char.t &&
-				MemoryScanner.readCharCode( _position ) == Char.r &&
-				MemoryScanner.readCharCode( _position ) == Char.u &&
-				MemoryScanner.readCharCode( _position ) == Char.e
-			) {
-				_tk = TRUE;
-			} else if (
-				flag & 4096 == 4096 &&
-				c == Char.f &&
-				MemoryScanner.readCharCode( _position ) == Char.a &&
-				MemoryScanner.readCharCode( _position ) == Char.l &&
-				MemoryScanner.readCharCode( _position ) == Char.s &&
-				MemoryScanner.readCharCode( _position ) == Char.e
-			) {
-				_tk = FALSE;
-			} else if (
-				flag & 8192 == 8192 &&
-				c == Char.u &&
-				MemoryScanner.readCharCode( _position ) == Char.n &&
-				MemoryScanner.readCharCode( _position ) == Char.d &&
-				MemoryScanner.readCharCode( _position ) == Char.e &&
-				MemoryScanner.readCharCode( _position ) == Char.f &&
-				MemoryScanner.readCharCode( _position ) == Char.i &&
-				MemoryScanner.readCharCode( _position ) == Char.n &&
-				MemoryScanner.readCharCode( _position ) == Char.e &&
-				MemoryScanner.readCharCode( _position ) == Char.d
-			) {
-				_tk = UNDEFINED;
-			} else if (
-				flag & 16384 == 16384 &&
-				c == Char.N &&
-				MemoryScanner.readCharCode( _position ) == Char.a &&
-				MemoryScanner.readCharCode( _position ) == Char.N
-			) {
-				_tk = NAN;
-			} else if (
-				flag & 32768 == 32768
-			) {
-				_position = pos;
-				t = MemoryScanner.readIdentifier( _memory, _position );
-				if ( t != null ) {
-					_tk = IDENTIFIER;
-					_tt = t;
-				} else {
-					_tk = UNKNOWN;
-				}
-			} else {
-				_tk = UNKNOWN;
-			}
-		}
 	}
 
 	public static inline function throwSyntaxError(mem:ByteArray):Void {

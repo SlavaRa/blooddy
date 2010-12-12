@@ -60,7 +60,7 @@ class MemoryScanner {
 		return String.fromCharCode( c );
 	}
 
-	public static inline function readIdentifier(_memory:ByteArray, _position:UInt):String {
+	public static inline function readIdentifier(memory:ByteArray, _position:UInt):String {
 		var pos:UInt = _position;
 		var c:UInt = readCharCode( _position, false );
 		if (
@@ -86,12 +86,12 @@ class MemoryScanner {
 				c > 0x7f
 			);
 			_position = p;
-			_memory.position = pos;
-			return _memory.readUTFBytes( _position - pos );
+			memory.position = pos;
+			return memory.readUTFBytes( _position - pos );
 		}
 	}
 	
-	public static inline function readString(_memory:ByteArray, _position:UInt):String {
+	public static inline function readString(memory:ByteArray, _position:UInt):String {
 		var pos:UInt = _position;
 		var to:UInt = readCharCode( _position );
 		if ( to != Char.SINGLE_QUOTE && to != Char.DOUBLE_QUOTE ) {
@@ -103,8 +103,8 @@ class MemoryScanner {
 			var c:UInt, t:String;
 			while ( ( c = readCharCode( _position, false ) ) != to ) {
 				if ( c == Char.BACK_SLASH ) {
-					_memory.position = p;
-					result += _memory.readUTFBytes( _position - 1 - p );
+					memory.position = p;
+					result += memory.readUTFBytes( _position - 1 - p );
 					c = readCharCode( _position );
 					if		( c == Char.n )	result += '\n';
 					else if	( c == Char.r )	result += '\r';
@@ -113,14 +113,14 @@ class MemoryScanner {
 					else if	( c == Char.f )	result += '\x0C';
 					else if	( c == Char.b )	result += '\x08';
 					else if	( c == Char.x ) {
-						t = TMP.readFixedHex( _memory, _position, 2 );
+						t = TMP.readFixedHex( memory, _position, 2 );
 						if ( t != null ) {
 							result += String.fromCharCode( untyped __global__["parseInt"]( t, 16 ) );
 						} else {
 							result += 'x';
 						}
 					} else if ( c == Char.u ) {
-						t = TMP.readFixedHex( _memory, _position, 4 );
+						t = TMP.readFixedHex( memory, _position, 4 );
 						if ( t != null ) {
 							result += String.fromCharCode( untyped __global__["parseInt"]( t, 16 ) );
 						} else {
@@ -148,15 +148,15 @@ class MemoryScanner {
 				return null;
 			} else {
 				if ( p != _position - 1 ) {
-					_memory.position = p;
-					result += _memory.readUTFBytes( _position - 1 - p );
+					memory.position = p;
+					result += memory.readUTFBytes( _position - 1 - p );
 				}
 				return result;
 			}
 		}
 	}
 
-	public static inline function readNumber(_memory:ByteArray, _position:UInt):String {
+	public static inline function readNumber(memory:ByteArray, _position:UInt):String {
 		var result:String = null;
 		var pos:UInt = _position;
 		var c:UInt = readCharCode( _position );
@@ -177,8 +177,8 @@ class MemoryScanner {
 					c = Char.ZERO;
 				} else {
 					--_position;
-					_memory.position = p;
-					result = untyped __global__["parseInt"]( _memory.readUTFBytes( _position - p ), 16 );
+					memory.position = p;
+					result = untyped __global__["parseInt"]( memory.readUTFBytes( _position - p ), 16 );
 				}
 			} else {
 				--_position;
@@ -215,8 +215,8 @@ class MemoryScanner {
 			}
 			--_position;
 			if ( _position != pos ) {
-				_memory.position = pos;
-				result = _memory.readUTFBytes( _position - pos );
+				memory.position = pos;
+				result = memory.readUTFBytes( _position - pos );
 			}
 		}
 		return result;
@@ -247,14 +247,14 @@ class MemoryScanner {
 		}
 	}
 
-	public static inline function readBlockComment(_memory:ByteArray, _position:UInt):String {
+	public static inline function readBlockComment(memory:ByteArray, _position:UInt):String {
 		var pos:UInt = _position;
 		skipBlockComment( _position );
 		if ( pos == _position ) {
 			return null;
 		} else {
-			_memory.position = pos + 2;
-			return _memory.readUTFBytes( _position - 4 - pos );
+			memory.position = pos + 2;
+			return memory.readUTFBytes( _position - 4 - pos );
 		}
 	}
 
@@ -266,11 +266,11 @@ class MemoryScanner {
 		--_position;
 	}
 
-	public static inline function readLine(_memory:ByteArray, _position:UInt):String {
+	public static inline function readLine(memory:ByteArray, _position:UInt):String {
 		var pos:UInt = _position;
 		skipLine( _position );
-		_memory.position = pos;
-		return _memory.readUTFBytes( _position - pos );
+		memory.position = pos;
+		return memory.readUTFBytes( _position - pos );
 	}
 
 }
@@ -289,7 +289,7 @@ private class TMP {
 	/**
 	 * @private
 	 */
-	public static inline function readFixedHex(_memory:ByteArray, _position:UInt, length:UInt):String {
+	public static inline function readFixedHex(memory:ByteArray, _position:UInt, length:UInt):String {
 		var c:UInt;
 		var i:UInt = 0;
 		do {
@@ -306,8 +306,8 @@ private class TMP {
 			_position -= i + 1;
 			return null;
 		} else {
-			_memory.position = _position - length;
-			return _memory.readUTFBytes( length );
+			memory.position = _position - length;
+			return memory.readUTFBytes( length );
 		}
 	}
 

@@ -36,7 +36,7 @@ class JPEGEncoder {
 		var tmp:ByteArray = new ByteArray();
 		tmp.position = TMP.Z2;
 		tmp.writeBytes( JPEGTable.getTable( quality ) );
-		tmp.length += 680;
+		tmp.length += 680 + width * height * 3;
 		// помещаем в пямять
 		if ( tmp.length < Memory.MIN_SIZE ) tmp.length = Memory.MIN_SIZE;
 		Memory.memory = tmp;
@@ -66,9 +66,9 @@ class JPEGEncoder {
 		do {
 			_x = 0;
 			do {
-				if ( tmp.length - _byteout < 2048 ) { // у памяти есть свойство заканчиваться
-					tmp.length += 4096;
-				}
+				//if ( tmp.length - _byteout < 2048 ) { // у памяти есть свойство заканчиваться
+				//	tmp.length += 4096;
+				//}
 				TMP.rgb2yuv( image, _x, _y );
 				DCY = TMP.processDU( _byteout, _bytepos, _bytenew, 256 + 512 * 0, TMP.Z2 + 130, DCY, TMP.Z2 + 1218 + 416,  TMP.Z2 + 1218 + 452  );
 				DCU = TMP.processDU( _byteout, _bytepos, _bytenew, 256 + 512 * 1, TMP.Z2 + 642, DCU, TMP.Z2 + 1218 + 1205, TMP.Z2 + 1218 + 1241 );

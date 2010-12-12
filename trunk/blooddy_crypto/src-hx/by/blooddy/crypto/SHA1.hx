@@ -8,6 +8,7 @@ package by.blooddy.crypto;
 
 import by.blooddy.core.utils.ByteArrayUtils;
 import by.blooddy.system.Memory;
+import by.blooddy.utils.Char;
 import by.blooddy.utils.IntUtils;
 import flash.utils.ByteArray;
 
@@ -93,32 +94,25 @@ class SHA1 {
 
 		} while ( i < bytesLength );
 
-		tmp.position = 0;
-		tmp.writeUTFBytes( '0123456789abcdef' );
+		Memory.setBI32(  0, h0 );
+		Memory.setBI32(  4, h1 );
+		Memory.setBI32(  8, h2 );
+		Memory.setBI32( 12, h3 );
+		Memory.setBI32( 16, h4 );
 
-		Memory.setBI32( 16, h0 );
-		Memory.setBI32( 20, h1 );
-		Memory.setBI32( 24, h2 );
-		Memory.setBI32( 28, h3 );
-		Memory.setBI32( 32, h4 );
-
-		b = 36 - 1;
-		i = 16;
+		b = 20 - 1;
+		i = 0;
 		do {
 			a = Memory.getByte( i );
-			Memory.setByte( ++b, Memory.getByte( a >>> 4 ) );
-			Memory.setByte( ++b, Memory.getByte( a & 0xF ) );
-		} while ( ++i < 16 + 5 * 4 );
-
-		tmp.position = 36;
-
-		var result:String = tmp.readUTFBytes( 5 * 8 );
+			Memory.setByte( ++b, Char.ZERO + ( a >>> 4 ) );
+			Memory.setByte( ++b, Char.ZERO + ( a & 0xF ) );
+		} while ( ++i < 20 );
 
 		Memory.memory = mem;
 
-		//tmp.clear();
+		tmp.position = 0;
 
-		return result;
+		return tmp.readUTFBytes( 40 );
 
 	}
 

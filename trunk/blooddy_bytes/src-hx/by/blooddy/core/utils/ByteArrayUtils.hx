@@ -273,7 +273,6 @@ class ByteArrayUtils {
 		return tmp.readUTFBytes( tmp.bytesAvailable );
 
 	}
-//00000000:  7F FF FF FF 87 F1 99 FF  77 FF E5 FF 93 EF E5 B4  |........w.......|
 
 }
 
