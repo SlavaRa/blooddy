@@ -8,7 +8,6 @@ package by.blooddy.crypto;
 
 import by.blooddy.core.utils.ByteArrayUtils;
 import by.blooddy.system.Memory;
-import by.blooddy.utils.Char;
 import by.blooddy.utils.IntUtils;
 import flash.utils.ByteArray;
 
@@ -91,28 +90,30 @@ class SHA2Helper {
 
 		} while ( i < bytesLength );
 
-		Memory.setBI32(  0, h0 );
-		Memory.setBI32(  4, h1 );
-		Memory.setBI32(  8, h2 );
-		Memory.setBI32( 12, h3 );
-		Memory.setBI32( 16, h4 );
-		Memory.setBI32( 20, h5 );
-		Memory.setBI32( 24, h6 );
-		Memory.setBI32( 28, h7 );
+		tmp.position = 0;
+		tmp.writeUTFBytes( '0123456789abcdef' );
 
-		b = 32 - 1;
-		i = 0;
+		Memory.setBI32( 16, h0 );
+		Memory.setBI32( 20, h1 );
+		Memory.setBI32( 24, h2 );
+		Memory.setBI32( 28, h3 );
+		Memory.setBI32( 32, h4 );
+		Memory.setBI32( 36, h5 );
+		Memory.setBI32( 40, h6 );
+		Memory.setBI32( 44, h7 );
+
+		b = 48 - 1;
+		i = 16;
 		do {
 			a = Memory.getByte( i );
-			Memory.setByte( ++b, Char.ZERO + ( a >>> 4 ) );
-			Memory.setByte( ++b, Char.ZERO + ( a & 0xF ) );
-		} while ( ++i < 32 );
+			Memory.setByte( ++b, Memory.getByte( a >>> 4 ) );
+			Memory.setByte( ++b, Memory.getByte( a & 0xF ) );
+		} while ( ++i < 16 + 8 * 4 );
 
 		Memory.memory = mem;
 
-		tmp.position = 0;
-
-		return tmp.readUTFBytes( 64 );
+		tmp.position = 48;
+		return tmp.readUTFBytes( 8 * 8 );
 
 	}
 	

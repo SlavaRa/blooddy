@@ -43,6 +43,7 @@ class JSON {
 
 		// помещаем в пямять
 		var tmp:ByteArray = new ByteArray();
+		tmp.writeUTFBytes( '0123456789abcdef' );
 
 		var bytes:ByteArray = new ByteArray();
 		bytes.endian = Endian.LITTLE_ENDIAN;
@@ -458,7 +459,6 @@ class JSON {
 
 							c = TMP.readNotSpaceCharCode( _position );
 							if ( c == Char.RIGHT_BRACKET ) {	// ]
-								arr.push( untyped __global__["undefined"] );
 								break;
 							} else if ( c == Char.COMMA ) {		// ,
 								arr.push( untyped __global__["undefined"] );
@@ -560,12 +560,12 @@ private class TMP {
 
 			bytes.writeByte( Char.DOUBLE_QUOTE );
 
-			tmp.position = 0;
+			tmp.position = 16;
 			tmp.writeUTFBytes( value );
 			var len:UInt = tmp.position;
 
-			var i:UInt = 0;
-			var j:UInt = 0;
+			var i:UInt = 16;
+			var j:UInt = i;
 			var l:UInt;
 
 			var c:UInt;
@@ -597,8 +597,8 @@ private class TMP {
 						bytes.writeShort( 0x665C );	// \f
 					} else {
 						bytes.writeInt( 0x3030755C );	// \u00
-						bytes.writeByte( Char.ZERO + ( c >>> 4 ) );
-						bytes.writeByte( Char.ZERO + ( c & 0xF ) );
+						bytes.writeByte( tmp[ c >>> 4 ] );
+						bytes.writeByte( tmp[ c & 0xF ] );
 					}
 				}
 			} while ( ++i < len );

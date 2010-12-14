@@ -8,7 +8,6 @@ package by.blooddy.crypto;
 
 import by.blooddy.core.utils.ByteArrayUtils;
 import by.blooddy.system.Memory;
-import by.blooddy.utils.Char;
 import by.blooddy.utils.IntUtils;
 import flash.utils.ByteArray;
 
@@ -143,23 +142,25 @@ class MD5 {
 
 		} while ( i < bytesLength );
 
-		Memory.setI32(  0, a );
-		Memory.setI32(  4, b );
-		Memory.setI32(  8, c );
-		Memory.setI32( 12, d );
+		tmp.position = 0;
+		tmp.writeUTFBytes( '0123456789abcdef' );
+		
+		Memory.setI32( 16, a );
+		Memory.setI32( 20, b );
+		Memory.setI32( 24, c );
+		Memory.setI32( 28, d );
 
-		b = 16 - 1;
-		i = 0;
+		b = 32 - 1;
+		i = 16;
 		do {
 			a = Memory.getByte( i );
-			Memory.setByte( ++b, Char.ZERO + ( a >>> 4 ) );
-			Memory.setByte( ++b, Char.ZERO + ( a & 0xF ) );
-		} while ( ++i < 16 );
+			Memory.setByte( ++b, Memory.getByte( a >>> 4 ) );
+			Memory.setByte( ++b, Memory.getByte( a & 0xF ) );
+		} while ( ++i < 16 + 4 * 4 );
 
 		Memory.memory = mem;
 
-		tmp.position = 16;
-
+		tmp.position = 32;
 		return tmp.readUTFBytes( 32 );
 
 	}
