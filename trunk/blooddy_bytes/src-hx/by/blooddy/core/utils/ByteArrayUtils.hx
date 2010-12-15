@@ -187,7 +187,7 @@ class ByteArrayUtils {
 		tmp.writeBytes( bytes, offset, length );
 		tmp.length += ( ( length >> 4 ) + ( rest == 0 ? 0 : 1 ) ) * 80;
 		length += 16;
-		if ( length <= Memory.MIN_SIZE ) {
+		if ( tmp.length < Memory.MIN_SIZE ) {
 			tmp.length = Memory.MIN_SIZE;
 		}
 		Memory.memory = tmp;
@@ -201,7 +201,7 @@ class ByteArrayUtils {
 		var len2:UInt;
 
 		do {
-			
+
 			Memory.fill2( j, 80, 0x20 );
 
 			v = i - 16;
