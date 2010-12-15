@@ -8,9 +8,10 @@ package by.blooddy.crypto.serialization;
 
 import by.blooddy.system.Memory;
 import by.blooddy.utils.Char;
-import by.blooddy.utils.MemoryScanner;
+import by.blooddy.utils.memory.MemoryScanner;
 import flash.Error;
 import flash.errors.StackOverflowError;
+import flash.Lib;
 import flash.utils.ByteArray;
 import flash.utils.Dictionary;
 import flash.utils.Endian;
@@ -274,7 +275,7 @@ class JSON {
 						if ( t != null ) {
 							result = t;
 						} else {
-							TMP.throwSyntaxError( mem );
+							TMP.throwError();
 						}
 
 					} else if ( ( c >= Char.ZERO && c <= Char.NINE ) || c == Char.DOT ) {	// Number
@@ -284,7 +285,7 @@ class JSON {
 						if ( t != null ) {
 							result = untyped __global__["parseFloat"]( t );
 						} else {
-							TMP.throwSyntaxError( mem );
+							TMP.throwError();
 						}
 
 					} else if ( c == Char.DASH ) {	// Number
@@ -296,7 +297,7 @@ class JSON {
 							if ( t != null ) {
 								result = -( untyped __global__["parseFloat"]( t ) );
 							} else {
-								TMP.throwSyntaxError( mem );
+								TMP.throwError();
 							}
 						} else if ( c == Char.n ) {
 							if (
@@ -306,7 +307,7 @@ class JSON {
 								_position += 3;
 								result = 0;
 							} else {
-								TMP.throwSyntaxError( mem );
+								TMP.throwError();
 							}
 						} else if ( c == Char.u ) {
 							if (
@@ -316,7 +317,7 @@ class JSON {
 								_position += 8;
 								result = untyped __global__["Number"].NaN; // -undefined
 							} else {
-								TMP.throwSyntaxError( mem );
+								TMP.throwError();
 							}
 						} else if ( c == Char.N ) {
 							if (
@@ -325,10 +326,10 @@ class JSON {
 								_position += 2;
 								result = untyped __global__["Number"].NaN; // -NaN
 							} else {
-								TMP.throwSyntaxError( mem );
+								TMP.throwError();
 							}
 						} else {
-							TMP.throwSyntaxError( mem );
+							TMP.throwError();
 						}
 
 					} else if ( c == Char.n ) {	// null
@@ -340,7 +341,7 @@ class JSON {
 							_position += 3;
 							result = null;
 						} else {
-							TMP.throwSyntaxError( mem );
+							TMP.throwError();
 						}
 
 					} else if ( c == Char.t ) {	// true
@@ -352,7 +353,7 @@ class JSON {
 							_position += 3;
 							result = true;
 						} else {
-							TMP.throwSyntaxError( mem );
+							TMP.throwError();
 						}
 
 					} else if ( c == Char.f ) {	// false
@@ -363,7 +364,7 @@ class JSON {
 							_position += 4;
 							result = false;
 						} else {
-							TMP.throwSyntaxError( mem );
+							TMP.throwError();
 						}
 
 					} else if ( c == Char.u ) {	// undefined
@@ -374,7 +375,7 @@ class JSON {
 						) {
 							_position += 8;
 						} else {
-							TMP.throwSyntaxError( mem );
+							TMP.throwError();
 						}
 
 					} else if ( c == Char.N ) {	// NaN
@@ -385,7 +386,7 @@ class JSON {
 							_position += 2;
 							result = untyped __global__["Number"].NaN; // -NaN
 						} else {
-							TMP.throwSyntaxError( mem );
+							TMP.throwError();
 						}
 
 					} else if ( c == Char.LEFT_BRACE ) {
@@ -407,7 +408,7 @@ class JSON {
 									if ( t != null ) {
 										key = t;
 									} else {
-										TMP.throwSyntaxError( mem );
+										TMP.throwError();
 									}
 								} else if ( ( c >= Char.ZERO && c <= Char.NINE ) || c == Char.DOT ) {
 									--_position;
@@ -415,26 +416,26 @@ class JSON {
 									if ( t != null ) {
 										key = untyped __global__["parseFloat"]( t ).toString();
 									} else {
-										TMP.throwSyntaxError( mem );
+										TMP.throwError();
 									}
 								} else if (
 									( c == Char.n && Memory.getByte( _position ) == 0x75 && Memory.getUI16( _position + 1 ) == 0x6C6C ) ||	// null
 									( c == Char.t && Memory.getByte( _position ) == 0x72 && Memory.getUI16( _position + 1 ) == 0x6575 ) ||	// true
 									( c == Char.f && Memory.getI32( _position ) == 0x65736C61 )												// false
 								) {
-									TMP.throwSyntaxError( mem );
+									TMP.throwError();
 								} else {
 									--_position;
 									t = MemoryScanner.readIdentifier( memory, _position );
 									if ( t != null ) {
 										key = t;
 									} else {
-										TMP.throwSyntaxError( mem );
+										TMP.throwError();
 									}
 								}
 
 								if ( TMP.readNotSpaceCharCode( _position ) != Char.COLON ) {
-									TMP.throwSyntaxError( mem );
+									TMP.throwError();
 								}
 
 								o[ untyped key ] = readValue( memory, _position );
@@ -444,7 +445,7 @@ class JSON {
 								if ( c == Char.RIGHT_BRACE ) {	// }
 									break;
 								} else if ( c != Char.COMMA ) {	// ,
-									TMP.throwSyntaxError( mem );
+									TMP.throwError();
 								}
 
 							} while ( true );
@@ -470,7 +471,7 @@ class JSON {
 								if ( c == Char.RIGHT_BRACKET ) {	// ]
 									break;
 								} else if ( c != Char.COMMA ) {		// ,
-									TMP.throwSyntaxError( mem );
+									TMP.throwError();
 								}
 							}
 
@@ -480,7 +481,7 @@ class JSON {
 
 					} else {
 
-						TMP.throwSyntaxError( mem );
+						TMP.throwError();
 
 					}
 
@@ -489,12 +490,21 @@ class JSON {
 
 				}
 
-				result = readValue( tmp, position );
-				_position = position;
-
-				if ( TMP.readNotSpaceCharCode( _position ) != Char.EOS ) {
-					TMP.throwSyntaxError( mem );
+				var h:Bool = false;
+				try {
+					result = readValue( tmp, position );
+					if ( TMP.readNotSpaceCharCode( _position ) != Char.EOS ) {
+						h = true;
+					}
+				} catch ( e:Dynamic ) {
+					// skip
+					//h = false;
 				}
+				if ( !h ) {
+					Memory.memory = mem;
+					Error.throwError( SyntaxError, 1509 );
+				}
+				_position = position;
 
 			}
 			
@@ -647,9 +657,8 @@ private class TMP {
 		return c;
 	}
 
-	public static inline function throwSyntaxError(mem:ByteArray):Void {
-		Memory.memory = mem;
-		Error.throwError( SyntaxError, 1509 );
+	public static inline function throwError():Void {
+		Error.throwError( Error, 0 );
 	}
 	
 }

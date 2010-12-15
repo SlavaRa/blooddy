@@ -4,7 +4,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.utils;
+package by.blooddy.utils.memory;
 
 import by.blooddy.utils.Char;
 import by.blooddy.system.Memory;
@@ -113,14 +113,14 @@ class MemoryScanner {
 					else if	( c == Char.f )	result += '\x0C';
 					else if	( c == Char.b )	result += '\x08';
 					else if	( c == Char.x ) {
-						t = TMP.readFixedHex( memory, _position, 2 );
+						t = readFixedHex( memory, _position, 2 );
 						if ( t != null ) {
 							result += String.fromCharCode( untyped __global__["parseInt"]( t, 16 ) );
 						} else {
 							result += 'x';
 						}
 					} else if ( c == Char.u ) {
-						t = TMP.readFixedHex( memory, _position, 4 );
+						t = readFixedHex( memory, _position, 4 );
 						if ( t != null ) {
 							result += String.fromCharCode( untyped __global__["parseInt"]( t, 16 ) );
 						} else {
@@ -273,23 +273,16 @@ class MemoryScanner {
 		return memory.readUTFBytes( _position - pos );
 	}
 
-}
-
-/**
- * @private
- */
-private class TMP {
-
 	//--------------------------------------------------------------------------
 	//
-	//  Class methods
+	//  Private class methods
 	//
 	//--------------------------------------------------------------------------
 
 	/**
 	 * @private
 	 */
-	public static inline function readFixedHex(memory:ByteArray, _position:UInt, length:UInt):String {
+	private static inline function readFixedHex(memory:ByteArray, _position:UInt, length:UInt):String {
 		var c:UInt;
 		var i:UInt = 0;
 		do {
