@@ -34,8 +34,8 @@ package by.blooddy.core.commands {
 		 */
 		public function Command(name:String, arguments:Array=null) {
 			super();
-			this._name = name;
-			if ( arguments ) {
+			this.name = name;
+			if ( arguments && arguments.length > 0 ) {
 				super.push.apply( this, arguments );
 			}
 		}
@@ -63,7 +63,7 @@ package by.blooddy.core.commands {
 
 		public function call(client:Object, ns:Namespace=null):* {
 			// пытаемся выполнить что-нить
-			return client[ new QName( ns || '', this._name ) ].apply( client, this );
+			return client[ new QName( ns || '', this.name ) ].apply( client, this );
 		}
 
 		/**
@@ -72,14 +72,14 @@ package by.blooddy.core.commands {
 		 * @return			Возвращает копию данной команды.
 		 */
 		public function clone():Command {
-			return new Command( this._name, this );
+			return new Command( this.name, this );
 		}
 
 		/**
 		 * @private
 		 */
 		public function toString():String {
-			return '[' + ClassUtils.getClassName( this ) + ' name="' + this._name + '" arguments=(' + this.argumentsToString() + ')]';
+			return '[' + ClassUtils.getClassName( this ) + ' name="' + this.name + '" arguments=(' + this.argumentsToString() + ')]';
 		}
 
 		//--------------------------------------------------------------------------

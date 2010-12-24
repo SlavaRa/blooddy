@@ -7,13 +7,14 @@
 package by.blooddy.core.net.connection.filters {
 	
 	import by.blooddy.core.net.NetCommand;
-	import by.blooddy.core.utils.UIDUtils;
+	import by.blooddy.crypto.MD5;
 	
 	import flash.errors.IllegalOperationError;
+	import flash.utils.ByteArray;
+	import flash.utils.Dictionary;
 	import flash.utils.IDataInput;
 	import flash.utils.IDataOutput;
-	import flash.utils.Dictionary;
-	import flash.utils.ByteArray;
+	import flash.utils.getQualifiedClassName;
 	
 	/**
 	 * @author					BlooDHounD
@@ -23,6 +24,17 @@ package by.blooddy.core.net.connection.filters {
 	 * @created					Mar 18, 2010 11:38:18 AM
 	 */
 	public class TextSocketFilter implements ISocketFilter {
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Class variables
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		 * @private
+		 */
+		private static const _HASH:String = MD5.hash( getQualifiedClassName( prototype.contructor ) );
 		
 		//--------------------------------------------------------------------------
 		//
@@ -45,16 +57,11 @@ package by.blooddy.core.net.connection.filters {
 		
 		/**
 		 * @private
-		 */
-		private const _hash:String = UIDUtils.createUID();
-		
-		/**
-		 * @private
 		 * хэш контекстов.
 		 * на случай, если одним сериализатором пользуются несколько сокетов.
 		 */
 		private const _contexts:Dictionary = new Dictionary( true );
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Implements methods
@@ -62,7 +69,7 @@ package by.blooddy.core.net.connection.filters {
 		//--------------------------------------------------------------------------
 
 		public function getHash():String {
-			return this._hash;
+			return _HASH;
 		}
 
 		public function readCommand(input:IDataInput, io:String='input'):NetCommand {
@@ -81,14 +88,16 @@ package by.blooddy.core.net.connection.filters {
 					if ( c == 0 ) {
 						bytes.position = 0;
 						data = bytes.readUTFBytes( bytes.length );
+						bytes.length = 0;
 						return this.getCommandFromString( data, io );
 					}
 					bytes.writeByte( c );
 				}
 
-			} finally {
+			} catch ( e:* ) {
 
 				bytes.length = 0;
+				throw e;
 
 			}
 

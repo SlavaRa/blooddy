@@ -104,7 +104,7 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		public override function clone():Command {
-			var result:NetCommand = new NetCommand( super.name, this._io, this );
+			var result:NetCommand = new NetCommand( super.name, this.io, this );
 			result.system = this.system;
 			result.num = this.num;
 			return result;
@@ -114,7 +114,7 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		public override function toString():String {
-			return '[' + ClassUtils.getClassName( this ) + ' io="' + this._io + '" name="' + super.name + '" arguments=(' + super.argumentsToString() + ')]';
+			return '[' + ClassUtils.getClassName( this ) + ' io="' + this.io + '" name="' + super.name + '" arguments=(' + super.argumentsToString() + ')]';
 		}
 
 	}

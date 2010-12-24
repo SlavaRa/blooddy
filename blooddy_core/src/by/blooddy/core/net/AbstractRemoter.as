@@ -183,6 +183,14 @@ package by.blooddy.core.net {
 		//
 		//--------------------------------------------------------------------------
 
+		protected final function clearResponders():void {
+			for ( var num:* in this._responders ) {
+				delete this._responders[ num ];
+			}
+			this._responderCount = 0;
+			_TIMER.removeEventListener( TimerEvent.TIMER, this.handler_timer );
+		}
+
 		//----------------------------------
 		//  output
 		//----------------------------------
