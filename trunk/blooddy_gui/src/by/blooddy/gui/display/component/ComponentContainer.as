@@ -55,12 +55,12 @@ package by.blooddy.gui.display.component {
 		/**
 		 * @private
 		 */
-		private static const $ns_controller:Namespace = NativeComponentController[ '$internal_c' ];
+		private static const $ns_controller:Namespace = NativeComponentController.$internal_c;
 
 		/**
 		 * @private
 		 */
-		private static const $ns_component:Namespace = Component[ '$internal_c' ];
+		private static const $ns_component:Namespace = Component.$internal_c;
 
 		use namespace $protected_rs;
 
@@ -161,7 +161,7 @@ package by.blooddy.gui.display.component {
 			if ( info.controller ) {
 				info.controller.$ns_controller::init( info, this._baseController );
 			}
-			
+
 			if ( info.name in this._components ) {
 				if ( this._components[ info.name ] !== info ) {
 					throw new ArgumentError();

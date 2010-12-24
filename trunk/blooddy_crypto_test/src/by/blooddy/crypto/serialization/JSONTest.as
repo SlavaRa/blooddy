@@ -653,7 +653,7 @@ package by.blooddy.crypto.serialization {
 		public function encode_object_key_nonstring():void {
 			Assert.assertEquals(
 				JSON.encode( { key: "value", 5:true } ),
-				'{"key":"value","5":true}'
+				'{"5":true,"key":"value"}'
 			);
 		}
 		
@@ -661,7 +661,7 @@ package by.blooddy.crypto.serialization {
 		public function encode_object_key_undefined_NaN():void {
 			Assert.assertEquals(
 				JSON.encode( {undefined:1,NaN:2} ),
-				'{"undefined":1,"NaN":2}'
+				'{"NaN":2,"undefined":1}'
 			);
 		}
 		

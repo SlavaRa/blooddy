@@ -7,6 +7,7 @@
 package by.blooddy.core.managers.resource {
 
 	import by.blooddy.core.events.managers.ResourceBundleEvent;
+	import by.blooddy.core.net.IURLRewriter;
 	import by.blooddy.core.net.domain;
 	import by.blooddy.core.net.loading.ILoadable;
 	import by.blooddy.core.net.loading.LoaderPriority;
@@ -133,6 +134,12 @@ package by.blooddy.core.managers.resource {
 		//----------------------------------
 		
 		public static var store:IResourceManagerStore;
+		
+		//----------------------------------
+		//  store
+		//----------------------------------
+		
+		public static var urlProxy:IURLRewriter;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -426,7 +433,11 @@ package by.blooddy.core.managers.resource {
 				if ( url in _HASH ) {
 					asset = _HASH[ url ];
 				} else {
-					_HASH[ url ] = asset = new ResourceLoaderAsset( url, ( store ? store.getFileByName( url ) : null ) );
+					_HASH[ url ] = asset = new ResourceLoaderAsset(
+						url,
+						( urlProxy ? urlProxy.getURLByName( url ) : url ),
+						( store ? store.getFileByName( url ) : null )
+					);
 					addLoaderQueue( asset, priority );
 				}
 				asset.managers[ this ] = true;
@@ -618,8 +629,8 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 	//
 	//--------------------------------------------------------------------------
 
-	public function ResourceLoaderAsset(url:String, bytes:ByteArray) {
-		super( url );
+	public function ResourceLoaderAsset(name:String, url:String, bytes:ByteArray) {
+		super( name );
 		this._url = url;
 		this._bytes = bytes;
 	}

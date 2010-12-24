@@ -327,12 +327,12 @@ package by.blooddy.core.net.connection {
 		 */
 		protected override function $callOutputCommand(command:Command):* {
 
-//			var bytes:ByteArray = new ByteArray();
-//			this._filter.writeCommand( bytes, command as NetCommand );
-//			this._socket.writeBytes( bytes );
-//			trace( ByteArrayUtils.dump( bytes ) );
+			var bytes:ByteArray = new ByteArray();
+			this._filter.writeCommand( bytes, command as NetCommand );
+			this._socket.writeBytes( bytes );
+			trace( ByteArrayUtils.dump( bytes ) );
 
-			this._filter.writeCommand( this._socket, command as NetCommand );
+//			this._filter.writeCommand( this._socket, command as NetCommand );
 			this._socket.flush(); 
 		}
 
@@ -346,6 +346,7 @@ package by.blooddy.core.net.connection {
 		 * @private
 		 */
 		private function clear():void {
+			super.clearResponders();
 			this._host = null;
 			this._port = 0;
 			this._socket.removeEventListener( Event.OPEN,							super.dispatchEvent );
@@ -412,11 +413,10 @@ package by.blooddy.core.net.connection {
 				);
 			}
 
-
-			//var pos:uint = this._inputBuffer.length;
+			var pos:uint = this._inputBuffer.length;
 			// запихиваем фсё в буфер
 			this._socket.readBytes( this._inputBuffer, this._inputBuffer.length );
-			//trace( ByteArrayUtils.dump( this._inputBuffer, pos  ) );
+			trace( ByteArrayUtils.dump( this._inputBuffer, pos  ) );
 
 			var command:NetCommand;
 
