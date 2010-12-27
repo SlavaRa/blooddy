@@ -493,7 +493,9 @@ class JSON {
 				var h:Bool = false;
 				try {
 					result = readValue( tmp, position );
-					if ( TMP.readNotSpaceCharCode( _position ) != Char.EOS ) {
+					_position = position;
+					c = TMP.readNotSpaceCharCode( _position );
+					if ( c == Char.EOS ) {
 						h = true;
 					}
 				} catch ( e:Dynamic ) {
@@ -504,7 +506,6 @@ class JSON {
 					Memory.memory = mem;
 					Error.throwError( SyntaxError, 1509 );
 				}
-				_position = position;
 
 			}
 			

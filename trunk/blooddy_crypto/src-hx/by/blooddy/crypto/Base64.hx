@@ -101,7 +101,7 @@ class Base64 {
 
 	public static function decode(str:String):ByteArray {
 
-		var len:UInt = Std.int( str.length * 0.75 );
+		var len:UInt = untyped str.length * 0.75;
 		var mem:ByteArray = Memory.memory;
 
 		var tmp:ByteArray = new ByteArray();
