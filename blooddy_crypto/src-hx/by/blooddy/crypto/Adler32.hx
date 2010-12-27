@@ -28,11 +28,11 @@ class Adler32 {
 
 			var mem:ByteArray = Memory.memory;
 
-			if ( len < 1024 ) {
+			if ( len < Memory.MIN_SIZE ) {
 
 				var tmp:ByteArray = new ByteArray();
 				tmp.writeBytes( bytes );
-				tmp.length = 1024;
+				tmp.length = Memory.MIN_SIZE;
 				Memory.memory = tmp;
 
 			} else {
@@ -78,7 +78,7 @@ private class TMP {
 	/**
 	 * The largest prime smaller than 65536.
 	 */
-	public static inline var BASE:UInt = 65521; 
+	public static inline var BASE:UInt = 65521;
 
 	/**
 	 * TLEN is the largest n such that 255n(n+1)/2 + (n+1)(BASE-1) <= 2^32-1

@@ -56,13 +56,12 @@ class MemoryScanner {
 	}
 
 	public static inline function readChar(_position:UInt, ?single:Bool=true):String {
-		var c:UInt = readCharCode( _position, single );
-		return String.fromCharCode( c );
+		return String.fromCharCode( readCharCode( _position, single ) );
 	}
 
 	public static inline function readIdentifier(memory:ByteArray, _position:UInt):String {
 		var pos:UInt = _position;
-		var c:UInt = readCharCode( _position, false );
+		var c:UInt = readCharCode( _position );
 		if (
 			( c < Char.a || c > Char.z ) &&
 			( c < Char.A || c > Char.Z ) &&
@@ -73,10 +72,8 @@ class MemoryScanner {
 			_position = pos;
 			return null;
 		} else {
-			var p:UInt;
 			do {
-				p = _position;
-				c = readCharCode( _position, false ); // bug?
+				c = readCharCode( _position ); // bug?
 			} while (
 				( c >= Char.a && c <= Char.z ) ||
 				( c >= Char.A && c <= Char.Z ) ||
@@ -85,9 +82,14 @@ class MemoryScanner {
 				c == Char.UNDER_SCORE ||
 				c > 0x7f
 			);
-			_position = p;
-			memory.position = pos;
-			return memory.readUTFBytes( _position - pos );
+			--_position;
+			c = _position - pos;
+			if ( c == 1 ) {
+				return String.fromCharCode( Memory.getByte( pos ) );
+			} else {
+				memory.position = pos;
+				return memory.readUTFBytes( c );
+			}
 		}
 	}
 	
@@ -101,10 +103,15 @@ class MemoryScanner {
 			var p:UInt = pos + 1;
 			var result:String = '';
 			var c:UInt, t:String;
-			while ( ( c = readCharCode( _position, false ) ) != to ) {
+			while ( ( c = readCharCode( _position ) ) != to ) {
 				if ( c == Char.BACK_SLASH ) {
-					memory.position = p;
-					result += memory.readUTFBytes( _position - 1 - p );
+					c = _position - 1 - p;
+					if ( c == 1 ) {
+						result += String.fromCharCode( Memory.getByte( p ) );
+					} else if ( c > 0 ) {
+						memory.position = p;
+						result += memory.readUTFBytes( c );
+					}
 					c = readCharCode( _position );
 					if		( c == Char.n )	result += '\n';
 					else if	( c == Char.r )	result += '\r';
@@ -112,26 +119,24 @@ class MemoryScanner {
 					else if	( c == Char.v )	result += '\x0B';
 					else if	( c == Char.f )	result += '\x0C';
 					else if	( c == Char.b )	result += '\x08';
-					else if	( c == Char.x ) {
-						t = readFixedHex( memory, _position, 2 );
-						if ( t != null ) {
-							result += String.fromCharCode( untyped __global__["parseInt"]( t, 16 ) );
-						} else {
-							result += 'x';
-						}
+					else if ( c == Char.BACK_SLASH || c == to ) {
+						result += String.fromCharCode( c );
 					} else if ( c == Char.u ) {
 						t = readFixedHex( memory, _position, 4 );
 						if ( t != null ) {
 							result += String.fromCharCode( untyped __global__["parseInt"]( t, 16 ) );
 						} else {
-							result += 'u';
+							--_position;
+						}
+					} else if	( c == Char.x ) {
+						t = readFixedHex( memory, _position, 2 );
+						if ( t != null ) {
+							result += String.fromCharCode( untyped __global__["parseInt"]( t, 16 ) );
+						} else {
+							--_position;
 						}
 					} else {
-						if ( c >= 0x80 ) {
-							--_position;
-							c = readCharCode( _position, false );
-						}
-						result += String.fromCharCode( c );
+						--_position;
 					}
 					p = _position;
 				} else if (
@@ -147,9 +152,12 @@ class MemoryScanner {
 			if ( _position == pos ) {
 				return null;
 			} else {
-				if ( p != _position - 1 ) {
+				c = _position - 1 - p;
+				if ( c == 1 ) {
+					result += String.fromCharCode( Memory.getByte( p ) );
+				} else if ( c > 0 ) {
 					memory.position = p;
-					result += memory.readUTFBytes( _position - 1 - p );
+					result += memory.readUTFBytes( c );
 				}
 				return result;
 			}
@@ -177,8 +185,14 @@ class MemoryScanner {
 					c = Char.ZERO;
 				} else {
 					--_position;
-					memory.position = p;
-					result = untyped __global__["parseInt"]( memory.readUTFBytes( _position - p ), 16 );
+					c = _position - p;
+					if ( c == 1 ) {
+						result = String.fromCharCode( Memory.getByte( p ) );
+					} else {
+						memory.position = p;
+						result = memory.readUTFBytes( c );
+					}
+					result = untyped __global__["parseInt"]( result, 16 );
 				}
 			} else {
 				--_position;
@@ -190,11 +204,10 @@ class MemoryScanner {
 				c = readCharCode( _position );
 			}
 			if ( c == Char.DOT ) { // float
-				p = _position;
 				do {
 					c = readCharCode( _position );
 				} while ( c >= Char.ZERO && c <= Char.NINE );
-				if ( _position == p + 1 ) {
+				if ( _position == pos + 2 ) {
 					--_position;
 					c = Char.DOT;
 				}
@@ -214,9 +227,12 @@ class MemoryScanner {
 				}
 			}
 			--_position;
-			if ( _position != pos ) {
+			c = _position - pos;
+			if ( c == 1 ) {
+				result = String.fromCharCode( Memory.getByte( pos ) );
+			} else if ( c > 0 ) {
 				memory.position = pos;
-				result = memory.readUTFBytes( _position - pos );
+				result = memory.readUTFBytes( c );
 			}
 		}
 		return result;

@@ -24,9 +24,9 @@ class ByteArrayUtils {
 	//
 	//--------------------------------------------------------------------------
 
-	public static inline function createByteArray(?length:UInt=0):ByteArray {
+	public static inline function createByteArray(length:UInt):ByteArray {
 		var result:ByteArray = new ByteArray();
-		if ( length != 0 ) result.length = length;
+		result.length = length;
 		return result;
 	}
 

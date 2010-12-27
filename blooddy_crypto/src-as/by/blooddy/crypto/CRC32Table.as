@@ -19,31 +19,31 @@ package by.blooddy.crypto {
 	 * @created					09.10.2010 20:06:26
 	 */
 	public final class CRC32Table {
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class variables
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 */
 		private static var _table:ByteArray;
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public static function getTable():ByteArray {
 			if ( !_table ) _table = createTable();
 			var result:ByteArray = new ByteArray();
 			result.writeBytes( _table );
 			return result;
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Private class methods
@@ -56,7 +56,7 @@ package by.blooddy.crypto {
 		private static function createTable():ByteArray {
 			var result:ByteArray = new ByteArray();
 			result.endian = Endian.LITTLE_ENDIAN;
-			
+
 			var c:uint;
 			var j:uint;
 			var i:uint;
@@ -71,16 +71,16 @@ package by.blooddy.crypto {
 				}
 				result.writeUnsignedInt( c );
 			}
-			
+
 			return result;
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 */
@@ -88,7 +88,7 @@ package by.blooddy.crypto {
 			super();
 			Error.throwError( ArgumentError, 2012, getQualifiedClassName( this ) );
 		}
-		
+
 	}
-	
+
 }

@@ -9,6 +9,7 @@
 		<symbol>by.blooddy.crypto.image.JPEGEncoder</symbol>
 		<symbol>by.blooddy.crypto.image.PNG8Encoder</symbol>
 		<symbol>by.blooddy.crypto.image.PNG24Encoder</symbol>
+		<!--symbol>by.blooddy.crypto.RSA</symbol-->
 		<symbol>by.blooddy.crypto.SHA1</symbol>
 		<symbol>by.blooddy.crypto.SHA256</symbol>
 		<symbol>by.blooddy.crypto.SHA224</symbol>
