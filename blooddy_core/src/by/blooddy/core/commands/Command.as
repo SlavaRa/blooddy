@@ -79,7 +79,7 @@ package by.blooddy.core.commands {
 		 * @private
 		 */
 		public function toString():String {
-			return '[' + ClassUtils.getClassName( this ) + ' name="' + this.name + '" arguments=(' + this.argumentsToString() + ')]';
+			return '[' + ClassUtils.getClassName( this ) + ' name="' + this.name + '"' + ( super.length > 0 ? ' arguments=(' + this.argumentsToString() + ')' : '' ) + ']';
 		}
 
 		//--------------------------------------------------------------------------

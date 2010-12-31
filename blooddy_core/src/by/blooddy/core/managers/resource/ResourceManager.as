@@ -139,7 +139,7 @@ package by.blooddy.core.managers.resource {
 		//  store
 		//----------------------------------
 		
-		public static var urlProxy:IURLRewriter;
+		public static var urlRewriter:IURLRewriter;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -435,7 +435,7 @@ package by.blooddy.core.managers.resource {
 				} else {
 					_HASH[ url ] = asset = new ResourceLoaderAsset(
 						url,
-						( urlProxy ? urlProxy.getURLByName( url ) : url ),
+						( urlRewriter ? urlRewriter.getURLByName( url ) : null ) || url ,
 						( store ? store.getFileByName( url ) : null )
 					);
 					addLoaderQueue( asset, priority );

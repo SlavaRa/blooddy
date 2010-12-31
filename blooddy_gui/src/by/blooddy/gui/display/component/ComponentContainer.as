@@ -13,6 +13,8 @@ package by.blooddy.gui.display.component {
 	import by.blooddy.gui.parser.component.ComponentParser;
 	
 	import flash.display.DisplayObject;
+	import flash.display.DisplayObjectContainer;
+	import flash.display.InteractiveObject;
 	import flash.errors.IllegalOperationError;
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
@@ -131,11 +133,34 @@ package by.blooddy.gui.display.component {
 
 		public function removeComponent(info:ComponentInfo):ComponentInfo {
 			if ( !( info.name in this._components ) || ( this._components[ info.name ] !== info ) ) throw new ArgumentError();
+
+			// focus
+			var setNewFocus:Boolean = false;
+			if ( super.stage && super.stage.focus ) {
+				var f:InteractiveObject = super.stage.focus;
+				if ( f && info.component.contains( f ) ) {
+					setNewFocus = true;
+				}
+			}
+
 			super.removeChild( info.component );
 			delete this._components[ info.name ];
+
+			if ( setNewFocus ) {
+				var num:int = super.numChildren;
+				var component:Component;
+				while ( num-- ) {
+					component = super.getChildAt( num ) as Component;
+					if ( component ) {
+						stage.focus = component;
+						break;
+					}
+				}
+			}
+
 			return info;
 		}
-		
+
 		public function removeComponentByID(id:String):ComponentInfo {
 			return this.removeComponent( this._components[ id ] );
 		}
@@ -148,6 +173,12 @@ package by.blooddy.gui.display.component {
 			return name in this._components;
 		}
 
+		public function clear():void {
+			for each ( var info:ComponentInfo in this._components ) {
+				this.removeComponent( info );
+			}
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
@@ -169,6 +200,9 @@ package by.blooddy.gui.display.component {
 			} else {
 				this._components[ info.name ] = info;
 				super.addChild( info.component );
+
+				// focus
+				super.stage.focus = info.component;
 			}
 			
 		}

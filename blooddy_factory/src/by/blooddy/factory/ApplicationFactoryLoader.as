@@ -12,6 +12,7 @@ package by.blooddy.factory {
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Loader;
 	import flash.display.LoaderInfo;
+	import flash.display.MovieClip;
 	import flash.display.Shader;
 	import flash.display.Sprite;
 	import flash.display.Stage;
@@ -22,16 +23,15 @@ package by.blooddy.factory {
 	import flash.geom.Rectangle;
 	import flash.geom.Transform;
 	import flash.media.SoundTransform;
+	import flash.net.LocalConnection;
 	import flash.net.URLRequest;
 	import flash.system.ApplicationDomain;
+	import flash.system.Capabilities;
 	import flash.system.LoaderContext;
 	import flash.system.SecurityDomain;
 	import flash.text.TextSnapshot;
 	import flash.ui.ContextMenu;
 	import flash.utils.getQualifiedClassName;
-	import flash.display.MovieClip;
-	import flash.system.Capabilities;
-	import flash.net.LocalConnection;
 
 	//--------------------------------------
 	//  Excluded APIs
@@ -127,7 +127,7 @@ package by.blooddy.factory {
 		/**
 		 * Constructor
 		 */
-		public function ApplicationFactoryLoader(url:String) {
+		public function ApplicationFactoryLoader(url:String=null) {
 			super();
 
 			if ( inited || !super.stage || super.stage != super.parent  ) {
@@ -141,21 +141,8 @@ package by.blooddy.factory {
 
 			super.addEventListener( Event.REMOVED_FROM_STAGE, this.handler_removedFromStage, false, int.MAX_VALUE );
 
-			const domain:String = (
-				Capabilities.playerType == 'Desktop' || Capabilities.playerType == 'StandAlone'
-				?	'localhost'
-				:	( new LocalConnection() ).domain
-			);
-			const URL:RegExp = ( domain == 'localhost' ? null : new RegExp( '^(?:(?!\\w+://)|https?://(?:www\\.)?' + domain.replace( /\./g, '\\.' ) + ')', 'i' ) );
-
-			this._loader = new LoaderAsset();
-			this._loader.contentLoaderInfo.addEventListener( Event.INIT, this.handler_loader_init );
-			this._loader.$load(
-				new URLRequest( url ),
-				new LoaderContext( false, ApplicationDomain.currentDomain, ( URL && URL.test( url ) ? SecurityDomain.currentDomain : null ) )
-			);
-			super.parent.addChild( this._loader );
-
+			if ( url ) this.load( url );
+			
 		}
 
 		//--------------------------------------------------------------------------
@@ -167,12 +154,50 @@ package by.blooddy.factory {
 		/**
 		 * @private
 		 */
+		private var _url:String;
+		
+		/**
+		 * @private
+		 */
+		private var _loaded:Boolean = false;
+		
+		/**
+		 * @private
+		 */
 		private var _loader:LoaderAsset;
 
 		/**
 		 * @private
 		 */
 		private var _factory:MovieClip;
+
+		//--------------------------------------------------------------------------
+		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
+
+		protected final function load(url:String):LoaderInfo {
+			if ( this._loaded ) throw new ArgumentError();
+			this._loaded = true;
+
+			const domain:String = (
+				Capabilities.playerType == 'Desktop' || Capabilities.playerType == 'StandAlone'
+				?	'localhost'
+				:	( new LocalConnection() ).domain
+			);
+			const URL:RegExp = ( domain == 'localhost' ? null : new RegExp( '^(?:(?!\\w+://)|https?://(?:www\\.)?' + domain.replace( /\./g, '\\.' ) + ')', 'i' ) );
+			
+			this._loader = new LoaderAsset();
+			this._loader.contentLoaderInfo.addEventListener( Event.INIT, this.handler_loader_init );
+			this._loader.$load(
+				new URLRequest( url ),
+				new LoaderContext( false, ApplicationDomain.currentDomain, ( URL && URL.test( url ) ? SecurityDomain.currentDomain : null ) )
+			);
+			super.addChild( this._loader );
+
+			return this._loader.contentLoaderInfo;
+		}
 
 		//--------------------------------------------------------------------------
 		//
@@ -192,12 +217,13 @@ package by.blooddy.factory {
 		 */
 		private function handler_loader_init(event:Event):void {
 			var info:LoaderInfo = event.target as LoaderInfo;
+			info.removeEventListener( Event.INIT, this.handler_loader_init );
 			if (
-				info.applicationDomain.hasDefinition( 'by.blooddy.factory::ApplicationFactory' ) &&
-				info.content is ( info.applicationDomain.getDefinition( 'by.blooddy.factory::ApplicationFactory' ) as Class ) 
+				info.applicationDomain.hasDefinition( 'by.blooddy.factory::SimpleApplicationFactory' ) &&
+				info.content is ( info.applicationDomain.getDefinition( 'by.blooddy.factory::SimpleApplicationFactory' ) as Class ) 
 			) {
 				this._factory = info.content as MovieClip;
-				this._factory.addEventListener( Event.INIT, this.handler_factory_init );
+				this._factory.addEventListener( Event.COMPLETE, this.handler_factory_complete );
 			} else {
 				this._loader.$lockStage();
 				this._loader = null;
@@ -209,10 +235,10 @@ package by.blooddy.factory {
 		/**
 		 * @private
 		 */
-		private function handler_factory_init(event:Event):void {
-			this._factory.removeEventListener( Event.INIT, this.handler_factory_init );
+		private function handler_factory_complete(event:Event):void {
+			this._factory.removeEventListener( Event.COMPLETE, this.handler_factory_complete );
 			this._factory = null;
-			super.parent.removeChild( this._loader );
+			( new Sprite() ).addChild( this._loader );
 			this._loader.$lockStage();
 			this._loader = null;
 			super.removeEventListener( Event.REMOVED_FROM_STAGE, this.handler_removedFromStage );

@@ -107,6 +107,7 @@ package by.blooddy.core.net {
 			var result:NetCommand = new NetCommand( super.name, this.io, this );
 			result.system = this.system;
 			result.num = this.num;
+			result.status = this.status;
 			return result;
 		}
 
@@ -114,7 +115,7 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		public override function toString():String {
-			return '[' + ClassUtils.getClassName( this ) + ' io="' + this.io + '" name="' + super.name + '" arguments=(' + super.argumentsToString() + ')]';
+			return '[' + ClassUtils.getClassName( this ) + ' io="' + this.io + '" name="' + super.name + '"' + ( super.length > 0 ? ' arguments=(' + this.argumentsToString() + ')' : '' ) + ']';
 		}
 
 	}
