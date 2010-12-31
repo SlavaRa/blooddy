@@ -189,8 +189,8 @@ package by.blooddy.factory {
 		 * @keyword					applicationfactory.loaded, loaded
 		 */
 		public final function get loaded():Boolean {
-			for ( var i:uint = 0; i < this._loaders.length; ++i ) {
-				if ( !this._loaded[ i ] ) return false;
+			for each ( var l:Boolean in this._loaded ) {
+				if ( !l ) return false;
 			}
 			return true;
 		}

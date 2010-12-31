@@ -206,7 +206,7 @@ package by.blooddy.core.net {
 					command = netCommand = new NetCommand( command.name, NetCommand.OUTPUT, command );
 				}
 				netCommand.num = ++this._responderNum;
-				this._responders[ this._responderNum ] = new ResponderAsset( responder ); // сохраняем, что бы обработать в ответе
+				this._responders[ this._responderNum ] = new ResponderAsset( responder, netCommand ); // сохраняем, что бы обработать в ответе
 				if ( this._responderCount == 0 ) {
 					_TIMER.addEventListener( TimerEvent.TIMER, this.handler_timer );
 				}
@@ -229,6 +229,13 @@ package by.blooddy.core.net {
 		protected function $invokeCallInputCommand(command:Command!, async:Boolean=true):* {
 
 			if ( this._logging && ( !( command is NetCommand ) || !( command as NetCommand ).system ) ) {
+				if ( command is NetCommand ) {
+					var netCommand:NetCommand = command as NetCommand;
+					if ( netCommand.num && netCommand.num in this._responders ) {
+						command = command.clone();
+						command.name = ( this._responders[ netCommand.num ] as ResponderAsset ).command.name + '(' + command.name + ')';
+					}
+				}
 				this._logger.addLog( new CommandLog( command ) );
 			}
 
@@ -264,10 +271,10 @@ package by.blooddy.core.net {
 			var result:*;
 			if ( num ) { // удалённый клиент считает, что у нас есть респондер
 
-				var responder:Responder = ( this._responders[ num ] as ResponderAsset ).responder;
-				if ( !responder ) {
+				if ( !( num in this._responders ) ) {
 					throw new DefinitionError( 'не найден responder: ' + command );
 				}
+				var responder:Responder = ( this._responders[ num ] as ResponderAsset ).responder;
 				delete this._responders[ num ];
 				--this._responderCount;
 				if ( this._responderCount == 0 ) {
@@ -331,19 +338,48 @@ package by.blooddy.core.net {
 
 }
 
+//==============================================================================
+//
+//  Inner definitions
+//
+//==============================================================================
+
+import by.blooddy.core.commands.Command;
+import by.blooddy.core.net.NetCommand;
 import by.blooddy.core.net.Responder;
 
 import flash.utils.getTimer;
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Helper class: ResponderAsset
+//
+////////////////////////////////////////////////////////////////////////////////
 
 /**
  * @private
  */
 internal final class ResponderAsset {
 
-	public function ResponderAsset(responder:Responder) {
+	//--------------------------------------------------------------------------
+	//
+	//  Constructor
+	//
+	//--------------------------------------------------------------------------
+	
+	public function ResponderAsset(responder:Responder, command:NetCommand) {
 		super();
 		this.responder = responder;
+		this.command = command;
 	}
+
+	//--------------------------------------------------------------------------
+	//
+	//  Properties
+	//
+	//--------------------------------------------------------------------------
+	
+	public var command:NetCommand;
 
 	public var responder:Responder;
 

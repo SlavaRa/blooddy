@@ -16,6 +16,7 @@ package by.blooddy.core.display.resource {
 	
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
+	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.media.Sound;
 	import flash.utils.Dictionary;
@@ -143,6 +144,21 @@ package by.blooddy.core.display.resource {
 		 */
 		private var _depth:int = 0;
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Properties
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private var _stage:Stage;
+
+		public override function get stage():Stage {
+			return this._stage;
+		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  $protected_rs methods
@@ -308,6 +324,7 @@ package by.blooddy.core.display.resource {
 			// зануляем resourceManager
 			this._manager = null;
 			this._lockers = null;
+			this._stage = null;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -321,6 +338,8 @@ package by.blooddy.core.display.resource {
 		 */
 		private function handler_addedToStage(event:Event):void {
 
+			this._stage = super.stage;
+			
 			enterFrameBroadcaster.removeEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameContructed );
 
 			this._depth = this.getDepth();

@@ -50,12 +50,12 @@ package by.blooddy.core.net.connection {
 	/**
 	 * @inheritDoc
 	 */
-	[Event( name="ioError", type="flash.events.IOErrorEvent" )]		
+	[Event( name="ioError", type="flash.events.IOErrorEvent" )]
 
 	/**
 	 * @inheritDoc
 	 */
-	[Event( name="securityError", type="flash.events.SecurityErrorEvent" )]	
+	[Event( name="securityError", type="flash.events.SecurityErrorEvent" )]
 
 	//--------------------------------------
 	//  Events
@@ -64,7 +64,7 @@ package by.blooddy.core.net.connection {
 	/**
 	 * ошибка сериализации протокола
 	 */
-	[Event( name="serializeError", type="by.blooddy.core.events.net.SerializeErrorEvent" )]	
+	[Event( name="serializeError", type="by.blooddy.core.events.net.SerializeErrorEvent" )]
 
 	/**
 	 * @author					BlooDHounD
@@ -327,12 +327,12 @@ package by.blooddy.core.net.connection {
 		 */
 		protected override function $callOutputCommand(command:Command):* {
 
-			var bytes:ByteArray = new ByteArray();
-			this._filter.writeCommand( bytes, command as NetCommand );
-			this._socket.writeBytes( bytes );
-			trace( ByteArrayUtils.dump( bytes ) );
+//			var bytes:ByteArray = new ByteArray();
+//			this._filter.writeCommand( bytes, command as NetCommand );
+//			this._socket.writeBytes( bytes );
+//			trace( ByteArrayUtils.dump( bytes ) );
 
-//			this._filter.writeCommand( this._socket, command as NetCommand );
+			this._filter.writeCommand( this._socket, command as NetCommand );
 			this._socket.flush(); 
 		}
 
@@ -413,10 +413,10 @@ package by.blooddy.core.net.connection {
 				);
 			}
 
-			var pos:uint = this._inputBuffer.length;
+//			var pos:uint = this._inputBuffer.length;
 			// запихиваем фсё в буфер
 			this._socket.readBytes( this._inputBuffer, this._inputBuffer.length );
-			trace( ByteArrayUtils.dump( this._inputBuffer, pos  ) );
+//			trace( ByteArrayUtils.dump( this._inputBuffer, pos  ) );
 
 			var command:NetCommand;
 

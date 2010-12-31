@@ -27,7 +27,7 @@ package by.blooddy.core.display.resource {
 		/**
 		 * @private
 		 */
-		private static const _SEPERATOR:String = String.fromCharCode( 0 );
+		private static const _SEPERATOR:String = '#';
 
 		//--------------------------------------------------------------------------
 		//

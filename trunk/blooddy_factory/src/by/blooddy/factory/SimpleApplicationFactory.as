@@ -25,6 +25,13 @@ package by.blooddy.factory {
 	import flash.text.TextSnapshot;
 
 	//--------------------------------------
+	//  Events
+	//--------------------------------------
+
+	[Event(name="complete", type="flash.events.Event")]
+	[Event(name="init", type="flash.events.Event")]
+	
+	//--------------------------------------
 	//  Excluded APIs
 	//--------------------------------------
 
@@ -188,9 +195,12 @@ package by.blooddy.factory {
 				}
 				// удалим себя
 				super.removeEventListener( Event.REMOVED_FROM_STAGE, this.handler_removedFromStage );
-				if ( super.parent is Loader ) ( new Sprite() ).addChild( this ); // стараемся для FactoryLoader
-				else super.parent.removeChild( this );
-
+				if ( super.parent is Loader ) {
+					( new Sprite() ).addChild( this ); // стараемся для FactoryLoader
+				} else {
+					super.parent.removeChild( this );
+				}
+				super.dispatchEvent( new Event( Event.COMPLETE ) );
 			} else {
 				throw new InvalidSWFError(); // TODO: описать ошибку
 			}
@@ -210,6 +220,7 @@ package by.blooddy.factory {
 			loaderInfo.removeEventListener( Event.COMPLETE, this.handler_complete );
 			loaderInfo.removeEventListener( IOErrorEvent.IO_ERROR, this.handler_ioError );
 			super.nextFrame();
+			super.dispatchEvent( new Event( Event.INIT ) );
 			this.initialize();
 		}
 
@@ -222,7 +233,7 @@ package by.blooddy.factory {
 			loaderInfo.removeEventListener( Event.COMPLETE, this.handler_complete );
 			loaderInfo.removeEventListener( IOErrorEvent.IO_ERROR, this.handler_ioError );
 			if ( !loaderInfo.hasEventListener( event.type ) ) {
-				loaderInfo.dispatchEvent( event );
+				loaderInfo.dispatchEvent( event ); // FIXME: throw error
 			}
 		}
 
