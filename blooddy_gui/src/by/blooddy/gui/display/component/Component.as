@@ -63,10 +63,8 @@ package by.blooddy.gui.display.component {
 			super();
 			super.mouseEnabled = true;
 			trace( 'component: ' + getQualifiedClassName( this ) );
-			super.addEventListener( Event.ADDED_TO_STAGE, this.handler_addedToStage, false, int.MIN_VALUE, true );
-			super.addEventListener( Event.REMOVED_FROM_STAGE, this.handler_removedFromStage, false, int.MIN_VALUE, true );
 			super.addEventListener( ResourceEvent.ADDED_TO_MANAGER, this.handler_addedToManager, false, int.MIN_VALUE, true );
-			super.addEventListener( ResourceEvent.REMOVED_FROM_MANAGER, this.handler_removedFromManager, false, int.MIN_VALUE, true );
+			super.addEventListener( ResourceEvent.REMOVED_FROM_MANAGER, this.handler_removedFromManager, false, int.MAX_VALUE, true );
 		}
 
 		//--------------------------------------------------------------------------
@@ -200,6 +198,12 @@ package by.blooddy.gui.display.component {
 			}
 		}
 
+		$internal_c final function clear():void {
+			this._componentInfo = null;
+			this._fixed = false;
+			super.name = '';
+		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Private methods
@@ -227,7 +231,7 @@ package by.blooddy.gui.display.component {
 		/**
 		 * @private
 		 */
-		private function handler_addedToStage(event:Event):void {
+		private function handler_addedToManager(event:ResourceEvent):void {
 			var parent:DisplayObject = this;
 			while ( ( parent = parent.parent ) && !( parent is ComponentContainer ) ) {};
 			this._container = parent as ComponentContainer;
@@ -235,22 +239,7 @@ package by.blooddy.gui.display.component {
 				super.stage.addEventListener( Event.RESIZE, this.drawLock );
 				this.drawLock();
 			}
-		}
-		
-		/**
-		 * @private
-		 */
-		private function handler_removedFromStage(event:Event):void {
-			this._container = null;
-			if ( this._lock ) {
-				super.stage.removeEventListener( Event.RESIZE, this.drawLock );
-			}
-		}
-		
-		/**
-		 * @private
-		 */
-		private function handler_addedToManager(event:ResourceEvent):void {
+
 			this._constructed = true;
 			super.dispatchEvent( new ComponentEvent( ComponentEvent.COMPONENT_CONSTRUCT, false, false, this ) );
 		}
@@ -261,6 +250,11 @@ package by.blooddy.gui.display.component {
 		private function handler_removedFromManager(event:ResourceEvent):void {
 			this._constructed = false;
 			super.dispatchEvent( new ComponentEvent( ComponentEvent.COMPONENT_DESTRUCT, false, false, this ) );
+
+			if ( this._lock ) {
+				super.stage.removeEventListener( Event.RESIZE, this.drawLock );
+			}
+			this._container = null;
 		}
 		
 	}

@@ -37,7 +37,7 @@ package by.blooddy.gui.display.component {
 
 		internal namespace $internal_c;
 
-		use namespace $internal_c;
+//		use namespace $internal_c;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -165,18 +165,29 @@ package by.blooddy.gui.display.component {
 
 		$internal_c final function init(info:ComponentInfo, controller:IBaseController=null):void {
 			this._componentInfo = info;
-
 			if ( controller ) {
 				this._baseController = controller;
 				this._sharedObject = controller.sharedObject[ 'component_' + info.name ];
 			}
 			if ( !this._sharedObject ) controller.sharedObject[ 'component_' + info.name ] = this._sharedObject = new Object();
-
 			info.component.addEventListener( ComponentEvent.COMPONENT_CONSTRUCT, this.handler_componentConstruct, false, int.MAX_VALUE, true );
 			info.component.addEventListener( ComponentEvent.COMPONENT_DESTRUCT, this.handler_componentDestruct, false, int.MAX_VALUE, true );
 			if ( info.component.constructed ) {
 				info.component.addEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameConstructed );
 			}
+		}
+
+		$internal_c final function clear():void {
+			if ( this._constructed ) {
+				this._constructed = false;
+				this.destruct();
+			}
+			this._componentInfo.component.removeEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameConstructed );
+			this._componentInfo.component.removeEventListener( ComponentEvent.COMPONENT_CONSTRUCT, this.handler_componentConstruct );
+			this._componentInfo.component.removeEventListener( ComponentEvent.COMPONENT_DESTRUCT, this.handler_componentDestruct );
+			this._sharedObject = null;
+			this._baseController = null;
+			this._componentInfo = null;
 		}
 
 		//--------------------------------------------------------------------------

@@ -131,7 +131,7 @@ package by.blooddy.gui.display.component {
 			}
 		}
 
-		public function removeComponent(info:ComponentInfo):ComponentInfo {
+		public function removeComponent(info:ComponentInfo):void {
 			if ( !( info.name in this._components ) || ( this._components[ info.name ] !== info ) ) throw new ArgumentError();
 
 			// focus
@@ -158,10 +158,12 @@ package by.blooddy.gui.display.component {
 				}
 			}
 
-			return info;
+			info.controller.$ns_controller::clear();
+			info.component.$ns_component::clear();
+
 		}
 
-		public function removeComponentByID(id:String):ComponentInfo {
+		public function removeComponentByID(id:String):void {
 			return this.removeComponent( this._components[ id ] );
 		}
 
