@@ -190,14 +190,9 @@ package by.blooddy.core.external {
 						copyObject( command[ 2 ], event );
 					}
 					if ( command[ 1 ] ) { // синхронный ответ
-						var result:*;
-						try {
-							result = super.dispatchEvent( event );
-						} finally {
-							return ( result == null || result );
-						}
+						return super.dispatchEvent( event );
 					} else {
-						setTimeout( this._dispatchEvent, 1, event );
+						setTimeout( super.dispatchEvent, 1, event );
 						return true;
 					}
 
@@ -249,22 +244,6 @@ package by.blooddy.core.external {
 			} else {
 				return super.$invokeCallInputCommand( new NetCommand( commandName, NetCommand.INPUT, parameters ) );
 			}
-		}
-
-		/**
-		 * @private
-		 */
-		private function _dispatchEvent(event:Event):Boolean {
-			try { // отлавливаем ошибки выполнения
-				return super.dispatchEvent( event );
-			} catch ( e:Error ) {
-				if ( super.logging ) {
-					super.logger.addLog( new InfoLog( ( e.getStackTrace() || e.toString() ), InfoLog.ERROR ) );
-					trace( e.getStackTrace() || e.toString() );
-				}
-				super.dispatchEvent( new AsyncErrorEvent( AsyncErrorEvent.ASYNC_ERROR, false, false, e.toString(), e ) );
-			}
-			return true;
 		}
 
 	}
