@@ -172,6 +172,8 @@ class ByteArrayUtils {
 
 	public static function dump(bytes:ByteArray, offset:UInt=0, length:UInt=0):String {
 
+		var mem:ByteArray = Memory.memory;
+
 		offset = IntUtils.min( offset, bytes.length );
 		if ( offset >= bytes.length ) return '';
 		length = (
@@ -268,9 +270,11 @@ class ByteArrayUtils {
 			
 		} while ( i < length );
 
+		Memory.memory = mem;
+		
 		tmp.position = length;
 
-		return tmp.readUTFBytes( tmp.bytesAvailable );
+		return tmp.readUTFBytes( j - length - 1 );
 
 	}
 
