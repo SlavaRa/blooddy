@@ -30,7 +30,7 @@ package by.blooddy.code.css {
 	import by.blooddy.code.errors.ParserError;
 	import by.blooddy.code.net.AbstractLoadableParser;
 	import by.blooddy.code.utils.Char;
-	import by.blooddy.core.net.loading.IProcessable;
+	import by.blooddy.core.managers.process.IProcessable;
 	import by.blooddy.core.utils.StringUtils;
 	
 	import flash.errors.IOError;

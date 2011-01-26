@@ -7,8 +7,8 @@
 package by.blooddy.code.net {
 	
 	import by.blooddy.code.AbstractParser;
-	import by.blooddy.core.net.loading.IProcessable;
-	import by.blooddy.core.net.loading.ProgressDispatcher;
+	import by.blooddy.core.managers.process.IProcessable;
+	import by.blooddy.core.managers.process.ProgressDispatcher;
 	
 	import flash.events.ErrorEvent;
 	import flash.events.Event;

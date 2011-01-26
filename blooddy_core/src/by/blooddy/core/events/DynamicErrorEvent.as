@@ -29,10 +29,10 @@ package by.blooddy.core.events {
 		/**
 		 * Constructor
 		 */
-		public function DynamicErrorEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false, text:String='') {
-			super( type, bubbles, cancelable, text );
+		public function DynamicErrorEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false, text:String='', id:int=0) {
+			super( type, bubbles, cancelable, text, id );
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Overridden methods: Event
@@ -43,7 +43,7 @@ package by.blooddy.core.events {
 		 * @private
 		 */
 		public override function clone():Event {
-			var event:DynamicErrorEvent = new DynamicErrorEvent( super.type, super.bubbles, super.cancelable, super.text );
+			var event:DynamicErrorEvent = new DynamicErrorEvent( super.type, super.bubbles, super.cancelable, super.text, super.errorID );
 			for ( var i:String in this ) {
 				event[i] = this[i];
 			}
@@ -54,7 +54,7 @@ package by.blooddy.core.events {
 		 * @private
 		 */
 		public override function toString():String {
-			var arr:Array = new Array( ClassUtils.getClassName( this ), 'type', 'bubbles', 'cancelable' );
+			var arr:Array = new Array( ClassUtils.getClassName( this ), 'type', 'bubbles', 'cancelable', 'text', 'errorID' );
 			for ( var i:String in this ) {
 				arr.push( i );
 			}

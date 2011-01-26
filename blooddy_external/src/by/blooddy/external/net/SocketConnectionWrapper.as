@@ -125,8 +125,8 @@ package by.blooddy.external.net {
 		private function _call(func:Function, ...args):* {
 			try {
 				func.apply( null, args );
-			} catch ( e:Error ) {
-				super.dispatchEvent( new AsyncErrorEvent( AsyncErrorEvent.ASYNC_ERROR, false, false, e.toString(), e ) );
+			} catch ( e:* ) {
+				super.dispatchEvent( new AsyncErrorEvent( AsyncErrorEvent.ASYNC_ERROR, false, false, String( e ), e as Error ) );
 			}
 		}
 		

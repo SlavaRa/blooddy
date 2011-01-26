@@ -518,11 +518,15 @@ package by.blooddy.core.net.loading {
 		 */
 		private function throwError(e:*):void {
 			this.clear();
+			var event:ErrorEvent;
 			if ( e is SecurityError ) {
-				super.completeHandler( new SecurityErrorEvent( SecurityErrorEvent.SECURITY_ERROR, false, false, e.toString() ) );
+				event = new SecurityErrorEvent( SecurityErrorEvent.SECURITY_ERROR, false, false, e.toString() );
+			} else if ( e is Error ) {
+				event = new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, e.toString(), e.errorID );
 			} else {
-				super.completeHandler( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, String( e ) ) );
+				event = new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, String( e ) );
 			}
+			super.completeHandler( event );
 		}
 
 		//--------------------------------------------------------------------------

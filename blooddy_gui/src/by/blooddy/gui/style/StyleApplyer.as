@@ -336,8 +336,8 @@ package by.blooddy.gui.style {
 				for ( n in declarations ) {
 					try {
 						target[ n ] = declarations[ n ];
-					} catch ( e:Error ) {
-						super.dispatchEvent( new AsyncErrorEvent( AsyncErrorEvent.ASYNC_ERROR, false, false, e.toString(), e ) );
+					} catch ( e:* ) {
+						super.dispatchEvent( new AsyncErrorEvent( AsyncErrorEvent.ASYNC_ERROR, false, false, e.toString(), e as Error ) );
 					}
 				}
 

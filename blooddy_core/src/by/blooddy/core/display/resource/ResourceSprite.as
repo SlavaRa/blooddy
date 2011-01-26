@@ -93,16 +93,6 @@ package by.blooddy.core.display.resource {
 		 */
 		private static const _LOCK_HASH:Dictionary = new Dictionary( true );
 
-		/**
-		 * @private
-		 */
-		private static const _SEPARATOR:String = String.fromCharCode( 0 );
-		
-		/**
-		 * @private
-		 */
-		private static const _NAME_DISPLAY_OBJECT:String = getQualifiedClassName( DisplayObject );
-		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -114,8 +104,8 @@ package by.blooddy.core.display.resource {
 		 */
 		public function ResourceSprite() {
 			super();
-			super.addEventListener( Event.ADDED_TO_STAGE,		this.handler_addedToStage,		false, int.MIN_VALUE, true );
-			super.addEventListener( Event.REMOVED_FROM_STAGE,	this.handler_removedFromStage,	false, int.MIN_VALUE, true );
+			super.addEventListener( Event.ADDED_TO_STAGE,		this.handler_addedToStage,		false, int.MAX_VALUE, true );
+			super.addEventListener( Event.REMOVED_FROM_STAGE,	this.handler_removedFromStage,	false, int.MAX_VALUE, true );
 		}
 
 		//--------------------------------------------------------------------------
@@ -319,14 +309,14 @@ package by.blooddy.core.display.resource {
 				resources.push( def );
 			}
 			if ( resources ) {
-				super.dispatchEvent( new ResourceErrorEvent( ResourceErrorEvent.RESOURCE_ERROR, false, false, 'Некоторые ресурсы не были возвращены в мэннеджер ресурсов.', resources ) );
+				super.dispatchEvent( new ResourceErrorEvent( ResourceErrorEvent.RESOURCE_ERROR, false, false, 'Некоторые ресурсы не были возвращены в мэннеджер ресурсов.', 0, resources ) );
 			}
 			// зануляем resourceManager
 			this._manager = null;
 			this._lockers = null;
 			this._stage = null;
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Event handlers
@@ -350,6 +340,7 @@ package by.blooddy.core.display.resource {
 			}
 			
 			if ( !this._manager && manager ) {
+				this._stage = super.stage;
 				this._manager = manager;
 				this._lockers = _LOCK_HASH[ manager ];
 				if ( !this._lockers ) {

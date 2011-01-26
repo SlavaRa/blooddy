@@ -6,6 +6,8 @@
 
 package by.blooddy.core.net.loading {
 
+	import by.blooddy.core.managers.process.IProgressProcessable;
+
 	//--------------------------------------
 	//  Events
 	//--------------------------------------
@@ -32,7 +34,7 @@ package by.blooddy.core.net.loading {
 	 * 
 	 * @keyword					iloadable
 	 */
-	public interface ILoadable extends IProgressable, IProcessable {
+	public interface ILoadable extends IProgressProcessable {
 
 		//--------------------------------------------------------------------------
 		//

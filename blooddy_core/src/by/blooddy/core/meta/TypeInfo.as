@@ -47,7 +47,6 @@ package by.blooddy.core.meta {
 				_privateCall = true;
 				_HASH[ c ] = result = new TypeInfo();
 				result.parseClass( c );
-				_privateCall = false;
 			}
 			return result;
 		}
@@ -74,7 +73,6 @@ package by.blooddy.core.meta {
 
 			_privateCall = true;
 			var result:TypeInfo = new TypeInfo();
-			_privateCall = false;
 
 			result._targetPrototype = Object.prototype;
 			result._target = Object;
@@ -202,6 +200,7 @@ package by.blooddy.core.meta {
 		public function TypeInfo() {
 			super();
 			if ( !_privateCall ) throw new IllegalOperationError();
+			_privateCall = false;
 		}
 		
 		//--------------------------------------------------------------------------

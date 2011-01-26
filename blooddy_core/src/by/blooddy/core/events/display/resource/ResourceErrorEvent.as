@@ -38,8 +38,8 @@ package by.blooddy.core.events.display.resource {
 		/**
 		 * Constructor.
 		 */
-		public function ResourceErrorEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false, text:String='', resources:Vector.<ResourceDefinition>=null) {
-			super( type, bubbles, cancelable, text );
+		public function ResourceErrorEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false, text:String='', id:int=0, resources:Vector.<ResourceDefinition>=null) {
+			super( type, bubbles, cancelable, text, id );
 			this.resources = resources;
 			trace( resources.join( '\n' ) );
 		}
@@ -59,11 +59,11 @@ package by.blooddy.core.events.display.resource {
 		//--------------------------------------------------------------------------
 		
 		public override function clone():Event {
-			return new ResourceErrorEvent( super.type, super.bubbles, super.cancelable, super.text, this.resources );
+			return new ResourceErrorEvent( super.type, super.bubbles, super.cancelable, super.text, super.errorID, this.resources );
 		}
 
 		public override function toString():String {
-			return super.formatToString( ClassUtils.getClassName( this ), 'type', 'bubbles', 'cancelable', 'text', 'resources' );
+			return super.formatToString( ClassUtils.getClassName( this ), 'type', 'bubbles', 'cancelable', 'text', 'errorID', 'resources' );
 		}
 
 	}

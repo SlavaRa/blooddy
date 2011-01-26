@@ -4,7 +4,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.net.loading {
+package by.blooddy.core.managers.process {
 
 	import by.blooddy.core.utils.nextframeCall;
 	
@@ -12,6 +12,8 @@ package by.blooddy.core.net.loading {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.ProgressEvent;
+	import by.blooddy.core.net.loading.ILoadable;
+	import by.blooddy.core.net.loading.ILoader;
 
 	//--------------------------------------
 	//  Implements events
@@ -36,7 +38,7 @@ package by.blooddy.core.net.loading {
 	 * @playerversion			Flash 9
 	 * @langversion				3.0
 	 */
-	public class ProgressDispatcher extends EventDispatcher implements IProcessable, IProgressable {
+	public class ProgressDispatcher extends EventDispatcher implements IProgressProcessable {
 
 		//--------------------------------------------------------------------------
 		//
@@ -130,7 +132,7 @@ package by.blooddy.core.net.loading {
 			return ( this._processes.indexOf( process ) >= 0 );
 		}
 		
-		public function close():void {
+		public function clear():void {
 			while ( this._processes.length > 0 ) {
 				this.$removeProcess( this._processes[ this._processes.length - 1 ] as IProcessable, false );
 			}

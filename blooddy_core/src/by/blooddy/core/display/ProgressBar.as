@@ -6,7 +6,7 @@
 
 package by.blooddy.core.display {
 
-	import by.blooddy.core.net.loading.IProgressable;
+	import by.blooddy.core.managers.process.IProgressable;
 	import by.blooddy.core.utils.css.ColorUtils;
 	
 	import flash.events.Event;

@@ -228,7 +228,10 @@ package by.blooddy.core.external {
 				super.dispatchEvent( new Event( Event.CONNECT ) );
 			} catch ( e:SecurityError ) { // bug fixing: ExternalInterface.available == true, but method ExternalInterface.call throws SecurityError
 				this._connected = false;
-				super.dispatchEvent( new SecurityErrorEvent( SecurityErrorEvent.SECURITY_ERROR, false, false, e.toString() ) );
+				super.dispatchEvent( new SecurityErrorEvent( SecurityErrorEvent.SECURITY_ERROR, false, false, e.toString(), e.errorID ) );
+			} catch ( e:Error ) {
+				this._connected = false;
+				super.dispatchEvent( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, e.toString(), e.errorID ) );
 			} catch ( e:* ) {
 				this._connected = false;
 				super.dispatchEvent( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, String( e ) ) );

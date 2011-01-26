@@ -59,7 +59,10 @@ package by.blooddy.core.managers.drag {
 		//  Namespaces
 		//
 		//--------------------------------------------------------------------------
-		
+
+		/**
+		 * @private
+		 */
 		private static const $internal_drag:Namespace = DragObject.$internal_drag;
 		
 		//--------------------------------------------------------------------------

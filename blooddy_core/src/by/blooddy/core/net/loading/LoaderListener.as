@@ -8,7 +8,10 @@ package by.blooddy.core.net.loading {
 
 	import by.blooddy.core.events.net.loading.LoaderEvent;
 	import by.blooddy.core.events.net.loading.LoaderListenerEvent;
+	import by.blooddy.core.managers.process.IProcessable;
+	import by.blooddy.core.managers.process.ProgressDispatcher;
 	
+	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
 
@@ -32,15 +35,14 @@ package by.blooddy.core.net.loading {
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * Constructor
 		 */
-		public function LoaderListener(target:IEventDispatcher) {
+		public function LoaderListener(target:IEventDispatcher=null) {
 			super();
-			this._target = target;
-			target.addEventListener( LoaderEvent.LOADER_INIT, this.handler_loaderInit, false, int.MAX_VALUE, true );
 			super.addEventListener( Event.COMPLETE, this.handler_complete, false, int.MAX_VALUE, true );
+			if ( target ) this.target = target;
 		}
 
 		//--------------------------------------------------------------------------
@@ -61,6 +63,21 @@ package by.blooddy.core.net.loading {
 		/**
 		 * @private
 		 */
+		public function set target(value:IEventDispatcher):void {
+			if ( this._target === value ) return;
+			if ( this._target ) {
+				this._target.removeEventListener( LoaderEvent.LOADER_INIT, this.handler_loaderInit );
+				super.clear();
+			}
+			this._target = value;
+			if ( this._target ) {
+				this._target.addEventListener( LoaderEvent.LOADER_INIT, this.handler_loaderInit, false, int.MAX_VALUE, true );
+			}
+		}
+		
+		/**
+		 * @private
+		 */
 		private var _running:Boolean = false;
 
 		public function get running():Boolean {
@@ -73,14 +90,30 @@ package by.blooddy.core.net.loading {
 		//
 		//--------------------------------------------------------------------------
 		
-		public override function close():void {
-			if ( this._target ) {
-				this._target.removeEventListener( LoaderEvent.LOADER_INIT, this.handler_loaderInit );
-				this._target = null;
-			}
-			super.close();
+		[Deprecated( message="метод запрещен" )]
+		/**
+		 * @private
+		 */
+		public override function clear():void {
+			Error.throwError( IllegalOperationError, 1001, 'clear' );
 		}
 
+		[Deprecated( message="метод запрещен" )]
+		/**
+		 * @private
+		 */
+		public override function addProcess(process:IProcessable):void {
+			Error.throwError( IllegalOperationError, 1001, 'addProcess' );
+		}
+
+		[Deprecated( message="метод запрещен" )]
+		/**
+		 * @private
+		 */
+		public override function removeProcess(process:IProcessable):void {
+			Error.throwError( IllegalOperationError, 1001, 'removeProcess' );
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Event handlers
