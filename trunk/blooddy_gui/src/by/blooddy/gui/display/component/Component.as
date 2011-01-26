@@ -10,6 +10,7 @@ package by.blooddy.gui.display.component {
 	import by.blooddy.core.display.DisplayObjectContainerProxy;
 	import by.blooddy.core.display.resource.LoadableResourceSprite;
 	import by.blooddy.core.events.display.resource.ResourceEvent;
+	import by.blooddy.core.managers.process.IProgressProcessable;
 	import by.blooddy.core.utils.ClassAlias;
 	import by.blooddy.gui.events.ComponentEvent;
 	
@@ -46,9 +47,7 @@ package by.blooddy.gui.display.component {
 		//
 		//--------------------------------------------------------------------------
 		
-		internal namespace $internal_c;
-		
-		use namespace $internal_c;
+		use namespace $internal;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -64,7 +63,7 @@ package by.blooddy.gui.display.component {
 			super.mouseEnabled = true;
 			trace( 'component: ' + getQualifiedClassName( this ) );
 			super.addEventListener( ResourceEvent.ADDED_TO_MANAGER, this.handler_addedToManager, false, int.MIN_VALUE, true );
-			super.addEventListener( ResourceEvent.REMOVED_FROM_MANAGER, this.handler_removedFromManager, false, int.MAX_VALUE, true );
+			super.addEventListener( ResourceEvent.REMOVED_FROM_MANAGER, this.handler_removedFromManager, false, int.MIN_VALUE, true );
 		}
 
 		//--------------------------------------------------------------------------
@@ -84,6 +83,14 @@ package by.blooddy.gui.display.component {
 		//
 		//--------------------------------------------------------------------------
 
+		//----------------------------------
+		//  loader
+		//----------------------------------
+
+		public function get loader():IProgressProcessable {
+			return this._componentInfo.loader;
+		}
+		
 		//----------------------------------
 		//  constructed
 		//----------------------------------
@@ -184,13 +191,36 @@ package by.blooddy.gui.display.component {
 			}
 		}
 
+		/**
+		 * @private
+		 */
+		public override function dispatchEvent(event:Event):Boolean {
+			return this.$dispatchEvent( event );
+		}
+
+		/**
+		 * @private
+		 */
+		public override function hasEventListener(type:String):Boolean {
+			return	super.hasEventListener( type ) ||
+					this._componentInfo.hasEventListener( type );
+		}
+
+		/**
+		 * @private
+		 */
+		public override function willTrigger(type:String):Boolean {
+			return	super.willTrigger( type ) ||
+					this._componentInfo.willTrigger( type );
+		}
+
 		//--------------------------------------------------------------------------
 		//
 		//  Namespace methods
 		//
 		//--------------------------------------------------------------------------
 
-		$internal_c final function init(componentInfo:ComponentInfo, name:String=null):void {
+		$internal final function $init(componentInfo:ComponentInfo, name:String=null):void {
 			this._componentInfo = componentInfo;
 			if ( name ) {
 				this._fixed = true;
@@ -198,7 +228,7 @@ package by.blooddy.gui.display.component {
 			}
 		}
 
-		$internal_c final function clear():void {
+		$internal final function $clear():void {
 			this._componentInfo = null;
 			this._fixed = false;
 			super.name = '';
@@ -222,6 +252,15 @@ package by.blooddy.gui.display.component {
 			}
 		}
 
+		/**
+		 * @private
+		 */
+		private function $dispatchEvent(event:Event):Boolean {
+			return	super.dispatchEvent( event ) &&
+					this._componentInfo.$dispatchEvent( event );
+		}
+		
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Event handlers
@@ -241,7 +280,7 @@ package by.blooddy.gui.display.component {
 			}
 
 			this._constructed = true;
-			super.dispatchEvent( new ComponentEvent( ComponentEvent.COMPONENT_CONSTRUCT, false, false, this ) );
+			this.$dispatchEvent( new ComponentEvent( ComponentEvent.COMPONENT_CONSTRUCT, false, false, this._componentInfo ) );
 		}
 
 		/**
@@ -249,7 +288,7 @@ package by.blooddy.gui.display.component {
 		 */
 		private function handler_removedFromManager(event:ResourceEvent):void {
 			this._constructed = false;
-			super.dispatchEvent( new ComponentEvent( ComponentEvent.COMPONENT_DESTRUCT, false, false, this ) );
+			this.$dispatchEvent( new ComponentEvent( ComponentEvent.COMPONENT_DESTRUCT, false, false, this._componentInfo ) );
 
 			if ( this._lock ) {
 				super.stage.removeEventListener( Event.RESIZE, this.drawLock );

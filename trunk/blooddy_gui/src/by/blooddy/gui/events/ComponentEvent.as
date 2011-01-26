@@ -6,7 +6,8 @@
 
 package by.blooddy.gui.events {
 	
-	import by.blooddy.gui.display.component.Component;
+	import by.blooddy.core.utils.ClassUtils;
+	import by.blooddy.gui.display.component.ComponentInfo;
 	
 	import flash.events.Event;
 	
@@ -38,9 +39,9 @@ package by.blooddy.gui.events {
 		/**
 		 * Constructor.
 		 */
-		public function ComponentEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false, component:Component=null) {
+		public function ComponentEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false, component:ComponentInfo=null) {
 			super( type, bubbles, cancelable );
-			this.component = component;
+			this.componentInfo = component;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -49,7 +50,7 @@ package by.blooddy.gui.events {
 		//
 		//--------------------------------------------------------------------------
 
-		public var component:Component;
+		public var componentInfo:ComponentInfo;
 
 		//--------------------------------------------------------------------------
 		//
@@ -58,9 +59,13 @@ package by.blooddy.gui.events {
 		//--------------------------------------------------------------------------
 
 		public override function clone():Event {
-			return new ComponentEvent( super.type, super.bubbles, super.cancelable, this.component );
+			return new ComponentEvent( super.type, super.bubbles, super.cancelable, this.componentInfo );
 		}
 
+		public override function toString():String {
+			return super.formatToString( ClassUtils.getClassName( this ), 'type', 'bubbles', 'cancelable', 'component' );
+		}
+		
 	}
 	
 }

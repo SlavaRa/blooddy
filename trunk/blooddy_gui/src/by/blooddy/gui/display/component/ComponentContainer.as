@@ -8,8 +8,11 @@ package by.blooddy.gui.display.component {
 	
 	import by.blooddy.core.controllers.IBaseController;
 	import by.blooddy.core.display.resource.MainResourceSprite;
+	import by.blooddy.core.events.display.resource.ResourceEvent;
 	import by.blooddy.core.events.net.loading.LoaderEvent;
 	import by.blooddy.core.net.loading.ILoadable;
+	import by.blooddy.gui.controller.ComponentController;
+	import by.blooddy.gui.events.ComponentEvent;
 	import by.blooddy.gui.parser.component.ComponentParser;
 	
 	import flash.display.DisplayObject;
@@ -54,17 +57,7 @@ package by.blooddy.gui.display.component {
 		//
 		//--------------------------------------------------------------------------
 
-		/**
-		 * @private
-		 */
-		private static const $ns_controller:Namespace = NativeComponentController.$internal_c;
-
-		/**
-		 * @private
-		 */
-		private static const $ns_component:Namespace = Component.$internal_c;
-
-		use namespace $protected_rs;
+		use namespace $internal;
 
 		//--------------------------------------------------------------------------
 		//
@@ -89,8 +82,13 @@ package by.blooddy.gui.display.component {
 		/**
 		 * @private
 		 */
-		private var _components:Object = new Object();
+		private var _components_id:Object = new Object();
 
+		/**
+		 * @private
+		 */
+		private var _components_name:Object = new Object();
+		
 		/**
 		 * @private
 		 */
@@ -117,22 +115,29 @@ package by.blooddy.gui.display.component {
 		//
 		//--------------------------------------------------------------------------
 
-		public function loadComponent(url:String, params:Object=null):void {
-			if ( !super.hasManager() ) throw new ArgumentError();
-			var loader:ILoadable = super.loadResourceBundle( url );
-			if ( loader.complete ) {
-				// TODO: inline
-			} else {
-				loader.addEventListener( Event.COMPLETE,	this.handler_loader_complete );
-				loader.addEventListener( ErrorEvent.ERROR,	this.handler_loader_error );
-				var asset:ComponentAsset = this._queue[ loader ];
-				if ( !asset ) this._queue[ loader ] = asset = new ComponentAsset( url );
-				asset.params.push( params );
-			}
+		public function loadComponent(url:String, params:Object=null):ComponentInfo {
+//			if ( !super.hasManager() ) throw new ArgumentError();
+//			var loader:ILoadable = super.loadResourceBundle( url );
+//			if ( loader.complete ) {
+//				// TODO: inline
+//			} else {
+//				loader.addEventListener( Event.COMPLETE,	this.handler_loader_complete );
+//				loader.addEventListener( ErrorEvent.ERROR,	this.handler_loader_error );
+//				var asset:ComponentAsset = this._queue[ loader ];
+//				if ( !asset ) this._queue[ loader ] = asset = new ComponentAsset( url );
+//				asset.params.push( params );
+//			}
+			ComponentInfo.internalCall = true;
+			var info:ComponentInfo = new ComponentInfo();
+			info.$initP( params );
+			
+			this._components_id[ info.id ] = info;
+			
+			return info;
 		}
 
 		public function removeComponent(info:ComponentInfo):void {
-			if ( !( info.name in this._components ) || ( this._components[ info.name ] !== info ) ) throw new ArgumentError();
+			if ( !( info.id in this._components_id ) ) throw new ArgumentError();
 
 			// focus
 			var setNewFocus:Boolean = false;
@@ -144,7 +149,9 @@ package by.blooddy.gui.display.component {
 			}
 
 			super.removeChild( info.component );
-			delete this._components[ info.name ];
+			delete this._components_id[ info.id ];
+			var i:int = this._components_name[ info.name ].indexOf( info );
+			if ( i >= 0 ) this._components_name[ info.name ].splice( i, 1 );
 
 			if ( setNewFocus ) {
 				var num:int = super.numChildren;
@@ -158,55 +165,63 @@ package by.blooddy.gui.display.component {
 				}
 			}
 
-			info.controller.$ns_controller::clear();
-			info.component.$ns_component::clear();
-
 		}
 
 		public function removeComponentByID(id:String):void {
-			return this.removeComponent( this._components[ id ] );
+			return this.removeComponent( this._components_id[ id ] );
 		}
 
 		public function getComponentByID(id:String):ComponentInfo {
-			return this._components[ id ];
+			return this._components_id[ id ];
+		}
+
+		public function getComponentByName(name:String):ComponentInfo {
+			var list:Vector.<ComponentInfo> = this._components_name[ name ];
+			return ( list && list.length > 0 ? list[ 0 ] : null );
 		}
 		
-		public function hasComponent(name:String):Boolean {
-			return name in this._components;
+		public function hasComponentByID(id:String):Boolean {
+			return id in this._components_id;
+		}
+		
+		public function hasComponentByName(name:String):Boolean {
+			return name in this._components_name && this._components_name[ name ].length > 0;
 		}
 
 		public function clear():void {
-			for each ( var info:ComponentInfo in this._components ) {
+			for each ( var info:ComponentInfo in this._components_id ) {
 				this.removeComponent( info );
 			}
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
 
+		protected function initComponent(info:ComponentInfo, name:String, component:Component, controller:ComponentController, properties:ComponentProperties):void {
+			info.$init( name, component, controller, properties, this._baseController );
+			info.addEventListener( ComponentEvent.COMPONENT_DESTRUCT, this.handler_componentDestruct, false, int.MIN_VALUE );
+		}
+		
 		protected function addComponent(info:ComponentInfo):void {
-			
-			// TODO: перенести
-			info.component.$ns_component::init( info, info.name );
-			if ( info.controller ) {
-				info.controller.$ns_controller::init( info, this._baseController );
-			}
 
-			if ( info.name in this._components ) {
-				if ( this._components[ info.name ] !== info ) {
-					throw new ArgumentError();
+			if ( !( info.name in this._components_name ) ) {
+				this._components_name[ info.name ] = new Vector.<ComponentInfo>();
+			}
+			if ( info.properties.singleton ) {
+				for each ( var i:ComponentInfo in this._components_name[ info.name ] ) {
+					this.removeComponent( i );
 				}
-			} else {
-				this._components[ info.name ] = info;
-				super.addChild( info.component );
-
-				// focus
-				super.stage.focus = info.component;
 			}
-			
+			this._components_name[ info.name ].push( info );
+
+			super.addChild( info.component );
+
+			// focus
+			super.stage.focus = info.component;
+
 		}
 
 		//--------------------------------------------------------------------------
@@ -214,7 +229,15 @@ package by.blooddy.gui.display.component {
 		//  Event handlers
 		//
 		//--------------------------------------------------------------------------
-		
+
+		/**
+		 * @private
+		 */
+		private function handler_componentDestruct(event:ComponentEvent):void {
+			event.target.removeEventListener( ComponentEvent.COMPONENT_DESTRUCT, this.handler_componentDestruct );
+			event.componentInfo.$clear();
+		}
+
 		/**
 		 * @private
 		 */
@@ -229,7 +252,7 @@ package by.blooddy.gui.display.component {
 				parser.addEventListener( Event.COMPLETE,			this.handler_parser_complete );
 				parser.addEventListener( ErrorEvent.ERROR,			this.handler_parser_error );
 				parser.addEventListener( LoaderEvent.LOADER_INIT,	this.handler_loaderInit );
-				parser.parse( xml, super.getResourceManager() );
+				parser.parse( xml, super.$protected_rs::getResourceManager() );
 				this._queue[ parser ] = asset;
 
 			} else {

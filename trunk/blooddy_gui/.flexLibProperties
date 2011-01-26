@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<flexLibProperties includeAllClasses="false" version="3">
+<flexLibProperties includeAllClasses="false" useMultiPlatformConfig="false" version="3">
   <includeClasses>
     <classEntry path="by.blooddy.gui.controller.ComponentController"/>
     <classEntry path="by.blooddy.gui.display.component.Component"/>
@@ -26,6 +26,9 @@
     <classEntry path="by.blooddy.gui.style.meta.AbstractStyle"/>
     <classEntry path="by.blooddy.gui.style.meta.CollectionStyle"/>
     <classEntry path="by.blooddy.gui.style.StyleType"/>
+    <classEntry path="by.blooddy.gui.display.component.ComponentProperties"/>
+    <classEntry path="by.blooddy.gui.display.component.$internal"/>
+    <classEntry path="by.blooddy.gui.events.ComponentErrorEvent"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
