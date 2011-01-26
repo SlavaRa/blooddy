@@ -16,7 +16,7 @@ package by.blooddy.core.utils {
 	 * @langversion				3.0
 	 * @created					28.02.2010 0:00:34
 	 */
-	public final class UIDUtils {
+	public final class UID {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -35,7 +35,7 @@ package by.blooddy.core.utils {
 		//
 		//--------------------------------------------------------------------------
 
-		public static function createUID():String {
+		public static function generate():String {
 			var hash:String;
 			do {
 				hash = MD5.hash( Math.random() + '-' + domain + '-' + Math.random() + '-' + ( new Date() ).getTime() + '-' + Math.random() );

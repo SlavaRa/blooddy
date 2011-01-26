@@ -21,7 +21,7 @@ package by.blooddy.core.controllers {
 	 * @langversion				3.0
 	 * @created					22.12.2010 15:30:31
 	 */
-	public class DelegateController extends EventDispatcher implements IController, IAbstractRemoter {
+	public class DelegateController extends EventDispatcher implements IController {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -107,17 +107,6 @@ package by.blooddy.core.controllers {
 				}
 			}
 			return sharedObject;
-		}
-		
-		//--------------------------------------------------------------------------
-		//
-		//  Methods
-		//
-		//--------------------------------------------------------------------------
-		
-		public function call(commandName:String, responder:Responder=null, ...parameters):* {
-			parameters.unshift( commandName, responder );
-			return this._baseController.call.apply( null, parameters );
 		}
 		
 		//--------------------------------------------------------------------------
