@@ -167,6 +167,7 @@ package by.blooddy.core.utils {
 			// вешаем листенеры
 			super.addEventListener( Event.ADDED_TO_STAGE, this.handler_addToStage, false, int.MAX_VALUE, true );
 			super.addEventListener( Event.REMOVED_FROM_STAGE, this.handler_removeFromStage, false, int.MAX_VALUE, true );
+			this._TIMER.addEventListener( TimerEvent.TIMER, this.handler_timer );
 			// стартуем отрисовку
 			this.refreshTime = 97;
 		}
@@ -519,10 +520,10 @@ package by.blooddy.core.utils {
 			this._refreshTime = time;
 			if ( time > 0 ) {
 				this._TIMER.delay = time;
-				this._TIMER.start();
-				this._TIMER.addEventListener( TimerEvent.TIMER, this.handler_timer );
+				if ( super.stage ) {
+					this._TIMER.start();
+				}
 			} else {
-				this._TIMER.removeEventListener( TimerEvent.TIMER, this.handler_timer );
 				this._TIMER.stop();
 			}
 		}
@@ -709,6 +710,9 @@ package by.blooddy.core.utils {
 			// найдём сперва тут менюшку что есть выше
 			this._prevTime = getTimer();
 			super.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
+			if ( this._refreshTime > 0 ) {
+				this._TIMER.start();
+			}
 		}
 
 		/**
@@ -717,6 +721,7 @@ package by.blooddy.core.utils {
 		private function handler_removeFromStage(event:Event):void {
 			super.contextMenu = null;
 			super.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
+			this._TIMER.stop();
 		}
 
 		/**
