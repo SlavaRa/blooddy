@@ -66,6 +66,16 @@ package by.blooddy.core.utils.time {
 			super.dispatchEvent( new TimeEvent( TimeEvent.TIME_RELATIVITY_CHANGE, false, false, this.currentTime - oldTime ) );
 		}
 
+		//--------------------------------------------------------------------------
+		//
+		//  Methods
+		//
+		//--------------------------------------------------------------------------
+
+		public function getDelata(time:Number):Number {
+			return time - this.currentTime;
+		}
+
 	}
 
 }
