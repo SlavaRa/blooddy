@@ -35,9 +35,7 @@ package by.blooddy.gui.display.component {
 		//
 		//--------------------------------------------------------------------------
 
-		internal namespace $internal_c;
-
-//		use namespace $internal_c;
+		use namespace $internal;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -145,6 +143,21 @@ package by.blooddy.gui.display.component {
 			this._baseController.call.apply( null, parameters );
 		}
 
+		public override function dispatchEvent(event:Event):Boolean {
+			return	super.dispatchEvent( event ) &&
+					this._componentInfo.$dispatchEvent( event );
+		}
+		
+		public override function hasEventListener(type:String):Boolean {
+			return	super.hasEventListener( type ) ||
+					this._componentInfo.hasEventListener( type );
+		}
+		
+		public override function willTrigger(type:String):Boolean {
+			return	super.willTrigger( type ) ||
+					this._componentInfo.willTrigger( type );
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
@@ -163,7 +176,7 @@ package by.blooddy.gui.display.component {
 		//
 		//--------------------------------------------------------------------------
 
-		$internal_c final function init(info:ComponentInfo, controller:IBaseController=null):void {
+		$internal final function $init(info:ComponentInfo, controller:IBaseController=null):void {
 			this._componentInfo = info;
 			if ( controller ) {
 				this._baseController = controller;
@@ -177,7 +190,7 @@ package by.blooddy.gui.display.component {
 			}
 		}
 
-		$internal_c final function clear():void {
+		$internal final function $clear():void {
 			if ( this._constructed ) {
 				this._constructed = false;
 				this.destruct();
@@ -195,7 +208,7 @@ package by.blooddy.gui.display.component {
 		//  Event handlers
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 */
@@ -206,7 +219,7 @@ package by.blooddy.gui.display.component {
 				this.construct();
 			}
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -216,7 +229,7 @@ package by.blooddy.gui.display.component {
 				this.construct();
 			}
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -226,7 +239,7 @@ package by.blooddy.gui.display.component {
 				this.destruct();
 			}
 		}
-		
+
 	}
 	
 }
