@@ -7,7 +7,7 @@
 package by.blooddy.game.data {
 
 	import by.blooddy.core.data.Data;
-	import by.blooddy.core.net.loading.IProgressable;
+	import by.blooddy.core.managers.process.IProgressable;
 	
 	import flash.events.ProgressEvent;
 

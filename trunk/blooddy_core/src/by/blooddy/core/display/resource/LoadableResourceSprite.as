@@ -7,10 +7,10 @@
 package by.blooddy.core.display.resource {
 
 	import by.blooddy.core.events.display.resource.ResourceEvent;
+	import by.blooddy.core.managers.process.IProgressProcessable;
+	import by.blooddy.core.managers.process.IProgressable;
+	import by.blooddy.core.managers.process.ProgressDispatcher;
 	import by.blooddy.core.net.loading.ILoadable;
-	import by.blooddy.core.net.loading.IProcessable;
-	import by.blooddy.core.net.loading.IProgressable;
-	import by.blooddy.core.net.loading.ProgressDispatcher;
 	
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
@@ -48,7 +48,7 @@ package by.blooddy.core.display.resource {
 		/**
 		 * @private
 		 */
-		private var _loader:IProcessable;
+		private var _loader:IProgressProcessable;
 
 		//--------------------------------------------------------------------------
 		//
@@ -118,9 +118,7 @@ package by.blooddy.core.display.resource {
 				if ( !( this._loader is ProgressDispatcher ) ) {
 					this._loader.addEventListener( ErrorEvent.ERROR, this.handler_complete );
 				}
-				if ( this._loader is IProgressable ) {
-					this.preload( this._loader as IProgressable );
-				}
+				this.preload( this._loader as IProgressable );
 
 			} else {
 
@@ -156,7 +154,7 @@ package by.blooddy.core.display.resource {
 		 */
 		private function clearLoader():void {
 			if ( this._loader is ProgressDispatcher ) {
-				( this._loader as ProgressDispatcher ).close();
+				( this._loader as ProgressDispatcher ).clear();
 			} else {
 				this._loader.removeEventListener( ErrorEvent.ERROR, this.handler_complete );
 			}

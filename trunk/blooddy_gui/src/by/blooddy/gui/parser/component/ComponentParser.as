@@ -17,7 +17,7 @@ package by.blooddy.gui.parser.component {
 	import by.blooddy.core.managers.resource.IResourceManager;
 	import by.blooddy.core.net.MIME;
 	import by.blooddy.core.net.domain;
-	import by.blooddy.core.net.loading.IProcessable;
+	import by.blooddy.core.managers.process.IProcessable;
 	import by.blooddy.gui.parser.css.CSSOptimizer;
 	import by.blooddy.gui.style.StyleApplyer;
 	

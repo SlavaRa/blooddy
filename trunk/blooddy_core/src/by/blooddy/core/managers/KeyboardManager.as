@@ -75,7 +75,6 @@ package by.blooddy.core.managers {
 			if ( !manager ) {
 				_privateCall = true;
 				_HASH[ container ] = manager = new KeyboardManager( container );
-				_privateCall = false;
 			}
 			return manager;
 		}
@@ -131,6 +130,7 @@ package by.blooddy.core.managers {
 		public function KeyboardManager(control:InteractiveObject) {
 			super();
 			if ( !_privateCall ) throw new ArgumentError();
+			_privateCall = false;
 			control.addEventListener( KeyboardEvent.KEY_DOWN, this.$dispatchEvent, false, int.MAX_VALUE );
 			control.addEventListener( KeyboardEvent.KEY_UP, this.$dispatchEvent, false, int.MAX_VALUE );
 		}

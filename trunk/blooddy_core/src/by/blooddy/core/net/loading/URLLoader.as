@@ -140,6 +140,9 @@ package by.blooddy.core.net.loading {
 							?	new URLVariables( s )
 							:	s
 						);
+					} catch ( e:Error ) {
+						super.completeHandler( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, e.toString(), e.errorID ) );
+						return; // выходим :(
 					} catch ( e:* ) {
 						super.completeHandler( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, String( e ) ) );
 						return; // выходим :(

@@ -11,7 +11,7 @@ package by.blooddy.code.css {
 	import by.blooddy.core.managers.resource.IResourceManager;
 	import by.blooddy.core.managers.resource.ResourceManager;
 	import by.blooddy.core.net.loading.ILoadable;
-	import by.blooddy.core.net.loading.IProcessable;
+	import by.blooddy.core.managers.process.IProcessable;
 	
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
@@ -61,7 +61,6 @@ package by.blooddy.code.css {
 			if ( !result ) {
 				_privateCall = true;
 				_HASH[ manager ] = result = new CSSManager( manager );
-				_privateCall = false;
 			}
 			return result;
 		}
@@ -79,6 +78,7 @@ package by.blooddy.code.css {
 		public function CSSManager(manager:IResourceManager) {
 			super();
 			if ( !_privateCall ) throw new ArgumentError();
+			_privateCall = false;
 			this._manager = manager;
 		}
 
@@ -162,7 +162,7 @@ import by.blooddy.code.css.CSSParser;
 import by.blooddy.code.css.definition.CSSMedia;
 import by.blooddy.core.managers.resource.IResourceManager;
 import by.blooddy.core.net.loading.ILoadable;
-import by.blooddy.core.net.loading.IProcessable;
+import by.blooddy.core.managers.process.IProcessable;
 import by.blooddy.core.net.loading.LoaderPriority;
 
 import flash.events.ErrorEvent;
@@ -259,7 +259,7 @@ internal final class CSSLoader extends EventDispatcher implements IProcessable {
 			this.$loader = null;
 			this.createParser();
 		} else {
-			this.$loader.addEventListener( Event.COMPLETE,	this.handler_loader_complete, false, int.MAX_VALUE );
+			this.$loader.addEventListener( Event.COMPLETE,		this.handler_loader_complete, false, int.MAX_VALUE );
 			this.$loader.addEventListener( ErrorEvent.ERROR,	this.handler_loader_error, false, int.MAX_VALUE );
 		}
 	}
@@ -280,7 +280,7 @@ internal final class CSSLoader extends EventDispatcher implements IProcessable {
 		var data:String = this._resourceManager.getResource( this.$url ) as String;
 		if ( data ) {
 			this.$parser = new CSSParser();
-			this.$parser.addEventListener( Event.COMPLETE,	this.handler_parser_complete );
+			this.$parser.addEventListener( Event.COMPLETE,		this.handler_parser_complete );
 			this.$parser.addEventListener( ErrorEvent.ERROR,	this.handler_parser_error );
 			this.$parser.parse( data, this._cssManager );
 		} else {

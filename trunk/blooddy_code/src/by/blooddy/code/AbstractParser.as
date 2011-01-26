@@ -6,7 +6,7 @@
 
 package by.blooddy.code {
 
-	import by.blooddy.core.net.loading.IProcessable;
+	import by.blooddy.core.managers.process.IProcessable;
 	import by.blooddy.core.utils.enterFrameBroadcaster;
 	
 	import flash.errors.IllegalOperationError;
@@ -147,7 +147,7 @@ package by.blooddy.code {
 		protected final function throwError(e:Error):void {
 			this.deactivate();
 			this._state = _STATE_ERROR;
-			super.dispatchEvent( new ErrorEvent( ErrorEvent.ERROR, false, false, e.toString() ) );
+			super.dispatchEvent( new ErrorEvent( ErrorEvent.ERROR, false, false, e.toString(), e.errorID ) );
 		}
 
 		//--------------------------------------------------------------------------

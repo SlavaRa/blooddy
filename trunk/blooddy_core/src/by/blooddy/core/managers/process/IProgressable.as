@@ -4,7 +4,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core.net.loading {
+package by.blooddy.core.managers.process {
 
 	import flash.events.IEventDispatcher;
 

@@ -477,7 +477,7 @@ package by.blooddy.core.net.loading {
 			//}
 			if ( event is ErrorEvent && event.type != ErrorEvent.ERROR ) {
 				if ( super.hasEventListener( ErrorEvent.ERROR ) ) {
-					var result:Boolean = super.dispatchEvent( new ErrorEvent( ErrorEvent.ERROR, false, false, ( event as ErrorEvent ).text ) );
+					var result:Boolean = super.dispatchEvent( new ErrorEvent( ErrorEvent.ERROR, false, false, ( event as ErrorEvent ).text, ( event as ErrorEvent ).errorID ) );
 					if ( !super.hasEventListener( event.type ) ) {
 						return result;
 					}

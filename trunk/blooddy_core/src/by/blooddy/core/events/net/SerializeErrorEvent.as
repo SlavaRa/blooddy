@@ -60,7 +60,7 @@ package by.blooddy.core.events.net {
 		}
 
 		public override function toString():String {
-			return super.formatToString( ClassUtils.getClassName( this ), 'type', 'bubbles', 'cancelable', 'text', 'error', 'data' );
+			return super.formatToString( ClassUtils.getClassName( this ), 'type', 'bubbles', 'cancelable', 'text', 'errorID', 'error', 'data' );
 		}
 
 	}

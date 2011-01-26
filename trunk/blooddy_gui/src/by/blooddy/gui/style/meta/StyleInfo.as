@@ -49,7 +49,6 @@ package by.blooddy.gui.style.meta {
 				_privateCall = true;
 				_HASH[ c ] = result = new StyleInfo();
 				result.parseType( TypeInfo.getInfo( c ) );
-				_privateCall = false;
 			}
 			return result;
 		}
@@ -82,6 +81,7 @@ package by.blooddy.gui.style.meta {
 		public function StyleInfo() {
 			super();
 			if ( !_privateCall ) throw new IllegalOperationError();
+			_privateCall = false;
 		}
 		
 		//--------------------------------------------------------------------------

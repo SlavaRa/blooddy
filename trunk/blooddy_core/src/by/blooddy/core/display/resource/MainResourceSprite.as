@@ -102,7 +102,7 @@ package by.blooddy.core.display.resource {
 			try {
 				this._manager.clear();
 			} catch ( e:ResourceError ) {
-				super.dispatchEvent( new ResourceErrorEvent( ResourceErrorEvent.RESOURCE_ERROR, false, false, e.toString(), e.resources ) );
+				super.dispatchEvent( new ResourceErrorEvent( ResourceErrorEvent.RESOURCE_ERROR, false, false, e.toString(), e.errorID, e.resources ) );
 			}
 		}
 
