@@ -74,7 +74,7 @@ package by.blooddy.core.net.loading {
 		/**
 		 * @private
 		 */
-		private var _loader:LoaderAsset;
+		private var _loader:$Loader;
 
 		//--------------------------------------------------------------------------
 		//
@@ -217,8 +217,8 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 * создаёт лоадер для загрузки
 		 */
-		private function create_loader(open:Boolean=false, security:Boolean=false):LoaderAsset {
-			var result:LoaderAsset = new LoaderAsset();
+		private function create_loader(open:Boolean=false, security:Boolean=false):$Loader {
+			var result:$Loader = new $Loader();
 			result._target = this;
 			var li:LoaderInfo = result._loaderInfo;
 			if ( open ) {	// событие уже могло быть послано
@@ -392,7 +392,7 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 */
 		private function handler_security_complete(event:Event):void {
-			var loader:LoaderAsset = this.create_loader();
+			var loader:$Loader = this.create_loader();
 			loader._loadBytes( this._loaderInfo.bytes, this.create_loaderContext() );
 			this.clear_loader();	// очищаем старый лоадер
 			this._loader = loader;	// записываем новый
@@ -460,7 +460,7 @@ internal const _JUNK:Sprite = new Sprite();
  * @private
  * Вспомогательный класс.
  */
-internal final class LoaderAsset extends flash.display.Loader {
+internal final class $Loader extends flash.display.Loader {
 
 	//--------------------------------------------------------------------------
 	//
@@ -487,7 +487,7 @@ internal final class LoaderAsset extends flash.display.Loader {
 	/**
 	 * @private
 	 */
-	public function LoaderAsset() {
+	public function $Loader() {
 		super();
 		super.addEventListener( Event.ADDED, this.handler_added, false, int.MAX_VALUE, true );
 	}

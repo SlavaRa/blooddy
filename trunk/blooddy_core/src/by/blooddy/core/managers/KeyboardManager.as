@@ -6,16 +6,13 @@
 
 package by.blooddy.core.managers {
 
+	import flash.display.InteractiveObject;
 	import flash.events.Event;
+	import flash.events.EventDispatcher;
 	import flash.events.KeyboardEvent;
-
+	import flash.text.TextField;
 	import flash.ui.KeyLocation;
 	import flash.ui.Keyboard;
-
-	import flash.display.InteractiveObject;
-	import flash.text.TextField;
-
-	import flash.events.EventDispatcher;
 	import flash.utils.Dictionary;
 
 	//--------------------------------------
@@ -227,7 +224,10 @@ package by.blooddy.core.managers {
 				var eventCode:uint = getKeyEventCode( e.type, e.keyCode, e.keyLocation, e.ctrlKey, e.altKey, e.shiftKey );
 				if ( event.target is InteractiveObject && this._prev == eventCode ) return true; // ну скока можно???
 				this._prev = eventCode;
-				return super.dispatchEvent( new KeyboardManagerEvent( eventCode.toString(), e.bubbles, e.cancelable, e.charCode ) );
+				var type:String = eventCode.toString();
+				if ( super.hasEventListener( type ) ) {
+					return super.dispatchEvent( new $KeyboardEvent( type, e.bubbles, e.cancelable, e.charCode ) );
+				}
 			}
 			return super.dispatchEvent( event );
 		}
@@ -249,7 +249,7 @@ import flash.events.Event;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  Helper class: KeyboardDispatcherEvent
+//  Helper class: $KeyboardEvent
 //
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -262,7 +262,7 @@ import flash.events.Event;
  * 
  * @author					BlooDHounD
  */
-internal final class KeyboardManagerEvent extends KeyboardEvent {
+internal final class $KeyboardEvent extends KeyboardEvent {
 
 	//--------------------------------------------------------------------------
 	//
@@ -274,7 +274,7 @@ internal final class KeyboardManagerEvent extends KeyboardEvent {
 	 * @private
 		 * Constructor
 	 */
-	public function KeyboardManagerEvent(type:String, bubbles:Boolean=true, cancelable:Boolean=false, charCode:uint=0) {
+	public function $KeyboardEvent(type:String, bubbles:Boolean=true, cancelable:Boolean=false, charCode:uint=0) {
 		var eventCode:uint = parseInt( type );
 		// конструкруируем
 		super( type, bubbles, cancelable, charCode,
@@ -328,7 +328,7 @@ internal final class KeyboardManagerEvent extends KeyboardEvent {
 	 * @private
 	 */
 	public override function clone():Event {
-		return new KeyboardManagerEvent( super.type, super.bubbles, super.cancelable, super.charCode );
+		return new $KeyboardEvent( super.type, super.bubbles, super.cancelable, super.charCode );
 	}
 
 }

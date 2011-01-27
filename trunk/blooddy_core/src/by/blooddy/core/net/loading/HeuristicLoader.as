@@ -103,19 +103,19 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 * сюда грузится swf, а так же картинки
 		 */
-		private var _loader:LoaderAsset;
+		private var _loader:$Loader;
 
 		/**
 		 * @private
 		 * сюда грузятся звуки
 		 */
-		private var _sound:SoundAsset;
+		private var _sound:$SoundLoader;
 
 		/**
 		 * @private
 		 * сюда грузятся zip
 		 */
-		private var _zip:ZIPAsset;
+		private var _zip:$ZIPLoader;
 		
 		/**
 		 * @private
@@ -153,7 +153,7 @@ package by.blooddy.core.net.loading {
 		/**
 		 * @private
 		 */
-		private var _loaderContext:by.blooddy.core.net.loading.LoaderContext;
+		private var _loaderContext:LoaderContext;
 
 		/**
 		 * A LoaderContext object to use to control loading of the content.
@@ -168,14 +168,14 @@ package by.blooddy.core.net.loading {
 		 * @see						flash.system.ApplicationDomain
 		 * @see						flash.system.SecurityDomain
 		 */
-		public function get loaderContext():by.blooddy.core.net.loading.LoaderContext {
+		public function get loaderContext():LoaderContext {
 			return this._loaderContext;
 		}
 
 		/**
 		 * @private
 		 */
-		public function set loaderContext(value:by.blooddy.core.net.loading.LoaderContext):void {
+		public function set loaderContext(value:LoaderContext):void {
 			if ( this._loaderContext === value ) return;
 			if ( !super.isIdle() ) throw new ArgumentError();
 			this._loaderContext = value;
@@ -353,8 +353,8 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 * создаёт лоадер для загрузки
 		 */
-		private function create_loader(url:Boolean=false, open:Boolean=false):LoaderAsset {
-			var result:LoaderAsset = new LoaderAsset( this._loaderContext );
+		private function create_loader(url:Boolean=false, open:Boolean=false):$Loader {
+			var result:$Loader = new $Loader( this._loaderContext );
 			result._target = this;
 			if ( open ) {	// событие уже могло быть послано
 				result.addEventListener( Event.OPEN,					super.dispatchEvent );
@@ -376,8 +376,8 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 * создаём звук для загрузки
 		 */
-		private function create_sound(open:Boolean=false):SoundAsset {
-			var result:SoundAsset = new SoundAsset( this._loaderContext );
+		private function create_sound(open:Boolean=false):$SoundLoader {
+			var result:$SoundLoader = new $SoundLoader( this._loaderContext );
 			result._target = this;
 			if ( open ) {
 				result.addEventListener( Event.OPEN,					super.dispatchEvent );
@@ -395,8 +395,8 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 * создаём звук для загрузки
 		 */
-		private function create_zip(open:Boolean=false):ZIPAsset {
-			var result:ZIPAsset = new ZIPAsset();
+		private function create_zip(open:Boolean=false):$ZIPLoader {
+			var result:$ZIPLoader = new $ZIPLoader();
 			result._target = this;
 			if ( open ) {
 				result.addEventListener( Event.OPEN,					super.dispatchEvent );
@@ -860,7 +860,7 @@ import by.blooddy.core.net.loading.ZIPLoader;
  * необходим, что бы при попытки обратится через различные ссылки, типа loaderInfo,
  * свойства были перекрыты
  */
-internal final class LoaderAsset extends Loader {
+internal final class $Loader extends Loader {
 
 	//--------------------------------------------------------------------------
 	//
@@ -872,7 +872,7 @@ internal final class LoaderAsset extends Loader {
 	 * @private
 	 * Constructor
 	 */
-	public function LoaderAsset(loaderContext:LoaderContext) {
+	public function $Loader(loaderContext:LoaderContext) {
 		super( null, loaderContext );
 	}
 
@@ -942,7 +942,7 @@ internal final class LoaderAsset extends Loader {
  * необходим, что бы при попытки обратится через различные ссылки
  * свойства были перекрыты
  */
-internal final class SoundAsset extends SoundLoader {
+internal final class $SoundLoader extends SoundLoader {
 
 	//--------------------------------------------------------------------------
 	//
@@ -954,7 +954,7 @@ internal final class SoundAsset extends SoundLoader {
 	 * @private
 	 * Constructor
 	 */
-	public function SoundAsset(loaderContext:LoaderContext) {
+	public function $SoundLoader(loaderContext:LoaderContext) {
 		super( null, loaderContext );
 	}
 
@@ -1024,7 +1024,7 @@ internal final class SoundAsset extends SoundLoader {
  * необходим, что бы при попытки обратится через различные ссылки
  * свойства были перекрыты
  */
-internal final class ZIPAsset extends ZIPLoader {
+internal final class $ZIPLoader extends ZIPLoader {
 	
 	//--------------------------------------------------------------------------
 	//
@@ -1036,7 +1036,7 @@ internal final class ZIPAsset extends ZIPLoader {
 	 * @private
 	 * Constructor
 	 */
-	public function ZIPAsset() {
+	public function $ZIPLoader() {
 		super( null );
 	}
 	

@@ -170,12 +170,12 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private const _conn1:URLStreamAsset = new URLStreamAsset();
+		private const _conn1:$URLStream = new $URLStream();
 
 		/**
 		 * @private
 		 */
-		private const _conn2:URLStreamAsset = new URLStreamAsset();
+		private const _conn2:$URLStream = new $URLStream();
 
 		/**
 		 * @private
@@ -384,7 +384,7 @@ package by.blooddy.core.net {
 				this._request.data = null;
 			}
 			
-			var conn:URLStreamAsset;
+			var conn:$URLStream;
 			if ( this._conn1.connected ) {
 				conn = this._conn2;
 			} else {
@@ -533,7 +533,7 @@ package by.blooddy.core.net {
 			if ( this._input.position == this._input.length ) {
 				this._input.length = 0;
 			}
-			var conn:URLStreamAsset = event.target as URLStreamAsset;
+			var conn:$URLStream = event.target as $URLStream;
 			//if ( conn === this._conn1 ) {
 				//if ( this._conn2.connected ) this._conn2.close();
 			//} else {
@@ -557,7 +557,7 @@ package by.blooddy.core.net {
 		 */
 		private function handler_complete(event:Event):void {
 			//trace( ( event.target === this._conn1 ? 1 : 2 ), 'complete' );
-			var conn:URLStreamAsset = event.target as URLStreamAsset;
+			var conn:$URLStream = event.target as $URLStream;
 			if ( !this._conn1.connected || !this._conn2.connected ) {
 				this.sendPoll();
 			}
@@ -848,7 +848,7 @@ import flash.net.URLStream;
  * @playerversion			Flash 9
  * @langversion				3.0
  */
-internal final class URLStreamAsset extends URLStream {
+internal final class $URLStream extends URLStream {
 
 	//--------------------------------------------------------------------------
 	//
@@ -856,7 +856,7 @@ internal final class URLStreamAsset extends URLStream {
 	//
 	//--------------------------------------------------------------------------
 
-	public function URLStreamAsset() {
+	public function $URLStream() {
 		super();
 	}
 
