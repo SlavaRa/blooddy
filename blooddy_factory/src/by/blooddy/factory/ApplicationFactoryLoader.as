@@ -164,7 +164,7 @@ package by.blooddy.factory {
 		/**
 		 * @private
 		 */
-		private var _loader:LoaderAsset;
+		private var _loader:$Loader;
 
 		/**
 		 * @private
@@ -188,7 +188,7 @@ package by.blooddy.factory {
 			);
 			const URL:RegExp = ( domain == 'localhost' ? null : new RegExp( '^(?:(?!\\w+://)|https?://(?:www\\.)?' + domain.replace( /\./g, '\\.' ) + ')', 'i' ) );
 			
-			this._loader = new LoaderAsset();
+			this._loader = new $Loader();
 			this._loader.contentLoaderInfo.addEventListener( Event.INIT, this.handler_loader_init );
 			this._loader.$load(
 				new URLRequest( url ),
@@ -763,7 +763,7 @@ import flash.utils.ByteArray;
  * необходим, что бы при попытки обратится через различные ссылки, типа loaderInfo,
  * свойства были перекрыты
  */
-internal final class LoaderAsset extends Loader {
+internal final class $Loader extends Loader {
 
 	//--------------------------------------------------------------------------
 	//
@@ -775,7 +775,7 @@ internal final class LoaderAsset extends Loader {
 	 * @private
 	 * Constructor
 	 */
-	public function LoaderAsset() {
+	public function $Loader() {
 		super();
 	}
 

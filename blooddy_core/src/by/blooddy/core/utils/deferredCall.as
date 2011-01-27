@@ -26,10 +26,11 @@ package by.blooddy.core.utils {
 //
 //==============================================================================
 
-import flash.events.IEventDispatcher;
+import by.blooddy.core.utils.Caller;
+
 import flash.events.Event;
 import flash.events.EventPhase;
-import by.blooddy.core.utils.Caller;
+import flash.events.IEventDispatcher;
 
 ////////////////////////////////////////////////////////////////////////////////
 //

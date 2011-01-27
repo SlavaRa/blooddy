@@ -77,7 +77,7 @@ package by.blooddy.core.net.loading {
 		/**
 		 * @private
 		 */
-		private var _sound:SoundAsset;
+		private var _sound:$Sound;
 
 		//--------------------------------------------------------------------------
 		//
@@ -168,8 +168,8 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 * создаём звук для загрузки
 		 */
-		private function create_sound():SoundAsset {
-			var result:SoundAsset = new SoundAsset();
+		private function create_sound():$Sound {
+			var result:$Sound = new $Sound();
 			result._target = this;
 			result.addEventListener( Event.OPEN,						super.dispatchEvent );
 			result.addEventListener( Event.ID3,							super.dispatchEvent );
@@ -295,7 +295,7 @@ import flash.utils.Dictionary;
  * необходим, что бы при попытки обратится через различные ссылки
  * свойства были перекрыты
  */
-internal final class SoundAsset extends Sound {
+internal final class $Sound extends Sound {
 	
 	//--------------------------------------------------------------------------
 	//
@@ -307,7 +307,7 @@ internal final class SoundAsset extends Sound {
 	 * @private
 	 * Constructor
 	 */
-	public function SoundAsset() {
+	public function $Sound() {
 		if ( !true ) { // суки из адобы, вызывают load в любом случаи. идиоты.
 			super();
 		}

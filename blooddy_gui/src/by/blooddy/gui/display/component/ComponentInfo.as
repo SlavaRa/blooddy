@@ -170,10 +170,10 @@ package by.blooddy.gui.display.component {
 		/**
 		 * @private
 		 */
-		private var _loader:LoaderAsset;
+		private var _loader:$LoaderListener;
 		
 		public function get loader():IProgressProcessable {
-			if ( !this._loader ) this._loader = new LoaderAsset();
+			if ( !this._loader ) this._loader = new $LoaderListener();
 			return this._loader;
 		}
 
@@ -215,7 +215,7 @@ package by.blooddy.gui.display.component {
 			this._controller = controller;
 			this._properties = properties || ComponentProperties.DEFAULT;
 
-			if ( !this._loader ) this._loader = new LoaderAsset();
+			if ( !this._loader ) this._loader = new $LoaderListener();
 			this._loader.set$target( this._component );
 
 			component.$init( this, this._properties.singleton ? name : this.id );
@@ -292,9 +292,9 @@ import flash.events.IEventDispatcher;
 /**
  * @private
  */
-internal final class LoaderAsset extends LoaderListener {
+internal final class $LoaderListener extends LoaderListener {
 
-	public function LoaderAsset() {
+	public function $LoaderListener() {
 		super();
 	}
 

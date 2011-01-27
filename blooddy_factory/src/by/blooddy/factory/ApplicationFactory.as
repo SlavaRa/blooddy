@@ -340,7 +340,7 @@ package by.blooddy.factory {
 		 * @see					flash.display.Loader#contentLoaderInfo
 		 */
 		protected final function load(request:URLRequest):LoaderInfo {
-			var loader:LoaderAsset = new LoaderAsset();
+			var loader:$Loader = new $Loader();
 			this.addLoader( loader.contentLoaderInfo );
 			try {
 				loader.$load( request, this._context );
@@ -931,7 +931,7 @@ internal final class ErrorSprite extends TextSprite {
  * необходим, что бы при попытки обратится через различные ссылки, типа loaderInfo,
  * свойства были перекрыты
  */
-internal final class LoaderAsset extends Loader {
+internal final class $Loader extends Loader {
 
 	//--------------------------------------------------------------------------
 	//
@@ -943,7 +943,7 @@ internal final class LoaderAsset extends Loader {
 	 * @private
 	 * Constructor
 	 */
-	public function LoaderAsset() {
+	public function $Loader() {
 		super();
 		super.addEventListener( Event.ADDED_TO_STAGE, this.handler_addedToStage, false, int.MAX_VALUE, true );
 	}
