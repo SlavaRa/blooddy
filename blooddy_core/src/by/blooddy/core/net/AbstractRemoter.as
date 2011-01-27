@@ -228,15 +228,25 @@ package by.blooddy.core.net {
 
 		protected function $invokeCallInputCommand(command:Command!, async:Boolean=true):* {
 
-			if ( this._logging && ( !( command is NetCommand ) || !( command as NetCommand ).system ) ) {
+			if ( this._logging ) {
+				var system:Boolean = false;
 				if ( command is NetCommand ) {
 					var netCommand:NetCommand = command as NetCommand;
-					if ( netCommand.num && netCommand.num in this._responders ) {
-						command = command.clone();
-						command.name = ( this._responders[ netCommand.num ] as ResponderAsset ).command.name + '(' + command.name + ')';
+					if ( netCommand.system ) {
+						system = true;
+					} else if ( netCommand.num && netCommand.num in this._responders ) {
+						var request:NetCommand = ( this._responders[ netCommand.num ] as ResponderAsset ).command;
+						if ( request.system ) {
+							system = true;
+						} else {
+							command = command.clone();
+							command.name = request.name + '(' + command.name + ')';
+						}
 					}
 				}
-				this._logger.addLog( new CommandLog( command ) );
+				if ( !system ) {
+					this._logger.addLog( new CommandLog( command ) );
+				}
 			}
 
 			if ( async ) {
@@ -287,7 +297,7 @@ package by.blooddy.core.net {
 					result = func.apply( null, command );
 				}
 
-			} else { 
+			} else {
 
 				// пытаемся выполнить что-нить
 				has = command.name in this._client;

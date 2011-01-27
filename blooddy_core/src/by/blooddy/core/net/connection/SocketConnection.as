@@ -310,10 +310,9 @@ package by.blooddy.core.net.connection {
 		public override function call(commandName:String, responder:Responder=null, ...parameters):* {
 			if ( !this._socket || !this._socket.connected ) throw new IllegalOperationError( 'соединение не установленно' );
 			if ( !this._filter ) throw new IllegalOperationError( 'нету фильтра сообщений' );
-			return super.$invokeCallOutputCommand(
-				new NetCommand( commandName, NetCommand.OUTPUT, parameters ),
-				responder
-			);
+			var command:NetCommand = new NetCommand( commandName, NetCommand.OUTPUT, parameters );
+			command.system = this._filter.isSystem( command );
+			return super.$invokeCallOutputCommand( command, responder );
 		}
 
 		//--------------------------------------------------------------------------

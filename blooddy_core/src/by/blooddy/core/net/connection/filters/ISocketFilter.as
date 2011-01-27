@@ -23,6 +23,8 @@ package by.blooddy.core.net.connection.filters {
 
 		function getHash():String;
 
+		function isSystem(command:NetCommand):Boolean;
+		
 		function readCommand(input:IDataInput, io:String='input'):NetCommand;
 
 		function writeCommand(output:IDataOutput, command:NetCommand):void;

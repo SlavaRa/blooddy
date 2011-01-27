@@ -72,6 +72,10 @@ package by.blooddy.core.net.connection.filters {
 			return _HASH;
 		}
 
+		public function isSystem(netCommand:NetCommand):Boolean {
+			return false;
+		}
+		
 		public function readCommand(input:IDataInput, io:String='input'):NetCommand {
 
 			var context:Context = this._contexts[ input ] as Context;

@@ -120,6 +120,22 @@ package by.blooddy.core.net.connection.filters {
 		/**
 		 * @inheritDoc
 		 */
+		public function getHash():String {
+			return this._hash;
+		}
+
+		public function isSystem(command:NetCommand):Boolean {
+			switch ( command.io ) {
+				case NetCommand.INPUT:	command = this._input_patterns[ command.name ];		break;
+				case NetCommand.OUTPUT:	command = this._output_patterns[ command.name ];	break;
+				default:				command = null;										break;
+			}
+			return ( command && command.system );
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
 		public function readCommand(input:IDataInput, io:String=NetCommand.INPUT):NetCommand {
 
 			var context:Context = this._contexts[ input ] as Context;
@@ -183,6 +199,7 @@ package by.blooddy.core.net.connection.filters {
 				}
 	
 				var command:NetCommand = new NetCommand( context.pattern.name, io );
+				command.system = context.pattern.system;
 				var l:uint = context.pattern.length;
 				for ( var i:uint = 0; i<l; ++i ) {
 					command.push(
@@ -217,7 +234,7 @@ package by.blooddy.core.net.connection.filters {
 
 			var pattern:NetCommandPattern;
 			switch ( command.io ) {
-				case NetCommand.INPUT:	pattern = this._input_patterns[ command.name ];	break;
+				case NetCommand.INPUT:	pattern = this._input_patterns[ command.name ];		break;
 				case NetCommand.OUTPUT:	pattern = this._output_patterns[ command.name ];	break;
 				default:				throw new ArgumentError( 'неизвестный тип комманды: ' + command.io );
 			}
@@ -272,13 +289,6 @@ package by.blooddy.core.net.connection.filters {
 
 		}
 
-		/**
-		 * @inheritDoc
-		 */
-		public function getHash():String {
-			return this._hash;
-		}
-		
 		/**
 		 * @inheritDoc
 		 */

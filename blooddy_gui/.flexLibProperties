@@ -31,5 +31,7 @@
     <classEntry path="by.blooddy.gui.events.ComponentErrorEvent"/>
   </includeClasses>
   <includeResources/>
-  <namespaceManifests/>
+  <namespaceManifests>
+    <namespaceManifestEntry manifest="../manifest.xml" namespace="http://blooddy.by/ns/"/>
+  </namespaceManifests>
 </flexLibProperties>
