@@ -2,10 +2,10 @@
 
 	<compiler>
 
-		<define>
+		<!--define>
 			<name>CONFIG::debug</name>
 			<value>true</value>
-		</define>
+		</define-->
 
 		<accessible>false</accessible>
 
@@ -54,10 +54,10 @@
 
 		<optimize>true</optimize>
 
-		<keep-as3-metadata>
+		<!--keep-as3-metadata>
 			<name>Event</name>
 			<name>AbstractClass</name>
-		</keep-as3-metadata>
+		</keep-as3-metadata-->
 
 		<show-binding-warnings>true</show-binding-warnings>
 

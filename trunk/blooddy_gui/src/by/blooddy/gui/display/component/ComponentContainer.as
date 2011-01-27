@@ -11,6 +11,7 @@ package by.blooddy.gui.display.component {
 	import by.blooddy.core.events.display.resource.ResourceEvent;
 	import by.blooddy.core.events.net.loading.LoaderEvent;
 	import by.blooddy.core.net.loading.ILoadable;
+	import by.blooddy.core.utils.DisplayObjectUtils;
 	import by.blooddy.gui.controller.ComponentController;
 	import by.blooddy.gui.events.ComponentEvent;
 	import by.blooddy.gui.parser.component.ComponentParser;
@@ -21,6 +22,7 @@ package by.blooddy.gui.display.component {
 	import flash.errors.IllegalOperationError;
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
+	import flash.events.FocusEvent;
 	import flash.system.Capabilities;
 	import flash.utils.Dictionary;
 
@@ -71,6 +73,8 @@ package by.blooddy.gui.display.component {
 		public function ComponentContainer(baseController:IBaseController=null) {
 			super();
 			this._baseController = baseController;
+			super.addEventListener( ResourceEvent.ADDED_TO_MANAGER,		this.handler_addedToManager, false, int.MAX_VALUE, true );
+			super.addEventListener( ResourceEvent.REMOVED_FROM_MANAGER,	this.handler_removedFromManager, false, int.MAX_VALUE, true );
 		}
 		
 		//--------------------------------------------------------------------------
@@ -92,7 +96,17 @@ package by.blooddy.gui.display.component {
 		/**
 		 * @private
 		 */
+		private var _components_list:Vector.<ComponentInfo> = new Vector.<ComponentInfo>();
+		
+		/**
+		 * @private
+		 */
 		private var _queue:Dictionary = new Dictionary();
+
+		/**
+		 * @private
+		 */
+		private var _lastFocusComponent:Component;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -204,7 +218,7 @@ package by.blooddy.gui.display.component {
 			info.$init( name, component, controller, properties, this._baseController );
 			info.addEventListener( ComponentEvent.COMPONENT_DESTRUCT, this.handler_componentDestruct, false, int.MIN_VALUE );
 		}
-		
+
 		protected function addComponent(info:ComponentInfo):void {
 
 			if ( !( info.name in this._components_name ) ) {
@@ -229,6 +243,42 @@ package by.blooddy.gui.display.component {
 		//  Event handlers
 		//
 		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private function handler_addedToManager(event:ResourceEvent):void {
+			super.addEventListener( FocusEvent.FOCUS_IN, this.handler_focusIn );
+		}
+
+		/**
+		 * @private
+		 */
+		private function handler_removedFromManager(event:ResourceEvent):void {
+			super.removeEventListener( FocusEvent.FOCUS_IN, this.handler_focusIn );
+		}
+
+		/**
+		 * @private
+		 */
+		private function handler_focusIn(event:FocusEvent):void {
+			if (
+				this._lastFocusComponent &&
+				this._lastFocusComponent.contains( event.target as DisplayObject )
+			) return;
+			var c:Component;
+			var parent:DisplayObjectContainer = event.target.parent as DisplayObjectContainer;
+			if ( parent === this ) {
+				c = event.target as Component;
+			} else {
+				while ( parent.parent !== this ) {
+					parent = parent.parent;
+				}
+				c = parent as Component;
+			}
+			this._lastFocusComponent = c;
+			trace( c );
+		}
 
 		/**
 		 * @private

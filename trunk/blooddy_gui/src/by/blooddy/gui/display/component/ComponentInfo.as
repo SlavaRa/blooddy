@@ -218,7 +218,7 @@ package by.blooddy.gui.display.component {
 			if ( !this._loader ) this._loader = new $LoaderListener();
 			this._loader.set$target( this._component );
 
-			component.$init( this, this._properties.singleton ? name : this.id );
+			component.$init( this, this._properties.singleton ? name : name + '-' + this.id );
 			if ( controller ) {
 				controller.$init( this, baseController );
 			}

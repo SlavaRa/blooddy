@@ -198,5 +198,7 @@
     <classEntry path="by.blooddy.core.managers.process.IProgressProcessable"/>
   </includeClasses>
   <includeResources/>
-  <namespaceManifests/>
+  <namespaceManifests>
+    <namespaceManifestEntry manifest="../manifest.xml" namespace="http://blooddy.by/ns/"/>
+  </namespaceManifests>
 </flexLibProperties>
