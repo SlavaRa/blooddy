@@ -154,8 +154,9 @@ package by.blooddy.core.net.connection {
 		 */
 		protected override function $callOutputCommand(command:Command):* {
 			if ( !this._targetName ) throw new IOError();
-			command.unshift( this._targetName, command.name );
-			this._connection.send.apply( this, command );
+			var args:Array = command.slice();
+			args.unshift( this._targetName, command.name );
+			this._connection.send.apply( this, args );
 		}
 
 		//--------------------------------------------------------------------------
