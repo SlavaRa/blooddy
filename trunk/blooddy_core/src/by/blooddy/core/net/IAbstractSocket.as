@@ -48,7 +48,7 @@ package by.blooddy.core.net {
 	[Event( name="securityError", type="flash.events.SecurityErrorEvent" )]	
 
 	/**
-	 * ISocket является интерфейсом для любых типов сокетных сединений,
+	 * IAbstractSocket является интерфейсом для любых типов сокетных сединений,
 	 * или их эмуляций.
 	 *
 	 * @author					BlooDHounD
@@ -102,7 +102,7 @@ package by.blooddy.core.net {
 		function get port():int;
 
 		//----------------------------------
-		//  connectionTimeout
+		//  timeout
 		//----------------------------------
 
 		/**

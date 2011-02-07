@@ -23,9 +23,7 @@ package by.blooddy.core.net {
 		//--------------------------------------------------------------------------
 		
 		public function Responder(result:Function!, status:Function=null) {
-
 			super( result, status );
-
 			this._result = result;
 			this._status = status;
 		}
