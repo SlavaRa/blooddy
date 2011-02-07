@@ -230,10 +230,10 @@ package by.blooddy.core.display {
 						)
 					);
 			alpha = ( ( color >> 24 ) & 0xFF ) / 0xFF;
-			if ( alpha>0.05 ) {
+			if ( alpha > 0.05 ) {
 				color = color & 0xFFFFFF;
 				super.graphics.beginFill( color, alpha );
-				super.graphics.drawRect(0, 0, this._width, this._height);
+				super.graphics.drawRect( 0, 0, this._width, this._height );
 				super.graphics.endFill();
 			}
 
@@ -249,15 +249,15 @@ package by.blooddy.core.display {
 				alpha = ( ( color >> 24 ) & 0xFF ) / 0xFF;
 				color = color & 0xFFFFFF;
 				super.graphics.beginFill( color, alpha );
-				super.graphics.drawRect(0, 0, this._width * this._progress, this._height );
+				super.graphics.drawRect( 0, 0, this._width * this._progress, this._height );
 				super.graphics.endFill();
 				// 3D суко!
-				super.graphics.lineStyle(1, 0, 0.70, true);
-				super.graphics.moveTo(0, this._height-1);
-				super.graphics.lineTo(this._width * this._progress, this._height-1);
-				super.graphics.lineStyle(1, 0, 0.40, true);
-				super.graphics.moveTo(0, 1);
-				super.graphics.lineTo(this._width * this._progress, 1);
+//				super.graphics.lineStyle( 1, 0, 0.70, true );
+//				super.graphics.moveTo( 0, this._height - 1 );
+//				super.graphics.lineTo( this._width * this._progress, this._height - 1 );
+//				super.graphics.lineStyle( 1, 0, 0.40, true );
+//				super.graphics.moveTo( 0, 1 );
+//				super.graphics.lineTo( this._width * this._progress, 1 );
 			}
 
 			color =	(	this._borderColor32 is Number ?

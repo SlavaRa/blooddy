@@ -39,12 +39,16 @@ package by.blooddy.core.logging {
 		
 		public override function toHTMLString():String {
 			var result:String = this.toString();
+			var cl:String;
 			switch ( this._type ) {
-				case INFO:	result = '<font color="#AAAAFF">' + result + '</font>';	break;
-				case WARN:	result = '<font color="#FFFF00">' + result + '</font>';	break;
-				case ERROR:	result = '<font color="#FF9900">' + result + '</font>';	break;
-				case FATAL:	result = '<font color="#FF0000">' + result + '</font>';	break;
-				case DEBUG:	result = '<font color="#CCCCCC">' + result + '</font>';	break;
+				case INFO:	cl = 'info';	break;
+				case WARN:	cl = 'warn';	break;
+				case ERROR:	cl = 'error';	break;
+				case FATAL:	cl = 'fatal';	break;
+				case DEBUG: cl = 'debug';	break;
+			}
+			if ( cl ) {
+				result = '<span class="' + cl + '">' + result + '</span>';
 			}
 			return result;
 		}

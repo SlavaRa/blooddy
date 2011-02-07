@@ -58,11 +58,15 @@ package by.blooddy.core.logging.commands {
 
 		public override function toHTMLString():String {
 			var result:String = this.toString();
+			var cl:String;
 			if ( this._command is NetCommand ) {
 				switch ( ( this._command as NetCommand ).io ) {
-					case NetCommand.INPUT:	result = '<font color="#6666FF">' + result + '</font>';	break;
-					case NetCommand.OUTPUT:	result = '<font color="#66FF66">' + result + '</font>';	break;
+					case NetCommand.INPUT:	cl = 'cmd_in';	break;
+					case NetCommand.OUTPUT:	cl = 'cmd_out';	break;
 				}
+			}
+			if ( cl ) {
+				result = '<span class="' + cl + '">' + result + '</span>';
 			}
 			return result;
 		}
