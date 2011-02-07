@@ -56,7 +56,7 @@ package by.blooddy.core.net.loading {
 		/**
 		 * @private
 		 */
-		private static const _XML:RegExp = /^\s*<.*>\s*$/;
+		private static const _XML:RegExp = /^\s*<.*>\s*$/s;
 		
 		/**
 		 * @private
@@ -536,22 +536,6 @@ package by.blooddy.core.net.loading {
 		private function parseUnknownData(bytes:ByteArray):void {
 			var l:uint = bytes.length;
 			if ( l > 0 ) {
-
-				// попытаемся узреть в нём текст
-//				var c:uint;
-//				var i:uint = ( bytes[ 0 ] == 0xEF && bytes[ 1 ] == 0xBB && bytes[ 2 ] == 0xBF ? 3 : 0 );
-//				for ( ; i<l; i++ ) {
-//					c = bytes[ i ];
-//					if (
-//						c == 0x00 ||
-//						c >  0xF5 ||
-//						c == 0xC0 ||
-//						c == 0xC1
-//					) {
-//						break; // не utf8 строка
-//					}
-//				}
-//				if ( i == l ) { // строка
 				if ( ByteArrayUtils.isUTFString( bytes ) ) {
 
 					this._content = bytes.readUTFBytes( bytes.length );
@@ -591,7 +575,7 @@ package by.blooddy.core.net.loading {
 				
 			}
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Event handlers
