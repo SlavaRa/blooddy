@@ -26,8 +26,6 @@ package by.blooddy.gui.display.component {
 	import flash.system.Capabilities;
 	import flash.utils.Dictionary;
 
-	// TODO: handler_removed
-
 	//--------------------------------------
 	//  Excluded APIs
 	//--------------------------------------
@@ -43,6 +41,13 @@ package by.blooddy.gui.display.component {
 	[Exclude( kind="method", name="swapChildren" )]
 	[Exclude( kind="method", name="swapChildrenAt" )]
 	[Exclude( kind="method", name="contains" )]
+	
+	//--------------------------------------
+	//  Events
+	//--------------------------------------
+	
+	[Event( name="componentConstuct", type="by.blooddy.gui.events.ComponentEvent" )]
+	[Event( name="componentDestruct", type="by.blooddy.gui.events.ComponentEvent" )]
 	
 	/**
 	 * @author					BlooDHounD
@@ -73,8 +78,8 @@ package by.blooddy.gui.display.component {
 		public function ComponentContainer(baseController:IBaseController=null) {
 			super();
 			this._baseController = baseController;
-			super.addEventListener( ResourceEvent.ADDED_TO_MANAGER,		this.handler_addedToManager, false, int.MAX_VALUE, true );
-			super.addEventListener( ResourceEvent.REMOVED_FROM_MANAGER,	this.handler_removedFromManager, false, int.MAX_VALUE, true );
+			super.addEventListener( ResourceEvent.ADDED_TO_MANAGER,		this.handler_addedToManager,		false, int.MAX_VALUE, true );
+			super.addEventListener( ResourceEvent.REMOVED_FROM_MANAGER,	this.handler_removedFromManager,	false, int.MAX_VALUE, true );
 		}
 		
 		//--------------------------------------------------------------------------
@@ -216,7 +221,8 @@ package by.blooddy.gui.display.component {
 
 		protected function initComponent(info:ComponentInfo, name:String, component:Component, controller:ComponentController, properties:ComponentProperties):void {
 			info.$init( name, component, controller, properties, this._baseController );
-			info.addEventListener( ComponentEvent.COMPONENT_DESTRUCT, this.handler_componentDestruct, false, int.MIN_VALUE );
+			info.addEventListener( ComponentEvent.COMPONENT_CONSTRUCT,	this.handler_componentConstruct, false, int.MIN_VALUE );
+			info.addEventListener( ComponentEvent.COMPONENT_DESTRUCT,	this.handler_componentDestruct, false, int.MIN_VALUE );
 		}
 
 		protected function addComponent(info:ComponentInfo):void {
@@ -283,8 +289,17 @@ package by.blooddy.gui.display.component {
 		/**
 		 * @private
 		 */
+		private function handler_componentConstruct(event:ComponentEvent):void {
+			event.target.removeEventListener( ComponentEvent.COMPONENT_CONSTRUCT, this.handler_componentConstruct );
+			super.dispatchEvent( event );
+		}
+		
+		/**
+		 * @private
+		 */
 		private function handler_componentDestruct(event:ComponentEvent):void {
 			event.target.removeEventListener( ComponentEvent.COMPONENT_DESTRUCT, this.handler_componentDestruct );
+			super.dispatchEvent( event );
 			event.componentInfo.$clear();
 		}
 
