@@ -35,7 +35,7 @@ package by.blooddy.core.display.resource {
 		 */
 		public function LoadableResourceSprite() {
 			super();
-			super.addEventListener( ResourceEvent.ADDED_TO_MANAGER,		this.handler_addedToManager,		false, int.MAX_VALUE, true );
+			super.addEventListener( ResourceEvent.ADDED_TO_MANAGER,		this.handler_addedToManager,		false, int.MIN_VALUE, true );
 			super.addEventListener( ResourceEvent.REMOVED_FROM_MANAGER,	this.handler_removedFromManager,	false, int.MAX_VALUE, true );
 		}
 

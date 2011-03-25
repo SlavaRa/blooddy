@@ -190,7 +190,7 @@ package by.blooddy.core.managers.resource {
 		/**
 		 * @private
 		 */
-		private static function addLoaderQueue(asset:ResourceLoaderAsset, priority:int):void {
+		private static function addLoaderQueue(asset:$ResourceLoader, priority:int):void {
 			asset.queue = new QueueItem( asset, priority );
 			if ( priority >= LoaderPriority.HIGHEST ) {
 				_LOADING_QUEUE.unshift( asset.queue );
@@ -213,7 +213,7 @@ package by.blooddy.core.managers.resource {
 					( _LOADING_QUEUE[ 0 ] as QueueItem ).priority >= LoaderPriority.HIGHEST
 				)
 			) {
-				var asset:ResourceLoaderAsset = _LOADING_QUEUE.pop().asset;
+				var asset:$ResourceLoader = _LOADING_QUEUE.pop().asset;
 				asset.queue = null;
 				registerQueue( asset );
 				asset.$load();
@@ -227,7 +227,7 @@ package by.blooddy.core.managers.resource {
 		/**
 		 * @private
 		 */
-		private static function registerQueue(asset:ResourceLoaderAsset):void {
+		private static function registerQueue(asset:$ResourceLoader):void {
 			asset.addEventListener( Event.COMPLETE, handler_queue_complete );
 			asset.addEventListener( ErrorEvent.ERROR, handler_queue_complete );
 		}
@@ -235,7 +235,7 @@ package by.blooddy.core.managers.resource {
 		/**
 		 * @private
 		 */
-		private static function unregisterQueue(asset:ResourceLoaderAsset):void {
+		private static function unregisterQueue(asset:$ResourceLoader):void {
 			asset.removeEventListener( Event.COMPLETE, handler_queue_complete );
 			asset.removeEventListener( ErrorEvent.ERROR, handler_queue_complete );
 		}
@@ -244,7 +244,7 @@ package by.blooddy.core.managers.resource {
 		 * @private
 		 */
 		private static function handler_queue_complete(event:Event=null):void {
-			unregisterQueue( event.target as ResourceLoaderAsset );
+			unregisterQueue( event.target as $ResourceLoader );
 			--_loading;
 		 	if ( _loading < _maxLoading || _LOADING_QUEUE.length > 0 ) {
 		 		enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, updateQueue );
@@ -359,8 +359,8 @@ package by.blooddy.core.managers.resource {
 				this._hash[ name ] = bundle;
 				if ( bundle is ILoadable ) {
 					var loader:ILoadable = bundle as ILoadable;
-					if ( loader is ResourceLoaderAsset ) {
-						( loader as ResourceLoaderAsset ).managers[ this ] = true;
+					if ( loader is $ResourceLoader ) {
+						( loader as $ResourceLoader ).managers[ this ] = true;
 					}
 					if ( loader.complete ) {
 						if ( super.hasEventListener( ResourceBundleEvent.BUNDLE_ADDED ) ) {
@@ -387,7 +387,7 @@ package by.blooddy.core.managers.resource {
 				var loader:ILoadable = bundle as ILoadable;
 				if ( loader ) {
 					this.unregisterLoadable( loader );
-					var asset:ResourceLoaderAsset = loader as ResourceLoaderAsset;
+					var asset:$ResourceLoader = loader as $ResourceLoader;
 					var complete:Boolean = loader.complete;
 					if ( asset ) { // если ассет, то помучаемся
 						delete asset.managers[ this ];
@@ -422,10 +422,10 @@ package by.blooddy.core.managers.resource {
 		 */
 		public function loadResourceBundle(url:String, priority:int=0.0):ILoadable {
 
-			var asset:ResourceLoaderAsset;
+			var asset:$ResourceLoader;
 			if ( url in this._hash ) { // такой уже есть
 
-				asset = this._hash[ url ] as ResourceLoaderAsset;
+				asset = this._hash[ url ] as $ResourceLoader;
 				if ( !asset ) throw new ArgumentError();
 
 			} else {
@@ -433,7 +433,7 @@ package by.blooddy.core.managers.resource {
 				if ( url in _HASH ) {
 					asset = _HASH[ url ];
 				} else {
-					_HASH[ url ] = asset = new ResourceLoaderAsset(
+					_HASH[ url ] = asset = new $ResourceLoader(
 						url,
 						( urlRewriter ? urlRewriter.getURLByName( url ) : null ) || url ,
 						( store ? store.getFileByName( url ) : null )
@@ -573,7 +573,7 @@ internal final class QueueItem {
 	//
 	//--------------------------------------------------------------------------
 	
-	public function QueueItem(asset:ResourceLoaderAsset, priority:int=0.0) {
+	public function QueueItem(asset:$ResourceLoader, priority:int=0.0) {
 		super();
 		this.asset = asset;
 		this.priority = priority;
@@ -585,7 +585,7 @@ internal final class QueueItem {
 	//
 	//--------------------------------------------------------------------------
 	
-	public var asset:ResourceLoaderAsset;
+	public var asset:$ResourceLoader;
 	
 	public var priority:int;
 	
@@ -595,14 +595,14 @@ internal final class QueueItem {
 
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  Helper class: ResourceLoaderAsset
+//  Helper class: $ResourceLoader
 //
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
  * @private
  */
-internal final class ResourceLoaderAsset extends ResourceLoader {
+internal final class $ResourceLoader extends ResourceLoader {
 
 	//--------------------------------------------------------------------------
 	//
@@ -629,7 +629,7 @@ internal final class ResourceLoaderAsset extends ResourceLoader {
 	//
 	//--------------------------------------------------------------------------
 
-	public function ResourceLoaderAsset(name:String, url:String, bytes:ByteArray) {
+	public function $ResourceLoader(name:String, url:String, bytes:ByteArray) {
 		super( name );
 		this._url = url;
 		this._bytes = bytes;
@@ -831,19 +831,22 @@ internal class DefaultResourceBundle implements IResourceBundle {
 			return this._hash[ name ];
 		} else {
 			
-			var resource:* = ApplicationDomain.currentDomain.getDefinition( name );
-			if ( resource is Class ) {
-				var resourceClass:Class = resource as Class;
-				var p:Object = resourceClass.prototype;
-				if ( _PROTO_BITMAP_DATA.isPrototypeOf( p ) ) {
-					resource = new resourceClass( 0, 0 );
-				} else if (
-					_PROTO_SOUND.isPrototypeOf( p ) ||
-					_PROTO_BYTE_ARRAY.isPrototypeOf( p )
-				) {
-					resource = new resourceClass();
+			var resource:*;
+			if ( ApplicationDomain.currentDomain.hasDefinition( name ) ) {
+				resource = ApplicationDomain.currentDomain.getDefinition( name );
+				if ( resource is Class ) {
+					var resourceClass:Class = resource as Class;
+					var p:Object = resourceClass.prototype;
+					if ( _PROTO_BITMAP_DATA.isPrototypeOf( p ) ) {
+						resource = new resourceClass( 0, 0 );
+					} else if (
+						_PROTO_SOUND.isPrototypeOf( p ) ||
+						_PROTO_BYTE_ARRAY.isPrototypeOf( p )
+					) {
+						resource = new resourceClass();
+					}
 				}
-			}				
+			}
 			this._hash[ name ] = resource;
 			return resource;
 
