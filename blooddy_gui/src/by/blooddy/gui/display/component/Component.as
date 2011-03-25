@@ -8,7 +8,7 @@ package by.blooddy.gui.display.component {
 	
 	import by.blooddy.core.blooddy;
 	import by.blooddy.core.display.DisplayObjectContainerProxy;
-	import by.blooddy.core.display.resource.LoadableResourceSprite;
+	import by.blooddy.core.display.resource.ResourceSprite;
 	import by.blooddy.core.events.display.resource.ResourceEvent;
 	import by.blooddy.core.managers.process.IProgressProcessable;
 	import by.blooddy.core.utils.ClassAlias;
@@ -17,6 +17,7 @@ package by.blooddy.gui.display.component {
 	
 	import flash.display.DisplayObject;
 	import flash.errors.IllegalOperationError;
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.geom.Transform;
 	import flash.utils.getQualifiedClassName;
@@ -41,7 +42,7 @@ package by.blooddy.gui.display.component {
 	 * @langversion				3.0
 	 * @created					07.04.2010 20:16:02
 	 */
-	public class Component extends LoadableResourceSprite {
+	public class Component extends ResourceSprite {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -198,6 +199,18 @@ package by.blooddy.gui.display.component {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
+
+		protected virtual function construct():void {
+		}
+
+		protected virtual function destruct():void {
+		}
+
+		//--------------------------------------------------------------------------
+		//
 		//  Namespace methods
 		//
 		//--------------------------------------------------------------------------
@@ -239,16 +252,41 @@ package by.blooddy.gui.display.component {
 		 * @private
 		 */
 		private function $dispatchEvent(event:Event):Boolean {
-			return	super.dispatchEvent( event ) &&
+			if ( event is ErrorEvent ) {
+				var result:Boolean = true;
+				if ( super.hasEventListener( event.type ) || !this._componentInfo.hasEventListener( event.type ) ) {
+					result &&= super.dispatchEvent( event );
+				}
+				if ( this._componentInfo.hasEventListener( event.type ) ) {
+					result &&= this._componentInfo.$dispatchEvent( event );
+				}
+				return result;
+			} else {
+				return	super.dispatchEvent( event ) &&
 					this._componentInfo.$dispatchEvent( event );
+			}
 		}
-		
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Event handlers
 		//
 		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private function handler_frameConstructed(event:Event):void {
+			super.removeEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameConstructed );
+			if ( !this._constructed && this._container ) {
+				this._constructed = true;
+				this.construct();
+
+				var resultEvent:ComponentEvent = new ComponentEvent( ComponentEvent.COMPONENT_CONSTRUCT, false, false, this._componentInfo );
+				this.$dispatchEvent( resultEvent );
+				this._container.$dispatchEvent( resultEvent ); // TODO: перенести?
+			}
+		}
 
 		/**
 		 * @private
@@ -261,19 +299,24 @@ package by.blooddy.gui.display.component {
 				super.stage.addEventListener( Event.RESIZE, this.drawLock );
 				this.drawLock();
 			}
-			this._constructed = true;
-			this.$dispatchEvent( new ComponentEvent( ComponentEvent.COMPONENT_CONSTRUCT, false, false, this._componentInfo ) );
+			super.addEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameConstructed );
 		}
 
 		/**
 		 * @private
 		 */
 		private function handler_removedFromManager(event:ResourceEvent):void {
-			this._constructed = false;
-			this.$dispatchEvent( new ComponentEvent( ComponentEvent.COMPONENT_DESTRUCT, false, false, this._componentInfo ) );
+			if ( this._constructed ) {
+				this._constructed = false;
+				var resultEvent:ComponentEvent = new ComponentEvent( ComponentEvent.COMPONENT_DESTRUCT, false, false, this._componentInfo );
+				this.$dispatchEvent( resultEvent );
+				this._container.$dispatchEvent( resultEvent ); // TODO: перенести?
+				this.destruct();
+			}
 			if ( this._lock ) {
 				super.stage.removeEventListener( Event.RESIZE, this.drawLock );
 			}
+			this._componentInfo.$clear(); // TODO: перенести?
 			this._container = null;
 		}
 		

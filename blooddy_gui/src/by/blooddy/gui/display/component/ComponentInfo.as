@@ -248,8 +248,8 @@ package by.blooddy.gui.display.component {
 		/**
 		 * @private
 		 */
-		$internal function $dispatchEvent(event:Event):void {
-			super.dispatchEvent( event );
+		$internal function $dispatchEvent(event:Event):Boolean {
+			return super.dispatchEvent( event );
 		}
 
 		//--------------------------------------------------------------------------

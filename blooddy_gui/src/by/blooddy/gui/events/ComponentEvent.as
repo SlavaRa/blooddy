@@ -26,7 +26,7 @@ package by.blooddy.gui.events {
 		//
 		//--------------------------------------------------------------------------
 
-		public static const COMPONENT_CONSTRUCT:String = 'componentConstuct';
+		public static const COMPONENT_CONSTRUCT:String = 'componentConstruct';
 
 		public static const COMPONENT_DESTRUCT:String = 'componentDestruct';
 
