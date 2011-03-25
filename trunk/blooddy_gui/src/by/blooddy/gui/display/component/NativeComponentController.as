@@ -16,6 +16,7 @@ package by.blooddy.gui.display.component {
 	import by.blooddy.gui.events.ComponentEvent;
 	
 	import flash.errors.IllegalOperationError;
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 
@@ -144,10 +145,21 @@ package by.blooddy.gui.display.component {
 		}
 
 		public override function dispatchEvent(event:Event):Boolean {
-			return	super.dispatchEvent( event ) &&
-					this._componentInfo.$dispatchEvent( event );
+			if ( event is ErrorEvent ) {
+				var result:Boolean = true;
+				if ( super.hasEventListener( event.type ) || !this._componentInfo.hasEventListener( event.type ) ) {
+					result &&= super.dispatchEvent( event );
+				}
+				if ( this._componentInfo.hasEventListener( event.type ) ) {
+					result &&= this._componentInfo.$dispatchEvent( event );
+				}
+				return result;
+			} else {
+				return	super.dispatchEvent( event ) &&
+						this._componentInfo.$dispatchEvent( event );
+			}
 		}
-		
+
 		public override function hasEventListener(type:String):Boolean {
 			return	super.hasEventListener( type ) ||
 					this._componentInfo.hasEventListener( type );

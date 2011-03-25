@@ -215,14 +215,25 @@ package by.blooddy.gui.display.component {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Internal methods
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		 * @private
+		 */
+		$internal function $dispatchEvent(event:Event):void {
+			super.dispatchEvent( event );
+		}
+		
+		//--------------------------------------------------------------------------
+		//
 		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
 
 		protected function initComponent(info:ComponentInfo, name:String, component:Component, controller:ComponentController, properties:ComponentProperties):void {
 			info.$init( name, component, controller, properties, this._baseController );
-			info.addEventListener( ComponentEvent.COMPONENT_CONSTRUCT,	this.handler_componentConstruct, false, int.MIN_VALUE );
-			info.addEventListener( ComponentEvent.COMPONENT_DESTRUCT,	this.handler_componentDestruct, false, int.MIN_VALUE );
 		}
 
 		protected function addComponent(info:ComponentInfo):void {
@@ -284,23 +295,6 @@ package by.blooddy.gui.display.component {
 			}
 			this._lastFocusComponent = c;
 			trace( c );
-		}
-
-		/**
-		 * @private
-		 */
-		private function handler_componentConstruct(event:ComponentEvent):void {
-			event.target.removeEventListener( ComponentEvent.COMPONENT_CONSTRUCT, this.handler_componentConstruct );
-			super.dispatchEvent( event );
-		}
-		
-		/**
-		 * @private
-		 */
-		private function handler_componentDestruct(event:ComponentEvent):void {
-			event.target.removeEventListener( ComponentEvent.COMPONENT_DESTRUCT, this.handler_componentDestruct );
-			super.dispatchEvent( event );
-			event.componentInfo.$clear();
 		}
 
 		/**
