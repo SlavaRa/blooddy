@@ -35,7 +35,7 @@ package by.blooddy.core.controllers {
 		public function DelegateController(name:String, baseController:IBaseController=null) {
 			super();
 			this._name = name;
-			if ( baseController ) this.baseController = baseController;
+			if ( baseController ) this.baseController = baseController; // TODO: exit frame
 		}
 		
 		//--------------------------------------------------------------------------
