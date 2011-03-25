@@ -196,6 +196,9 @@
     <classEntry path="by.blooddy.core.net.IURLRewriter"/>
     <classEntry path="by.blooddy.core.controllers.DelegateController"/>
     <classEntry path="by.blooddy.core.managers.process.IProgressProcessable"/>
+    <classEntry path="by.blooddy.core.logging.ConsoleDispatcher"/>
+    <classEntry path="by.blooddy.core.net.SocketConnector"/>
+    <classEntry path="by.blooddy.core.net.HostPair"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests>
