@@ -253,6 +253,8 @@ package by.blooddy.gui.display.component {
 			// focus
 			super.stage.focus = info.component;
 
+			// sorting
+
 		}
 
 		//--------------------------------------------------------------------------

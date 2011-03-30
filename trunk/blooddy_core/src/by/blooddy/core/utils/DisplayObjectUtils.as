@@ -117,7 +117,35 @@ package by.blooddy.core.utils {
 			} while( obj = obj.parent );
 			return arr.join( '.' );
 		}
-		
+
+		public static function getInteractiveObject(object:DisplayObject):InteractiveObject {
+			var arr:Vector.<InteractiveObject>;
+			if ( object is InteractiveObject ) {
+				arr = new Vector.<InteractiveObject>();
+			}
+			do {
+
+				if (
+					!( object is DisplayObjectContainer ) ||
+					!( object as DisplayObjectContainer ).mouseChildren
+				) {
+					arr = new Vector.<InteractiveObject>();
+				}
+				if ( object is InteractiveObject ) {
+					arr.unshift( object as InteractiveObject );
+				}
+				
+			} while ( object = object.parent );
+
+			var d:InteractiveObject;
+			while ( arr.length > 0 ) {
+				d = arr.pop();
+				if ( d.mouseEnabled ) return d;
+			}
+			
+			return null;
+		}
+
 		public static function getDropTarget(container:DisplayObjectContainer, point:Point, objects:Array = null):DisplayObject {
 			if ( !objects ) {
 				objects = container.getObjectsUnderPoint( point );

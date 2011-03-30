@@ -271,7 +271,7 @@ package by.blooddy.gui.display.component {
 		private function handler_componentDestruct():void {
 			
 		}
-		
+
 	}
 	
 }
