@@ -33,7 +33,7 @@ package by.blooddy.core.utils {
 		/**
 		 * @private
 		 */
-		private static const _TIMER:AutoTimer = new AutoTimer( 10*1E3 );
+		private static const _TIMER:AutoTimer = new AutoTimer( 30*1E3 );
 
 		//--------------------------------------------------------------------------
 		//
@@ -70,22 +70,6 @@ package by.blooddy.core.utils {
 		//
 		//--------------------------------------------------------------------------
 
-		public function takeIn(key:String, resource:Object, time:uint=3*60*1E3):void {
-			if ( resource == null || time <= 0 ) throw new ArgumentError();
-			var rcs:Vector.<ResourceContainer> = this._hash[ key ] as Vector.<ResourceContainer>;
-			if ( !rcs ) this._hash[ key ] = rcs = new Vector.<ResourceContainer>();
-			time += getTimer();
-			for ( var i:int = rcs.length - 1; i >= 0; --i ) {
-				if ( rcs[ i ].time > time ) break;
-			}
-			if ( this._length == 0 ) {
-				_TIMER.addEventListener( TimerEvent.TIMER, this.handler_timer );
-			}
-			++this._length;
-			++i;
-			rcs.splice( i, 0, new ResourceContainer( resource, time ) );
-		}
-
 		public function has(key:String!):Boolean {
 			if ( key in this._hash ) {
 				if ( this._hash[ key ].length > 0 ) {
@@ -95,7 +79,23 @@ package by.blooddy.core.utils {
 			return false;
 		}
 
-		public function takeOut(key:String):Object {
+		public function takeIn(key:String, resource:*, time:uint=3*60*1E3):void {
+			if ( resource == null || time <= 0 ) throw new ArgumentError();
+			var rcs:Vector.<ResourceContainer> = this._hash[ key ] as Vector.<ResourceContainer>;
+			if ( !rcs ) this._hash[ key ] = rcs = new Vector.<ResourceContainer>();
+			time += getTimer();
+			for ( var i:int = rcs.length - 1; i >= 0; --i ) {
+				if ( rcs[ i ].time > time ) break;
+			}
+			++i;
+			rcs.splice( i, 0, new ResourceContainer( resource, time ) );
+			if ( this._length == 0 ) {
+				_TIMER.addEventListener( TimerEvent.TIMER, this.handler_timer );
+			}
+			++this._length;
+		}
+
+		public function takeOut(key:String):* {
 			var rcs:Vector.<ResourceContainer> = this._hash[ key ] as Vector.<ResourceContainer>;
 			if ( rcs && rcs.length > 0 ) {
 				--this._length;
@@ -195,13 +195,13 @@ package by.blooddy.core.utils {
  */
 internal final class ResourceContainer {
 
-	public function ResourceContainer(resource:Object, time:Number=0) {
+	public function ResourceContainer(resource:*, time:Number=0) {
 		super();
 		this.resource = resource;
 		this.time = time;
 	}
 
-	public var resource:Object;
+	public var resource:*;
 
 	public var time:Number;
 

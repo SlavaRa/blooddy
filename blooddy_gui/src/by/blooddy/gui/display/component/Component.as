@@ -316,7 +316,9 @@ package by.blooddy.gui.display.component {
 			if ( this._lock ) {
 				super.stage.removeEventListener( Event.RESIZE, this.drawLock );
 			}
-			this._componentInfo.$clear(); // TODO: перенести?
+			if ( this._componentInfo ) {
+				this._componentInfo.$clear(); // TODO: перенести?
+			}
 			this._container = null;
 		}
 		

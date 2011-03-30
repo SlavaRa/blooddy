@@ -28,8 +28,8 @@ package by.blooddy.factory {
 	//  Events
 	//--------------------------------------
 
-	[Event(name="complete", type="flash.events.Event")]
-	[Event(name="init", type="flash.events.Event")]
+	[Event( name="complete", type="flash.events.Event" )]
+	[Event( name="init", type="flash.events.Event" )]
 	
 	//--------------------------------------
 	//  Excluded APIs
