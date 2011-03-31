@@ -35,6 +35,9 @@ package by.blooddy.console.display {
 		 */
 //		private static const _FORMAT:TextFormat = new TextFormat( '_sans', 12, 0xFFFFFF );
 
+		/**
+		 * @private
+		 */
 		private static const _STYLE_SHEET:StyleSheet = new StyleSheet();
 		_STYLE_SHEET.parseCSS(
 		'	span {							' +
