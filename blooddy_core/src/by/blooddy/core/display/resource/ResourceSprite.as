@@ -388,6 +388,9 @@ import by.blooddy.core.display.resource.ResourceDefinition;
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @private
+ */
 internal final class ResourceLinker extends ResourceDefinition {
 
 	//--------------------------------------------------------------------------

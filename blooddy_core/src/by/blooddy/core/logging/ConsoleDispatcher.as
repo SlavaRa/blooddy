@@ -9,7 +9,6 @@ package by.blooddy.core.logging {
 	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.events.logging.LogEvent;
 	import by.blooddy.core.logging.commands.CommandLog;
-	import by.blooddy.core.net.IRemoter;
 	import by.blooddy.core.net.NetCommand;
 	import by.blooddy.core.net.connection.LocalConnection;
 	import by.blooddy.core.utils.IAbstractRemoter;
@@ -208,14 +207,27 @@ package by.blooddy.core.logging {
 	}
 
 }
+
 import by.blooddy.core.logging.ConsoleDispatcher;
+import by.blooddy.core.net.Responder;
 
 internal namespace $private;
 
 use namespace $private;
 
+/**
+ * @private
+ */
 internal final class Client {
 
+	/**
+	 * @private
+	 */
+	private static const _RESPONDER:Responder = new Responder(
+		function(...rest):* {},
+		function(...rest):* {}
+	);
+	
 	public function Client(target:ConsoleDispatcher) {
 		super();
 		this._target = target;
@@ -228,8 +240,8 @@ internal final class Client {
 	
 	public function call(commandName:String, parameters:Array=null):* {
 		if ( this._target ) {
-			parameters.unshift( commandName, null );
-			return this._target.$private::$client.call.apply( null, parameters );
+			parameters.unshift( commandName, _RESPONDER );
+			return this._target.$client.call.apply( null, parameters );
 		}
 	}
 

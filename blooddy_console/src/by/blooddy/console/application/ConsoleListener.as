@@ -364,6 +364,9 @@ package by.blooddy.console.application {
 
 import by.blooddy.core.logging.Logger;
 
+/**
+ * @private
+ */
 internal final class $Logger extends Logger {
 
 	public function $Logger(name:String) {

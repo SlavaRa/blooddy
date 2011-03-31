@@ -161,6 +161,7 @@ package by.blooddy.core.utils.time {
 		 * @private
 		 */
 		public override function start():void {
+			if ( this._running ) return;
 			this.updateDelay();
 			switch ( this._reset_count ) {
 				case 0:		super.start();																			break;
@@ -175,13 +176,14 @@ package by.blooddy.core.utils.time {
 		 * @private
 		 */
 		public override function stop():void {
+			if ( !this._running ) return;
+			this._running = false;
 			switch ( this._reset_count ) {
 				case 0:		super.stop();																				break;
 				case 1:		enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );	break;
 				default:	enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame2 );	break;
 					
 			}
-			this._running = false;
 		}
 
 		[Deprecated( message="метод запрещен" )]
