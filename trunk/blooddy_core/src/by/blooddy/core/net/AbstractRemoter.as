@@ -47,7 +47,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private static const _TIMER:AutoTimer = new AutoTimer( 60*1E3 );
+		private static const _TIMER:AutoTimer = new AutoTimer( 30 * 1E3 );
 		
 		//--------------------------------------------------------------------------
 		//
@@ -327,16 +327,35 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		private function handler_timer(event:TimerEvent):void {
-			var time:Number = getTimer() - 30 * 1e3;
+			const time:Number = getTimer() - 15 * 1e3;
 			var e:ScriptTimeoutError;
+			var func:Function;
+			var assset:ResponderAsset;
+			var has:Boolean = false;
+			const args:Array = new Array();
 			for ( var num:* in this._responders ) {
-				if ( ( this._responders[ num ] as ResponderAsset ).time <= time ) {
+				assset = this._responders[ num ] as ResponderAsset;
+				if ( assset.time <= time ) {
+
 					delete this._responders[ num ];
 					--this._responderCount;
-				}
-				if ( !this._unassisted || super.hasEventListener( AsyncErrorEvent.ASYNC_ERROR ) ) {
-					e = new ScriptTimeoutError();
-					super.dispatchEvent( new AsyncErrorEvent( AsyncErrorEvent.ASYNC_ERROR, false, false, e.toString(), e ) );
+
+					func = assset.responder.status;
+					has = Boolean( func );
+					if ( has ) {
+
+						// если есть метод ошибки, то перенаправяем туда с неизвестными параметрами
+						args.length = func.length;
+						func.apply( null, args );
+
+					} else if ( !this._unassisted || super.hasEventListener( AsyncErrorEvent.ASYNC_ERROR ) ) {
+
+						// если метода нету, то кидаем исключение
+						e = new ScriptTimeoutError();
+						super.dispatchEvent( new AsyncErrorEvent( AsyncErrorEvent.ASYNC_ERROR, false, false, e.toString(), e ) );
+
+					}
+
 				}
 			}
 			if ( this._responderCount == 0 ) {
