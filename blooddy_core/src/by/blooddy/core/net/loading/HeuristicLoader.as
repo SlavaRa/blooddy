@@ -607,7 +607,6 @@ package by.blooddy.core.net.loading {
 		 * при успешном определение меняет поведение загрузки.
 		 */
 		private function handler_stream_init_progress(event:ProgressEvent):void {
-			trace( event, this.url );
 			this._stream.readBytes( this._input, this._input.length );
 			this._contentType = MIME.analyseBytes( this._input ); // пытаемся узнать что за говно мы грузим
 			if ( this._contentType ) {
