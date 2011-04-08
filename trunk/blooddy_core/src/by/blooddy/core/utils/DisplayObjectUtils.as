@@ -118,29 +118,28 @@ package by.blooddy.core.utils {
 			return arr.join( '.' );
 		}
 
-		public static function getInteractiveObject(object:DisplayObject):InteractiveObject {
-			var arr:Vector.<InteractiveObject>;
-			if ( object is InteractiveObject ) {
-				arr = new Vector.<InteractiveObject>();
-			}
+		public static function getInteractiveObject(object:DisplayObject):DisplayObject {
+			var arr:Vector.<DisplayObject> = new Vector.<DisplayObject>();
 			do {
 
 				if (
 					!( object is DisplayObjectContainer ) ||
 					!( object as DisplayObjectContainer ).mouseChildren
 				) {
-					arr = new Vector.<InteractiveObject>();
+					arr.length = 0;
 				}
-				if ( object is InteractiveObject ) {
-					arr.unshift( object as InteractiveObject );
-				}
+				arr.unshift( object );
 				
 			} while ( object = object.parent );
 
-			var d:InteractiveObject;
 			while ( arr.length > 0 ) {
-				d = arr.pop();
-				if ( d.mouseEnabled ) return d;
+				object = arr.pop();
+				if (
+					!( object is InteractiveObject ) ||
+					( object as InteractiveObject ).mouseEnabled
+				) {
+					return object;
+				}
 			}
 			
 			return null;
