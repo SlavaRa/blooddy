@@ -438,9 +438,11 @@ package by.blooddy.core.net.loading {
 				this._stream.removeEventListener( Event.COMPLETE,						this.handler_stream_complete );
 				this._stream.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_common_error );
 				this._stream.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_stream_init_securityError );
-				try {
-					this._stream.close();
-				} catch ( e:* ) {
+				if ( close ) {
+					try {
+						this._stream.close();
+					} catch ( e:* ) {
+					}
 				}
 				this._stream = null;
 			}
@@ -605,6 +607,7 @@ package by.blooddy.core.net.loading {
 		 * при успешном определение меняет поведение загрузки.
 		 */
 		private function handler_stream_init_progress(event:ProgressEvent):void {
+			trace( event, this.url );
 			this._stream.readBytes( this._input, this._input.length );
 			this._contentType = MIME.analyseBytes( this._input ); // пытаемся узнать что за говно мы грузим
 			if ( this._contentType ) {

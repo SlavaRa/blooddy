@@ -182,7 +182,7 @@ package by.blooddy.core.net.loading {
 				this._stream = stream;
 				this._input = input;
 				this._input.endian = Endian.LITTLE_ENDIAN;
-				
+				this._state = _STATE_SIGNATURE;
 				try {
 					this._need = this.parse();
 					if ( this._need <= 0 ) {
@@ -192,8 +192,6 @@ package by.blooddy.core.net.loading {
 				} catch ( e:* ) {
 					this.throwError( e );
 				}
-				
-
 			} else {
 				this.$loadBytes( input );
 			}
@@ -593,6 +591,9 @@ package by.blooddy.core.net.loading {
 
 import flash.utils.ByteArray;
 
+/**
+ * @private
+ */
 internal final class FileInfo {
 	
 	public function FileInfo() {

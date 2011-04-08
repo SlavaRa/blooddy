@@ -43,15 +43,14 @@ package by.blooddy.core.utils.time {
 		 */
 		private static var _frameRate:Number = 1E3 / 12;
 
-		public static function get frameRate():uint {
+		public static function get frameRate():Number {
 			return 1E3 / _frameRate;
 		}
 
 		/**
 		 * @private
 		 */
-		public static function set frameRate(value:uint):void {
-			if ( _frameRate == 1E3 / value ) return;
+		public static function set frameRate(value:Number):void {
 			_frameRate = 1E3 / value;
 		}
 
