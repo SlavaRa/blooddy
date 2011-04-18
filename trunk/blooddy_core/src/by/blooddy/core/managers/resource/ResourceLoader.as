@@ -81,7 +81,7 @@ package by.blooddy.core.managers.resource {
 		 */
 		public function ResourceLoader(name:String=null, request:URLRequest=null, loaderContext:LoaderContext=null) {
 			super( request, loaderContext );
-			this._name = null;
+			this._name = name;
 		}
 
 		//--------------------------------------------------------------------------
