@@ -19,6 +19,7 @@ package by.blooddy.gui.display.component {
 	import flash.errors.IllegalOperationError;
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
+	import flash.geom.Point;
 	import flash.geom.Transform;
 	import flash.utils.getQualifiedClassName;
 
@@ -197,6 +198,14 @@ package by.blooddy.gui.display.component {
 					this._componentInfo.willTrigger( type );
 		}
 
+		public function bringToFront():void {
+			this._container.bringToFront( this._componentInfo );
+		}
+		
+		public function sendToBack():void {
+			this._container.sendToBack( this._componentInfo );
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
@@ -240,10 +249,11 @@ package by.blooddy.gui.display.component {
 		 * @private
 		 */
 		private function drawLock(event:Event=null):void {
+			var p:Point = super.localToGlobal( new Point() );
 			with ( super.graphics ) {
 				clear();
 				beginFill( 0xFF0000, 0 );
-				drawRect( 0, 0, super.stage.stageWidth, super.stage.stageHeight );
+				drawRect( p.x, p.y, super.stage.stageWidth, super.stage.stageHeight );
 				endFill();
 			}
 		}
@@ -254,7 +264,7 @@ package by.blooddy.gui.display.component {
 		private function $dispatchEvent(event:Event):Boolean {
 			if ( event is ErrorEvent ) {
 				var result:Boolean = true;
-				if ( super.hasEventListener( event.type ) || !this._componentInfo.hasEventListener( event.type ) ) {
+				if ( super.hasEventListener( event.type ) || !this._componentInfo || !this._componentInfo.hasEventListener( event.type ) ) {
 					result &&= super.dispatchEvent( event );
 				}
 				if ( this._componentInfo.hasEventListener( event.type ) ) {
