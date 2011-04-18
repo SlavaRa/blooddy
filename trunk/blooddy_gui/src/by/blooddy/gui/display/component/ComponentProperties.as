@@ -69,7 +69,11 @@ package by.blooddy.gui.display.component {
 		public function get modal():Boolean {
 			return this._modal;
 		}
-		
+
+		public function get rating():uint {
+			return ( this._alwaysOnTop ? 1 : 0 ) | ( this._modal ? 2 : 0 );
+		}
+
 	}
 	
 }

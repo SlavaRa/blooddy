@@ -167,9 +167,12 @@ package by.blooddy.gui.display.component {
 				}
 			}
 
+			var i:int = super.getChildIndex( info.component );
+			this._components_list.splice( i, 1 );
+
 			super.removeChild( info.component );
 			delete this._components_id[ info.id ];
-			var i:int = this._components_name[ info.name ].indexOf( info );
+			i = this._components_name[ info.name ].indexOf( info );
 			if ( i >= 0 ) this._components_name[ info.name ].splice( i, 1 );
 
 			if ( setNewFocus ) {
@@ -213,6 +216,43 @@ package by.blooddy.gui.display.component {
 			}
 		}
 
+		public function bringToFront(info:ComponentInfo):void {
+
+			var rating:uint = info.properties.rating;
+
+			var i:int = super.getChildIndex( info.component );
+			this._components_list.splice( i, 1 );
+
+			i = this._components_list.length;
+
+			while ( i-- > 0 ) {
+				if ( rating >= this._components_list[ i ].properties.rating ) break;
+			}
+			++i;
+
+			this._components_list.splice( i, 0, info );
+			super.setChildIndex( info.component, i );
+
+		}
+
+		public function sendToBack(info:ComponentInfo):void {
+
+			var rating:uint = info.properties.rating;
+			
+			var i:int = super.getChildIndex( info.component );
+			this._components_list.splice( i, 1 );
+
+			i = -1;
+			var l:uint = this._components_list.length;
+			while ( ++i < l ) {
+				if ( rating <= this._components_list[ i ].properties.rating ) break;
+			}
+			
+			this._components_list.splice( i, 0, info );
+			super.setChildIndex( info.component, i );
+
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Internal methods
@@ -242,19 +282,20 @@ package by.blooddy.gui.display.component {
 				this._components_name[ info.name ] = new Vector.<ComponentInfo>();
 			}
 			if ( info.properties.singleton ) {
-				for each ( var i:ComponentInfo in this._components_name[ info.name ] ) {
-					this.removeComponent( i );
+				for each ( var ci:ComponentInfo in this._components_name[ info.name ] ) {
+					this.removeComponent( ci );
 				}
 			}
 			this._components_name[ info.name ].push( info );
 
-			super.addChild( info.component );
-
 			// focus
 			super.stage.focus = info.component;
 
-			// sorting
+			this._components_list.push( info );
+			super.addChild( info.component );
 
+			this.bringToFront( info );
+			
 		}
 
 		//--------------------------------------------------------------------------
@@ -296,7 +337,6 @@ package by.blooddy.gui.display.component {
 				c = parent as Component;
 			}
 			this._lastFocusComponent = c;
-			trace( c );
 		}
 
 		/**
