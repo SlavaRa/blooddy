@@ -216,7 +216,7 @@ package by.blooddy.core.managers.resource {
 				var asset:$ResourceLoader = _LOADING_QUEUE.pop().asset;
 				asset.queue = null;
 				registerQueue( asset );
-				asset.$load();
+				asset._load();
 				++_loading;
 			}
 		 	if ( _loading >= _maxLoading || _LOADING_QUEUE.length <= 0 ) {
@@ -394,13 +394,13 @@ package by.blooddy.core.managers.resource {
 						for each ( var has:Boolean in asset.managers ) break;
 						if ( !has ) {
 							delete _HASH[ bundleName ];
-							if ( complete ) asset.$unload();
+							if ( complete ) asset._unload();
 							else {
 								if ( asset.queue ) {
 									var i:int = _LOADING_QUEUE.indexOf( asset.queue );
 									_LOADING_QUEUE.splice( i, 1 );
 									asset.queue = null;
-								} else asset.$close();
+								} else asset._close();
 							}
 						}
 					}
@@ -678,22 +678,22 @@ internal final class $ResourceLoader extends ResourceLoader {
 	//
 	//--------------------------------------------------------------------------
 
-	[Deprecated( message="метод запрещен", replacement="$load" )]
+	[Deprecated( message="метод запрещен", replacement="_load" )]
 	public override function load(request:URLRequest):void {
 		throw new IllegalOperationError();
 	}
 
-	[Deprecated( message="метод запрещен", replacement="$load" )]
+	[Deprecated( message="метод запрещен", replacement="_load" )]
 	public override function loadBytes(request:ByteArray):void {
 		throw new IllegalOperationError();
 	}
 	
-	[Deprecated( message="метод запрещен", replacement="$close" )]
+	[Deprecated( message="метод запрещен", replacement="_close" )]
 	public override function close():void {
 		throw new IllegalOperationError();
 	}
 
-	[Deprecated( message="метод запрещен", replacement="$unload" )]
+	[Deprecated( message="метод запрещен", replacement="_unload" )]
 	public override function unload():void {
 		throw new IllegalOperationError();
 	}
@@ -704,7 +704,7 @@ internal final class $ResourceLoader extends ResourceLoader {
 	//
 	//--------------------------------------------------------------------------
 	
-	internal function $load():void {
+	internal function _load():void {
 		if ( this._bytes ) {
 			super.loadBytes( this._bytes );
 		} else {
@@ -727,11 +727,11 @@ internal final class $ResourceLoader extends ResourceLoader {
 		}
 	}
 	
-	internal function $close():void {
+	internal function _close():void {
 		super.close();
 	}
 	
-	internal function $unload():void {
+	internal function _unload():void {
 		super.unload();
 	}
 
