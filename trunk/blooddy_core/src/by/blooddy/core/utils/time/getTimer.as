@@ -26,31 +26,23 @@ package by.blooddy.core.utils.time {
 //
 //==============================================================================
 
-import flash.events.TimerEvent;
-import flash.utils.Timer;
 import flash.utils.getTimer;
+import flash.utils.setInterval;
 
 /**
- * эта величина хактеризует на сколько флэшой таймер сбился
+ * эта величина характеризует на сколько флэшовый таймер сбился
  * относительно системного времени
  */
 internal var deltaTime:Number = 0;
 
 /**
- * время запуска таймера
+ * время старта таймера
  */
 internal const startTime:Number = ( new Date() ).getTime() - getTimer();
 
 /**
- * таймем для переодической синхронизации
+ * взводим таймер для периодической синхронизации
  */
-internal const timer:Timer = new Timer( 10e3 );
-timer.addEventListener( TimerEvent.TIMER, handler_timer );
-timer.start();
-
-/**
- * метод синхронизации
- */
-internal function handler_timer(event:TimerEvent):void {
+setInterval( function():void {
 	deltaTime = ( new Date() ).getTime() - startTime - getTimer();
-}
+}, 10e3 );
