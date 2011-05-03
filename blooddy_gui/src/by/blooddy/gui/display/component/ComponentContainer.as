@@ -78,8 +78,8 @@ package by.blooddy.gui.display.component {
 		public function ComponentContainer(baseController:IBaseController=null) {
 			super();
 			this._baseController = baseController;
-			super.addEventListener( ResourceEvent.ADDED_TO_MANAGER,		this.handler_addedToManager,		false, int.MAX_VALUE, true );
-			super.addEventListener( ResourceEvent.REMOVED_FROM_MANAGER,	this.handler_removedFromManager,	false, int.MAX_VALUE, true );
+			super.addEventListener( ResourceEvent.ADDED_TO_MAIN,		this.handler_addedToMain,		false, int.MAX_VALUE, true );
+			super.addEventListener( ResourceEvent.REMOVED_FROM_MAIN,	this.handler_removedFromMain,	false, int.MAX_VALUE, true );
 		}
 		
 		//--------------------------------------------------------------------------
@@ -307,14 +307,14 @@ package by.blooddy.gui.display.component {
 		/**
 		 * @private
 		 */
-		private function handler_addedToManager(event:ResourceEvent):void {
+		private function handler_addedToMain(event:ResourceEvent):void {
 			super.addEventListener( FocusEvent.FOCUS_IN, this.handler_focusIn );
 		}
 
 		/**
 		 * @private
 		 */
-		private function handler_removedFromManager(event:ResourceEvent):void {
+		private function handler_removedFromMain(event:ResourceEvent):void {
 			super.removeEventListener( FocusEvent.FOCUS_IN, this.handler_focusIn );
 		}
 

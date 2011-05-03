@@ -34,12 +34,12 @@ package by.blooddy.core.display.resource {
 	/**
 	 * @eventType			by.blooddy.core.events.display.resource.ResourceEvent.ADDED_TO_MANAGER
 	 */
-	[Event( name="addedToManager", type="by.blooddy.core.events.display.resource.ResourceEvent" )]
+	[Event( name="addedToMain", type="by.blooddy.core.events.display.resource.ResourceEvent" )]
 
 	/**
 	 * @eventType			by.blooddy.core.events.display.resource.ResourceEvent.REMOVED_FROM_MANAGER
 	 */
-	[Event( name="removedFromManager", type="by.blooddy.core.events.display.resource.ResourceEvent" )]
+	[Event( name="removedFromMain", type="by.blooddy.core.events.display.resource.ResourceEvent" )]
 
 	/**
 	 * @eventType			by.blooddy.core.events.display.resource.ResourceErrorEvent.RESOURCE_ERROR
@@ -299,8 +299,8 @@ package by.blooddy.core.display.resource {
 		 * @private
 		 */
 		private function removeFromManager():void {
-			if ( super.hasEventListener( ResourceEvent.REMOVED_FROM_MANAGER ) ) {
-				super.dispatchEvent( new ResourceEvent( ResourceEvent.REMOVED_FROM_MANAGER ) );
+			if ( super.hasEventListener( ResourceEvent.REMOVED_FROM_MAIN ) ) {
+				super.dispatchEvent( new ResourceEvent( ResourceEvent.REMOVED_FROM_MAIN ) );
 			}
 			// если у нас остались ресурсы, это ЖОПА!
 			var resources:Vector.<ResourceDefinition>;
@@ -346,8 +346,8 @@ package by.blooddy.core.display.resource {
 				if ( !this._lockers ) {
 					_LOCK_HASH[ manager ] = this._lockers = new Object();
 				}
-				if ( super.hasEventListener( ResourceEvent.ADDED_TO_MANAGER ) ) {
-					super.dispatchEvent( new ResourceEvent( ResourceEvent.ADDED_TO_MANAGER ) );
+				if ( super.hasEventListener( ResourceEvent.ADDED_TO_MAIN ) ) {
+					super.dispatchEvent( new ResourceEvent( ResourceEvent.ADDED_TO_MAIN ) );
 				}
 			}
 

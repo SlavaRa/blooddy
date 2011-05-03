@@ -67,9 +67,8 @@ package by.blooddy.gui.display.component {
 			super.transform = new $Transform( this );
 			super.mouseEnabled = true;
 			super.mouseChildren = true;
-			trace( 'component: ' + getQualifiedClassName( this ) );
-			super.addEventListener( ResourceEvent.ADDED_TO_MANAGER, this.handler_addedToManager, false, int.MIN_VALUE, true );
-			super.addEventListener( ResourceEvent.REMOVED_FROM_MANAGER, this.handler_removedFromManager, false, int.MIN_VALUE, true );
+			super.addEventListener( ResourceEvent.ADDED_TO_MAIN,		this.handler_addedToMain, false, int.MIN_VALUE, true );
+			super.addEventListener( ResourceEvent.REMOVED_FROM_MAIN,	this.handler_removedFromMain, false, int.MIN_VALUE, true );
 		}
 
 		//--------------------------------------------------------------------------
@@ -301,7 +300,7 @@ package by.blooddy.gui.display.component {
 		/**
 		 * @private
 		 */
-		private function handler_addedToManager(event:ResourceEvent):void {
+		private function handler_addedToMain(event:ResourceEvent):void {
 			var parent:DisplayObject = this;
 			while ( ( parent = parent.parent ) && !( parent is ComponentContainer ) ) {};
 			this._container = parent as ComponentContainer;
@@ -315,7 +314,7 @@ package by.blooddy.gui.display.component {
 		/**
 		 * @private
 		 */
-		private function handler_removedFromManager(event:ResourceEvent):void {
+		private function handler_removedFromMain(event:ResourceEvent):void {
 			if ( this._constructed ) {
 				this._constructed = false;
 				var resultEvent:ComponentEvent = new ComponentEvent( ComponentEvent.COMPONENT_DESTRUCT, false, false, this._componentInfo );

@@ -43,9 +43,7 @@ package by.blooddy.core.data {
 		//
 		//--------------------------------------------------------------------------
 
-		internal namespace $internal_data;
-
-		use namespace $internal_data;
+		use namespace $internal;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -77,12 +75,12 @@ package by.blooddy.core.data {
 		/**
 		 * @private
 		 */
-		$internal_data var $stopped:Boolean = false;
+		$internal var $stopped:Boolean = false;
 
 		/**
 		 * @private
 		 */
-		$internal_data var $canceled:Boolean = false;
+		$internal var $canceled:Boolean = false;
 
 		//--------------------------------------------------------------------------
 		//
@@ -97,7 +95,7 @@ package by.blooddy.core.data {
 		/**
 		 * @private
 		 */
-		$internal_data var $target:Object;
+		$internal var $target:Object;
 
 		/**
 		 * @private
@@ -114,7 +112,7 @@ package by.blooddy.core.data {
 		/**
 		 * @private
 		 */
-		$internal_data var $eventPhase:uint;
+		$internal var $eventPhase:uint;
 
 		/**
 		 * @private
