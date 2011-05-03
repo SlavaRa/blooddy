@@ -199,6 +199,7 @@
     <classEntry path="by.blooddy.core.logging.ConsoleDispatcher"/>
     <classEntry path="by.blooddy.core.net.SocketConnector"/>
     <classEntry path="by.blooddy.core.net.HostPair"/>
+    <classEntry path="by.blooddy.core.data.$internal"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests>

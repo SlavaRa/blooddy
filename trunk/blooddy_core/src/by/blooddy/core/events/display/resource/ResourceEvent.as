@@ -24,9 +24,9 @@ package by.blooddy.core.events.display.resource {
 		//
 		//--------------------------------------------------------------------------
 
-		public static const ADDED_TO_MANAGER:String =		'addedToMain';
+		public static const ADDED_TO_MAIN:String =		'addedToMain';
 		
-		public static const REMOVED_FROM_MANAGER:String =	'removedFromMain';
+		public static const REMOVED_FROM_MAIN:String =	'removedFromMain';
 		
 		//--------------------------------------------------------------------------
 		//

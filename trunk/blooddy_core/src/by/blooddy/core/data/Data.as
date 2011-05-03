@@ -57,11 +57,6 @@ package by.blooddy.core.data {
 		//
 		//--------------------------------------------------------------------------
 
-		/**
-		 * @private
-		 */
-		private static const $internal_data:Namespace = DataBaseNativeEvent.$internal_data;
-		
 		protected namespace $protected_data;
 
 		use namespace $protected_data;
@@ -192,12 +187,13 @@ package by.blooddy.core.data {
 			while ( target ) {
 				if ( target.hasEventListener( event.type ) ) {
 					e = event.clone() as DataBaseNativeEvent;
-					e.$internal_data::$eventPhase = EventPhase.BUBBLING_PHASE;
-					e.$internal_data::$target = this;
-					e.$internal_data::$canceled = canceled;
-					target.$dispatchEvent( new EventContainer( e ) );
-					canceled &&= e.$internal_data::$canceled;
-					if ( e.$internal_data::$stopped ) break;
+					e.$internal::$eventPhase = EventPhase.BUBBLING_PHASE;
+					e.$internal::$target = this;
+					e.$internal::$canceled = canceled;
+					CONTAINER.$event = e;
+					target.$dispatchEvent( CONTAINER );
+					canceled &&= e.$internal::$canceled;
+					if ( e.$internal::$stopped ) break;
 				}
 				target = target._bubble_parent;
 			}
@@ -289,9 +285,8 @@ internal final class EventContainer extends Event {
 	 * @private
 	 * Constructor.
 	 */
-	public function EventContainer(event:Event) {
-		super( event.type, event.bubbles, event.cancelable );
-		this._event = event;
+	public function EventContainer() {
+		super( '', true );
 	}
 
 	//--------------------------------------------------------------------------
@@ -303,7 +298,7 @@ internal final class EventContainer extends Event {
 	/**
 	 * @private
 	 */
-	private var _event:Event;
+	internal var $event:Event;
 
 	//--------------------------------------------------------------------------
 	//
@@ -330,7 +325,9 @@ internal final class EventContainer extends Event {
 	 * Возвращаем наш евент.
 	 */
 	public override function clone():Event {
-		return this._event;
+		return this.$event;
 	}
 
 }
+
+internal const CONTAINER:EventContainer = new EventContainer();

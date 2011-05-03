@@ -35,8 +35,8 @@ package by.blooddy.core.display.resource {
 		 */
 		public function LoadableResourceSprite() {
 			super();
-			super.addEventListener( ResourceEvent.ADDED_TO_MANAGER,		this.handler_addedToManager,		false, int.MIN_VALUE, true );
-			super.addEventListener( ResourceEvent.REMOVED_FROM_MANAGER,	this.handler_removedFromManager,	false, int.MAX_VALUE, true );
+			super.addEventListener( ResourceEvent.ADDED_TO_MAIN,		this.handler_addedToMain,		false, int.MIN_VALUE, true );
+			super.addEventListener( ResourceEvent.REMOVED_FROM_MAIN,	this.handler_removedFromMain,	false, int.MAX_VALUE, true );
 		}
 
 		//--------------------------------------------------------------------------
@@ -171,14 +171,14 @@ package by.blooddy.core.display.resource {
 		/**
 		 * @private
 		 */
-		private function handler_addedToManager(event:ResourceEvent):void {
+		private function handler_addedToMain(event:ResourceEvent):void {
 			this.invalidate();
 		}
 		
 		/**
 		 * @private
 		 */
-		private function handler_removedFromManager(event:ResourceEvent):void {
+		private function handler_removedFromMain(event:ResourceEvent):void {
 			if ( this._loader ) {
 				this.clearLoader();
 			} else {

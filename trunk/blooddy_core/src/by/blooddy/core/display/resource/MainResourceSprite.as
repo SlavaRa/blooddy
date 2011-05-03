@@ -38,7 +38,7 @@ package by.blooddy.core.display.resource {
 		 */
 		public function MainResourceSprite() {
 			super();
-			super.addEventListener( ResourceEvent.REMOVED_FROM_MANAGER,	this.handler_removedFromManager, false, int.MIN_VALUE, true ); // !!! MIN !!!
+			super.addEventListener( ResourceEvent.REMOVED_FROM_MAIN,	this.handler_removedFromMain, false, int.MIN_VALUE, true ); // !!! MIN !!!
 		}
 
 		//--------------------------------------------------------------------------
@@ -98,12 +98,12 @@ package by.blooddy.core.display.resource {
 		/**
 		 * @private
 		 */
-		private function handler_removedFromManager(event:ResourceEvent):void {
-			try {
+		private function handler_removedFromMain(event:ResourceEvent):void {
+//			try {
 				this._manager.clear();
-			} catch ( e:ResourceError ) {
-				super.dispatchEvent( new ResourceErrorEvent( ResourceErrorEvent.RESOURCE_ERROR, false, false, e.toString(), e.errorID, e.resources ) );
-			}
+//			} catch ( e:ResourceError ) {
+//				super.dispatchEvent( new ResourceErrorEvent( ResourceErrorEvent.RESOURCE_ERROR, false, false, e.toString(), e.errorID, e.resources ) );
+//			}
 		}
 
 	}
