@@ -133,7 +133,7 @@ if ( !blooddy.SocialApi ) {
 			var arr = new Array(),
 				key,
 				result = '',
-				l;
+				i, l;
 			for ( key in vars ) {
 				arr.push( key );
 			}
