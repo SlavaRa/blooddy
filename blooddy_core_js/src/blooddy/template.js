@@ -32,13 +32,11 @@ if ( !blooddy.template ) {
 			_cache_id =		new Object(),
 			_cache_url =	new Object(),
 			_cache_text =	new Object(),
-			_cache_js =		new Object(),
 
 			_ZERO =			String.fromCharCode( 0 ),
 
 			_rExp =			/<%([^\s]+)?\s+([\S\s]*?)\s*%>/g,
 			_rExpPure =		/\s*<%\s+([\S\s]*?)\s*%>\s*/g,
-			_rEmpty =		/^\s*$/,
 			_rQuote =		/"/g,
 			_rSpaces =		/\r?\n/g,
 			_rSharp =		/#/g,

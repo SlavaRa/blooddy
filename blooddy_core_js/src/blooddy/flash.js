@@ -62,12 +62,12 @@ if ( !blooddy.Flash ) {
 		 * @static
 		 * @method
 		 * создаёт flash-объект при пощи DOM
-		 * @param	{HTMLElement}	element		объект для замены флэшкой
+		 * @param	{Element}	element		объект для замены флэшкой
 		 * @param	{String}		id			ID флэшки
 		 * @param	{String}		uri			путь к флэшке
 		 * @param	{Object}		attributes	атрибуты флэшки
 		 * @param	{Object}		parameters	параметры флэшки
-		 * @return	{HTMLElement}	Flash-объект
+		 * @return	{Element}	Flash-объект
 		 */
 		var createSWF = function(element, id, uri, attributes, parameters) {
 			var	key,
@@ -97,12 +97,12 @@ if ( !blooddy.Flash ) {
 		 * @static
 		 * @method
 		 * создаёт Flash-объект на основе outerHTML
-		 * @param	{HTMLElement}	element		объект для замены флэшкой
+		 * @param	{Element}	element		объект для замены флэшкой
 		 * @param	{String}		id			ID флэшки
 		 * @param	{String}		uri			путь к флэшке
 		 * @param	{Object}		attributes	атрибуты флэшки
 		 * @param	{Object}		parameters	параметры флэшки
-		 * @return	{HTMLElement}	Flash-объект
+		 * @return	{Element}	Flash-объект
 		 */
 		var writeSWF = function(element, id, uri, attributes, parameters) {
 			var	key,
@@ -125,19 +125,16 @@ if ( !blooddy.Flash ) {
 		 * @private
 		 * @static
 		 * @method
-		 * @param	{HTMLElement}	e
+		 * @param	{Element}	e
 		 * @return	{Boolean}
 		 */
 		var isFlash = function(e) {
-			if (
+			return (
 				e &&
 				e.id &&
 				_flashs[ e.id ] &&
 				e === _flashs[ e.id ].getElement()
-			) {
-				return true;
-			}
-			return false;
+			);
 		};
 
 		//--------------------------------------------------------------------------
@@ -292,7 +289,7 @@ if ( !blooddy.Flash ) {
 
 		/**
 		 * @method
-		 * @return	{String}	HTMLElement флэшки
+		 * @return	{HTMLElement}	HTMLElement флэшки
 		 */
 		FlashPrototype.getElement = function() {
 			return doc.getElementById( this._id );

@@ -237,7 +237,7 @@ if ( !blooddy.Logger ) {
 
 		/**
 		 * @method
-		 * @return	{Attay}
+		 * @return	{Array}
 		 */
 		LoggerPrototype.getList = function() {
 			return this._list.slice();

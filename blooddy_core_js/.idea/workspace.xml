@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="AnalysisUIOptions">
-    <option name="SCOPE_TYPE" value="3" />
     <option name="CUSTOM_SCOPE_NAME" value="Project Files" />
   </component>
-  <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/index - копия.html" line="13" />
-  </component>
   <component name="ChangeListManager">
-    <list default="true" readonly="true" id="6f715f5d-9dce-45e0-bcb5-af1f791a2af9" name="Default" comment="" />
+    <list default="true" id="6f715f5d-9dce-45e0-bcb5-af1f791a2af9" name="Default" comment="" />
     <ignored path="JavaScript.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -34,94 +30,66 @@
   <component name="FavoritesManager">
     <favorites_list name="JavaScript" />
   </component>
-  <component name="FileColors" enabled="false" enabledForTabs="false" />
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="chat_controller.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/avangard/chat/chat_controller.js">
+      <file leaf-file-name="blooddy.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/blooddy.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="142" column="0" selection-start="4967" selection-end="4967" vertical-scroll-proportion="-15.52">
+            <state line="351" column="11" selection-start="8088" selection-end="8088" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="md5.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/blooddy/utils/crypto/md5.js">
+      <file leaf-file-name="version.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/blooddy/utils/version.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="207" column="18" selection-start="7121" selection-end="7121" vertical-scroll-proportion="0.0">
+            <state line="15" column="46" selection-start="316" selection-end="316" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="template.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/blooddy/template.js">
+      <file leaf-file-name="events.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/blooddy/events.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="317" column="34" selection-start="8063" selection-end="8063" vertical-scroll-proportion="0.0">
+            <state line="18" column="1" selection-start="364" selection-end="364" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="index_730x730.tpl" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/views/index_730x730.tpl">
+      <file leaf-file-name="dom.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/blooddy/events/dom.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="286" column="13" selection-start="10145" selection-end="10145" vertical-scroll-proportion="0.0">
+            <state line="37" column="11" selection-start="850" selection-end="850" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="interface_controller.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/avangard/interface_controller.js">
+      <file leaf-file-name="flash.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/blooddy/flash.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="219" column="11" selection-start="5232" selection-end="5232" vertical-scroll-proportion="0.0">
+            <state line="400" column="13" selection-start="10314" selection-end="10314" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="wait.tpl" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tpl/wait.tpl">
+      <file leaf-file-name="external_flash.js" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/blooddy/flash/external_flash.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="8" column="17" selection-start="320" selection-end="320" vertical-scroll-proportion="0.0">
+            <state line="430" column="10" selection-start="11344" selection-end="11344" vertical-scroll-proportion="0.8553345">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="chat.css" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/views/chat.css">
+      <file leaf-file-name="event.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/blooddy/events/event.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="32" column="4" selection-start="370" selection-end="382" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="index - копия.html" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/index - копия.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="22" column="39" selection-start="831" selection-end="831" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="community_controller.js" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/avangard/community/community_controller.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="67" column="0" selection-start="1697" selection-end="1697" vertical-scroll-proportion="0.8069164">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="display.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/avangard/community/display.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="92" column="16" selection-start="2088" selection-end="2088" vertical-scroll-proportion="-7.8">
+            <state line="42" column="82" selection-start="1043" selection-end="1043" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -137,26 +105,48 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/src/avangard/community/friend.js" />
-        <option value="$PROJECT_DIR$/src/blooddy/events/event_dispatcher.js" />
-        <option value="$PROJECT_DIR$/src/blooddy/utils/crypto/md5.js" />
-        <option value="$PROJECT_DIR$/tpl/character_name.tpl" />
-        <option value="$PROJECT_DIR$/views/chat/index.tpl" />
-        <option value="$PROJECT_DIR$/src/avangard/chat/display.js" />
-        <option value="$PROJECT_DIR$/index - копия.html" />
-        <option value="$PROJECT_DIR$/views/index.tpl" />
-        <option value="$PROJECT_DIR$/views/index_730x730.tpl" />
-        <option value="$PROJECT_DIR$/src/avangard/base_interface.js" />
         <option value="$PROJECT_DIR$/tpl/wait.tpl" />
-        <option value="$PROJECT_DIR$/src/blooddy/template.js" />
         <option value="$PROJECT_DIR$/src/avangard/chat/chat_controller.js" />
         <option value="$PROJECT_DIR$/src/avangard/interface_controller.js" />
         <option value="$PROJECT_DIR$/src/avangard/community/community_controller.js" />
         <option value="$PROJECT_DIR$/src/avangard/community/display.js" />
+        <option value="$PROJECT_DIR$/src/blooddy/events/event_dispatcher.js" />
+        <option value="$PROJECT_DIR$/src/blooddy/utils/history.js" />
+        <option value="$PROJECT_DIR$/src/blooddy/template.js" />
+        <option value="$PROJECT_DIR$/src/blooddy/ajax.js" />
+        <option value="$PROJECT_DIR$/src/blooddy/social_api.js" />
+        <option value="$PROJECT_DIR$/src/blooddy/social_api/factory.js" />
+        <option value="$PROJECT_DIR$/src/blooddy/flash/external_flash.js" />
+        <option value="$PROJECT_DIR$/src/blooddy/logger.js" />
+        <option value="$PROJECT_DIR$/src/blooddy/social_api/mm_api.js" />
+        <option value="$PROJECT_DIR$/src/blooddy/flash.js" />
+        <option value="$PROJECT_DIR$/src/blooddy.js" />
       </list>
     </option>
   </component>
-  <component name="ProjectLevelVcsManager">
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id>Error handling</id>
+          </State>
+          <State>
+            <id>Inspections</id>
+          </State>
+          <State>
+            <id>JavaScript</id>
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>ExceptionCaughtLocallyJS</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
     <OptionsSetting value="true" id="Remove" />
     <OptionsSetting value="true" id="Checkout" />
@@ -294,74 +284,25 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Favorites">
-        <subPane subId="JavaScript" />
-      </pane>
       <pane id="ProjectPane">
         <subPane>
           <PATH>
             <PATH_ELEMENT>
-              <option name="myItemId" value="JavaScript" />
+              <option name="myItemId" value="blooddy_core_js" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="JavaScript" />
+              <option name="myItemId" value="blooddy_core_js" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
-              <option name="myItemId" value="JavaScript" />
+              <option name="myItemId" value="blooddy_core_js" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="JavaScript" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="views" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="JavaScript" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="JavaScript" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="views" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="chat" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="JavaScript" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="JavaScript" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tpl" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="JavaScript" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="JavaScript" />
+              <option name="myItemId" value="blooddy_core_js" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -371,11 +312,11 @@
           </PATH>
           <PATH>
             <PATH_ELEMENT>
-              <option name="myItemId" value="JavaScript" />
+              <option name="myItemId" value="blooddy_core_js" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="JavaScript" />
+              <option name="myItemId" value="blooddy_core_js" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -389,59 +330,11 @@
           </PATH>
           <PATH>
             <PATH_ELEMENT>
-              <option name="myItemId" value="JavaScript" />
+              <option name="myItemId" value="blooddy_core_js" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="JavaScript" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="blooddy" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="utils" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="JavaScript" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="JavaScript" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="blooddy" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="utils" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="crypto" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="JavaScript" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="JavaScript" />
+              <option name="myItemId" value="blooddy_core_js" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -459,11 +352,11 @@
           </PATH>
           <PATH>
             <PATH_ELEMENT>
-              <option name="myItemId" value="JavaScript" />
+              <option name="myItemId" value="blooddy_core_js" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="JavaScript" />
+              <option name="myItemId" value="blooddy_core_js" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -479,78 +372,37 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="JavaScript" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="JavaScript" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="avangard" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="JavaScript" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="JavaScript" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="avangard" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="community" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
+      </pane>
+      <pane id="Favorites">
+        <subPane subId="JavaScript" />
       </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="options.lastSelected" value="editor.preferences.folding" />
     <property name="recentsLimit" value="5" />
-    <property name="options.lastSelected" value="preferences.keymap" />
-    <property name="options.searchVisible" value="true" />
     <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
   </component>
   <component name="RunManager" selected="JavaScript Debug.avangard">
+    <configuration default="true" type="JavascriptDebugSession" factoryName="Remote">
+      <JSRemoteDebuggerConfigurationSettings>
+        <option name="engineId" value="firefox" />
+        <option name="fileUrl" value="" />
+      </JSRemoteDebuggerConfigurationSettings>
+      <method />
+    </configuration>
     <configuration default="true" type="JavascriptDebugSession" factoryName="Local">
       <JSDebuggerConfigurationSettings>
-        <option name="engineId" value="embedded" />
+        <option name="engineId" value="firefox" />
         <option name="fileUrl" />
       </JSDebuggerConfigurationSettings>
       <method />
     </configuration>
-    <configuration default="false" name="avangard" type="JavascriptDebugSession" factoryName="Local">
-      <JSDebuggerConfigurationSettings>
-        <option name="engineId" value="firefox" />
-        <option name="fileUrl" value="file://$PROJECT_DIR$/index.html" />
-      </JSDebuggerConfigurationSettings>
-      <RunnerSettings RunnerId="JavascriptDebugRunner" />
-      <ConfigurationWrapper RunnerId="JavascriptDebugRunner" />
-      <method />
-    </configuration>
-    <list size="1">
-      <item index="0" class="java.lang.String" itemvalue="JavaScript Debug.avangard" />
-    </list>
+    <list size="0" />
   </component>
   <component name="ShelveChangesManager" show_recycled="false" />
   <component name="StructureViewFactory">
@@ -602,25 +454,25 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-4" y="-4" width="1448" height="855" extended-state="6" />
+    <frame x="-4" y="-4" width="1088" height="1828" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3283582" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.22284909" sideWeight="0.49525103" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.59565806" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" weight="0.2221172" sideWeight="0.60260975" order="0" side_tool="true" content_ui="tabs" x="1402" y="1" width="360" height="1135" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22284909" sideWeight="0.39484397" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="true" weight="0.2221172" sideWeight="0.39264533" order="4" side_tool="false" content_ui="tabs" x="1083" y="1" width="321" height="1139" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3997195" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3985765" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Data Sources" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3295129" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.59565806" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24946237" sideWeight="0.6614951" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39891452" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Thumbnails" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32959327" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -636,6 +488,8 @@
     <option name="CHECK_LOCALLY_CHANGED_CONFLICTS_IN_BACKGROUND" value="true" />
     <option name="ENABLE_BACKGROUND_PROCESSES" value="true" />
     <option name="CHANGED_ON_SERVER_INTERVAL" value="5" />
+    <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="true" />
+    <option name="CHECK_COMMIT_MESSAGE_SPELLING" value="true" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="LAST_COMMIT_MESSAGE" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
@@ -655,100 +509,114 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/tpl/character_name.tpl">
+    <entry file="file://$PROJECT_DIR$/src/blooddy/logger.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="39" column="19" selection-start="894" selection-end="894" vertical-scroll-proportion="0.38947368" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/blooddy/events/event_dispatcher.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="209" column="30" selection-start="4958" selection-end="4958" vertical-scroll-proportion="0.31504923" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/avangard/chat/display.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="118" column="8" selection-start="3224" selection-end="3232" vertical-scroll-proportion="-0.56" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/chat/index.tpl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-2.1037037" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/index.tpl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="45" column="0" selection-start="1892" selection-end="1892" vertical-scroll-proportion="0.4977778" />
+        <state line="242" column="26" selection-start="5059" selection-end="5059" vertical-scroll-proportion="0.52224255">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/blooddy/utils/list.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="269" column="20" selection-start="6407" selection-end="6407" vertical-scroll-proportion="0.55475503" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/blooddy/utils/crypto/md5.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="207" column="18" selection-start="7121" selection-end="7121" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/index_730x730.tpl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="286" column="13" selection-start="10145" selection-end="10145" vertical-scroll-proportion="0.0">
+        <state line="14" column="7" selection-start="299" selection-end="299" vertical-scroll-proportion="-0.44364074">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tpl/wait.tpl">
+    <entry file="file://$PROJECT_DIR$/src/blooddy/utils.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="17" selection-start="320" selection-end="320" vertical-scroll-proportion="0.0">
+        <state line="119" column="29" selection-start="2556" selection-end="2556" vertical-scroll-proportion="0.3809524">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/views/chat.css">
+    <entry file="file://$PROJECT_DIR$/src/blooddy/ajax.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="32" column="4" selection-start="370" selection-end="382" vertical-scroll-proportion="0.0">
+        <state line="193" column="45" selection-start="4940" selection-end="4940" vertical-scroll-proportion="0.33453888">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/index - копия.html">
+    <entry file="file://$PROJECT_DIR$/src/blooddy/social_api/mm_api.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="39" selection-start="831" selection-end="831" vertical-scroll-proportion="0.0">
+        <state line="265" column="28" selection-start="5679" selection-end="5679" vertical-scroll-proportion="0.22061484">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/blooddy/template.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="317" column="34" selection-start="8063" selection-end="8063" vertical-scroll-proportion="0.0">
+        <state line="266" column="8" selection-start="6863" selection-end="6863" vertical-scroll-proportion="2.54678">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/avangard/chat/chat_controller.js">
+    <entry file="file://$PROJECT_DIR$/src/blooddy/social_api.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="142" column="0" selection-start="4967" selection-end="4967" vertical-scroll-proportion="-15.52">
+        <state line="76" column="37" selection-start="1778" selection-end="1778" vertical-scroll-proportion="0.07414105">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/avangard/community/display.js">
+    <entry file="file://$PROJECT_DIR$/src/blooddy/social_api/factory.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="92" column="16" selection-start="2088" selection-end="2088" vertical-scroll-proportion="-7.8">
+        <state line="80" column="27" selection-start="1929" selection-end="1929" vertical-scroll-proportion="0.74924654">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/avangard/interface_controller.js">
+    <entry file="file://$PROJECT_DIR$/src/blooddy.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="219" column="11" selection-start="5232" selection-end="5232" vertical-scroll-proportion="0.0">
+        <state line="351" column="11" selection-start="8088" selection-end="8088" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/avangard/community/community_controller.js">
+    <entry file="file://$PROJECT_DIR$/src/blooddy/utils/version.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="67" column="0" selection-start="1697" selection-end="1697" vertical-scroll-proportion="0.8069164">
+        <state line="15" column="46" selection-start="316" selection-end="316" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/blooddy/events/event_dispatcher.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="77" column="11" selection-start="1825" selection-end="1825" vertical-scroll-proportion="0.64315856">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/blooddy/events/event.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="42" column="82" selection-start="1043" selection-end="1043" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/blooddy/events.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="1" selection-start="364" selection-end="364" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/blooddy/events/dom.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="37" column="11" selection-start="850" selection-end="850" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/blooddy/flash.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="400" column="13" selection-start="10314" selection-end="10314" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/blooddy/flash/external_flash.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="430" column="10" selection-start="11344" selection-end="11344" vertical-scroll-proportion="0.8553345">
           <folding />
         </state>
       </provider>

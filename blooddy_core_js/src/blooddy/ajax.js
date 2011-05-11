@@ -1,6 +1,6 @@
 /*!
  * blooddy/ajax.js
- * © 2009 BlooDHounD
+ * В© 2009 BlooDHounD
  * @author BlooDHounD <http://www.blooddy.by>
  */
 
@@ -81,10 +81,10 @@ if ( !blooddy.Ajax ) {
 		var serialize = function(o) {
 			var	result =	new Array(),
 				i;
-			if ( o instanceof Array ) { // массив записываем без ключей
+			if ( o instanceof Array ) { // РјР°СЃСЃРёРІ Р·Р°РїРёСЃС‹РІР°РµРј Р±РµР· РєР»СЋС‡РµР№
 				var	a = o.slice(),
 					l =	a.length;
-				while ( l > 0 && a[ l-1 ] == null ) l--; // отсекаем последнии пустые элементы
+				while ( l > 0 && a[ l-1 ] == null ) l--; // РѕС‚СЃРµРєР°РµРј РїРѕСЃР»РµРґРЅРёРё РїСѓСЃС‚С‹Рµ СЌР»РµРјРµРЅС‚С‹
 				for ( i=0; i<l; i++ ) {
 					result.push( a[ i ] == null ? '' : encodeURIComponent( a[ i ] ) );
 				}
@@ -171,7 +171,7 @@ if ( !blooddy.Ajax ) {
 			}
 			if ( content && content.length > 0 ) {
 				content = content.replace( _r20, '+' );
-				if ( method == 'GET' ) { // склеим урыл с нашими данными
+				if ( method == 'GET' ) { // СЃРєР»РµРёРј СѓСЂС‹Р» СЃ РЅР°С€РёРјРё РґР°РЅРЅС‹РјРё
 					if ( loc2[ 4 ] || loc2[ 5 ] ) {
 						loc2[ 4 ] = '?' + content + ( loc2[ 4 ] && loc2[ 4 ].length > 1 ? '&' + loc2[ 4 ].substr( 1 ) : '' );
 						uri = loc2[ 1 ] + '//' + loc2[ 2 ] + loc2[ 3 ] + loc2[ 4 ] + ( loc2[ 5 ] || '' );

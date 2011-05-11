@@ -264,7 +264,7 @@ if ( !blooddy.SocialApi.MmApi ) {
 						onFailApi.call( this );
 						return;
 					} else {
-						throw new Error( o.error.error_msg );
+                        throw new Error( o.error.error_msg );
 					}
 
 				} else {

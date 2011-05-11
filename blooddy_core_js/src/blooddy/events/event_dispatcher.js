@@ -6,9 +6,9 @@
 
 if ( !window.blooddy ) throw new Error( '"blooddy" not initialized' );
 
-if ( !blooddy.events.EventDispatcher ) {
+blooddy.require( 'blooddy.events.Event' );
 
-	blooddy.require( 'blooddy.events.Event' );
+if ( !blooddy.events.EventDispatcher ) {
 
 	/**
 	 * @class

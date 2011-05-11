@@ -1,5 +1,5 @@
 /*!
- * blooddy/blooddy.js
+ * blooddy.js
  * © 2009 BlooDHounD
  * @author BlooDHounD <http://www.blooddy.by>
  */
@@ -158,7 +158,6 @@ if ( !window.blooddy ) {
 			g_win =			win,
 			t_win,
 			doc =			win.document,
-			loc =			win.location,
 
 			_FILENAME =		'blooddy.js',
 			_NOTATION =		/([^^\/])([A-Z])/g,
@@ -169,7 +168,7 @@ if ( !window.blooddy ) {
 
 			_xhr,
 			_root,
-			_logging =		/(;|^)\s*\$bl=1\s*(;|$)/.test( doc.cookie );
+			_logging =		/(;|^)\s*\$bl=1\s*(;|$)/.test( doc.cookie.toString() );
 
 		//--------------------------------------------------------------------------
 		//
@@ -208,7 +207,7 @@ if ( !window.blooddy ) {
 		// инитиализируем root
 		if ( browser.getGecko() ) {
 			try {
-				_root = ( new Error() ).stack.split( '\n', 2 )[1].match( new RegExp( '^[\\w\\.]*\\(\\)@(.+?)' + _FILENAME + ':\\d+$' ) )[1];
+				_root = ( new Error() ).stack.split( '\n', 2 )[1].match( new RegExp( '@(.+?)' + _FILENAME + ':\\d+' ) )[1];
 			} catch ( e ) {
 			}
 		}
@@ -277,7 +276,7 @@ if ( !window.blooddy ) {
 		 */
 		BlooddyPrototype.setLogging = function(value) {
 			doc.cookie = '$bl=' + ( value ? '1; path=/' : '; expires=' + ( new Date( 0 ) ) );
-			return _logging = Boolean( value );
+			return _logging = Number( value ) > 0;
 		};
 
 		/**
@@ -442,10 +441,4 @@ if ( !window.blooddy ) {
 
 	}() );
 
-}
-
-function trace() {
-	if ( window.console ) {
-		console.log( Array.prototype.join.call( arguments, ', ' ) );
-	}
 }
