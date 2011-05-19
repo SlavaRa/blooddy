@@ -42,7 +42,7 @@ package by.blooddy.core.managers.resource {
 		/**
 		 * @private
 		 */
-		private static const _SEPARATOR:String = String.fromCharCode( 0 );
+		private static const _SEPARATOR:String = '#';
 
 		/**
 		 * @private

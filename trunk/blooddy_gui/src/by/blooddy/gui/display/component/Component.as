@@ -374,12 +374,12 @@ package by.blooddy.gui.display.component {
 		
 		[Deprecated( message="свойство запрещено" )]
 		public override function set mouseEnabled(enabled:Boolean):void {
-			Error.throwError( IllegalOperationError, 1069, 'transform', ClassUtils.getClassName( this ) );
+			Error.throwError( IllegalOperationError, 1069, 'mouseEnabled', ClassUtils.getClassName( this ) );
 		}
 		
 		[Deprecated( message="свойство запрещено" )]
 		public override function set mouseChildren(enable:Boolean):void {
-			Error.throwError( IllegalOperationError, 1069, 'transform', ClassUtils.getClassName( this ) );
+			Error.throwError( IllegalOperationError, 1069, 'mouseChildren', ClassUtils.getClassName( this ) );
 		}
 		
 	}

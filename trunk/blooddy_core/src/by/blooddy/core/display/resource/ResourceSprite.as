@@ -104,7 +104,7 @@ package by.blooddy.core.display.resource {
 		 */
 		public function ResourceSprite() {
 			super();
-			super.addEventListener( Event.ADDED_TO_STAGE,		this.handler_addedToStage,		false, int.MAX_VALUE, true );
+			super.addEventListener( Event.ADDED_TO_STAGE,		this.handler_addedToStage,		false, int.MIN_VALUE, true );
 			super.addEventListener( Event.REMOVED_FROM_STAGE,	this.handler_removedFromStage,	false, int.MAX_VALUE, true );
 		}
 
@@ -146,7 +146,7 @@ package by.blooddy.core.display.resource {
 		private var _stage:Stage;
 
 		public override function get stage():Stage {
-			return this._stage;
+			return this._stage || super.stage;
 		}
 
 		//--------------------------------------------------------------------------
