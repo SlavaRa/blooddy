@@ -200,7 +200,7 @@ package by.blooddy.core.display {
 		 */
 		public function set progress(value:Number):void {
 			if ( this._progressDispatcher || this._progress == value ) return;
-			value = Math.max( Math.min( 0, value ), 1 );
+			value = Math.min( Math.max( 0, value ), 1 );
 			if ( this._progress == value ) return;
 			this._progress = value;
 			this.render();
