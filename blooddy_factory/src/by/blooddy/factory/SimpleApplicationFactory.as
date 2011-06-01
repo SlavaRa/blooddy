@@ -125,7 +125,9 @@ package by.blooddy.factory {
 			} else if ( super.totalFrames != 2 || super.currentFrame != 1 )  {
 				throw new ReferenceError( '' );
 			} else if ( super.parent is Loader ) {
-				var c:Class = ( super.parent as Loader ).loaderInfo.applicationDomain.getDefinition( 'by.blooddy.factory::ApplicationFactoryLoader' ) as Class;
+				var app:ApplicationDomain = ( super.parent as Loader ).loaderInfo.applicationDomain;
+				if ( !app.hasDefinition( 'by.blooddy.factory::ApplicationFactoryLoader' ) ) throw new ReferenceError( '' );
+				var c:Class = app.getDefinition( 'by.blooddy.factory::ApplicationFactoryLoader' ) as Class;
 				if ( !c || !( super.parent.parent is c ) ) throw new ReferenceError( '' ); 
 			} else if ( super.parent != super.stage ) {
 				throw new ReferenceError( '' );

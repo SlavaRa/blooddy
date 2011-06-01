@@ -345,7 +345,6 @@ package by.blooddy.core.net.connection {
 		 * @private
 		 */
 		private function clear():void {
-			super.clearResponders();
 			this._host = null;
 			this._port = 0;
 			this._socket.removeEventListener( Event.OPEN,							super.dispatchEvent );
@@ -390,6 +389,7 @@ package by.blooddy.core.net.connection {
 		 * Соединение закрылось.
 		 */
 		private function handler_close(event:Event):void {
+			super.rejectResponders();
 			if ( super.logging ) {
 				super.logger.addLog( new InfoLog( 'Close: ' + this._host + ':' + this._port, InfoLog.INFO ) );
 			}
