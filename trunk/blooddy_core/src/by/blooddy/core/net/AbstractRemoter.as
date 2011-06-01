@@ -183,9 +183,9 @@ package by.blooddy.core.net {
 		//
 		//--------------------------------------------------------------------------
 
-		protected final function clearResponders():void {
+		protected final function rejectResponders():void {
 			for ( var num:* in this._responders ) {
-				delete this._responders[ num ];
+				this.invokeResponder( num );
 			}
 			this._responderCount = 0;
 			_TIMER.removeEventListener( TimerEvent.TIMER, this.handler_timer );
@@ -319,6 +319,37 @@ package by.blooddy.core.net {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Private methods
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private function invokeResponder(num:int, kind:String='reject'):void {
+
+			var assset:ResponderAsset = this._responders[ num ] as ResponderAsset;
+			var func:Function = assset.responder.status;
+			if ( func != null ) {
+				
+				var command:NetCommand = new NetCommand( kind, NetCommand.INPUT );
+				command.status = true;
+				command.num = assset.command.num;
+				command.length = func.length;
+				this.$invokeCallInputCommand( command );
+
+			} else if ( !this._unassisted || super.hasEventListener( AsyncErrorEvent.ASYNC_ERROR ) ) {
+
+				// если метода нету, то кидаем исключение
+				var e:ScriptTimeoutError = new ScriptTimeoutError();
+				super.dispatchEvent( new AsyncErrorEvent( AsyncErrorEvent.ASYNC_ERROR, false, false, e.toString(), e ) );
+
+			}
+
+		}
+
+		//--------------------------------------------------------------------------
+		//
 		//  Event handlers
 		//
 		//--------------------------------------------------------------------------
@@ -328,34 +359,9 @@ package by.blooddy.core.net {
 		 */
 		private function handler_timer(event:TimerEvent):void {
 			const time:Number = getTimer() - 15 * 1e3;
-			var e:ScriptTimeoutError;
-			var func:Function;
-			var assset:ResponderAsset;
-			var has:Boolean = false;
-			const args:Array = new Array();
 			for ( var num:* in this._responders ) {
-				assset = this._responders[ num ] as ResponderAsset;
-				if ( assset.time <= time ) {
-
-					delete this._responders[ num ];
-					--this._responderCount;
-
-					func = assset.responder.status;
-					has = Boolean( func );
-					if ( has ) {
-
-						// если есть метод ошибки, то перенаправяем туда с неизвестными параметрами
-						args.length = func.length;
-						func.apply( null, args );
-
-					} else if ( !this._unassisted || super.hasEventListener( AsyncErrorEvent.ASYNC_ERROR ) ) {
-
-						// если метода нету, то кидаем исключение
-						e = new ScriptTimeoutError();
-						super.dispatchEvent( new AsyncErrorEvent( AsyncErrorEvent.ASYNC_ERROR, false, false, e.toString(), e ) );
-
-					}
-
+				if ( ( this._responders[ num ] as ResponderAsset ).time <= time ) {
+					this.invokeResponder( num, 'timeout' );
 				}
 			}
 			if ( this._responderCount == 0 ) {

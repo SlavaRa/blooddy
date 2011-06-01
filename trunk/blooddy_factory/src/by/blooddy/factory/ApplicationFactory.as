@@ -76,7 +76,7 @@ package by.blooddy.factory {
 			super.stage.scaleMode = StageScaleMode.NO_SCALE;
 			super.stage.addEventListener( Event.RESIZE, this.handler_resize );
 
-			this._context = new LoaderContext( false, ApplicationDomain.currentDomain, SecurityDomain.currentDomain );
+			this._context = new LoaderContext( false, ApplicationDomain.currentDomain ); // wtf with SecurityDomain.currentDomain ?
 
 			// рузим себя
 			this.addLoader( super.loaderInfo );
@@ -339,11 +339,11 @@ package by.blooddy.factory {
 		 * @see					flash.display.Loader#load()
 		 * @see					flash.display.Loader#contentLoaderInfo
 		 */
-		protected final function load(request:URLRequest):LoaderInfo {
+		protected function load(request:URLRequest):LoaderInfo {
 			var loader:$Loader = new $Loader();
-			this.addLoader( loader.contentLoaderInfo );
 			try {
 				loader.$load( request, this._context );
+				this.addLoader( loader.contentLoaderInfo );
 				return loader.contentLoaderInfo;
 			} catch ( e:Error ) {
 				this.throwError( e );

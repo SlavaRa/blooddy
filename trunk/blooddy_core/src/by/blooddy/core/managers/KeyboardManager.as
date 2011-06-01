@@ -10,9 +10,7 @@ package by.blooddy.core.managers {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.KeyboardEvent;
-	import flash.text.TextField;
 	import flash.ui.KeyLocation;
-	import flash.ui.Keyboard;
 	import flash.utils.Dictionary;
 
 	//--------------------------------------
@@ -242,10 +240,9 @@ package by.blooddy.core.managers {
 //
 //==============================================================================
 
+import flash.events.Event;
 import flash.events.KeyboardEvent;
 import flash.ui.KeyLocation;
-
-import flash.events.Event;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
