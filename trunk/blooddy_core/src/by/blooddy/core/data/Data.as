@@ -61,6 +61,8 @@ package by.blooddy.core.data {
 
 		use namespace $protected_data;
 
+		use namespace $internal;
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -187,13 +189,13 @@ package by.blooddy.core.data {
 			while ( target ) {
 				if ( target.hasEventListener( event.type ) ) {
 					e = event.clone() as DataBaseNativeEvent;
-					e.$internal::$eventPhase = EventPhase.BUBBLING_PHASE;
-					e.$internal::$target = this;
-					e.$internal::$canceled = canceled;
+					e.$eventPhase = EventPhase.BUBBLING_PHASE;
+					e.$target = this;
+					e.$canceled = canceled;
 					CONTAINER.$event = e;
 					target.$dispatchEvent( CONTAINER );
-					canceled &&= e.$internal::$canceled;
-					if ( e.$internal::$stopped ) break;
+					canceled &&= e.$canceled;
+					if ( e.$stopped ) break;
 				}
 				target = target._bubble_parent;
 			}

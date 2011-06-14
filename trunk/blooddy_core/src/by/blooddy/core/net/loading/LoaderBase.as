@@ -323,7 +323,7 @@ package by.blooddy.core.net.loading {
 			this._input = new ByteArray();
 			this._input.writeBytes( bytes );
 			this._input.position = 0;
-			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_frameConstructed );
+			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_exitFrame );
 		}
 		
 		/**
@@ -492,7 +492,7 @@ package by.blooddy.core.net.loading {
 		 */
 		private function clear():void {
 			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
-			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_frameConstructed );
+			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_exitFrame );
 			if ( this._input ) {
 				this._input.clear();
 				this._input = null;
@@ -524,8 +524,8 @@ package by.blooddy.core.net.loading {
 		/**
 		 * @private
 		 */
-		private function handler_frameConstructed(event:Event):void {
-			enterFrameBroadcaster.removeEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameConstructed );
+		private function handler_exitFrame(event:Event):void {
+			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_exitFrame );
 			if ( super.hasEventListener( Event.OPEN ) ) {
 				this.$dispatchEvent( new Event( Event.OPEN ) );
 			}

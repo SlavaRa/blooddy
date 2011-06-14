@@ -198,7 +198,7 @@ package by.blooddy.gui.display.component {
 			info.component.addEventListener( ComponentEvent.COMPONENT_CONSTRUCT, this.handler_componentConstruct, false, int.MAX_VALUE, true );
 			info.component.addEventListener( ComponentEvent.COMPONENT_DESTRUCT, this.handler_componentDestruct, false, int.MAX_VALUE, true );
 			if ( info.component.constructed ) {
-				info.component.addEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameConstructed );
+				info.component.addEventListener( Event.ENTER_FRAME, this.handler_exitFrame );
 			}
 		}
 
@@ -207,7 +207,7 @@ package by.blooddy.gui.display.component {
 				this._constructed = false;
 				this.destruct();
 			}
-			this._componentInfo.component.removeEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameConstructed );
+			this._componentInfo.component.removeEventListener( Event.ENTER_FRAME, this.handler_exitFrame );
 			this._componentInfo.component.removeEventListener( ComponentEvent.COMPONENT_CONSTRUCT, this.handler_componentConstruct );
 			this._componentInfo.component.removeEventListener( ComponentEvent.COMPONENT_DESTRUCT, this.handler_componentDestruct );
 			this._sharedObject = null;
@@ -224,8 +224,8 @@ package by.blooddy.gui.display.component {
 		/**
 		 * @private
 		 */
-		private function handler_frameConstructed(event:Event):void {
-			this._componentInfo.component.removeEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameConstructed );
+		private function handler_exitFrame(event:Event):void {
+			this._componentInfo.component.removeEventListener( Event.ENTER_FRAME, this.handler_exitFrame );
 			if ( !this._constructed && this._componentInfo.component.constructed ) {
 				this._constructed = true;
 				this.construct();

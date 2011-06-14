@@ -12,6 +12,7 @@ package by.blooddy.core.display.resource {
 	import by.blooddy.core.events.net.loading.LoaderEvent;
 	import by.blooddy.core.managers.resource.ResourceManagerProxy;
 	import by.blooddy.core.net.loading.ILoadable;
+	import by.blooddy.core.utils.DisplayObjectUtils;
 	import by.blooddy.core.utils.enterFrameBroadcaster;
 	
 	import flash.display.DisplayObject;
@@ -330,7 +331,7 @@ package by.blooddy.core.display.resource {
 
 			this._stage = super.stage;
 			
-			enterFrameBroadcaster.removeEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameContructed );
+			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_exitFrame );
 
 			this._depth = this.getDepth();
 			var manager:ResourceManagerProxy = this.getResourceManager();
@@ -358,15 +359,15 @@ package by.blooddy.core.display.resource {
 		 */
 		private function handler_removedFromStage(event:Event):void {
 			if ( this._manager ) {
-				enterFrameBroadcaster.addEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameContructed, false, this._depth );
+				enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_exitFrame, false, this._depth );
 			}
 		}
 
 		/**
 		 * @private
 		 */
-		private function handler_frameContructed(event:Event):void {
-			enterFrameBroadcaster.removeEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameContructed );
+		private function handler_exitFrame(event:Event):void {
+			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_exitFrame );
 			this.removeFromManager();
 		}
 

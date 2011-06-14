@@ -295,7 +295,7 @@ package by.blooddy.gui.display.component {
 			super.addChild( info.component );
 
 			this.bringToFront( info );
-			
+
 		}
 
 		//--------------------------------------------------------------------------
