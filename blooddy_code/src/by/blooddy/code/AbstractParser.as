@@ -119,7 +119,7 @@ package by.blooddy.code {
 		protected final function start():void {
 			if ( this._state != _STATE_IDLE ) throw new ArgumentError();
 			this._state = _STATE_PROGRESS;
-			enterFrameBroadcaster.addEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameConstructed );
+			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_exitFrame );
 		}
 
 		protected final function activate():void {
@@ -159,8 +159,8 @@ package by.blooddy.code {
 		/**
 		 * @private
 		 */
-		private function handler_frameConstructed(event:Event):void {
-			enterFrameBroadcaster.removeEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameConstructed );
+		private function handler_exitFrame(event:Event):void {
+			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_exitFrame );
 			if ( this._state < _STATE_COMPLETE && super.hasEventListener( Event.OPEN ) ) {
 				super.dispatchEvent( new Event( Event.OPEN ) );
 			}

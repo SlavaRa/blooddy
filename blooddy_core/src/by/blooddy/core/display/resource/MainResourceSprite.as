@@ -38,7 +38,7 @@ package by.blooddy.core.display.resource {
 		 */
 		public function MainResourceSprite() {
 			super();
-			super.addEventListener( ResourceEvent.REMOVED_FROM_MAIN,	this.handler_removedFromMain, false, int.MIN_VALUE, true ); // !!! MIN !!!
+			super.addEventListener( ResourceEvent.REMOVED_FROM_MAIN, this.handler_removedFromMain, false, int.MIN_VALUE, true ); // !!! MIN !!!
 		}
 
 		//--------------------------------------------------------------------------
@@ -86,9 +86,9 @@ package by.blooddy.core.display.resource {
 		}
 
 		$protected_rs override function getDepth():int {
-			return int.MIN_VALUE;
+			return 0;//int.MIN_VALUE;
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Event handlers
@@ -99,11 +99,11 @@ package by.blooddy.core.display.resource {
 		 * @private
 		 */
 		private function handler_removedFromMain(event:ResourceEvent):void {
-//			try {
+			try {
 				this._manager.clear();
-//			} catch ( e:ResourceError ) {
-//				super.dispatchEvent( new ResourceErrorEvent( ResourceErrorEvent.RESOURCE_ERROR, false, false, e.toString(), e.errorID, e.resources ) );
-//			}
+			} catch ( e:ResourceError ) {
+				super.dispatchEvent( new ResourceErrorEvent( ResourceErrorEvent.RESOURCE_ERROR, false, false, e.toString(), e.errorID, e.resources ) );
+			}
 		}
 
 	}

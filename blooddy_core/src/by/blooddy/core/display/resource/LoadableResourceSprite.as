@@ -136,7 +136,7 @@ package by.blooddy.core.display.resource {
 		}
 		
 		protected function draw():Boolean {
-			return true;
+			return super.hasManager();
 		}
 
 		protected function clear():Boolean {

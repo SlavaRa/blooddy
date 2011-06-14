@@ -13,6 +13,7 @@ package by.blooddy.gui.display.component {
 	import by.blooddy.core.managers.process.IProgressProcessable;
 	import by.blooddy.core.utils.ClassAlias;
 	import by.blooddy.core.utils.ClassUtils;
+	import by.blooddy.core.utils.enterFrameBroadcaster;
 	import by.blooddy.gui.events.ComponentEvent;
 	
 	import flash.display.DisplayObject;
@@ -285,15 +286,17 @@ package by.blooddy.gui.display.component {
 		/**
 		 * @private
 		 */
-		private function handler_frameConstructed(event:Event):void {
-			super.removeEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameConstructed );
+		private function handler_exitFrame(event:Event):void {
+			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_exitFrame );
 			if ( !this._constructed && this._container ) {
+
 				this._constructed = true;
 				this.construct();
 
 				var resultEvent:ComponentEvent = new ComponentEvent( ComponentEvent.COMPONENT_CONSTRUCT, false, false, this._componentInfo );
 				this.$dispatchEvent( resultEvent );
 				this._container.$dispatchEvent( resultEvent ); // TODO: перенести?
+
 			}
 		}
 
@@ -308,7 +311,7 @@ package by.blooddy.gui.display.component {
 				super.stage.addEventListener( Event.RESIZE, this.drawLock );
 				this.drawLock();
 			}
-			super.addEventListener( Event.FRAME_CONSTRUCTED, this.handler_frameConstructed );
+			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_exitFrame, false, int.MIN_VALUE );
 		}
 
 		/**
@@ -317,10 +320,13 @@ package by.blooddy.gui.display.component {
 		private function handler_removedFromMain(event:ResourceEvent):void {
 			if ( this._constructed ) {
 				this._constructed = false;
+
 				var resultEvent:ComponentEvent = new ComponentEvent( ComponentEvent.COMPONENT_DESTRUCT, false, false, this._componentInfo );
 				this.$dispatchEvent( resultEvent );
 				this._container.$dispatchEvent( resultEvent ); // TODO: перенести?
+
 				this.destruct();
+
 			}
 			if ( this._lock ) {
 				super.stage.removeEventListener( Event.RESIZE, this.drawLock );
