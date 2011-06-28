@@ -210,11 +210,13 @@ package by.blooddy.core.display.resource {
 		protected final function getResource(bundleName:String, resourceName:String=null):Object {
 			if ( !this._manager ) throw new ArgumentError( 'спрайт не имеет связи с ResourceManager' );
 			var result:Object = this._manager.getResource( bundleName, resourceName );
-			switch ( typeof result ) {
-				case 'object':
-				case 'function':
-					if ( !resourceName ) resourceName = '';
-					this.saveResource( bundleName, resourceName, result );
+			if ( result ) {
+				switch ( typeof result ) {
+					case 'object':
+					case 'function':
+						if ( !resourceName ) resourceName = '';
+						this.saveResource( bundleName, resourceName, result );
+				}
 			}
 			return result;
 		}
