@@ -9,7 +9,6 @@ package by.blooddy.core.external {
 	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.events.DynamicErrorEvent;
 	import by.blooddy.core.events.DynamicEvent;
-	import by.blooddy.core.logging.InfoLog;
 	import by.blooddy.core.net.AbstractRemoter;
 	import by.blooddy.core.net.NetCommand;
 	import by.blooddy.core.net.Responder;
@@ -19,7 +18,6 @@ package by.blooddy.core.external {
 	import by.blooddy.core.utils.time.setTimeout;
 	
 	import flash.errors.IllegalOperationError;
-	import flash.events.AsyncErrorEvent;
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;

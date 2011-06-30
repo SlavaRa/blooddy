@@ -15,18 +15,8 @@ package by.blooddy.core.net {
 	import by.blooddy.core.utils.time.AutoTimer;
 	
 	import flash.errors.ScriptTimeoutError;
-	import flash.events.AsyncErrorEvent;
 	import flash.events.TimerEvent;
 	import flash.utils.getTimer;
-
-	//--------------------------------------
-	//  Events
-	//--------------------------------------
-
-	/**
-	 * какая-то ошибка при исполнении.
-	 */
-	[Event( name="asyncError", type="flash.events.AsyncErrorEvent" )]	
 
 	/**
 	 * @author					BlooDHounD
@@ -37,6 +27,14 @@ package by.blooddy.core.net {
 	 * @keyword					iconnection, connection
 	 */
 	public class AbstractRemoter extends CommandDispatcher implements IRemoter, ILogging {
+
+		//--------------------------------------------------------------------------
+		//
+		//  Namespaces
+		//
+		//--------------------------------------------------------------------------
+
+		use namespace $protected;
 
 		//--------------------------------------------------------------------------
 		//
@@ -258,8 +256,8 @@ package by.blooddy.core.net {
 						this._logger.addLog( new InfoLog( ( e is Error ? ( e.getStackTrace() || e.toString() ) : String( e ) ), InfoLog.ERROR ) );
 						trace( e is Error ? ( e.getStackTrace() || e.toString() ) : String( e ) );
 					}
-					if ( !this._unassisted || super.hasEventListener( AsyncErrorEvent.ASYNC_ERROR ) ) {
-						super.dispatchEvent( new AsyncErrorEvent( AsyncErrorEvent.ASYNC_ERROR, false, false, String( e ), e as Error ) );
+					if ( !this._unassisted ) {
+						this.dispatchError( e );
 					}
 				}
 
@@ -338,11 +336,10 @@ package by.blooddy.core.net {
 				command.length = func.length;
 				this.$invokeCallInputCommand( command );
 
-			} else if ( !this._unassisted || super.hasEventListener( AsyncErrorEvent.ASYNC_ERROR ) ) {
+			} else if ( !this._unassisted ) {
 
 				// если метода нету, то кидаем исключение
-				var e:ScriptTimeoutError = new ScriptTimeoutError();
-				super.dispatchEvent( new AsyncErrorEvent( AsyncErrorEvent.ASYNC_ERROR, false, false, e.toString(), e ) );
+				this.dispatchError( new ScriptTimeoutError() );
 
 			}
 
@@ -353,7 +350,7 @@ package by.blooddy.core.net {
 		//  Event handlers
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 */
