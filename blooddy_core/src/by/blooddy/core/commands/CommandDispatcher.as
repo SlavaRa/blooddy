@@ -7,9 +7,19 @@
 package by.blooddy.core.commands {
 
 	import by.blooddy.core.events.commands.CommandEvent;
-	
+
+	import flash.events.AsyncErrorEvent;
 	import flash.events.EventDispatcher;
 	import flash.utils.Dictionary;
+
+	//--------------------------------------
+	//  Events
+	//--------------------------------------
+	
+	/**
+	 * какая-то ошибка при исполнении.
+	 */
+	[Event( name="asyncError", type="flash.events.AsyncErrorEvent" )]	
 	
 	/**
 	 * @author					BlooDHounD
@@ -19,6 +29,16 @@ package by.blooddy.core.commands {
 	 * @created					09.08.2009 16:48:52
 	 */
 	public class CommandDispatcher extends EventDispatcher implements ICommandDispatcher {
+
+		//--------------------------------------------------------------------------
+		//
+		//  Namespaces
+		//
+		//--------------------------------------------------------------------------
+		
+		protected namespace $protected;
+
+		use namespace $protected;
 
 		//--------------------------------------------------------------------------
 		//
@@ -73,7 +93,7 @@ package by.blooddy.core.commands {
 		 */
 		public function addCommandListener(commandName:String, listener:Function, priority:int=0, useWeakReference:Boolean=false):void {
 			var commandListener:CommandEventListener = this._listeners[ listener ];
-			if ( !commandListener ) this._listeners[ listener ] = commandListener =  new CommandEventListener( listener );
+			if ( !commandListener ) this._listeners[ listener ] = commandListener =  new CommandEventListener( this, listener );
 			super.addEventListener( PREFIX + commandName, commandListener.handler, false, priority, useWeakReference );
 		}
 
@@ -94,6 +114,22 @@ package by.blooddy.core.commands {
 			return super.hasEventListener( PREFIX + commandName );
 		}
 
+		//--------------------------------------------------------------------------
+		//
+		//  Private methods
+		//
+		//--------------------------------------------------------------------------
+
+		$protected final function dispatchError(e:*):void {
+			if ( super.hasEventListener( AsyncErrorEvent.ASYNC_ERROR ) ) {
+				super.dispatchEvent( new AsyncErrorEvent( AsyncErrorEvent.ASYNC_ERROR, false, false, String( e ), e as Error ) );
+			}
+		}
+
+		$private final function dispatchError(e:*):void {
+			this.dispatchError( e );
+		}
+		
 	}
 
 }
@@ -104,13 +140,12 @@ package by.blooddy.core.commands {
 //
 //==============================================================================
 
+import by.blooddy.core.commands.CommandDispatcher;
 import by.blooddy.core.events.commands.CommandEvent;
 
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Helper class: CommandEventListener
-//
-////////////////////////////////////////////////////////////////////////////////
+internal namespace $private;
+
+use namespace $private;
 
 /**
  * @private
@@ -127,8 +162,9 @@ internal final class CommandEventListener {
 	 * @private
 	 * Constructor.
 	 */
-	public function CommandEventListener(listener:Function) {
+	public function CommandEventListener(dispatcher:CommandDispatcher, listener:Function) {
 		super();
+		this.dispatcher = dispatcher;
 		this.listener = listener;
 	}
 
@@ -137,6 +173,8 @@ internal final class CommandEventListener {
 	//  Properties
 	//
 	//--------------------------------------------------------------------------
+
+	public var dispatcher:CommandDispatcher;
 
 	public var listener:Function;
 
@@ -147,7 +185,11 @@ internal final class CommandEventListener {
 	//--------------------------------------------------------------------------
 
 	public function handler(event:CommandEvent):void {
-		this.listener.apply( null, event.command );
+		try {
+			this.listener.apply( null, event.command );
+		} catch ( e:* ) {
+			this.dispatcher.dispatchError( e );
+		}
 	}
 
 }
