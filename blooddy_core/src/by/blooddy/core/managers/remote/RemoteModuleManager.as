@@ -9,7 +9,7 @@ package by.blooddy.core.managers.remote {
 	import by.blooddy.core.events.managers.RemoteModuleEvent;
 	import by.blooddy.core.net.MIME;
 	import by.blooddy.core.net.loading.LoaderContext;
-	
+
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -32,22 +32,22 @@ package by.blooddy.core.managers.remote {
 			super();
 			this._applicationDomain = applicationDomain || ApplicationDomain.currentDomain;
 		}
-	
+
 		private const _loaders:Vector.<ModuleLoader> = new Vector.<ModuleLoader>();
-	
+
 		private var _applicationDomain:ApplicationDomain;
-	
+
 		public function get applicationDomain():ApplicationDomain {
 			return this._applicationDomain;
 		}
-	
+
 		public function hasDefinition(name:String):Boolean {
 			for each ( var loader:ModuleLoader in this._loaders ) {
 				if ( loader.loaderInfo.applicationDomain.hasDefinition( name ) ) return true;
 			}
 			return false;
 		}
-	
+
 		public function getDefinition(name:String):Object {
 			var app:ApplicationDomain, result:Object;
 			for each ( var loader:ModuleLoader in this._loaders ) {
@@ -59,7 +59,7 @@ package by.blooddy.core.managers.remote {
 			}
 			return null;
 		}
-	
+
 		public function load(request:URLRequest, applicationDomain:ApplicationDomain=null):void {
 			var loader:ModuleLoader = new ModuleLoader();
 			loader.addEventListener( Event.COMPLETE,	this.handler_complete );
@@ -68,7 +68,7 @@ package by.blooddy.core.managers.remote {
 			loader.loaderContext = new LoaderContext( applicationDomain || new ApplicationDomain( this._applicationDomain ) );
 			loader.load( request );
 		}
-	
+
 		public function loadBytes(bytes:ByteArray, applicationDomain:ApplicationDomain=null):void {
 			var loader:ModuleLoader = new ModuleLoader();
 			loader.addEventListener( Event.COMPLETE,	this.handler_complete );
@@ -77,7 +77,7 @@ package by.blooddy.core.managers.remote {
 			loader.loaderContext = new LoaderContext( applicationDomain || new ApplicationDomain( this._applicationDomain ) );
 			loader.loadBytes( bytes );
 		}
-	
+
 		public function unload():void {
 			var loader:ModuleLoader;
 			var id:String;
@@ -88,7 +88,7 @@ package by.blooddy.core.managers.remote {
 				super.dispatchEvent( new RemoteModuleEvent( RemoteModuleEvent.UNLOAD, false, false, id ) );
 			}
 		}
-	
+
 		public function unloadModule(id:String):void {
 			if ( !id ) return;
 			for each ( var module:ModuleLoader in this._loaders ) {
@@ -101,14 +101,14 @@ package by.blooddy.core.managers.remote {
 			}
 			throw new ArgumentError();
 		}
-	
+
 		public function hasModule(id:String):Boolean {
 			for each ( var module:ModuleLoader in this._loaders ) {
 				if ( module.id == id ) return true;
 			}
 			return false;
 		}
-	
+
 		private function handler_init(event:Event):void {
 			var loader:ModuleLoader = event.target as ModuleLoader;
 			loader.removeEventListener( Event.INIT, this.handler_init );
@@ -118,7 +118,7 @@ package by.blooddy.core.managers.remote {
 				loader.close();
 			}
 		}
-	
+
 		private function handler_complete(event:Event):void {
 			var loader:ModuleLoader = event.target as ModuleLoader;
 			loader.removeEventListener( Event.COMPLETE,		this.handler_complete );
@@ -126,7 +126,7 @@ package by.blooddy.core.managers.remote {
 			this._loaders.push( loader );
 			super.dispatchEvent( new RemoteModuleEvent( RemoteModuleEvent.INIT, false, false, loader.id ) );
 		}
-	
+
 		private function handler_error(event:ErrorEvent):void {
 			var loader:ModuleLoader = event.target as ModuleLoader;
 			loader.removeEventListener( Event.COMPLETE, this.handler_complete );

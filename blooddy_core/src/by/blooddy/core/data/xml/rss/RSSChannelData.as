@@ -417,7 +417,7 @@ package by.blooddy.core.data.xml.rss {
 			++this.$lock;
 
 			super.parseXML( xml );
-			
+
 			this._language =		XMLUtils.parseListToString( xml.language );
 			this._copyright =		XMLUtils.parseListToString( xml.copyright );
 			this._managingEditor =	XMLUtils.parseListToString( xml.managingEditor );

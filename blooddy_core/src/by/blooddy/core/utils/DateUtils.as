@@ -48,15 +48,15 @@ package by.blooddy.core.utils {
 			}
 			return result;
 		}
-		
+
 		public static function differenceToRemain(time:Number):String {
 			var text:String = '';
-			
+
 			if (time > 3600*99*1E3) {
 				text = Math.round(time/(3600*24*1E3))+'d';
 			} else {
 				var date:Date = new Date(time);
-				
+
 				if (date.hoursUTC >= 1) {
 					time = date.minutesUTC/60;
 					text = Math.round(date.hoursUTC+time)+'h';
@@ -68,7 +68,7 @@ package by.blooddy.core.utils {
 					text = Math.round(date.secondsUTC+time)+'s';
 				}
 			}
-			
+
 			if (time < 0) text = '-' + text;
 			return text;
 		}
@@ -189,7 +189,6 @@ Z 	Смещение временной зоны в секундах. Для вр
 
 		private static const DAY_LOCALE:Object =
 			new Array(	"Monday",	"Tuesday",	"Wednesday","Thursday",	"Friday",	"Saturday",	"Sunday"	);
-
 
 		private static const DAY_LOCALE_SHORT:Object =
 			new Array(	"Mon",		"Tue",		"Wed",		"Thu",		"Fri",		"Sat",		"Sun"		);

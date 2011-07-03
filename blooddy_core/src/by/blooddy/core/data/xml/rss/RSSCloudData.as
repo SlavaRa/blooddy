@@ -173,7 +173,7 @@ package by.blooddy.core.data.xml.rss {
 		public override function parseXML(xml:XML):void {
 			if ( xml.name().toString() != 'cloud' ) throw new ArgumentError();
 			++this.$lock;
-			
+
 			super.name =				XMLUtils.parseListToString( xml.@domain );
 			this._port =				XMLUtils.parseListToInt( xml.@port );
 			this._path =				XMLUtils.parseListToString( xml.@path );

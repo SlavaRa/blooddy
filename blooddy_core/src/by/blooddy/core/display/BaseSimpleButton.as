@@ -5,17 +5,17 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.display {
-	
+
 	import by.blooddy.core.blooddy;
 	import by.blooddy.core.utils.ClassAlias;
-	
+
 	import flash.display.DisplayObject;
 	import flash.display.SimpleButton;
-	
+
 	//--------------------------------------
 	//  Aliases
 	//--------------------------------------
-	
+
 	ClassAlias.registerQNameAlias( new QName( blooddy, 'SimpleButton' ), BaseSimpleButton );
 
 	/**
@@ -26,13 +26,13 @@ package by.blooddy.core.display {
 	 * @created					Mar 1, 2010 1:14:58 PM
 	 */
 	public class BaseSimpleButton extends SimpleButton {
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * Constructor.
 		 */
@@ -41,15 +41,15 @@ package by.blooddy.core.display {
 			super.addEventListener( Event.ADDED_TO_STAGE,		this.handler_addedToStage,		false, int.MAX_VALUE, true );
 			super.addEventListener( Event.REMOVED_FROM_STAGE,	this.handler_removedFromStage,	false, int.MAX_VALUE, true );
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Includes
 		//
 		//--------------------------------------------------------------------------
-		
+
 		include "../../../../includes/implements_BaseDisplayObject.as";
-		
+
 	}
-	
+
 }

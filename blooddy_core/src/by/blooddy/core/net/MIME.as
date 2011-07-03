@@ -155,10 +155,10 @@ internal final class MP3Frame {
 	public static const LAYER_1:uint = 1;
 	public static const LAYER_2:uint = 2;
 	public static const LAYER_3:uint = 3;
-	
+
 	public static const VERSION_1:uint = 1;
 	public static const VERSION_2:uint = 2;
-	
+
 	public static const BITRATES:Array = new Array(
 		0, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448, null,
 		0, 32, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 384, null,
@@ -167,7 +167,7 @@ internal final class MP3Frame {
 		0, 32, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 384, null,
 		0, 8, 16, 24, 32, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, null
 	);
-	
+
 	public static const FREQUENCIES:Array = new Array(
 		44100, 48000, 32000,
 		22050, 24000, 16000
@@ -183,22 +183,22 @@ internal final class MP3Frame {
 			case 2:	this.version = VERSION_2;	break;
 			case 3:	this.version = VERSION_1;	break;
 		}
-	
+
 		switch ( ( 0x00060000 & header ) >> 17 ) {
 			case 1:	this.layer = LAYER_3;		break;
 			case 2:	this.layer = LAYER_2;		break;
 			case 3:	this.layer = LAYER_1;		break;
 		}
-	
+
 		var crc:Boolean = ( 0x00010000 & header ) == 0;
-	
+
 		this.bitrate =	BITRATES[ ( ( version - 1 ) * 3 + layer - 1 ) * 16 + ( ( 0x0000F000 & header ) >> 12 ) ];
 		this.frequency = FREQUENCIES[ ( ( version - 1 ) * 3 + ( 0x00000C00 & header ) ) ];
 		this.padding =	( 0x00000200 & header ) >> 9;
 						//( 0x00000100 & header ) >> 8;
-	
+
 		this.length = 144000 * this.bitrate / this.frequency + this.padding;
-	
+
 	}
 
 	public var version:uint;
@@ -223,7 +223,7 @@ internal final class MP3Frame {
 			this._input.position = 0;
 
 //			var i:uint = 0;
-//			
+//
 //			while ( this._draft.bytesAvailable > 4 ) {
 //				this._draft.position = i;
 //				tmp = this._draft.readUnsignedInt();
@@ -255,14 +255,11 @@ internal final class MP3Frame {
 					}
 				} catch (e:Error) {
 				} finally {
-					
+
 				}
 			}
 
-
-
 */
-
 
 //////////////////////////////////////////////////////////////////////////////////
 ////
@@ -271,9 +268,9 @@ internal final class MP3Frame {
 //////////////////////////////////////////////////////////////////////////////////
 //
 //package by.blooddy.core.net {
-//	
+//
 //	import flash.utils.ByteArray;
-//	
+//
 //	/**
 //	 * @author					BlooDHounD
 //	 * @version					1.0
@@ -281,83 +278,83 @@ internal final class MP3Frame {
 //	 * @langversion				3.0
 //	 */
 //	public final class MIME {
-//		
+//
 //		//--------------------------------------------------------------------------
 //		//
 //		//  Class variables
 //		//
 //		//--------------------------------------------------------------------------
-//		
+//
 //		/**
 //		 * @private
 //		 */
 //		private static const _PROTO:Object = createMIME( 'application/octet-stream' );
-//		
+//
 //		/**
 //		 * @private
 //		 */
 //		private static const _HASH:Object = new Object();
 //		_HASH[ _PROTO ] = _PROTO;
-//		
+//
 //		/**
 //		 * @private
 //		 */
 //		private static const _EXTENSION:RegExp = /[^\.\?]+(?=\?.+$|$)/;
-//		
+//
 //		//--------------------------------------------------------------------------
 //		//
 //		//  Class constants
 //		//
 //		//--------------------------------------------------------------------------
-//		
+//
 //		public static const BINARY:* =	_PROTO;
-//		
+//
 //		public static const FLASH:* =	getMIME( 'application/x-shockwave-flash' );
-//		
+//
 //		public static const GIF:* =		getMIME( 'image/gif' );
-//		
+//
 //		public static const JPEG:* =	getMIME( 'image/jpeg' );
-//		
+//
 //		public static const PNG:* =		getMIME( 'image/png' );
-//		
+//
 //		public static const ZIP:* =		getMIME( 'application/zip' );
-//		
+//
 //		public static const MP3:* =		getMIME( 'audio/mpeg' );
-//		
+//
 //		public static const TEXT:* =	getMIME( 'text/plain' );
-//		
+//
 //		public static const XML:* =		getMIME( 'text/xml', TEXT );
-//		
+//
 //		public static const HTML:* =	getMIME( 'text/html', TEXT );
-//		
+//
 //		public static const RSS:* =		getMIME( 'text/xml+rss', XML );
-//		
+//
 //		public static const CSS:* =		getMIME( 'text/css', TEXT );
-//		
+//
 //		public static const VARS:* =	getMIME( 'multipart/form-data', TEXT );
-//		
+//
 //		//--------------------------------------------------------------------------
 //		//
 //		//  Class methods
 //		//
 //		//--------------------------------------------------------------------------
-//		
+//
 //		public static function isPrototypeOf(type:*, subtype:*):Boolean {
 //			if ( type is String ) {
 //				type = getMIME( type );
 //			} else if ( !_PROTO.isPrototypeOf( type ) ) {
 //				throw Error.throwError( TypeError, 1034, type, _PROTO );
 //			}
-//			
+//
 //			if ( subtype is String ) {
 //				subtype = getMIME( subtype );
 //			} else if ( !_PROTO.isPrototypeOf( subtype ) ) {
 //				throw Error.throwError( TypeError, 1034, subtype, _PROTO );
 //			}
-//			
+//
 //			return type.isPrototypeOf( subtype );
 //		}
-//		
+//
 //		public static function getMIME(type:*, parent:*=null):* {
 //			if ( !type ) throw new ArgumentError();
 //			if ( parent ) {
@@ -381,7 +378,7 @@ internal final class MP3Frame {
 //			}
 //			return result;
 //		}
-//		
+//
 //		public static function analyseBytes(bytes:ByteArray):* {
 //			if			( bytes[0] == 67 ) { // C
 //				if			( bytes[1] == 87 ) { // W
@@ -434,11 +431,11 @@ internal final class MP3Frame {
 //				//					if ( i[i]
 //				//				}
 //			}
-//			
+//
 //			// TODO: bmp, video
 //			return null;
 //		}
-//		
+//
 //		public static function analyseURL(url:String):* {
 //			if ( url ) {
 //				var m:Array = url.match( _EXTENSION );
@@ -462,13 +459,13 @@ internal final class MP3Frame {
 //			}
 //			return null;
 //		}
-//		
+//
 //		//--------------------------------------------------------------------------
 //		//
 //		//  Private class methods
 //		//
 //		//--------------------------------------------------------------------------
-//		
+//
 //		/**
 //		 * @private
 //		 */
@@ -486,8 +483,8 @@ internal final class MP3Frame {
 //				}
 //			return new C();
 //		}
-//		
-//		
+//
+//
 //	}
-//	
+//
 //}

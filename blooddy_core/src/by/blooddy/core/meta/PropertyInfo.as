@@ -16,15 +16,15 @@ package by.blooddy.core.meta {
 	 * @created					06.03.2010 2:11:47
 	 */
 	public final class PropertyInfo extends MemberInfo {
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Namespaces
 		//
 		//--------------------------------------------------------------------------
-		
+
 		use namespace $protected_info;
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class constants
@@ -34,22 +34,22 @@ package by.blooddy.core.meta {
 		public static const ACCESS_READ:uint =			1;
 
 		public static const ACCESS_WRITE:uint =			2;
-		
+
 		public static const ACCESS_READ_WRITE:uint =	0;
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * Constructor
 		 */
 		public function PropertyInfo() {
 			super();
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
@@ -116,5 +116,5 @@ package by.blooddy.core.meta {
 		}
 
 	}
-	
+
 }

@@ -8,7 +8,7 @@ package by.blooddy.core.events.managers {
 
 	import by.blooddy.core.managers.resource.IResourceBundle;
 	import by.blooddy.core.utils.ClassUtils;
-	
+
 	import flash.events.Event;
 
 	/**

@@ -4,7 +4,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-
 package by.blooddy.core.utils.ui {
 
 	import flash.display.InteractiveObject;
@@ -38,21 +37,21 @@ package by.blooddy.core.utils.ui {
 		public static function getContextMenu(child:InteractiveObject, separatorBefore:Boolean=false):ContextMenu {
 			var items:Array;
 			var i:uint;
-			
+
 			do {
 				// О! у нашего предка есть менюшка
 				if ( child.contextMenu ) {
 					var menu:ContextMenu = child.contextMenu.clone();
 					items = child.contextMenu.customItems;
 					menu.customItems.length = 0;
-					
+
 					for ( i=0; i < items.length; ++i ) {
 						menu.customItems[i] = child.contextMenu.customItems[i];
 					}
-					
+
 					if (separatorBefore) {
 						items = menu.customItems;
-						
+
 						for ( i=0; i<items.length; ++i ) {
 							if ( ( items[i] as ContextMenuItem ).visible ) {
 								( items[i] as ContextMenuItem ).separatorBefore = true;

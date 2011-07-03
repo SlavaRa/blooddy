@@ -63,7 +63,7 @@ package by.blooddy.core.utils.version {
 			this._buildNumber = buildNumber;
 			this._internalBuildNumber = internalBuildNumber;
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
@@ -85,7 +85,7 @@ package by.blooddy.core.utils.version {
 		public final function get majorVersion():uint {
 			return this._majorVersion;
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -93,7 +93,7 @@ package by.blooddy.core.utils.version {
 			if ( this._majorVersion == value ) return;
 			this._majorVersion = value;
 		}
-		
+
 		//--------------------------------------
 		//  minorVersion
 		//--------------------------------------
@@ -109,7 +109,7 @@ package by.blooddy.core.utils.version {
 		public final function get minorVersion():uint {
 			return this._minorVersion;
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -117,7 +117,7 @@ package by.blooddy.core.utils.version {
 			if ( this._minorVersion == value ) return;
 			this._minorVersion = value;
 		}
-		
+
 		//--------------------------------------
 		//  buildNumber
 		//--------------------------------------
@@ -133,7 +133,7 @@ package by.blooddy.core.utils.version {
 		public final function get buildNumber():uint {
 			return this._buildNumber;
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -141,7 +141,7 @@ package by.blooddy.core.utils.version {
 			if ( this._buildNumber == value ) return;
 			this._buildNumber = value;
 		}
-		
+
 		//--------------------------------------
 		//  internalBuildNumber
 		//--------------------------------------
@@ -157,7 +157,7 @@ package by.blooddy.core.utils.version {
 		public final function get internalBuildNumber():uint {
 			return this._internalBuildNumber;
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -165,7 +165,7 @@ package by.blooddy.core.utils.version {
 			if ( this._internalBuildNumber == value ) return;
 			this._internalBuildNumber = value;
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Properties

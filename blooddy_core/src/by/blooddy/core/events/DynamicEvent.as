@@ -7,7 +7,7 @@
 package by.blooddy.core.events {
 
 	import by.blooddy.core.utils.ClassUtils;
-	
+
 	import flash.events.Event;
 
 	/**

@@ -7,9 +7,9 @@
 package by.blooddy.core.events.time {
 
 	import by.blooddy.core.utils.ClassUtils;
-	
+
 	import flash.events.Event;
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0

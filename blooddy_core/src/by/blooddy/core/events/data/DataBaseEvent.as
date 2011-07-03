@@ -7,7 +7,7 @@
 package by.blooddy.core.events.data {
 
 	import by.blooddy.core.data.DataBaseNativeEvent;
-	
+
 	import flash.events.Event;
 
 	/**

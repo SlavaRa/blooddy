@@ -7,7 +7,7 @@
 package by.blooddy.core.utils.net {
 
 	import flash.external.ExternalInterface;
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -24,15 +24,15 @@ package by.blooddy.core.utils.net {
 		//--------------------------------------------------------------------------
 
 		public static const MSIE:String =		'Microsoft Internet Explorer';
-		
+
 		public static const FIREFOX:String =	'Firefox';
-		
+
 		public static const CHROME:String =		'Chrome';
 
 		public static const SAFARI:String =		'Safari';
-		
+
 		public static const OPERA:String =		'Opera';
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class properties
@@ -52,7 +52,7 @@ package by.blooddy.core.utils.net {
 		 * @private
 		 */
 		private static var _browserVersion:String;
-		
+
 		public static function get browserVersion():String {
 			return _browserVersion;
 		}
@@ -65,7 +65,7 @@ package by.blooddy.core.utils.net {
 		public static function get domain():String {
 			return _domain;
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Private class methids
@@ -119,10 +119,10 @@ package by.blooddy.core.utils.net {
 						if ( m ) _browserVersion = m[ 1 ];
 
 					} else if ( ( m = o.ua.match( /MSIE ([\d\.]+)/ ) ) ) {
-						
+
 						_browserName = MSIE;
 						_browserVersion = m[ 1 ];
-						
+
 					} else {
 
 						_browserName = o.an;
@@ -137,7 +137,7 @@ package by.blooddy.core.utils.net {
 			}
 		}
 		init();
-		
+
 	}
 
 }

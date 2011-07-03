@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.meta {
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -18,5 +18,5 @@ package by.blooddy.core.meta {
 		function getParameters(required:Boolean=false):Vector.<ParameterInfo>;
 
 	}
-	
+
 }

@@ -7,7 +7,7 @@
 package by.blooddy.core.utils.net {
 
 	import by.blooddy.core.utils.copyObject;
-	
+
 	import flash.net.URLRequest;
 	import flash.net.URLRequestHeader;
 	import flash.net.URLVariables;

@@ -7,11 +7,11 @@
 package by.blooddy.core.utils {
 
 	import by.blooddy.core.display.dispose;
-	
+
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
 	import flash.utils.ByteArray;
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -31,5 +31,5 @@ package by.blooddy.core.utils {
 			( obj as ByteArray ).clear();
 		}
 	}
-	
+
 }

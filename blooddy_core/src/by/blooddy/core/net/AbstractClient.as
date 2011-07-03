@@ -9,7 +9,7 @@ package by.blooddy.core.net {
 	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.events.commands.CommandEvent;
 	import by.blooddy.core.utils.proxy.ProxyEventDispatcher;
-	
+
 	import flash.events.IEventDispatcher;
 	import flash.utils.flash_proxy;
 

@@ -8,7 +8,7 @@ package by.blooddy.core.net {
 
 	import flash.system.Capabilities;
 	import flash.net.LocalConnection;
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0

@@ -15,7 +15,7 @@ package by.blooddy.core.net {
 	//--------------------------------------
 	//  Events
 	//--------------------------------------
-	
+
 	[Event( name="open", type="flash.events.Event" )]
 
 	/**

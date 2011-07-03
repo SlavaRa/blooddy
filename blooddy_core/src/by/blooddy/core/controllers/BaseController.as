@@ -11,7 +11,7 @@ package by.blooddy.core.controllers {
 	import by.blooddy.core.data.DataBase;
 	import by.blooddy.core.net.ProxySharedObject;
 	import by.blooddy.core.net.Responder;
-	
+
 	import flash.display.DisplayObjectContainer;
 
 	/**
@@ -91,7 +91,7 @@ package by.blooddy.core.controllers {
 		public function get dataBase():DataBase {
 			return this._dataBase;
 		}
-		
+
 		//----------------------------------
 		//  sharedObject
 		//----------------------------------

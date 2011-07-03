@@ -97,7 +97,7 @@ package by.blooddy.core.utils.math {
 					}
 					break;
 			}
-			
+
 			return s;
 		}
 

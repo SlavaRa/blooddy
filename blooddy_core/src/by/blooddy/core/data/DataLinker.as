@@ -7,7 +7,7 @@
 package by.blooddy.core.data {
 
 	import by.blooddy.core.events.data.DataBaseEvent;
-	
+
 	import flash.errors.IllegalOperationError;
 
 	/**

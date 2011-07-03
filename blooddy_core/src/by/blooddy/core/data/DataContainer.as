@@ -172,7 +172,6 @@ package by.blooddy.core.data {
 			return this.$removeChildAt( this.$getChildIndex( child ) );
 		}
 
-
 		//----------------------------------
 		//  removeChildAt
 		//----------------------------------
@@ -370,7 +369,6 @@ package by.blooddy.core.data {
 		public function swapChildren(child1:Data, child2:Data):void {
 			this.$swapChildrenAt( child1, child2, this.$getChildIndex( child1 ), this.$getChildIndex( child2 ) );
 		}
-
 
 		//----------------------------------
 		//  swapChildrenAt

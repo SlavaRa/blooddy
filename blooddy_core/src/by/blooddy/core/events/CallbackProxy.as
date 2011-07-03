@@ -5,14 +5,14 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.events {
-	
+
 	import by.blooddy.core.utils.proxy.Proxy;
-	
+
 	import flash.events.IEventDispatcher;
 	import flash.utils.flash_proxy;
 
 	use namespace flash_proxy;
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -21,7 +21,7 @@ package by.blooddy.core.events {
 	 * @created					26.10.2010 14:36:32
 	 */
 	public class CallbackProxy extends Proxy {
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Private class methods
@@ -33,7 +33,7 @@ package by.blooddy.core.events {
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * Constructor.
 		 */
@@ -41,7 +41,7 @@ package by.blooddy.core.events {
 			super();
 			this._target = target;
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Variables
@@ -63,7 +63,7 @@ package by.blooddy.core.events {
 		//  Overriden flash_proxy methods: flash.utils.Proxy
 		//
 		//--------------------------------------------------------------------------
-		
+
 		flash_proxy override function hasProperty(name:*):Boolean {
 			if ( name is QName ) {
 				if ( name.uri ) throw new TypeError();
@@ -72,7 +72,7 @@ package by.blooddy.core.events {
 			if ( !( name is String ) ) throw new TypeError();
 			return name in this._hash;
 		}
-		
+
 		flash_proxy override function getProperty(name:*):* {
 			if ( name is QName ) {
 				if ( name.uri ) throw new TypeError();
@@ -81,7 +81,7 @@ package by.blooddy.core.events {
 			if ( !( name is String ) ) throw new TypeError();
 			return this._hash[ name ];
 		}
-		
+
 		flash_proxy override function setProperty(name:*, value:*):void {
 			if ( name is QName ) {
 				if ( name.uri ) throw new TypeError();
@@ -92,7 +92,7 @@ package by.blooddy.core.events {
 			this._hash[ name ] = value;
 			this._target.addEventListener( name, value );
 		}
-		
+
 		flash_proxy override function deleteProperty(name:*):Boolean {
 			if ( name is QName ) {
 				if ( name.uri ) throw new TypeError();
@@ -111,7 +111,7 @@ package by.blooddy.core.events {
 				return false;
 			}
 		}
-		
+
 	}
-	
+
 }

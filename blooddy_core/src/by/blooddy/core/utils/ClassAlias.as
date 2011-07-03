@@ -18,7 +18,7 @@ package by.blooddy.core.utils {
 	 * @created					16.04.2010 18:04:54
 	 */
 	public final class ClassAlias {
-	
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class initialization
@@ -83,7 +83,7 @@ package by.blooddy.core.utils {
 		//  Class methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public static function getClass(name:*):Class {
 			if ( name is QName ) {
 				name = name.toString();
@@ -115,11 +115,11 @@ package by.blooddy.core.utils {
 			}
 			return result;
 		}
-		
+
 		public static function registerAlias(c:Class):void {
 			$registerClassAlias( ClassUtils.getClassName( c ), c );
 		}
-		
+
 		public static function registerQNameAlias(name:*, c:Class):void {
 			if ( name is QName ) {
 				name = name.toString();

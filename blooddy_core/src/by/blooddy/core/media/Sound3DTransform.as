@@ -23,7 +23,7 @@ package by.blooddy.core.media {
 		public static function getTransform(point:Point, bounds:Rectangle, volome:Number=1):SoundTransform {
 
 			/*
-			
+
 			+--------+--------+--------|--------+
 			|        |        |        |        |
 			|        |        |        |        |
@@ -37,7 +37,7 @@ package by.blooddy.core.media {
 			|        |        |        |        |
 			|        |        |        |        |
 			+--------+--------+--------+--------+
-			
+
 			*/
 			var result:SoundTransform = new SoundTransform();
 

@@ -11,14 +11,14 @@ package by.blooddy.core.managers.process {
 	//--------------------------------------
 	//  Events
 	//--------------------------------------
-	
+
 	/**
 	 * Транслиуется, когда приходят байты данных.
 	 * 
 	 * @eventType			flash.events.ProgressEvent.PROGRESS
 	 */
 	[Event( name="progress", type="flash.events.ProgressEvent" )]
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0

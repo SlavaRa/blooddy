@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.display {
-	
+
 	import by.blooddy.core.blooddy;
 	import by.blooddy.core.utils.ClassAlias;
 
@@ -15,7 +15,7 @@ package by.blooddy.core.display {
 	//--------------------------------------
 	//  Aliases
 	//--------------------------------------
-	
+
 	ClassAlias.registerQNameAlias( new QName( blooddy, 'Bitmap' ), BaseBitmap );
 
 	/**
@@ -32,7 +32,7 @@ package by.blooddy.core.display {
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * Constructor.
 		 */

@@ -8,10 +8,8 @@ package by.blooddy.core.utils {
 
 	import flash.utils.Dictionary;
 
-	public function traceObject(object:*):void {
-		trace("======== >> =====");
-		trace( var_dump( new Dictionary(), object ) );
-		trace("======== << =====");
+	public function traceObject(object:*):String {
+		return var_dump( new Dictionary(), object );
 	}
 
 }

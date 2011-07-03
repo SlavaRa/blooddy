@@ -23,36 +23,36 @@ package by.blooddy.core.meta {
 	 * @created					06.03.2010 13:18:17
 	 */
 	public class AbstractInfo {
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Namespaces
 		//
 		//--------------------------------------------------------------------------
-		
+
 		protected namespace $protected_info;
-		
+
 		use namespace $protected_info;
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * Constructor
 		 */
 		public function AbstractInfo() {
 			super();
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public function toXML(local:Boolean=false):XML {
 			return new XML();
 		}
@@ -66,10 +66,10 @@ package by.blooddy.core.meta {
 		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		$protected_info function parseXML(xml:XML):void {
 		}
-		
+
 	}
-	
+
 }

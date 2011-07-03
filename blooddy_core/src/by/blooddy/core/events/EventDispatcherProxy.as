@@ -147,7 +147,7 @@ package by.blooddy.core.events {
 		public function addEventDispatcher(dispatcher:IEventDispatcher):void {
 			if ( this._dispatchers.indexOf( dispatcher ) >= 0 ) return;
 			this._dispatchers.push( dispatcher );
-			
+
 			var type:String;
 			var listener:Function;
 			var useCapture_i:uint;

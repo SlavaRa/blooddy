@@ -7,7 +7,7 @@
 package by.blooddy.core.net {
 
 	import by.blooddy.core.utils.IAbstractRemoter;
-	
+
 	import flash.events.IEventDispatcher;
 
 	/**

@@ -8,7 +8,7 @@ package by.blooddy.core.logging {
 
 	import by.blooddy.core.events.logging.LogEvent;
 	import by.blooddy.core.utils.time.getTimer;
-	
+
 	import flash.events.EventDispatcher;
 
 	//--------------------------------------
@@ -65,7 +65,7 @@ package by.blooddy.core.logging {
 		 * @private
 		 */
 		private const _list:Vector.<Log> = new Vector.<Log>();
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
@@ -141,7 +141,7 @@ package by.blooddy.core.logging {
 		public function getList():Vector.<Log> {
 			return this._list.slice();
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Private methods

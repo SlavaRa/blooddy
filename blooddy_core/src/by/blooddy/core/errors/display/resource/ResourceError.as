@@ -5,10 +5,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.errors.display.resource {
-	
+
 	import by.blooddy.core.display.resource.ResourceDefinition;
 	import by.blooddy.core.utils.ClassUtils;
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -17,13 +17,13 @@ package by.blooddy.core.errors.display.resource {
 	 * @created					25.11.2009 23:25:32
 	 */
 	public class ResourceError extends Error {
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * Constructor
 		 */
@@ -34,13 +34,13 @@ package by.blooddy.core.errors.display.resource {
 				this.resources = resources.slice();
 			}
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public var resources:Vector.<ResourceDefinition>;
 
 		//--------------------------------------------------------------------------
@@ -57,5 +57,5 @@ package by.blooddy.core.errors.display.resource {
 		}
 
 	}
-	
+
 }

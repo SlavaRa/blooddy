@@ -7,10 +7,10 @@
 package by.blooddy.core.net.monitor {
 
 	import by.blooddy.core.net.loading.ILoadable;
-	
+
 	import flash.events.Event;
 	import flash.net.URLRequest;
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -19,7 +19,7 @@ package by.blooddy.core.net.monitor {
 	 * @created					Feb 26, 2010 12:34:08 PM
 	 */
 	public final class NetMonitor {
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class properties
@@ -33,14 +33,14 @@ package by.blooddy.core.net.monitor {
 		//  Class methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @copy	by.blooddy.core.net.monitor.INetMonitor#isActive
 		 */
 		public static function isActive():Boolean {
 			return ( monitor ? monitor.isActive() : false );
 		}
-		
+
 		/**
 		 * @copy	by.blooddy.core.net.monitor.INetMonitor#isURLAdjusted()
 		 */
@@ -48,7 +48,7 @@ package by.blooddy.core.net.monitor {
 			if ( !monitor ) return false;
 			return monitor.isURLAdjusted( url );
 		}
-		
+
 		/**
 		 * @copy	by.blooddy.core.net.monitor.INetMonitor#isURLRequestAdjusted()
 		 */
@@ -56,7 +56,7 @@ package by.blooddy.core.net.monitor {
 			if ( !monitor ) return false;
 			return monitor.isURLRequestAdjusted( request );
 		}
-		
+
 		/**
 		 * @copy	by.blooddy.core.net.monitor.INetMonitor#adjustURL()
 		 */
@@ -64,7 +64,7 @@ package by.blooddy.core.net.monitor {
 			if ( !monitor ) return url;
 			return monitor.adjustURL( url, correlationID );
 		}
-		
+
 		/**
 		 * @copy	by.blooddy.core.net.monitor.INetMonitor#adjustURLRequest()
 		 */
@@ -72,7 +72,7 @@ package by.blooddy.core.net.monitor {
 			if ( !monitor ) return;
 			monitor.adjustURLRequest( correlationID, request );
 		}
-		
+
 		/**
 		 * @copy	by.blooddy.core.net.monitor.INetMonitor#monitorEvent()
 		 */
@@ -80,7 +80,7 @@ package by.blooddy.core.net.monitor {
 			if ( !monitor ) return;
 			monitor.monitorLoadableEvent( correlationID, event );
 		}
-		
+
 		/**
 		 * @copy	by.blooddy.core.net.monitor.INetMonitor#monitorLoadableInvocation()
 		 */
@@ -96,7 +96,7 @@ package by.blooddy.core.net.monitor {
 			if ( !monitor ) return;
 			monitor.monitorLoadableResult( correlationID, responceData );
 		}
-		
+
 		/**
 		 * @copy	by.blooddy.core.net.monitor.INetMonitor#monitorLoadableFault()
 		 */
@@ -104,7 +104,7 @@ package by.blooddy.core.net.monitor {
 			if ( !monitor ) return;
 			monitor.monitorLoadableFault( correlationID, message );
 		}
-		
+
 	}
-	
+
 }

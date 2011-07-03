@@ -8,10 +8,10 @@ package by.blooddy.core.net.monitor {
 
 	import by.blooddy.core.net.IAbstractSocket;
 	import by.blooddy.core.net.loading.ILoadable;
-	
+
 	import flash.events.Event;
 	import flash.net.URLRequest;
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -28,27 +28,27 @@ package by.blooddy.core.net.monitor {
 		//--------------------------------------------------------------------------
 
 		function isActive():Boolean;
-		
+
 		function isURLAdjusted(url:String):Boolean;
-		
+
 		function isURLRequestAdjusted(request:URLRequest):Boolean;
 
 		function adjustURL(url:String, correlationID:String=null):String;
-		
+
 		function adjustURLRequest(correlationID:String, request:URLRequest):void;
-		
+
 		function monitorLoadableInvocation(correlationID:String, request:URLRequest, loader:ILoadable):void;
 
 		function monitorLoadableEvent(correlationID:String, event:Event):void;
-		
+
 		function monitorLoadableResult(correlationID:String, responceData:Object):void;
-		
+
 		function monitorLoadableFault(correlationID:String, message:String):void;
 
 		function monitorSocketOutput(correlationID:String, data:Object, socket:IAbstractSocket):void;
-		
+
 		function monitorSocketInput(correlationID:String, data:Object, socket:IAbstractSocket):void;
 
 	}
-	
+
 }

@@ -16,8 +16,6 @@ package by.blooddy.core.data {
 	//  Excluded APIs
 	//--------------------------------------
 
-	[Exclude( kind="namespace", name="$internal_data" )]
-
 	[Exclude( kind="property", name="$stopped" )]
 	[Exclude( kind="property", name="$canceled" )]
 	[Exclude( kind="property", name="$target" )]

@@ -5,27 +5,27 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.managers.process {
-	
+
 	import flash.events.IEventDispatcher;
-	
+
 	//--------------------------------------
 	//  Events
 	//--------------------------------------
-	
+
 	/**
 	 * Транслируется, когда загрузка заканчивается.
 	 * 
 	 * @eventType			flash.events.Event.COMPLETE
 	 */
 	[Event( name="complete", type="flash.events.Event" )]
-	
+
 	/**
 	 * Ошибка.
 	 * 
 	 * @eventType			flash.events.ErrorEvent.ERROR
 	 */
 	[Event( name="error", type="flash.events.ErrorEvent" )]
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -40,16 +40,16 @@ package by.blooddy.core.managers.process {
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
-		
+
 		//----------------------------------
 		//  complete
 		//----------------------------------
-		
+
 		/**
 		 * закончилась ли обработка
 		 */
 		function get complete():Boolean;
 
 	}
-	
+
 }

@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.meta {
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -14,55 +14,55 @@ package by.blooddy.core.meta {
 	 * @created					06.03.2010 13:55:02
 	 */
 	public final class ConstructorInfo extends AbstractInfo implements IFunctionInfo {
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Namespaces
 		//
 		//--------------------------------------------------------------------------
-		
+
 		use namespace $protected_info;
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class variables
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 */
 		private static const _EMPTY_PARAMETERS:Vector.<ParameterInfo> = new Vector.<ParameterInfo>( 0, true );
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * Constructor
 		 */
 		public function ConstructorInfo() {
 			super();
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Variables
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 */
 		private var _parameters:Vector.<ParameterInfo>;
-		
+
 		/**
 		 * @private
 		 */
 		private var _parameters_required:Vector.<ParameterInfo>;
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
@@ -79,7 +79,7 @@ package by.blooddy.core.meta {
 				return this._parameters.slice();
 			}
 		}
-		
+
 		public override function toXML(local:Boolean=false):XML {
 			var xml:XML = <constructor />;
 			var i:uint, l:uint = this._parameters.length;
@@ -94,7 +94,7 @@ package by.blooddy.core.meta {
 		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		$protected_info override function parseXML(xml:XML):void {
 			var list:XMLList = xml.parameter;
 			if ( list.length() <= 0 ) {
@@ -114,7 +114,7 @@ package by.blooddy.core.meta {
 				}
 			}
 		}
-		
+
 	}
-	
+
 }

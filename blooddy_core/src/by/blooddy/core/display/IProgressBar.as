@@ -11,7 +11,7 @@ package by.blooddy.core.display {
 	/**
 	 * Интерфейс прогресс бара.
 	 * 
-	 * @author						etc
+	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 9
 	 * @langversion				3.0
@@ -20,10 +20,10 @@ package by.blooddy.core.display {
 
 		function get progress():Number;
 		function set progress(value:Number):void;
-		
+
 		function get progressDispatcher():IProgressable;
 		function set progressDispatcher(value:IProgressable):void;
-		
+
 	}
 
 }

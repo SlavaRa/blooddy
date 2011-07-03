@@ -12,12 +12,12 @@ package by.blooddy.core.display {
 	//--------------------------------------
 	//  Excluded APIs
 	//--------------------------------------
-	
+
 	[Exclude( kind="namespace", name="$protected_mc" )]
 
 	[Exclude( kind="method", name="_totalFrames" )]
 	[Exclude( kind="method", name="_currentFrame" )]
-	
+
 	[Exclude( kind="method", name="addFrameScript" )]
 	[Exclude( kind="method", name="setCurrentFrame" )]
 
@@ -41,7 +41,7 @@ package by.blooddy.core.display {
 		protected namespace $protected_mc;
 
 		use namespace $protected_mc;
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor

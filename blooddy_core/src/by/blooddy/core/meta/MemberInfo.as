@@ -52,7 +52,7 @@ package by.blooddy.core.meta {
 		 * @private
 		 */
 		protected var _type:QName;
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -61,7 +61,7 @@ package by.blooddy.core.meta {
 		}
 
 		$protected_info var _owner:TypeInfo;
-		
+
 		public function get owner():TypeInfo {
 			return this._owner;
 		}
@@ -95,5 +95,5 @@ package by.blooddy.core.meta {
 		}
 
 	}
-	
+
 }

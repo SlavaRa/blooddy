@@ -5,10 +5,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.display.text {
-	
+
 	import by.blooddy.core.blooddy;
 	import by.blooddy.core.utils.ClassAlias;
-	
+
 	import flash.display.Loader;
 	import flash.display.LoaderInfo;
 	import flash.events.Event;
@@ -18,7 +18,7 @@ package by.blooddy.core.display.text {
 	//--------------------------------------
 	//  Aliases
 	//--------------------------------------
-	
+
 	ClassAlias.registerQNameAlias( new QName( blooddy, 'TextField' ), BaseTextField );
 
 	/**
@@ -29,13 +29,13 @@ package by.blooddy.core.display.text {
 	 * @created					Mar 1, 2010 1:15:43 PM
 	 */
 	public class BaseTextField extends TextField {
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * Constructor.
 		 */
@@ -53,7 +53,7 @@ package by.blooddy.core.display.text {
 		//  Includes
 		//
 		//--------------------------------------------------------------------------
-		
+
 		include "../../../../../includes/implements_BaseDisplayObject.as";
 
 		//--------------------------------------------------------------------------
@@ -79,7 +79,7 @@ package by.blooddy.core.display.text {
 				}
 			}
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -98,7 +98,7 @@ package by.blooddy.core.display.text {
 				}
 			}
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -108,7 +108,7 @@ package by.blooddy.core.display.text {
 			loader.removeEventListener( IOErrorEvent.IO_ERROR,	this.handler_complete );
 			// TODO: uncatch errors
 		}
-		
+
 	}
-	
+
 }

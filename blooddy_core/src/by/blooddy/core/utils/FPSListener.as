@@ -7,7 +7,7 @@
 package by.blooddy.core.utils {
 
 	import by.blooddy.core.utils.time.getTimer;
-	
+
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 

@@ -68,7 +68,7 @@ package by.blooddy.core.display {
 				}
 			}
 		}
-		
+
 		public function unregisterTarget():void {
 			this._target.removeEventListener(Event.ADDED_TO_STAGE, this.handler_addedToStage);
 			this._target.removeEventListener(Event.REMOVED_FROM_STAGE, this.handler_removedFromStage);

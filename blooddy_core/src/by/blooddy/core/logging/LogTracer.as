@@ -7,7 +7,7 @@
 package by.blooddy.core.logging {
 
 	import by.blooddy.core.events.logging.LogEvent;
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -16,13 +16,13 @@ package by.blooddy.core.logging {
 	 * @created					Mar 18, 2010 4:34:48 PM
 	 */
 	public final class LogTracer {
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public static function addLogger(logger:Logger):void {
 			logger.addEventListener( LogEvent.ADDED_LOG, handler_addedLog );
 		}
@@ -30,20 +30,20 @@ package by.blooddy.core.logging {
 		public static function removeLogger(logger:Logger):void {
 			logger.removeEventListener( LogEvent.ADDED_LOG, handler_addedLog );
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class event handlers
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 */
 		private static function handler_addedLog(event:LogEvent):void {
 			trace( event.log );
 		}
-		
+
 	}
-	
+
 }

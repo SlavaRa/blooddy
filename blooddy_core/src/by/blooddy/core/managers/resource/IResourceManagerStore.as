@@ -7,7 +7,7 @@
 package by.blooddy.core.managers.resource {
 
 	import flash.utils.ByteArray;
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -16,9 +16,9 @@ package by.blooddy.core.managers.resource {
 	 * @created					29.11.2010 8:46:21
 	 */
 	public interface IResourceManagerStore {
-		
+
 		function getFileByName(name:String):ByteArray;
-		
+
 	}
-	
+
 }

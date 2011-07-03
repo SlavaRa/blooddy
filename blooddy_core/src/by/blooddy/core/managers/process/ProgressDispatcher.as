@@ -7,7 +7,7 @@
 package by.blooddy.core.managers.process {
 
 	import by.blooddy.core.utils.nextframeCall;
-	
+
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -45,7 +45,7 @@ package by.blooddy.core.managers.process {
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-	
+
 		/**
 		 * Constructor
 		 */
@@ -68,7 +68,7 @@ package by.blooddy.core.managers.process {
 		 * @private
 		 */
 		private var _toComplete:Boolean = false;
-		
+
 		/**
 		 * @private
 		 */
@@ -131,7 +131,7 @@ package by.blooddy.core.managers.process {
 		public function hasProcess(process:IProcessable):Boolean {
 			return ( this._processes.indexOf( process ) >= 0 );
 		}
-		
+
 		public function clear():void {
 			while ( this._processes.length > 0 ) {
 				this.$removeProcess( this._processes[ this._processes.length - 1 ] as IProcessable, false );
@@ -271,7 +271,7 @@ package by.blooddy.core.managers.process {
 		private function handler_complete(event:Event):void {
 			this.updateComplete();
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -288,7 +288,7 @@ package by.blooddy.core.managers.process {
 				nextframeCall( this.updateProgress );
 			}
 		}
-		
+
 	}
 
 }
