@@ -7,7 +7,7 @@
 package by.blooddy.core.utils.proxy {
 
 	import by.blooddy.core.utils.ClassUtils;
-	
+
 	import flash.utils.Proxy;
 	import flash.utils.flash_proxy;
 	import flash.utils.getQualifiedClassName;
@@ -64,7 +64,7 @@ package by.blooddy.core.utils.proxy {
 		 * @private
 		 */
 		private var _prototype:Object;
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Overriden flash_proxy methods: flash.utils.Proxy
@@ -77,7 +77,7 @@ package by.blooddy.core.utils.proxy {
 		flash_proxy override function hasProperty(name:*):Boolean {
 			return name in this._prototype;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -103,7 +103,7 @@ package by.blooddy.core.utils.proxy {
 		flash_proxy override function deleteProperty(name:*):Boolean {
 			return false;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 * 

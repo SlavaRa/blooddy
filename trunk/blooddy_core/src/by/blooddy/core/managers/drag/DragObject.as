@@ -7,7 +7,7 @@
 package by.blooddy.core.managers.drag {
 
 	import by.blooddy.core.display.BaseShape;
-	
+
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
@@ -24,8 +24,6 @@ package by.blooddy.core.managers.drag {
 	//--------------------------------------
 	//  Excluded APIs
 	//--------------------------------------
-
-	[Exclude( kind="namespace", name="$internal_drag" )]
 
 	[Exclude( kind="property", name="graphics" )]
 	[Exclude( kind="property", name="parent" )]
@@ -51,7 +49,7 @@ package by.blooddy.core.managers.drag {
 		//
 		//--------------------------------------------------------------------------
 
-		internal namespace $internal_drag;
+		use namespace $internal;
 
 		//--------------------------------------------------------------------------
 		//
@@ -73,7 +71,7 @@ package by.blooddy.core.managers.drag {
 		/**
 		 * @private
 		 */
-		$internal_drag static function $getInstance(dragSource:DisplayObject, rescale:Boolean=false, offset:Point=null, bounds:Rectangle=null):DragObject {
+		$internal static function $getInstance(dragSource:DisplayObject, rescale:Boolean=false, offset:Point=null, bounds:Rectangle=null):DragObject {
 			_internalCall = true;
 			var result:DragObject = new DragObject( dragSource, rescale, offset, bounds );
 			_internalCall = false;
@@ -149,7 +147,7 @@ package by.blooddy.core.managers.drag {
 		//--------------------------------------
 		//  x
 		//--------------------------------------
-	
+
 		/**
 		 * @private
 		 */
@@ -171,7 +169,7 @@ package by.blooddy.core.managers.drag {
 		//--------------------------------------
 		//  parent
 		//--------------------------------------
-	
+
 		[Deprecated( message="свойство не используется" )]
 		/**
 		 * @default	null
@@ -183,14 +181,14 @@ package by.blooddy.core.managers.drag {
 		/**
 		 * @private
 		 */
-		$internal_drag function get $parent():DisplayObjectContainer {
+		$internal function get $parent():DisplayObjectContainer {
 			return super.parent;
 		}
 
 		//--------------------------------------
 		//  stage
 		//--------------------------------------
-	
+
 		[Deprecated( message="свойство не используется" )]
 		/**
 		 * @default	null
@@ -202,7 +200,7 @@ package by.blooddy.core.managers.drag {
 		//--------------------------------------
 		//  visible
 		//--------------------------------------
-	
+
 		[Deprecated( message="свойство не используется" )]
 		/**
 		 * @private
@@ -227,7 +225,7 @@ package by.blooddy.core.managers.drag {
 		//--------------------------------------
 		//  graphics
 		//--------------------------------------
-	
+
 		[Deprecated( message="свойство не используется" )]
 		/**
 		 * @default	null
@@ -315,9 +313,9 @@ package by.blooddy.core.managers.drag {
 		 */
 		private function updatePosition():void {
 			if ( !super.visible ) return;
-			
+
 //			var delim:Number = 180 / (8/2);
-			
+
 			//var oldX:Number = super.x;
 			//var oldY:Number = super.y;
 			var x:Number = super.stage.mouseX + this._offset.x;
@@ -333,7 +331,7 @@ package by.blooddy.core.managers.drag {
 //				x = start.x + Math.cos( angle ) * length;
 //				y = start.y + Math.sin( angle ) * length;
 //				if ( this._bounds ) {
-//					
+//
 //				}
 //			} else {
 				if ( this._bounds ) {

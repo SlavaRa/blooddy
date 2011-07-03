@@ -7,7 +7,7 @@
 package by.blooddy.core.net {
 
 	import by.blooddy.core.utils.proxy.ProxyObject;
-	
+
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
@@ -43,9 +43,9 @@ package by.blooddy.core.net {
 		//  Namespaces
 		//
 		//--------------------------------------------------------------------------
-		
+
 		use namespace $protected_px;
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class variables

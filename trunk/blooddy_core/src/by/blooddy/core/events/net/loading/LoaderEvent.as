@@ -8,7 +8,7 @@ package by.blooddy.core.events.net.loading {
 
 	import by.blooddy.core.net.loading.ILoadable;
 	import by.blooddy.core.utils.ClassUtils;
-	
+
 	import flash.events.Event;
 
 	/**

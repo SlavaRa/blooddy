@@ -15,6 +15,7 @@ package by.blooddy.core.managers.resource {
 	import by.blooddy.crypto.MD5;
 	
 	import flash.display.BitmapData;
+	import flash.events.Event;
 	import flash.media.Sound;
 	import flash.net.URLRequest;
 	import flash.system.ApplicationDomain;
@@ -39,27 +40,27 @@ package by.blooddy.core.managers.resource {
 		//  Class variables
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 */
 		private static const _NAME_BITMAP_DATA:String =		getQualifiedClassName( BitmapData );
-		
+
 		/**
 		 * @private
 		 */
 		private static const _NAME_SOUND:String =			getQualifiedClassName( Sound );
-		
+
 		/**
 		 * @private
 		 */
 		private static const _NAME_BYTE_ARRAY:String =		getQualifiedClassName( ByteArray );
-		
+
 		/**
 		 * @private
 		 */
 		private static const _PROTO_BITMAP_DATA:Object =	BitmapData.prototype;
-		
+
 		/**
 		 * @private
 		 */
@@ -82,6 +83,7 @@ package by.blooddy.core.managers.resource {
 		public function ResourceLoader(name:String=null, request:URLRequest=null, loaderContext:LoaderContext=null) {
 			super( request, loaderContext );
 			this._name = name;
+			super.addEventListener( Event.INIT, this.handler_init, false, int.MAX_VALUE, true );
 		}
 
 		//--------------------------------------------------------------------------
@@ -98,6 +100,11 @@ package by.blooddy.core.managers.resource {
 		/**
 		 * @private
 		 */
+		private var _domain:ApplicationDomain;
+		
+		/**
+		 * @private
+		 */
 		private var _definitions:DefinitionFinder;
 
 		//--------------------------------------------------------------------------
@@ -110,7 +117,7 @@ package by.blooddy.core.managers.resource {
 		 * @private
 		 */
 		private var _name:String;
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -139,10 +146,9 @@ package by.blooddy.core.managers.resource {
 			} else {
 
 				var resource:*;
-				var domain:ApplicationDomain = ( super.loaderInfo ? super.loaderInfo.applicationDomain : null );
 
-				if ( domain && domain.hasDefinition( name ) ) { // пытаемся найти в домене
-					resource = domain.getDefinition( name );
+				if ( this._domain && this._domain.hasDefinition( name ) ) { // пытаемся найти в домене
+					resource = this._domain.getDefinition( name );
 				} else if ( super.content && name in super.content ) { // пытаемся найти в контэнте
 					resource = super.content[ name ];
 				}
@@ -151,8 +157,10 @@ package by.blooddy.core.managers.resource {
 					var resourceClass:Class = resource as Class;
 					var p:Object = resourceClass.prototype;
 					if (
-						_PROTO_BITMAP_DATA.isPrototypeOf( p ) ||
-						domain.getDefinition( _NAME_BITMAP_DATA ).prototype.isPrototypeOf( p )
+						_PROTO_BITMAP_DATA.isPrototypeOf( p ) || (
+							this._domain &&
+							this._domain.getDefinition( _NAME_BITMAP_DATA ).prototype.isPrototypeOf( p )
+						)
 					) {
 						try {
 							resource = new resourceClass( 0, 0 );
@@ -161,9 +169,12 @@ package by.blooddy.core.managers.resource {
 						}
 					} else if ( 
 						_PROTO_SOUND.isPrototypeOf( p ) ||
-						_PROTO_BYTE_ARRAY.isPrototypeOf( p ) ||
-						domain.getDefinition( _NAME_SOUND ).prototype.isPrototypeOf( p ) ||
-						domain.getDefinition( _NAME_BYTE_ARRAY ).prototype.isPrototypeOf( p )
+						_PROTO_BYTE_ARRAY.isPrototypeOf( p ) || (
+							this._domain && (
+								this._domain.getDefinition( _NAME_SOUND ).prototype.isPrototypeOf( p ) ||
+								this._domain.getDefinition( _NAME_BYTE_ARRAY ).prototype.isPrototypeOf( p )
+							)
+						)
 					) {
 						resource = new resourceClass();
 					}
@@ -172,7 +183,7 @@ package by.blooddy.core.managers.resource {
 				this._hash[ name ] = resource;
 
 				return resource;
-				
+
 			}
 
 		}
@@ -186,7 +197,7 @@ package by.blooddy.core.managers.resource {
 			}
 			return (
 				( name in this._hash ) || // пытаемся найти в кэше
-				( super.loaderInfo && super.loaderInfo.applicationDomain && super.loaderInfo.applicationDomain.hasDefinition( name ) ) || // пытаемся найти в домене
+				( this._domain && this._domain.hasDefinition( name ) ) || // пытаемся найти в домене
 				( super.content && name in super.content ) // пытаемся найти в контэнте
 			);
 		}
@@ -206,7 +217,7 @@ package by.blooddy.core.managers.resource {
 				this._name = MD5.hashBytes( bytes );
 			}
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -232,13 +243,13 @@ package by.blooddy.core.managers.resource {
 						( this._name || super.url ? ' name="' + ( this._name || super.url ) + '"' : ' object' ) +
 					']';
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 */
 		public function getResources():Array {
@@ -269,6 +280,23 @@ package by.blooddy.core.managers.resource {
 					dispose( resource );
 				}
 				delete this._hash[ name ];
+			}
+			this._domain = null;
+			this._name = null;
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Event handlers
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		 * @private
+		 */
+		private function handler_init(event:Event):void {
+			if ( super.loaderInfo ) {
+				this._domain = super.loaderInfo.applicationDomain;
 			}
 		}
 

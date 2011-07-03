@@ -7,7 +7,7 @@
 package by.blooddy.core.meta {
 
 	import by.blooddy.core.utils.ClassUtils;
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -16,21 +16,21 @@ package by.blooddy.core.meta {
 	 * @created					06.03.2010 2:22:30
 	 */
 	public final class MethodInfo extends MemberInfo implements IFunctionInfo {
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Namespaces
 		//
 		//--------------------------------------------------------------------------
-		
+
 		use namespace $protected_info;
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class variables
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 */
@@ -40,13 +40,13 @@ package by.blooddy.core.meta {
 		 * @private
 		 */
 		private static const _EMPTY_PARAMETERS:Vector.<ParameterInfo> = new Vector.<ParameterInfo>( 0, true );
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * Constructor
 		 */
@@ -54,33 +54,33 @@ package by.blooddy.core.meta {
 			super();
 			this._type = _TYPE;
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Variables
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 */
 		private var _parameters:Vector.<ParameterInfo>;
-		
+
 		/**
 		 * @private
 		 */
 		private var _parameters_required:Vector.<ParameterInfo>;
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public function get parent():MethodInfo {
 			return this._parent as MethodInfo;
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -106,7 +106,7 @@ package by.blooddy.core.meta {
 				return this._parameters.slice();
 			}
 		}
-		
+
 		public override function toXML(local:Boolean=false):XML {
 			var xml:XML = super.toXML( local );
 			xml.setLocalName( 'method' );
@@ -123,7 +123,7 @@ package by.blooddy.core.meta {
 		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		$protected_info override function parseXML(xml:XML):void {
 			super.parseXML( xml );
 			if ( this._parent ) { // сигнатура метода не может именяться, так что нечего лишний раз парсить

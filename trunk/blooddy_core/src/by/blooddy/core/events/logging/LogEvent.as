@@ -8,7 +8,7 @@ package by.blooddy.core.events.logging {
 
 	import by.blooddy.core.logging.Log;
 	import by.blooddy.core.utils.ClassUtils;
-	
+
 	import flash.events.Event;
 
 	/**
@@ -33,7 +33,7 @@ package by.blooddy.core.events.logging {
 		 * @eventType			addedLog
 		 */
 		public static const ADDED_LOG:String = 'addedLog';
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor

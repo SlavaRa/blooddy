@@ -65,7 +65,7 @@ package by.blooddy.core.data {
 		$protected_data override function setParent(value:DataContainer):void {
 			Error.throwError( IllegalOperationError, 2037 );
 		}
-		
+
 	}
 
 }

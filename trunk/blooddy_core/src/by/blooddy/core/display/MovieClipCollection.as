@@ -25,9 +25,9 @@ package by.blooddy.core.display {
 		//  Namespaces
 		//
 		//--------------------------------------------------------------------------
-		
+
 		use namespace $protected_mc;
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class variables
@@ -191,12 +191,12 @@ package by.blooddy.core.display {
 				var mc:MovieClip = child as MovieClip;
 				if ( mc.totalFrames == this._totalFrames ) {
 					var num:int = super.numChildren;
-					
+
 					if ( num <= 0 ) {
 						this.setTotalFrame( 0 );
 						return;
 					}
-					
+
 					var totalFrames:uint = 1;
 
 					while ( num-- ) {
@@ -205,7 +205,7 @@ package by.blooddy.core.display {
 							totalFrames = mc.totalFrames;
 						} 
 					}
-					
+
 					if ( this._totalFrames != totalFrames ) {
 						this.setTotalFrame( totalFrames );
 						if ( this._currentFrame < totalFrames ) {

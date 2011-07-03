@@ -19,7 +19,7 @@ package by.blooddy.core.net.loading {
 	 * @eventType			flash.events.Event.OPEN
 	 */
 	[Event( name="open", type="flash.events.Event" )]
-	
+
 	/**
 	 * Транслируется, когда Flash Player может определить HTTP статус.
 	 * 
@@ -35,9 +35,9 @@ package by.blooddy.core.net.loading {
 	[Event( name="httpResponseStatus", type="flash.events.HTTPStatusEvent" )]
 
 	[Event( name="init", type="flash.events.Event" )]
-	
+
 	[Event( name="unload", type="flash.events.Event" )]
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -106,7 +106,7 @@ package by.blooddy.core.net.loading {
 		 * @copy			flash.net.Loader#loadBytes()
 		 */
 		function loadBytes(bytes:ByteArray):void;
-		
+
 		/**
 		 * останавливает загрузку, и выгружает данные
 		 * @copy			flash.net.URLLoader#close()
@@ -118,7 +118,7 @@ package by.blooddy.core.net.loading {
 		 * @copy			flash.net.Loader#unload()
 		 */
 		function unload():void;
-		
+
 	}
 
 }

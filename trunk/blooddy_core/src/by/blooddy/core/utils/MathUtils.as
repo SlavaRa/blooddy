@@ -23,10 +23,10 @@ package by.blooddy.core.utils {
 			}
 
 			if ( inRadix == outRadix ) return value;
-			
+
 			var hash:Array = new Array();
 			var l:uint = value.length;
-			
+
 			var i:int;
 			var c:Number;
 			var hl:uint, pos:uint;
@@ -47,7 +47,7 @@ package by.blooddy.core.utils {
 					pos += 1;
 				} while ( pos <= hl || rest || v );
 			}
-			
+
 			var result:String = "";
 			i = hash.length;
 			while ( i-- && hash[ i ] == 0 ) {};

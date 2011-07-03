@@ -1,7 +1,7 @@
 package by.blooddy.core.math {
 
 	import by.blooddy.core.utils.MathUtils;
-	
+
 	import flash.utils.ByteArray;
 	import flash.utils.Endian;
 
@@ -223,6 +223,18 @@ package by.blooddy.core.math {
 			return result;
 		}
 
+		private static function _toString(arr:Array):String {
+			var l:int = arr.length;
+			if ( l <= 0 ) return "0";
+			var result:String = arr[--l].toString( BASE_RADIX );
+			var s:String;
+			while ( l-- ) {
+				s = arr[l].toString( BASE_RADIX );
+				result += "000".substr( 0, 4-s.length ) + s;
+			}
+			return result;
+		}
+
 		public function toString(radix:uint=10):String {
 			if ( radix < 2 || radix > 36 ) {
 				throw new RangeError( "Error #1003: The radix argument must be between 2 and 36; got " + radix + "." );
@@ -306,7 +318,7 @@ package by.blooddy.core.math {
 
 				var result:BigInt = new BigInt();
 
-				var resultArr:Array = new Array();
+				var resultArr:Array = new Array( 1 );
 
 				var arr1:Array = this._arr;
 				var arr2:Array = new Array();
@@ -504,6 +516,7 @@ package by.blooddy.core.math {
 			} else {
 				result = value as BigInt;
 			}
+			result = new BigInt();
 			$multiply( this._arr, ( value as BigInt )._arr, result._arr );
 			result._positive = ( this._positive == value._positive );
 			return result;
@@ -524,6 +537,8 @@ package by.blooddy.core.math {
 			value = verifyObject( value );
 			var result:BigInt;
 			var rest:BigInt;
+			result = new BigInt();
+			rest = new BigInt();
 			if ( value is Number ) {
 				if ( value == 0 ) {										// вырожденный случай: второе число == 0
 					throw new ArgumentError();
@@ -532,8 +547,6 @@ package by.blooddy.core.math {
 				} else if ( this._arr.length <= 0 ) {					// вырожденный случай: мы равны 0
 					return new Array( ZERO, ZERO );
 				} else {
-					result = new BigInt();
-					rest = new BigInt();
 					if ( this._arr.length <=1 ) {						// вырожденный случай: оба числа достаточно коротки
 						var num:Number = this.toNumber();
 						rest.setNumber( num % ( value as Number ) );
@@ -973,17 +986,11 @@ package by.blooddy.core.math {
 				temp += a[i] * value;
 				result[i] = temp % BASE;
 				temp = uint( temp / BASE );
-				
+
 			}
-			var cl:uint = result.length;
-			if ( i < cl ) {
-				result.splice( i, cl - i );
-				cl -= i;
-			}
-			while ( temp > 0 ) {
+			if ( temp > 0 ) {
 				// Число удлинилось за счет переноса нового разряда
-				result.push( temp % BASE );
-				temp = uint( temp / BASE );
+				result[ i ] = temp;
 			}
 		}
 
@@ -1004,7 +1011,7 @@ package by.blooddy.core.math {
 				}
 				result[i+j] = temp;
 			}
-			$cleanArray( result );
+//			$cleanArray( result );
 		}
 
 		private static function $divide_s(a:Array, value:uint, result:Array, rest:Array):void {
@@ -1012,19 +1019,15 @@ package by.blooddy.core.math {
 			var i:int;
 			var temp:Number = 0;
 			for ( i=al-1; i>=0; i-- ) {
-				temp = a[i] + temp * BASE;	// идти по A, начиная от старшего разряда
+				temp = ( a[i] || 0 ) + temp * BASE;	// идти по A, начиная от старшего разряда
 											// rest – остаток от предыдущего деления
 											// вначале rest=0, потом текущая цифра A с
 											// учетом перенесенного остатка
-				
+
 				result[i] = uint( temp / value );		// i-я цифра частного
 
 				temp %= value;				// остаток примет участие в вычислении
 											// следующей цифры частного
-			}
-			var cl:int = result .length;
-			if ( cl > i ) {
-				result.splice( i, i - cl );
 			}
 			$cleanArray( result );
 
@@ -1035,9 +1038,16 @@ package by.blooddy.core.math {
 			}
 		}
 
-		private static function $divide(a:Array, b:Array, result:Array, rest:Array):void { // TODO: оптимизировать
+		private static function $divide(a:Array, b:Array, result:Array, _rest:Array):void { // TODO: оптимизировать
 
-			rest.splice( 0, rest.length );
+			var xxx:BigInt, yyy:BigInt;
+			xxx = new BigInt();
+			xxx._arr.push.apply( null, a );
+			yyy = new BigInt();
+			yyy._arr.push.apply( null, b );
+			trace( xxx.toString( 16 ), yyy.toString( 16 ) );
+
+			var rest:Array = new Array();
 			rest.push.apply( rest, a );
 
 			var n:int = b.length, m:int = a.length - b.length;
@@ -1048,6 +1058,7 @@ package by.blooddy.core.math {
 			var borrow:int, carry:int; // переносы
 			// Нормализация
 			scale = BASE / ( b[n-1] + 1 );
+			trace( scale );
 			if ( scale > 1 ) {
 				var tmp:Array;
 				tmp = new Array();
@@ -1058,6 +1069,12 @@ package by.blooddy.core.math {
 				b = tmp;
 			}
 
+			xxx = new BigInt();
+			xxx._arr.push.apply( null, rest );
+			yyy = new BigInt();
+			yyy._arr.push.apply( null, b );
+			trace( xxx.toString( 16 ), yyy.toString( 16 ) );
+			rest.push( 0 );
 			// Главный цикл шагов деления. Каждая итерация дает очередную цифру частного.
 			// vJ - текущий сдвиг B относительно U, используемый при вычитании,
 			// по совместительству - индекс очередной цифры частного.
@@ -1065,10 +1082,15 @@ package by.blooddy.core.math {
 			for (vJ = m, uJ=n+vJ; vJ>=0; --vJ, --uJ) {
 				qGuess = ( rest[uJ] * BASE + rest[uJ-1] ) / b[n-1];
 				r = ( rest[uJ] * BASE + rest[uJ-1] ) % b[n-1];
+				
+//				trace( 't', rest[uJ] * BASE + rest[uJ-1], b[n-1] );
+//				trace( 'q', qGuess, r );
+				
 				// Пока не будут выполнены условия (2) уменьшать частное.
 				while ( r < BASE ) {
 					temp2 = b[n-2] * qGuess;
 					temp1 = r * BASE + rest[uJ-2];
+
 					if ( ( temp2 > temp1 ) || ( qGuess == BASE ) ) {
 						// условия не выполнены, уменьшить qGuess
 						// и досчитать новый остаток
@@ -1076,6 +1098,7 @@ package by.blooddy.core.math {
 						r += b[n-1];
 					} else break;
 				}
+//				trace( '	q', qGuess, r );
 				// Теперь qGuess - правильное частное или на единицу больше q
 				// Вычесть делитель B, умноженный на qGuess из делимого U,
 				// начиная с позиции vJ+i
@@ -1089,6 +1112,7 @@ package by.blooddy.core.math {
 					temp1 -= carry * BASE;
 					// Сразу же вычесть из U
 					temp2 = rest[ i + vJ ] - temp1 + borrow;
+//					trace( 't3', temp1, temp2 );
 					if ( temp2 < 0 ) {
 						rest[ i + vJ ] = temp2 + BASE;
 						borrow = -1;
@@ -1101,6 +1125,7 @@ package by.blooddy.core.math {
 				// Если это так, то после умножения остался
 				// неиспользованный перенос carry. Вычесть и его тоже.
 				temp2 = rest[ i + vJ ] - carry + borrow;
+//				trace( 't3', temp1, temp2 );
 				if ( temp2 < 0 ) {
 					rest[ i + vJ ] = temp2 + BASE;
 					borrow = -1;
@@ -1108,6 +1133,7 @@ package by.blooddy.core.math {
 					rest[ i + vJ ] = temp2;
 					borrow = 0;
 				}
+//				trace( 'borrow', borrow );
 				// Прошло ли вычитание нормально ?
 				if ( borrow == 0 ) { // Да, частное угадано правильно
 					result[vJ] = qGuess;
@@ -1128,16 +1154,18 @@ package by.blooddy.core.math {
 					}
 					rest[ i + vJ ] += carry - BASE;
 				}
-				// Обновим размер U, который после вычитания мог уменьшиться
-				$cleanArray( rest );
+//				trace( 'result', result[ vJ ] );
 			}
 
+			$cleanArray( rest );
 			$cleanArray( result );
 
 			if ( scale > 1 ) {
-				$divide_s( rest, scale, rest, JUNK );
+				$divide_s( rest, scale, _rest, JUNK );
+			} else {
+				_rest.push.apply( null, rest );
 			}
-
+			
 		}
 
 		private static function $cleanArray(a:Array):void {
@@ -1146,7 +1174,7 @@ package by.blooddy.core.math {
 		}
 
 		private static function $or_s(a:Array, value:Number, result:Array):void {
-			
+
 		}
 
 		private static function $shiftRight(a:Array, value:uint):void {

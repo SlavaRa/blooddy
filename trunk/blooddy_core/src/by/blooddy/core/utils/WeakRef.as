@@ -21,7 +21,7 @@ package by.blooddy.core.utils {
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public function WeakRef(obj:Object) {
 			super();
 			//if ( !obj || obj is Number || obj is String || obj is Boolean ) throw new ArgumentError();
@@ -33,7 +33,7 @@ package by.blooddy.core.utils {
 		//  Variables
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 */
@@ -44,7 +44,7 @@ package by.blooddy.core.utils {
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public function get():* {
 			for ( var obj:* in this._ref ) {
 				return obj;

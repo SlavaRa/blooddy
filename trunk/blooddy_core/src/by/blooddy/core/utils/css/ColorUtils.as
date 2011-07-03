@@ -5,14 +5,14 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.utils.css {
-	
+
 	/**
 	 * Класс с утилитами для StyleSheet.
 	 * 
 	 * @author etc
 	 */	
 	public class ColorUtils	{
-		
+
 		/**
 		 * @private
 		 */
@@ -158,7 +158,7 @@ package by.blooddy.core.utils.css {
 			yellow:					0xFFFFFF00,
 			yellowgreen:			0xFF9ACD32
 		};
-				
+
 		/**
 		 * Преобразовывает строку с цветом в число. Строка может быть вида #xxxxxx, #xyz (=#xxyyzz) или просто xxxxxx;
 		 * 
@@ -170,14 +170,14 @@ package by.blooddy.core.utils.css {
 		public static function parseColor(color:String):Number {
 			if (!color) return 0;
 			var float:Boolean = false;
-			
+
 			if (color in _COLORS) {
 				return _COLORS[color];
 			} else 	{
 				float = color.indexOf('0x') < 0 && color.indexOf('#') < 0;
 				if (!float) {
 					color = color.replace(/#/g,'');
-					
+
 					if (!float && color.length <= 3) {
 						color = color.replace(/([\da-f])/ig, "$1$1");
 					}
@@ -213,7 +213,7 @@ package by.blooddy.core.utils.css {
 							( ( ( start >> 16 ) & 0xFF ) * ( 1 - ratio ) + ( ( end >> 16 ) & 0xFF ) * ratio << 16 ) |
 							( ( ( start >> 24 ) & 0xFF ) * ( 1 - ratio ) + ( ( end >> 24 ) & 0xFF ) * ratio << 24 ) ;
 				}
-				
+
 			}
 			return 0;
 		}

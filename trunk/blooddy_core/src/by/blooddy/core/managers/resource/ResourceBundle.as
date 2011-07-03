@@ -7,7 +7,7 @@
 package by.blooddy.core.managers.resource {
 
 	import by.blooddy.core.utils.ClassUtils;
-	
+
 	import flash.errors.IllegalOperationError;
 
 	/**
@@ -128,7 +128,7 @@ package by.blooddy.core.managers.resource {
 		public function toString():String {
 			return '[' + ClassUtils.getClassName( this ) + ' name="' + this._name + '"]';
 		}
-		
+
 	}
 
 }

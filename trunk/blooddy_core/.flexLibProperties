@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<flexLibProperties includeAllClasses="false" useMultiPlatformConfig="false" version="1">
+<flexLibProperties includeAllClasses="false" version="1">
   <includeClasses>
-    <classEntry path="avmplus.ttt"/>
     <classEntry path="by.blooddy.core.blooddy"/>
     <classEntry path="by.blooddy.core.commands.Command"/>
     <classEntry path="by.blooddy.core.commands.CommandDispatcher"/>

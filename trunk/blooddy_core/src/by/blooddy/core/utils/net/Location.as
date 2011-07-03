@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.utils.net {
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -25,13 +25,13 @@ package by.blooddy.core.utils.net {
 		 * @private
 		 */
 		private static const _R_URL:RegExp = /^(?:(\w+):\/\/([\w\.]+)(?::(\d+)?)?(\/[^?#]*)?|([^?#]*))?(\?[^#]*)?(#.*)?$/;
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public static function isLocation(url:String, strict:Boolean=false):Boolean {
 			if ( strict ) {
 				var arr:Array = url.match( _R_URL );
@@ -39,13 +39,13 @@ package by.blooddy.core.utils.net {
 			}
 			return _R_URL.test( url );
 		}
-			
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * Constructor
 		 */
@@ -66,7 +66,7 @@ package by.blooddy.core.utils.net {
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public var protocol:String;
 
 		public var host:String;
@@ -94,7 +94,7 @@ package by.blooddy.core.utils.net {
 		//  Methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public function toString():String {
 			return ( this.host
 				?	( this.protocol
@@ -110,7 +110,7 @@ package by.blooddy.core.utils.net {
 		//  Private methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 */

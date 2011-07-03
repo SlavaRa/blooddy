@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.utils {
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -14,9 +14,9 @@ package by.blooddy.core.utils {
 	 * @created					27.11.2009 22:57:04
 	 */
 	public interface IDisposable {
-		
+
 		function dispose():void;
-		
+
 	}
-	
+
 }

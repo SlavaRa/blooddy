@@ -7,7 +7,7 @@
 package by.blooddy.core.net {
 
 	import by.blooddy.core.utils.proxy.ProxyEventDispatcher;
-	
+
 	import flash.utils.flash_proxy;
 
 	use namespace flash_proxy;

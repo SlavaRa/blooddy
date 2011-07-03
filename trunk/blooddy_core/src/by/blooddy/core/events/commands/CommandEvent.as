@@ -8,7 +8,7 @@ package by.blooddy.core.events.commands {
 
 	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.utils.ClassUtils;
-	
+
 	import flash.events.Event;
 
 	/**

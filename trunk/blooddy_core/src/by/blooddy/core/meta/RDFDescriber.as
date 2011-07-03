@@ -7,7 +7,7 @@
 package by.blooddy.core.meta {
 
 	import flash.utils.Dictionary;
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -16,21 +16,21 @@ package by.blooddy.core.meta {
 	 * @created					06.09.2010 16:16:44
 	 */
 	public class RDFDescriber {
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class variables
 		//
 		//--------------------------------------------------------------------------
-		
+
 		private static const ns_rdf:Namespace = new Namespace( 'rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#' );
-		
+
 		private static const ns_as3:Namespace = new Namespace( 'as3', AS3 + '#' );
-		
+
 		private static const ns_dc:Namespace = new Namespace( 'dc', 'http://purl.org/dc/elements/1.1/' );
-		
+
 		private static const ns_rdfs:Namespace = new Namespace( 'rdfs', 'http://www.w3.org/2000/01/rdf-schema' );
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class methods
@@ -52,31 +52,31 @@ package by.blooddy.core.meta {
 			result.setNamespace( ns_rdf );
 			result.addNamespace( ns_dc );
 			result.addNamespace( ns_as3 );
-			
+
 			var desc:XML;
 			var x:XML;
 			var seq:XML;
 			var li:XML;
-			
+
 			for each ( var info:TypeInfo in list ) {
 				// пробегаемся по списку и строим RDF
 				desc = <Description />;
 				desc.setNamespace( ns_rdf );
 				desc.@ns_rdf::about = '#' + encodeURI( info.name.toString() );
-				
+
 				// title
 				x = <title />;
 				x.setNamespace( ns_dc );
 				x.appendChild( info.name.toString() );
 				desc.appendChild( x );
-				
+
 				// links
 				x = <links />;
 				x.setNamespace( ns_as3 );
-				
+
 				seq = <Bag />;
 				seq.setNamespace( ns_rdf );
-				
+
 				list = hash[ info ];
 				for each ( info in list ) {
 					li = <li />;
@@ -84,15 +84,15 @@ package by.blooddy.core.meta {
 					li.@ns_rdf::resource = '#' + encodeURI( info.name.toString() );
 					seq.appendChild( li );
 				}
-				
+
 				x.appendChild( seq );
-				
+
 				desc.appendChild( x );
-				
+
 				result.appendChild( desc );
-				
+
 			}
-			
+
 			return result;
 		}
 
@@ -102,20 +102,20 @@ package by.blooddy.core.meta {
 			for each ( var o:Object in args ) {
 				updateDependes( hash, list, TypeInfo.getInfo( o ) );
 			}
-			
+
 			var result:XML = <RDF />;
 			result.setNamespace( ns_rdf );
 			result.addNamespace( ns_rdfs );
 			result.addNamespace( ns_dc );
 			result.addNamespace( ns_as3 );
-			
+
 			for each ( var info:TypeInfo in list ) {
 				result.appendChild( getType( info ) );
 			}
-			
+
 			return result;
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Private class methods
@@ -126,16 +126,15 @@ package by.blooddy.core.meta {
 		 * @private
 		 */
 		private static function updateLinks(hash:Dictionary, list:Vector.<TypeInfo>, info:TypeInfo):void {
-			
+
 			var hash2:Dictionary = new Dictionary();
 			var list2:Vector.<TypeInfo> = new Vector.<TypeInfo>();
-			
+
 			hash[ info ] = list2;
 			list.push( info );
-			
-			
+
 			var t:ITypedInfo;
-			
+
 			var names:Vector.<QName>;
 			// interfaces
 			names = info.getInterfaces( true );
@@ -158,7 +157,7 @@ package by.blooddy.core.meta {
 			for each ( t in info.constructor.getParameters() ) {
 				names.push( t.type );
 			}
-			
+
 			// вызываем апдэйтилку
 			for each ( var n:QName in names ) {
 				info = TypeInfo.getInfoByName( n );
@@ -174,14 +173,14 @@ package by.blooddy.core.meta {
 		 * @private
 		 */
 		private static function updateDependes(hash:Dictionary, list:Vector.<TypeInfo>, info:TypeInfo):void {
-			
+
 			list.push( info );
 			hash[ info ] = true;
-			
+
 			var names:Vector.<QName> = new Vector.<QName>();
-			
+
 			var t:ITypedInfo;
-			
+
 			// superClasses
 			names = names.concat( info.getSuperclasses() );
 			// interfaces
@@ -201,7 +200,7 @@ package by.blooddy.core.meta {
 			for each ( t in info.constructor.getParameters() ) {
 				names.push( t.type );
 			}
-			
+
 			// вызываем апдэйтилку
 			for each ( var n:QName in names ) {
 				info = TypeInfo.getInfoByName( n );
@@ -218,21 +217,21 @@ package by.blooddy.core.meta {
 			xml.addNamespace( ns_rdfs );
 			xml.addNamespace( ns_dc );
 			xml.addNamespace( ns_as3 );
-			
+
 			xml.@ns_rdf::about = '#' + encodeURI( info.name.toString() );
-			
+
 			var resource:XML;
 			var seq:XML;
 			var x:XML;
 			var members:Vector.<MemberInfo>;
 			var types:Vector.<QName>
 			var i:uint, l:uint;
-			
+
 			// type
 			x = <type>type</type>;
 			x.setNamespace( ns_dc );
 			xml.appendChild( x );
-			
+
 			// source
 			if ( info.source ) {
 				x = <source />;
@@ -240,59 +239,59 @@ package by.blooddy.core.meta {
 				x.setNamespace( ns_dc );
 				xml.appendChild( x );
 			}
-			
+
 			// superClasses
 			types = info.getSuperclasses();
 			l = types.length;
 			if ( l > 0 ) {
 				resource = <extendsClass />
 				resource.setNamespace( ns_as3 );
-				
+
 				seq = <Seq />
 				seq.setNamespace( ns_rdf );
-				
+
 				for ( i=0; i<l; ++i ) {
 					x = <li />
 					x.setNamespace( ns_rdf );
 					x.@ns_rdf::resource = '#' + encodeURI( types[ i ].toString() );
-					
+
 					seq.appendChild( x );
 				}
-				
+
 				resource.appendChild( seq );
-				
+
 				xml.appendChild( resource );
 			}
-			
+
 			// interfaces
 			types = info.getInterfaces( true );
 			l = types.length;
 			if ( l > 0 ) {
 				resource = <implementsInterface />
 				resource.setNamespace( ns_as3 );
-				
+
 				seq = <Bag />
 				seq.setNamespace( ns_rdf );
-				
+
 				for ( i=0; i<l; ++i ) {
 					x = <li />
 					x.setNamespace( ns_rdf );
 					x.@ns_rdf::resource = '#' + encodeURI( types[ i ].toString() );
-					
+
 					seq.appendChild( x );
 				}
-				
+
 				resource.appendChild( seq );
-				
+
 				xml.appendChild( resource );
 			}
-			
+
 			// constructor
 			resource = getConstructor( info.constructor );
 			if ( resource.hasComplexContent() ) {
 				xml.appendChild( resource );
 			}
-			
+
 			// members
 			members = info.getMembers( true );
 			if ( members.length > 0 ) {
@@ -311,7 +310,7 @@ package by.blooddy.core.meta {
 				}
 				xml.appendChild( resource );
 			}
-			
+
 			return xml;
 		}
 
@@ -356,7 +355,7 @@ package by.blooddy.core.meta {
 			}	
 			return xml;
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -375,7 +374,7 @@ package by.blooddy.core.meta {
 			xml.setChildren( getFunction( info ) );
 			return xml;
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -390,7 +389,7 @@ package by.blooddy.core.meta {
 			xml.appendChild( x );
 			return xml;
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -412,10 +411,10 @@ package by.blooddy.core.meta {
 				x.setChildren( meta );
 				xml.appendChild( x );
 			}
-			
+
 			return xml;
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -459,7 +458,7 @@ package by.blooddy.core.meta {
 			xml.appendChild( x );
 			return xml;
 		}
-		
+
 	}
-	
+
 }

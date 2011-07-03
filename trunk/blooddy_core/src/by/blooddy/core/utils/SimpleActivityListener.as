@@ -5,11 +5,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.utils {
-	
+
 	import by.blooddy.core.utils.time.FrameTimer;
 	import by.blooddy.core.utils.time.getTimer;
 	import by.blooddy.core.utils.ui.ContextMenuUtils;
-	
+
 	import flash.display.Graphics;
 	import flash.display.LineScaleMode;
 	import flash.display.Shape;
@@ -27,7 +27,7 @@ package by.blooddy.core.utils {
 	import flash.text.TextFormat;
 	import flash.ui.ContextMenu;
 	import flash.ui.ContextMenuItem;
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -35,55 +35,55 @@ package by.blooddy.core.utils {
 	 * @langversion				3.0
 	 */
 	public final class SimpleActivityListener extends Sprite {
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Private constants
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 * Формат текстовых палей.
 		 */
 		private static const TF:TextFormat = new TextFormat( '_sans', 10 );
-		
+
 		/**
 		 * @private
 		 */
 		private static const DEFAULT_BG_COLOR:uint = 0x80000000;
-		
+
 		/**
 		 * @private
 		 */
 		private static const DEFAULT_FPS_COLOR:uint = 0xFFFFFF;
-		
+
 		/**
 		 * @private
 		 */
 		private static const DEFAULT_MEMORY_COLOR:uint = 0xFFFF00;
-		
+
 		/**
 		 * @private
 		 */
 		private static const DEFAULT_WIDTH:Number = 100;
-		
+
 		/**
 		 * @private
 		 */
 		private static const DEFAULT_HEIGHT:Number = 60;
-		
+
 		/**
 		 * @private
 		 */
 		private static const GRAPH_OFFSET_Y:Number = 42;
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Private methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 * Возвращает новое текстовое поле с задаными свойствами.
@@ -95,13 +95,13 @@ package by.blooddy.core.utils {
 			txt.autoSize = TextFieldAutoSize.LEFT;
 			return txt;
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * Constructor.
 		 */
@@ -149,147 +149,147 @@ package by.blooddy.core.utils {
 			// стартуем отрисовку
 			this.refreshTime = 97;
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Includes
 		//
 		//--------------------------------------------------------------------------
-		
+
 		include "../../../../includes/override_EventDispatcher.as";
 		include "../../../../includes/override_InteractiveObject.as";
 		include "../../../../includes/override_DisplayObjectContainer.as";
 		include "../../../../includes/override_Sprite.as";
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  DisplayObjects
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 * Фон.
 		 */
 		private const _shape_BG:Shape = new Shape();
-		
+
 		/**
 		 * @private
 		 */
 		private const _shape_FPS:Shape = new Shape();
-		
+
 		/**
 		 * @private
 		 */
 		private const _shape_MEM:Shape = new Shape();
-		
+
 		/**
 		 * @private
 		 */
 		private const _graphics_FPS:Graphics = ( _shape_FPS ).graphics;
-		
+
 		/**
 		 * @private
 		 */
 		private const _graphics_MEM:Graphics = ( _shape_MEM ).graphics;
-		
+
 		/**
 		 * @private
 		 */
 		private const _txt_FPS_label:TextField = getNewTextField();
-		
+
 		/**
 		 * @private
 		 */
 		private const _txt_FPS_value:TextField = getNewTextField();
-		
+
 		/**
 		 * @private
 		 */
 		private const _txt_FPS_max:TextField = getNewTextField();
-		
+
 		/**
 		 * @private
 		 */
 		private const _txt_MEM_label:TextField = getNewTextField();
-		
+
 		/**
 		 * @private
 		 */
 		private const _txt_MEM_value:TextField = getNewTextField();
-		
+
 		/**
 		 * @private
 		 */
 		private const _txt_MEM_max:TextField = getNewTextField();
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Variblies
 		//
 		//--------------------------------------------------------------------------
-		
+
 		private const _scrollRect:Rectangle = new Rectangle();
-		
+
 		/**
 		 * @private
 		 * Таймер для обновления экрана.
 		 */
 		private const _TIMER:FrameTimer = new FrameTimer( 0 );
-		
+
 		/**
 		 * @private
 		 * Массив для записи времнной шкалы.
 		 */
 		private const _TIMES:Array = new Array();
-		
+
 		/**
 		 * @private
 		 * Массив фпсов для отрисовки.
 		 */
 		private const _FPS:Array = new Array();
-		
+
 		/**
 		 * @private
 		 * Предыдущее время.
 		 */
 		private var _prevTime:uint = 0;
-		
+
 		/**
 		 * @private
 		 * Предыдущее время.
 		 */
 		private var _frameRate:uint;
-		
+
 		/**
 		 * @private
 		 * Использование памяти.
 		 */
 		private const _MEM:Array = new Array();
-		
+
 		/**
 		 * @private
 		 * Максимально занято памяти, для отрисовки графика.
 		 */
 		private var _memMax:uint = 0;
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Override properties: DisplayObject
 		//
 		//--------------------------------------------------------------------------
-		
+
 		//----------------------------------
 		//  width
 		//----------------------------------
-		
+
 		/**
 		 * @private
 		 */
 		public override function get width():Number {
 			return this._scrollRect.width;
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -308,18 +308,18 @@ package by.blooddy.core.utils {
 			this._txt_FPS_max.visible =
 			this._txt_MEM_max.visible = ( value >= 100 );
 		}
-		
+
 		//----------------------------------
 		//  height
 		//----------------------------------
-		
+
 		/**
 		 * @private
 		 */
 		public override function get height():Number {
 			return this._scrollRect.height;
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -341,98 +341,98 @@ package by.blooddy.core.utils {
 			this._shape_MEM.visible =
 			this._shape_FPS.visible = ( value >= 60 );
 		}
-		
+
 		//----------------------------------
 		//  scaleX
 		//----------------------------------
-		
+
 		/**
 		 * @private
 		 */
 		public override function get scaleX():Number {
 			return this._shape_BG.scaleX;
 		}
-		
+
 		/**
 		 * @private
 		 */
 		public override function set scaleX(value:Number):void {
 			this.width = DEFAULT_WIDTH * value;
 		}
-		
+
 		//----------------------------------
 		//  scaleY
 		//----------------------------------
-		
+
 		/**
 		 * @private
 		 */
 		public override function get scaleY():Number {
 			return this._shape_BG.scaleY;
 		}
-		
+
 		/**
 		 * @private
 		 */
 		public override function set scaleY(value:Number):void {
 			this.height = DEFAULT_HEIGHT * value;
 		}
-		
+
 		//----------------------------------
 		//  opaqueBackground
 		//----------------------------------
-		
+
 		/**
 		 * @private
 		 */
 		public override function set opaqueBackground(value:Object):void {
 			Error.throwError( IllegalOperationError, 3008 );
 		}
-		
+
 		//----------------------------------
 		//  scale9Grid
 		//----------------------------------
-		
+
 		/**
 		 * @private
 		 */
 		public override function set scale9Grid(innerRectangle:Rectangle):void {
 			Error.throwError( IllegalOperationError, 3008 );
 		}
-		
+
 		//----------------------------------
 		//  scrollRect
 		//----------------------------------
-		
+
 		/**
 		 * @private
 		 */
 		public override function get scrollRect():Rectangle {
 			return null;
 		}
-		
+
 		/**
 		 * @private
 		 */
 		public override function set scrollRect(value:Rectangle):void {
 			Error.throwError( IllegalOperationError, 3008 );
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
-		
+
 		//----------------------------------
 		//  refreshTime
 		//----------------------------------
-		
+
 		/**
 		 * @private
 		 */
 		private var _refreshTime:uint = 0;
-		
+
 		/**
 		 * Скорость обновления экрана в милисикундах.
 		 * 
@@ -441,7 +441,7 @@ package by.blooddy.core.utils {
 		public function get refreshTime():uint {
 			return this._refreshTime;
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -457,16 +457,16 @@ package by.blooddy.core.utils {
 				this._TIMER.stop();
 			}
 		}
-		
+
 		//----------------------------------
 		//  fpsColor
 		//----------------------------------
-		
+
 		/**
 		 * @private
 		 */
 		private var _fpsColor:Number = NaN;
-		
+
 		/**
 		 * Цвет FPS.
 		 * 
@@ -475,7 +475,7 @@ package by.blooddy.core.utils {
 		public function get fpsColor():uint {
 			return this._fpsColor;
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -486,16 +486,16 @@ package by.blooddy.core.utils {
 			this._txt_FPS_value.textColor = value;
 			this._txt_FPS_max.textColor = value;
 		}
-		
+
 		//----------------------------------
 		//  memoryColor
 		//----------------------------------
-		
+
 		/**
 		 * @private
 		 */
 		private var _memColor:Number = NaN;
-		
+
 		/**
 		 * Цвет памяти.
 		 * 
@@ -504,7 +504,7 @@ package by.blooddy.core.utils {
 		public function get memoryColor():uint {
 			return this._memColor;
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -515,16 +515,16 @@ package by.blooddy.core.utils {
 			this._txt_MEM_value.textColor = value;
 			this._txt_MEM_max.textColor = value;
 		}
-		
+
 		//----------------------------------
 		//  bgColor32
 		//----------------------------------
-		
+
 		/**
 		 * @private
 		 */
 		private var _bgColor:Number = NaN;
-		
+
 		/**
 		 * Цвет Фона в 32 бита.
 		 * 
@@ -533,7 +533,7 @@ package by.blooddy.core.utils {
 		public function get bgColor32():uint {
 			return this._bgColor;
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -548,13 +548,13 @@ package by.blooddy.core.utils {
 			g.drawRect( 0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT );
 			g.endFill();
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Event handlers
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 */
@@ -577,7 +577,7 @@ package by.blooddy.core.utils {
 			this._prevTime = getTimer();
 			super.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -585,7 +585,7 @@ package by.blooddy.core.utils {
 			super.contextMenu = null;
 			super.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
 		}
-		
+
 		/**
 		 * @private
 		 * Обновлялка состояния
@@ -594,31 +594,31 @@ package by.blooddy.core.utils {
 			// обработаем FPS
 			var time:uint = getTimer();
 			this._TIMES.push( time );
-			
+
 			var fps:Number = 1E3 / ( time - this._prevTime );
 			this._FPS.push( fps );
-			
+
 			var mem:Number = System.totalMemory / 1024 / 1024;
 			this._MEM.push( mem );
-			
+
 			this._prevTime = time;
-			
+
 			// изменился фрэймрайт
 			if ( this._frameRate != super.stage.frameRate ) {
 				this._frameRate = super.stage.frameRate;
 				this._shape_FPS.scaleY = - ( this.height - GRAPH_OFFSET_Y ) / this._frameRate;
 				this._txt_FPS_max.text = String( this._frameRate );
 			}
-			
+
 			// изменился максимуми памяти
 			if ( this._memMax < mem ) {
 				this._memMax = mem = ( int( mem / 5 ) + 1 ) * 5;
 				this._shape_MEM.scaleY = -( this.height-GRAPH_OFFSET_Y ) / mem;
 				this._txt_MEM_max.text = String( mem );
 			}
-			
+
 		}
-		
+
 		/**
 		 * @private
 		 * Обновлялка графики.
@@ -664,7 +664,7 @@ package by.blooddy.core.utils {
 			gF.lineTo( -5, this._FPS[l-1] );
 			gM.lineTo( -5, this._MEM[l-1] );
 		}
-		
+
 		/**
 		 * @private
 		 * Обрабатывался менюшки.
@@ -672,7 +672,7 @@ package by.blooddy.core.utils {
 		private function handler_menuItemSelect(event:ContextMenuEvent):void {
 			navigateToURL( new URLRequest( 'http://www.blooddy.by' ), '_blank' );
 		}
-		
+
 	}
-	
+
 }

@@ -7,7 +7,7 @@
 package by.blooddy.core.net.loading {
 
 	import flash.system.ApplicationDomain;
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -16,13 +16,13 @@ package by.blooddy.core.net.loading {
 	 * @created					18.02.2010 22:00:04
 	 */
 	public class LoaderContext {
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * Constructor
 		 */
@@ -45,9 +45,9 @@ package by.blooddy.core.net.loading {
 		public var applicationDomain:ApplicationDomain;
 
 		public var ignoreSecurityDomain:Boolean;
-		
+
 		public var checkPolicyFile:Boolean;
-		
+
 	}
-	
+
 }

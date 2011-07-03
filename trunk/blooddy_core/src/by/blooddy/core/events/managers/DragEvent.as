@@ -8,7 +8,7 @@ package by.blooddy.core.events.managers {
 
 	import by.blooddy.core.managers.drag.DragObject;
 	import by.blooddy.core.utils.ClassUtils;
-	
+
 	import flash.display.DisplayObject;
 	import flash.display.InteractiveObject;
 	import flash.events.Event;
@@ -27,7 +27,7 @@ package by.blooddy.core.events.managers {
 		//  Class constants
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public static const DRAG_START:String =	'dragStart';
 
 		public static const DRAG_MOVE:String =	'dragMove';
@@ -41,7 +41,7 @@ package by.blooddy.core.events.managers {
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * Constructor
 		 */
@@ -57,11 +57,11 @@ package by.blooddy.core.events.managers {
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public var dragObject:DragObject;
 
 		public var dragSource:DisplayObject;
-		
+
 		public var dropTarget:DisplayObject;
 
 		//--------------------------------------------------------------------------
@@ -69,7 +69,7 @@ package by.blooddy.core.events.managers {
 		//  Methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public override function clone():Event {
 			return new DragEvent( super.type, super.bubbles, super.cancelable, super.localX, super.localY, super.relatedObject, super.ctrlKey, super.altKey, super.shiftKey, super.buttonDown, super.delta, this.dragSource, this.dragObject, this.dropTarget );
 		}

@@ -8,7 +8,7 @@ package by.blooddy.core.managers.drag {
 
 	import by.blooddy.core.events.managers.DragEvent;
 	import by.blooddy.core.utils.DisplayObjectUtils;
-	
+
 	import flash.display.DisplayObject;
 	import flash.display.Stage;
 	import flash.errors.IllegalOperationError;
@@ -60,11 +60,8 @@ package by.blooddy.core.managers.drag {
 		//
 		//--------------------------------------------------------------------------
 
-		/**
-		 * @private
-		 */
-		private static const $internal_drag:Namespace = DragObject.$internal_drag;
-		
+		use namespace $internal;
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class variables
@@ -129,7 +126,7 @@ package by.blooddy.core.managers.drag {
 		//--------------------------------------
 		//  dropTarget
 		//--------------------------------------
-	
+
 		/**
 		 * @private
 		 */
@@ -142,7 +139,7 @@ package by.blooddy.core.managers.drag {
 		//--------------------------------------
 		//  dragSource
 		//--------------------------------------
-	
+
 		/**
 		 * @private
 		 */
@@ -155,7 +152,7 @@ package by.blooddy.core.managers.drag {
 		//--------------------------------------
 		//  dragObject
 		//--------------------------------------
-	
+
 		/**
 		 * @private
 		 */
@@ -191,7 +188,7 @@ package by.blooddy.core.managers.drag {
 
 			this._dragSource = dragSource;
 
-			this._dragObject = DragObject.$internal_drag::$getInstance( this._dragSource, rescale, offset, bounds );
+			this._dragObject = DragObject.$getInstance( this._dragSource, rescale, offset, bounds );
 
 			offset = this._dragObject.offset;
 
@@ -212,7 +209,7 @@ package by.blooddy.core.managers.drag {
 			stage.addEventListener( MouseEvent.MOUSE_OUT,					this.handler_mouseOut,	false, int.MAX_VALUE );
 			stage.addEventListener( MouseEvent.MOUSE_OUT,					this.handler_mouseOut,	true, int.MAX_VALUE );
 			stage.addEventListener( KeyboardEvent.KEY_UP,					this.handler_keyUp,		false, int.MAX_VALUE );
-			
+
 			this._dropTarget = DisplayObjectUtils.getDropTarget( stage, new Point( stage.mouseX, stage.mouseY ) );
 			stage.addChild( this._dragObject );
 			this.dispatchDragEvent( DragEvent.DRAG_START );
@@ -224,13 +221,13 @@ package by.blooddy.core.managers.drag {
 		//  Private methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 */
 		private function clear():void {
-			if ( this._dragObject && this._dragObject.$internal_drag::$parent ) {
-				this._dragObject.$internal_drag::$parent.removeChild( this._dragObject );
+			if ( this._dragObject && this._dragObject.$parent ) {
+				this._dragObject.$parent.removeChild( this._dragObject );
 			}
 
 			if ( this._dragSource && this._dragSource.stage ) {

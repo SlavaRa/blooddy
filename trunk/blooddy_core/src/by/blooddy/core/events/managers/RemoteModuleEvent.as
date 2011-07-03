@@ -7,7 +7,7 @@
 package by.blooddy.core.events.managers {
 
 	import by.blooddy.core.utils.ClassUtils;
-	
+
 	import flash.events.Event;
 
 	/**
@@ -23,7 +23,7 @@ package by.blooddy.core.events.managers {
 		//  Class constants
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public static const INIT:String = Event.INIT;
 
 		public static const UNLOAD:String = Event.UNLOAD;
@@ -33,7 +33,7 @@ package by.blooddy.core.events.managers {
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public function RemoteModuleEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false, id:String=null) {
 			super(type, bubbles, cancelable);
 			this.id = id;
@@ -44,7 +44,7 @@ package by.blooddy.core.events.managers {
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public var id:String = id;
 
 		//--------------------------------------------------------------------------
@@ -52,7 +52,7 @@ package by.blooddy.core.events.managers {
 		//  Methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public override function clone():Event {
 			return new RemoteModuleEvent(super.type, super.bubbles, super.cancelable, this.id);
 		}

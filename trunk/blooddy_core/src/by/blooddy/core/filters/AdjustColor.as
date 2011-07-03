@@ -7,7 +7,7 @@
 package by.blooddy.core.filters {
 
 	import by.blooddy.core.utils.MathUtils;
-	
+
 	import flash.filters.ColorMatrixFilter;
 
 	/**
@@ -17,13 +17,13 @@ package by.blooddy.core.filters {
 	 * @langversion				3.0
 	 */
 	public class AdjustColor {
-	
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class variables
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 * constant for contrast calculations
@@ -68,7 +68,7 @@ package by.blooddy.core.filters {
 		 * @private
 		 */
 		private static const _LUM_B:Number = 0.072169;
-	
+
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
@@ -101,7 +101,7 @@ package by.blooddy.core.filters {
 			}
 
 			if ( saturation ) {
-	
+
 				saturation = MathUtils.validateRange( saturation, -1, 1 );
 
 				x = 1 + ( saturation > 0 ? 3 : 1 ) * saturation;
@@ -194,7 +194,7 @@ package by.blooddy.core.filters {
 		//  Private class methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 * multiplies one matrix against another
@@ -215,7 +215,7 @@ package by.blooddy.core.filters {
 			}
 			return result;
 		}
-		
+
 	}
 
 }

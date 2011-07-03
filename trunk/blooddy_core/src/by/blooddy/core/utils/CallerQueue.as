@@ -21,7 +21,7 @@ package by.blooddy.core.utils {
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public function CallerQueue() {
 			super();
 		}
@@ -52,7 +52,7 @@ package by.blooddy.core.utils {
 		//  Methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public function addQueue(handler:Function, ...args):void {
 			this.addCallerQueue( new Caller( handler, args ) );
 		}

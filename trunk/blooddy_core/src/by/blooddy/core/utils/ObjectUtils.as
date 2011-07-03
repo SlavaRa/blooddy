@@ -8,9 +8,9 @@ package by.blooddy.core.utils {
 
 	import by.blooddy.core.meta.PropertyInfo;
 	import by.blooddy.core.meta.TypeInfo;
-	
+
 	import flash.xml.XMLDocument;
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -19,18 +19,18 @@ package by.blooddy.core.utils {
 	 * @created					01.04.2010 12:29:05
 	 */
 	public final class ObjectUtils {
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class variables
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 */
 		private static const _FUNCTION:QName = new QName( '', 'Function' );
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class methods
@@ -40,13 +40,13 @@ package by.blooddy.core.utils {
 		public static function toString(o:Object):String {
 			return encodeValue( o, new Array() );
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Private class methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 */
@@ -70,7 +70,7 @@ package by.blooddy.core.utils {
 			}
 			return 'null';
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -106,7 +106,7 @@ package by.blooddy.core.utils {
 			result += value.substr( j );
 			return result;
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -124,7 +124,7 @@ package by.blooddy.core.utils {
 			}
 			return '[' + arr.join( ',' ) + ']';
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -152,6 +152,5 @@ package by.blooddy.core.utils {
 		}
 
 	}
-	
-}
 
+}

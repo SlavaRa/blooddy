@@ -7,7 +7,7 @@
 package by.blooddy.core.managers.resource {
 
 	import by.blooddy.core.net.loading.ILoadable;
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -24,5 +24,5 @@ package by.blooddy.core.managers.resource {
 		function getResource(bundleName:String, resourceName:String=null):*;
 
 	}
-	
+
 }

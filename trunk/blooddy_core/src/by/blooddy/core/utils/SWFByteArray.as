@@ -62,7 +62,7 @@ package by.blooddy.core.utils {
 				} else {
 					var endian:String = bytes.endian;
 					bytes.endian = Endian.LITTLE_ENDIAN;
-					
+
 					if (bytes.bytesAvailable > 26) {
 						var type:String = bytes.readUTFBytes(3);
 						this._version = bytes.readUnsignedByte();
@@ -72,17 +72,17 @@ package by.blooddy.core.utils {
 							if (type == TAG_SWF_COMPRESSED) {
 								this.uncompress();
 							}
-							
+
 							this.readHeader();
 							this._tagsStartPosition = super.position;
 						}
 					} else {
 						super.position = 0;
 					}
-					
+
 					bytes.endian = endian;
 				}
-				
+
 				bytes.position = pos;
 				// this.position = 0;
 			}
@@ -93,7 +93,7 @@ package by.blooddy.core.utils {
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 */
@@ -124,16 +124,16 @@ package by.blooddy.core.utils {
 		 * @private
 		 */
 		private var _frameRate:Number;
-		
+
 		public function get frameRate():Number {
 			return this._frameRate;	
 		}
-		
+
 		/**
 		 * @private
 		 */
 		private var _rect:Rectangle;
-		
+
 		public function get rect():Rectangle {
 			return this._rect;
 		}
@@ -143,7 +143,7 @@ package by.blooddy.core.utils {
 		//  Methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		public function rewind():void {
 			super.position = this._tagsStartPosition;			
 		}
@@ -156,21 +156,21 @@ package by.blooddy.core.utils {
 			var out:int = 0;
 			var i:uint = 0;
 			var byte:uint = this[pos];
-			
+
 			if (!(byte & 0x80)) {
 				super.position = pos+1;
 				return byte;
 			}
-			
+
 			pos += 1;
-			
+
 			while ((byte & 0x80)) {
 				out |= (byte ^ 0x80) << (i * 7);
 				i += 1;
 				byte = this[pos];
 				pos += 1;
 			}
-			
+
 			out |= (byte << (i * 7)); 
 			super.position = pos;
 			return out;*/
@@ -183,7 +183,7 @@ package by.blooddy.core.utils {
 			} while ( byte & 1<<7 );
 			return result;			
 		}
-	
+
 		/**
 		 * Читает signed 24-bit число (фиксированной длины, 3 байта)
 		 */
@@ -192,21 +192,21 @@ package by.blooddy.core.utils {
 			var out:int = (this[pos] << 16);
 			out += (this[pos+=1] << 8);
 			out += this[pos+=1]; 
-			
+
 			if (out >= 0x808080) {
 				out -= 0xFFFFFF;
 			}
-			
+
 			super.position = pos+1;
 			return out;
 		}
-				
+
 		public function readUnsignedInt64():Number {
 			var n1:Number = super.readUnsignedInt();
 			var n2:Number = super.readUnsignedInt();
 			return n2 * 0x100000000 + n1;	
 		}
-		
+
 		public function readString():String {
 			var i:uint = super.position;
 			while (this[i] && (i+=1)) {};
@@ -226,7 +226,7 @@ package by.blooddy.core.utils {
 			super.position = pos + Math.ceil(((bits * 4) - 3) / 8) + 1;
 			return new Rectangle(xMin, yMin, xMax - xMin, yMax - yMin);
 		}
-		
+
 		public function readBits(length:uint, start:int = -1):Number {
 			if (start < 0) start = this._bitIndex;
 			this._bitIndex = start;
@@ -235,7 +235,7 @@ package by.blooddy.core.utils {
 			var shift:Number = 0;
 			var currentByteBitsLeft:uint = 8 - start;
 			var bitsLeft:Number = length - currentByteBitsLeft;
-			
+
 			if (bitsLeft > 0) {
 				++super.position;
 				out = this.readBits(bitsLeft, 0) | ((byte & ((1 << currentByteBitsLeft) - 1)) << (bitsLeft));
@@ -244,10 +244,10 @@ package by.blooddy.core.utils {
 				this._bitIndex = (start + length) % 8;
 				if (start + length > 7) ++super.position;
 			}
-			
+
 			return out;
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -259,7 +259,7 @@ package by.blooddy.core.utils {
 				this._frameRate = super.readUnsignedByte()+fixed;
 			}
 		}
-		
+
 		/**
 		 * @private
 		 */

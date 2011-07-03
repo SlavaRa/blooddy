@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.utils.net {
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -14,7 +14,7 @@ package by.blooddy.core.utils.net {
 	 * @created					27.02.2010 0:00:41
 	 */
 	public final class URLUtils {
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class variables
@@ -30,22 +30,22 @@ package by.blooddy.core.utils.net {
 		 * @private
 		 */
 		private static const _BACKWARDS:RegExp = /\.\.\//g;
-		
+
 		/**
 		 * @private
 		 */
 		private static const _N_DYNAMIC:RegExp = /\/\[\[DYNAMIC\]\]\/.*$/;
-		
+
 		/**
 		 * @private
 		 */
 		private static const _N_IMPORT:RegExp = /^(\w+:\/\/).*?\/\[\[IMPORT\]\]\//;
-		
+
 		/**
 		 * @private
 		 */
 		private static const _N_DISK:RegExp = /^file:\/\/\/(\w)\|/i;
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class methods
@@ -55,7 +55,7 @@ package by.blooddy.core.utils.net {
 		public static function normalizeURL(url:String):String {
 			return decodeURIComponent( url ).replace( _N_DISK, 'file://$1:' ).replace( _N_DYNAMIC, '' ).replace( _N_IMPORT, '$1' );
 		}
-		
+
 		public static function getPathURL(url:String):String {
 			var loc:Location = new Location( url );
 			if ( loc.path ) {
@@ -68,7 +68,7 @@ package by.blooddy.core.utils.net {
 			loc.hash = null;
 			return loc.toString();
 		}
-		
+
 		public static function createAbsoluteURL(relativeRoot:String, relativeURL:String):String {
 
 			var urlLoc:Location = new Location( relativeURL );
@@ -112,5 +112,5 @@ package by.blooddy.core.utils.net {
 		}
 
 	}
-	
+
 }

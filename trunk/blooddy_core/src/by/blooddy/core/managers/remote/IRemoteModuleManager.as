@@ -20,5 +20,5 @@ package by.blooddy.core.managers.remote {
 		function unloadModule(id:String):void;
 
 	}
-	
+
 }

@@ -8,7 +8,7 @@ package by.blooddy.core.data.xml.rss {
 
 	import by.blooddy.core.data.Data;
 	import by.blooddy.core.events.data.DataBaseEvent;
-	
+
 	import flash.errors.IllegalOperationError;
 
 	[Event( name="change", type="by.blooddy.core.events.data.DataBaseEvent" )]

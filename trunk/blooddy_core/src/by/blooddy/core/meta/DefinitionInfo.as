@@ -31,13 +31,13 @@ package by.blooddy.core.meta {
 		//--------------------------------------------------------------------------
 
 		use namespace $protected_info;
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class variables
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 */
@@ -48,7 +48,7 @@ package by.blooddy.core.meta {
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * Constructor
 		 */
@@ -61,12 +61,12 @@ package by.blooddy.core.meta {
 		//  Variables
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 */
 		$protected_info var _parent:DefinitionInfo;
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Properties
@@ -91,7 +91,7 @@ package by.blooddy.core.meta {
 		 * @private
 		 */
 		$protected_info var _metadata_local:XMLList;
-		
+
 		public function getMetadata(local:Boolean=false):XMLList {
 			if ( local ) {
 				return this._metadata_local.copy();
@@ -111,7 +111,7 @@ package by.blooddy.core.meta {
 			xml.appendChild( local ? this._metadata_local : this._metadata );
 			return xml;
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
@@ -126,12 +126,12 @@ package by.blooddy.core.meta {
 				n != '__go_to_definition_help'
 			); // исключаев дебаг мету
 			if ( this._parent ) {
-				
+
 				if ( meta.length() <= 0 ) {
-					
+
 					this._metadata_local =	_EMPTY_METADATA;
 					this._metadata =		this._parent._metadata;
-					
+
 				} else {
 
 					this._metadata_local =	meta.copy();
@@ -140,7 +140,7 @@ package by.blooddy.core.meta {
 					} else {
 						this._metadata = meta.copy() + this._parent._metadata;
 					}
-					
+
 				}
 
 			} else {
@@ -152,5 +152,5 @@ package by.blooddy.core.meta {
 		}
 
 	}
-	
+
 }

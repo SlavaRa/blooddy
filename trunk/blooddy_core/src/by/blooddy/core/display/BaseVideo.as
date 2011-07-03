@@ -5,16 +5,16 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.display {
-	
+
 	import by.blooddy.core.blooddy;
 	import by.blooddy.core.utils.ClassAlias;
-	
+
 	import flash.media.Video;
 
 	//--------------------------------------
 	//  Aliases
 	//--------------------------------------
-	
+
 	ClassAlias.registerQNameAlias( new QName( blooddy, 'Video' ), BaseVideo );
 
 	/**
@@ -25,13 +25,13 @@ package by.blooddy.core.display {
 	 * @created					Mar 1, 2010 1:12:51 PM
 	 */
 	public class BaseVideo extends Video {
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * Constructor.
 		 */
@@ -40,15 +40,15 @@ package by.blooddy.core.display {
 			super.addEventListener( Event.ADDED_TO_STAGE,		this.handler_addedToStage,		false, int.MAX_VALUE, true );
 			super.addEventListener( Event.REMOVED_FROM_STAGE,	this.handler_removedFromStage,	false, int.MAX_VALUE, true );
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Includes
 		//
 		//--------------------------------------------------------------------------
-		
+
 		include "../../../../includes/implements_BaseDisplayObject.as";
-		
+
 	}
-	
+
 }

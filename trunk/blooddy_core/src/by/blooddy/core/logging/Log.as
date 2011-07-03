@@ -57,7 +57,7 @@ package by.blooddy.core.logging {
 		public function toHTMLString():String {
 			return this.toString();
 		}
-		
+
 		/**
 		 * @private
 		 */

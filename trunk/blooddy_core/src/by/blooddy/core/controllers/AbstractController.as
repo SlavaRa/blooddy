@@ -7,9 +7,9 @@
 package by.blooddy.core.controllers {
 
 	import by.blooddy.core.data.DataBase;
-	
+
 	import flash.events.EventDispatcher;
-	
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0

@@ -28,11 +28,11 @@ package by.blooddy.core.utils.proxy {
 		//  Namespaces
 		//
 		//--------------------------------------------------------------------------
-		
+
 		protected namespace $protected_px;
-		
+
 		use namespace $protected_px;
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -94,7 +94,7 @@ package by.blooddy.core.utils.proxy {
 		flash_proxy override function hasProperty(name:*):Boolean {
 			return name in this._proxies || name in this._target;
 		}
-		
+
 		flash_proxy override function getProperty(name:*):* {
 			if ( name in this._proxies ) {
 
@@ -118,7 +118,7 @@ package by.blooddy.core.utils.proxy {
 
 			}
 		}
-		
+
 		flash_proxy override function setProperty(name:*, value:*):void {
 
 			if ( this._target[ name ] === value ) return;
@@ -126,7 +126,7 @@ package by.blooddy.core.utils.proxy {
 			if ( value is ProxyObject ) {
 
 				var p:ProxyObject = value as ProxyObject;
-				
+
 				if ( name in this._proxies ) {
 					if ( this._proxies[ name ] === p ) return;
 					else this.deleteProxyProperty( name );
@@ -142,15 +142,15 @@ package by.blooddy.core.utils.proxy {
 					this.bubble( name );
 
 				}
-				
+
 			} else {
 
 				this._target[ name ] = value;
-	
+
 				if ( name in this._proxies ) {
 					this.deleteProxyProperty( name );
 				}
-	
+
 				if (
 					value &&
 					typeof value == 'object' &&
@@ -168,7 +168,7 @@ package by.blooddy.core.utils.proxy {
 			}
 
 		}
-		
+
 		flash_proxy override function deleteProperty(name:*):Boolean {
 			var result:Boolean;
 			if ( name in this._target ) {
@@ -206,7 +206,7 @@ package by.blooddy.core.utils.proxy {
 			}
 			return ( !index ? this._keys.length : index - 1 );
 		}
-		
+
 		flash_proxy override function nextName(index:int):String {
 			return ( this._keys ? this._keys[ index - 1 ] : null );
 		}
@@ -254,7 +254,7 @@ package by.blooddy.core.utils.proxy {
 			}
 			return p;
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -263,7 +263,7 @@ package by.blooddy.core.utils.proxy {
 			delete p._parents[ this ];
 			delete this._proxies[ name ];
 		}
-		
+
 	}
 
 }

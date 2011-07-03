@@ -25,7 +25,7 @@ package by.blooddy.core.net.loading {
 	 * @keyword					urlstream
 	 */
 	public class URLStream extends LoaderBase implements IDataInput {
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Namespaces
@@ -218,7 +218,7 @@ package by.blooddy.core.net.loading {
 			this._stream.removeEventListener( ProgressEvent.PROGRESS,	this.handler_stream_progress );
 			this._stream.addEventListener( ProgressEvent.PROGRESS,		super.progressHandler );
 		}
-		
+
 		/**
 		 * @private
 		 */

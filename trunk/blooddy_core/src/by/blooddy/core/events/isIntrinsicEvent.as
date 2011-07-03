@@ -94,7 +94,7 @@ internal final class EventDispatcherInfo {
 	 * @private
 	 */
 	private static const _NAME_EVENT_DISPATCHER:String = getQualifiedClassName( IEventDispatcher );
-	
+
 	//--------------------------------------------------------------------------
 	//
 	//  Constructor

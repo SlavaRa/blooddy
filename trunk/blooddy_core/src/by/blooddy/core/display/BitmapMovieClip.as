@@ -7,7 +7,7 @@
 package by.blooddy.core.display {
 
 	import by.blooddy.core.utils.IDisposable;
-	
+
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
@@ -49,9 +49,9 @@ package by.blooddy.core.display {
 		//  Namespaces
 		//
 		//--------------------------------------------------------------------------
-		
+
 		use namespace $protected_mc;
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class variables

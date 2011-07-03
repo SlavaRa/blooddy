@@ -7,7 +7,7 @@
 package by.blooddy.core.controllers {
 
 	import by.blooddy.core.data.DataBase;
-	
+
 	import flash.events.IEventDispatcher;
 
 	/**
@@ -39,7 +39,7 @@ package by.blooddy.core.controllers {
 		 * @keyword					controller.basecontroller, basecontroller
 		 */
 		function get dataBase():DataBase;
-		
+
 		/**
 		 * Ссылка на SharedObject.
 		 * 

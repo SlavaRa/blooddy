@@ -21,7 +21,7 @@ package by.blooddy.core.logging {
 		//  Private class methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 */
@@ -36,7 +36,7 @@ package by.blooddy.core.logging {
 			}
 			return false;
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor

@@ -8,13 +8,13 @@ package by.blooddy.core.display {
 
 	import by.blooddy.core.blooddy;
 	import by.blooddy.core.utils.ClassAlias;
-	
+
 	import flash.display.Sprite;
 
 	//--------------------------------------
 	//  Aliases
 	//--------------------------------------
-	
+
 	ClassAlias.registerQNameAlias( new QName( blooddy, 'Sprite' ), BaseSprite );
 
 	/**
@@ -46,9 +46,9 @@ package by.blooddy.core.display {
 		//  Includes
 		//
 		//--------------------------------------------------------------------------
-		
+
 		include "../../../../includes/implements_BaseDisplayObject.as";
-		
+
 	}
 
 }

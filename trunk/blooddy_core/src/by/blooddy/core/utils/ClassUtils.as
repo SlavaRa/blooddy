@@ -9,7 +9,7 @@ package by.blooddy.core.utils {
 	import flash.utils.getDefinitionByName;
 	import flash.utils.getQualifiedClassName;
 	import flash.utils.getQualifiedSuperclassName;
-	
+
 	/**
 	 * Утилиты для работы с классами.
 	 * 
@@ -21,7 +21,7 @@ package by.blooddy.core.utils {
 	 * @keyword					сlassutils, class, utils
 	 */
 	public final class ClassUtils {
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class methods
@@ -36,7 +36,7 @@ package by.blooddy.core.utils {
 				return new QName( name.substr( 0, i ), name.substr( i + 2 ) );
 			}
 		}
-		
+
 		public static function parseClassName(name:String):String {
 			var i:int = name.lastIndexOf( '::' );
 			if ( i > 0 ) name = name.substr( i + 2 );
@@ -46,7 +46,7 @@ package by.blooddy.core.utils {
 		public static function getClassQName(o:Object):QName {
 			return parseClassQName( getQualifiedClassName( o ) );
 		}
-		
+
 		/**
 		 * @param	value			Объект, имя класса, которого нужно узнать.
 		 *
@@ -59,7 +59,7 @@ package by.blooddy.core.utils {
 		public static function getClassName(o:Object):String {
 			return parseClassName( getQualifiedClassName( o ) );
 		}
-		
+
 		/**
 		 * @param	value			Объект, имя класса, которого нужно узнать.
 		 *
@@ -89,7 +89,7 @@ package by.blooddy.core.utils {
 		public static function getClassFromName(o:Object):Class {
 			return ClassAlias.getClass( getQualifiedClassName( o ) );
 		}
-		
+
 		public static function getSuperclassFromName(o:Object):Class {
 			var name:String = getQualifiedSuperclassName( o );
 			if ( name ) {

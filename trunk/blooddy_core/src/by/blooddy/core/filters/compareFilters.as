@@ -4,12 +4,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-
 package by.blooddy.core.filters {
 
 	import flash.filters.BitmapFilter;
 	import by.blooddy.core.utils.ClassUtils;
-	
+
 	/**
 	 * Класс GlowAnimationFilter.
 	 * 
@@ -53,7 +52,6 @@ _HASH[ DisplacementMapFilter ] = compare_DisplacementMapFilter;
 _HASH[ DropShadowFilter ] = compare_DropShadowFilter;
 _HASH[ GradientBevelFilter ] = compare_GradientBevelFilter;
 _HASH[ GradientGlowFilter ] = compare_GradientGlowFilter;
-
 
 internal function compare_GlowFilters(f1:GlowFilter, f2:GlowFilter):Boolean {
 	return (
@@ -169,9 +167,6 @@ internal function compare_GradientGlowFilter(f1:GradientGlowFilter, f2:GradientG
 		compare_Array(f1.ratios, f1.ratios)
 	);
 }
-
-
-
 
 internal function compare_Array(a1:Array, a2:Array):Boolean {
 	var l1:int = a1.length;

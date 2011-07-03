@@ -1,18 +1,19 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  © 2010 BlooDHounD
+//  (C) 2011 BlooDHounD
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package by.blooddy.core {
+package by.blooddy.core.managers.drag {
 
+	[ExcludeClass]
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 10
 	 * @langversion				3.0
-	 * @created					16.04.2010 20:31:34
+	 * @created					18.02.2011 2:45:26
 	 */
-	public namespace blooddy = 'http://blooddy.by/ns/';
-
+	internal namespace $internal;
+	
 }

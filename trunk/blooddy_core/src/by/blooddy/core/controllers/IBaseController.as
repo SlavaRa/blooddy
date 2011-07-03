@@ -8,7 +8,7 @@ package by.blooddy.core.controllers {
 
 	import by.blooddy.core.commands.ICommandDispatcher;
 	import by.blooddy.core.utils.IAbstractRemoter;
-	
+
 	import flash.display.DisplayObjectContainer;
 
 	/**

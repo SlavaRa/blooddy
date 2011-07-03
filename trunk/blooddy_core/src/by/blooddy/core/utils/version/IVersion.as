@@ -31,7 +31,7 @@ package by.blooddy.core.utils.version {
 		function get buildNumber():uint;
 
 		function get internalBuildNumber():uint;
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
