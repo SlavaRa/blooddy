@@ -117,7 +117,7 @@ package by.blooddy.core.logging {
 		/**
 		 * @private
 		 */
-		private const _connection:LocalConnection = new LocalConnection( 'blooddy-console' );
+		private const _connection:LocalConnection = new LocalConnection( '__blooddy_console' );
 
 		//--------------------------------------------------------------------------
 		//
@@ -150,7 +150,7 @@ package by.blooddy.core.logging {
 				this._logger.addEventListener( LogEvent.ADDED_LOG, this.handler_addedLog );
 				do {
 					try {
-						this._connection.open( 'blooddy-console-' + UID.generate() );
+						this._connection.open( '__blooddy_console_' + UID.generate() );
 						break;
 					} catch ( e:* ) {
 					}

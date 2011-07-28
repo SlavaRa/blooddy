@@ -444,6 +444,7 @@ package by.blooddy.core.net.loading {
 		$protected_load final function completeHandler(event:Event):void {
 			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
 			if ( event is ErrorEvent ) {
+				trace( '[LOADER-ERROR]', this._url );
 				this._state = _STATE_ERROR;
 			} else {
 				this.updateProgress( this._bytesTotal, this._bytesTotal );
