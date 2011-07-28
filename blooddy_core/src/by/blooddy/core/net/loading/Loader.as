@@ -427,7 +427,6 @@ package by.blooddy.core.net.loading {
 //==============================================================================
 
 import by.blooddy.core.utils.ClassUtils;
-import by.blooddy.core.utils.time.setTimeout;
 
 import flash.display.DisplayObject;
 import flash.display.Loader;
@@ -435,9 +434,11 @@ import flash.display.LoaderInfo;
 import flash.display.Sprite;
 import flash.errors.IllegalOperationError;
 import flash.events.Event;
+import flash.events.TimerEvent;
 import flash.net.URLRequest;
 import flash.system.LoaderContext;
 import flash.utils.ByteArray;
+import flash.utils.Timer;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -471,7 +472,7 @@ internal final class $Loader extends flash.display.Loader {
 	/**
 	 * @private
 	 */
-	private static const _GC_CALL_TIMEOUT:uint = 1E3;
+	private static const _GC_TIMER:Timer = new Timer( 1e3, 1 );
 	
 	/**
 	 * @private
@@ -624,23 +625,10 @@ internal final class $Loader extends flash.display.Loader {
 		if ( _waitGC ) {
 			super.unloadAndStop( false );
 		} else {
+			_GC_TIMER.addEventListener( TimerEvent.TIMER_COMPLETE, this.handler_timerComplete );
+			_GC_TIMER.start();
 			_waitGC = true;
-			setTimeout( this._unloadAndGC, _GC_CALL_TIMEOUT );
 		}
-	}
-	
-	//--------------------------------------------------------------------------
-	//
-	//  Private methods
-	//
-	//--------------------------------------------------------------------------
-
-	/**
-	 * @private
-	 */
-	private function _unloadAndGC():void {
-		super.unloadAndStop( true );
-		_waitGC = false;
 	}
 	
 	//--------------------------------------------------------------------------
@@ -648,6 +636,16 @@ internal final class $Loader extends flash.display.Loader {
 	//  Event handlers
 	//
 	//--------------------------------------------------------------------------
+
+	/**
+	 * @private
+	 */
+	private function handler_timerComplete(event:TimerEvent):void {
+		_GC_TIMER.reset();
+		_GC_TIMER.removeEventListener( TimerEvent.TIMER_COMPLETE, this.handler_timerComplete );
+		super.unloadAndStop( true );
+		_waitGC = false;
+	}
 
 	/**
 	 * @private

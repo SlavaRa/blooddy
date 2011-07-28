@@ -113,7 +113,7 @@ package by.blooddy.console.application {
 			stage.align = StageAlign.TOP_LEFT;
 
 			var i:uint = 0;
-			this._connection.open( 'blooddy-console' );
+			this._connection.open( '__blooddy_console' );
 			this._connection.client = this;
 			this._connection.addEventListener( AsyncErrorEvent.ASYNC_ERROR, this.handler_asyncError, false, int.MAX_VALUE, true );
 			this._connection.addEventListener( StatusEvent.STATUS, this.handler_status, false, int.MAX_VALUE, true );

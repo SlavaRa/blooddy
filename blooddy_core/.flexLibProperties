@@ -85,6 +85,7 @@
     <classEntry path="by.blooddy.core.logging.TextLog"/>
     <classEntry path="by.blooddy.core.logging.commands.CommandLog"/>
     <classEntry path="by.blooddy.core.managers.KeyboardManager"/>
+    <classEntry path="by.blooddy.core.managers.drag.$internal"/>
     <classEntry path="by.blooddy.core.managers.drag.DragManager"/>
     <classEntry path="by.blooddy.core.managers.drag.DragObject"/>
     <classEntry path="by.blooddy.core.managers.process.IProcessable"/>
