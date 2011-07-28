@@ -79,7 +79,7 @@ package by.blooddy.core.managers.resource {
 		/**
 		 * @private
 		 */
-		private static const _SORT_OPTIONS:Array = new Array( Array.NUMERIC, Array.NUMERIC | Array.DESCENDING );
+		private static const _SORT_OPTIONS:Array = new Array( Array.NUMERIC | Array.DESCENDING, Array.NUMERIC );
 
 		//--------------------------------------------------------------------------
 		//
@@ -213,7 +213,7 @@ package by.blooddy.core.managers.resource {
 					( _LOADING_QUEUE[ 0 ] as QueueItem ).priority >= LoaderPriority.HIGHEST
 				)
 			) {
-				var asset:$ResourceLoader = _LOADING_QUEUE.pop().asset;
+				var asset:$ResourceLoader = _LOADING_QUEUE.shift().asset;
 				asset.queue = null;
 				registerQueue( asset );
 				asset._load();

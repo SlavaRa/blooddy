@@ -65,7 +65,6 @@ package by.blooddy.core.utils {
 			obj.cacheAsBitmap = false;
 			if ( obj.filters.length > 0 ) obj.filters = _EMPTY_ARRAY;
 			obj.mask = null;
-			obj.name = '';
 			obj.scale9Grid = null;
 			obj.scrollRect = null;
 			// transform

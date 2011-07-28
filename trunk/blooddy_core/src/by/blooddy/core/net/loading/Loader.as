@@ -24,6 +24,7 @@ package by.blooddy.core.net.loading {
 	import flash.events.SecurityErrorEvent;
 	import flash.net.URLRequest;
 	import flash.system.LoaderContext;
+	import flash.system.Security;
 	import flash.system.SecurityDomain;
 	import flash.utils.ByteArray;
 
@@ -46,7 +47,18 @@ package by.blooddy.core.net.loading {
 		//--------------------------------------------------------------------------
 
 		use namespace $protected_load;
-		
+
+		//--------------------------------------------------------------------------
+		//
+		//  Class variables
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private static const IS_REMOTE:Boolean = Security.sandboxType == Security.REMOTE;
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -298,28 +310,61 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 */
 		private function handler_security_init(event:Event):void {
-			try {
 
-				this._loader._content;
-				this.handler_init( event );
+			var hasError:Boolean = false;
+			switch ( this._loaderInfo.contentType ) {
+				case MIME.FLASH:
+					hasError = !( IS_REMOTE || this._loaderInfo.sameDomain ) || !this._loaderInfo.childAllowsParent || !this._loaderInfo.parentAllowsChild;
+					break;
+				case MIME.PNG:
+				case MIME.JPEG:
+				case MIME.GIF:
+					hasError = !this._loaderInfo.childAllowsParent;
+					break;
+			}
 
-			} catch ( e:SecurityError ) {
+			var error:Error;
+
+			if ( !hasError ) {
+
+				try {
+	
+					this._loader._content;
+					this.handler_init( event );
+	
+				} catch ( e:SecurityError ) {
+					hasError = true;
+					error = e;
+				} catch ( e:* ) {
+					// ignore
+				}
+
+			}
+
+			if ( hasError ) {
 
 				if ( this._loaderContext && this._loaderContext.ignoreSecurityDomain ) {
-
+					
 					this._contentType = this._loaderInfo.contentType;
 					this._loaderInfo.removeEventListener( Event.COMPLETE, this.handler_loader_complete );
 					this._loaderInfo.addEventListener( Event.COMPLETE, this.handler_security_complete );
-
+					
 				} else {
 
-					this.handler_loader_error( new SecurityErrorEvent( SecurityErrorEvent.SECURITY_ERROR, false, false, e.toString(), e.errorID ) );
+					if ( !error ) {
+						try {
+							Error.throwError( SecurityError, 2048, this._loaderInfo.loaderURL, this._loaderInfo.url );
+						} catch ( e:SecurityError ) {
+							error = e;
+						}
+					}
 
+					this.handler_loader_error( new SecurityErrorEvent( SecurityErrorEvent.SECURITY_ERROR, false, false, error.toString(), error.errorID ) );
+					
 				}
 
-			} catch ( e:* ) {
-				// ignore
 			}
+			
 		}
 
 		/**
@@ -371,7 +416,7 @@ package by.blooddy.core.net.loading {
 
 			} else {
 
-				switch ( this._loaderInfo.contentType ) {
+				switch ( this._contentType ) {
 					case MIME.FLASH:
 						this._content = content;
 						break;
