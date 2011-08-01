@@ -378,7 +378,7 @@ package by.blooddy.core.net.connection {
 		 */
 		private function handler_error(event:ErrorEvent):void {
 			if ( super.logging ) {
-				super.logger.addLog( new InfoLog( 'Error: ' + this._host + ':' + this._port, InfoLog.INFO ) );
+				super.logger.addLog( new InfoLog( 'Error: ' + this._host + ':' + this._port, InfoLog.ERROR ) );
 			}
 			this.clear();
 			super.dispatchEvent( event );
