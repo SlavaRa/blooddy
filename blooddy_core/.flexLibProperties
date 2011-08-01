@@ -202,6 +202,8 @@
     <classEntry path="by.blooddy.core.utils.xml.IXMLable"/>
     <classEntry path="by.blooddy.core.utils.xml.XMLUtils"/>
     <classEntry path="parseBoolean"/>
+    <classEntry path="by.blooddy.core.net.ITextSocket"/>
+    <classEntry path="by.blooddy.core.net.WebSocket"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests>
