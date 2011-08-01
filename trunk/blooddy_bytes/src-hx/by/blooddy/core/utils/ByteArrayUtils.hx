@@ -95,11 +95,11 @@ class ByteArrayUtils {
 		return result;
 	}
 
-	public static inline function indexOfBytes(bytes:ByteArray, value:ByteArray, ?startIndex:UInt=0):Int {
+	public static inline function indexOfBytes(bytes:ByteArray, value:ByteArray, ?startIndex:UInt = 0):Int {
 		var result:Int = -1;
-		var l:UInt = bytes.length;
 		var m:UInt = value.length;
-		if ( m > 0 && l - m - startIndex > 0 ) {
+		var n:UInt = bytes.length;
+		if ( m > 0 && startIndex < n ) {
 			if ( m == 1 ) {
 				result = indexOfByte( bytes, value[ 0 ], startIndex );
 			} else {
@@ -111,6 +111,7 @@ class ByteArrayUtils {
 					tmp.length = Memory.MIN_SIZE;
 				}
 				Memory.memory = tmp;
+				var l:UInt = n + 1;
 				var i:UInt = m + startIndex;
 				var j:UInt;
 				var byte:UInt = Memory.getByte( 0 );
@@ -118,7 +119,7 @@ class ByteArrayUtils {
 					if ( Memory.getByte( i ) == byte ) {
 						j = 1;
 						do {
-							if ( Memory.getByte( i + j ) == Memory.getByte( j ) ) break;
+							if ( Memory.getByte( i + j ) != Memory.getByte( j ) ) break;
 						} while ( ++j < m );
 						if ( j == m ) {
 							result = i - j;
