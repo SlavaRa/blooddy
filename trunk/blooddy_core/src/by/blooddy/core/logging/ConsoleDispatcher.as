@@ -16,6 +16,7 @@ package by.blooddy.core.logging {
 	
 	import flash.events.AsyncErrorEvent;
 	import flash.events.StatusEvent;
+	import flash.events.SecurityErrorEvent;
 	
 	/**
 	 * @author					BlooDHounD
@@ -102,9 +103,12 @@ package by.blooddy.core.logging {
 		 */
 		public function ConsoleDispatcher(logger:Logger=null) {
 			super();
+			this._connection.allowDomain( '*' );
+			this._connection.allowInsecureDomain( '*' );
 			this._connection.client = new Client( this );
-			this._connection.addEventListener( AsyncErrorEvent.ASYNC_ERROR, this.handler_asyncError, false, int.MAX_VALUE, true );
-			this._connection.addEventListener( StatusEvent.STATUS, this.handler_status, false, int.MAX_VALUE, true );
+			this._connection.addEventListener( SecurityErrorEvent.SECURITY_ERROR, this.handler_securityError, false, 0, true );
+			this._connection.addEventListener( AsyncErrorEvent.ASYNC_ERROR, this.handler_asyncError, false, 0, true );
+			this._connection.addEventListener( StatusEvent.STATUS, this.handler_status, false, 0, true );
 			if ( logger ) this.logger = logger;
 		}
 		
@@ -192,16 +196,23 @@ package by.blooddy.core.logging {
 		 * @private
 		 */
 		private function handler_asyncError(event:AsyncErrorEvent):void {
-			trace( 'dispatcher ' + event );
+			trace( 'dispatcher', event );
 		}
-		
+
 		/**
 		 * @private
 		 */
 		private function handler_status(event:StatusEvent):void {
 			if ( event.type == 'error' || event.type == 'warning' ) {
-				trace( 'dispatcher ' + event );
+			trace( 'dispatcher', event );
 			}
+		}
+
+		/**
+		 * @private
+		 */
+		private function handler_securityError(event:SecurityErrorEvent):void {
+			trace( 'dispatcher', event );
 		}
 
 	}

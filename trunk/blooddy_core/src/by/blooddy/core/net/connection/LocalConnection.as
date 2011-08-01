@@ -14,6 +14,8 @@ package by.blooddy.core.net.connection {
 	import flash.events.StatusEvent;
 	import flash.net.LocalConnection;
 	
+	// TODO: log events
+
 	//--------------------------------------
 	//  Events
 	//--------------------------------------
@@ -128,6 +130,9 @@ package by.blooddy.core.net.connection {
 			this._connected = true;
 		}
 
+		/**
+		 * @copy flash.net.LocalConnection#close()
+		 */
 		public function close():void {
 			if ( this._connected ) throw new ArgumentError();
 			this._connection.close();
@@ -135,10 +140,16 @@ package by.blooddy.core.net.connection {
 			this._connected = false;
 		}
 
+		/**
+		 * @copy flash.net.LocalConnection#allowDomain()
+		 */
 		public function allowDomain(...parameters):void {
 			this._connection.allowDomain.apply( null, parameters );
 		}
 
+		/**
+		 * @copy flash.net.LocalConnection#allowInsecureDomain()
+		 */
 		public function allowInsecureDomain(...parameters):void {
 			this._connection.allowInsecureDomain.apply( null, parameters );
 		}
