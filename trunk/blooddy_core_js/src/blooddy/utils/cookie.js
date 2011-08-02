@@ -23,7 +23,8 @@ if ( !blooddy.utils.cookie ) {
 		//
 		//--------------------------------------------------------------------------
 
-		var	doc =	window.document;
+		var	doc =	window.document,
+			n =		/([.*+?^=!:${}()|[\]\/\\])/g;
 
 		//--------------------------------------------------------------------------
 		//
@@ -51,7 +52,8 @@ if ( !blooddy.utils.cookie ) {
 		 * @return	{String}
 		 */
 		CookiePrototype.get = function(name) {
-			var	match = ( new RegExp( "\\s*" + name + "=(.*?);", "g") ).exec( doc.cookie );
+			name = encodeURIComponent( name ).replace( n, '\\$1' );
+			var match = document.cookie.match( new RegExp( '(?:^|;)\\s?' + name + '=(.*?)(?:;|$)','i' ) );
 			return ( match && match[ 1 ] ? decodeURIComponent( match[ 1 ] ) : null );
 		};
 
