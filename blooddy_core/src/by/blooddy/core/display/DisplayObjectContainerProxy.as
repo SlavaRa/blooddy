@@ -7,7 +7,7 @@
 package by.blooddy.core.display {
 
 	import by.blooddy.core.utils.proxy.Proxy;
-
+	
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.errors.IllegalOperationError;
@@ -97,7 +97,7 @@ package by.blooddy.core.display {
 
 		flash_proxy override function hasProperty(name:*):Boolean {
 			if ( super.isAttribute( name ) ) {
-				return name in this._container;
+				return new QName( name.uri, name.localName ) in this._container;
 			} else {
 				if ( name is QName ) name = name.toString();
 				else if ( ( !name is String ) ) throw new ArgumentError();
@@ -107,7 +107,7 @@ package by.blooddy.core.display {
 
 		flash_proxy override function getProperty(name:*):* {
 			if ( super.isAttribute( name ) ) {
-				return this._container[ name ];
+				return this._container[ new QName( name.uri, name.localName ) ];
 			} else {
 				if ( name is QName ) name = name.toString();
 				else if ( ( !name is String ) ) throw new ArgumentError();

@@ -34,7 +34,7 @@ package by.blooddy.gui.display.component {
 	//  Events
 	//--------------------------------------
 	
-	[Event( name="componentConstuct", type="by.blooddy.gui.events.ComponentEvent" )]
+	[Event( name="componentConstruct", type="by.blooddy.gui.events.ComponentEvent" )]
 	[Event( name="componentDestruct", type="by.blooddy.gui.events.ComponentEvent" )]
 
 	/**
@@ -51,9 +51,20 @@ package by.blooddy.gui.display.component {
 		//  Namepsaces
 		//
 		//--------------------------------------------------------------------------
-		
+
 		use namespace $internal;
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Class variables
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private static const _POINT:Point = new Point();
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -115,6 +126,9 @@ package by.blooddy.gui.display.component {
 			return this._constructed;
 		}
 		
+		/**
+		 * @private
+		 */
 		public override function set name(value:String):void {
 			if ( this._fixed ) {
 				throw new IllegalOperationError();
@@ -249,7 +263,7 @@ package by.blooddy.gui.display.component {
 		 * @private
 		 */
 		private function drawLock(event:Event=null):void {
-			var p:Point = super.localToGlobal( new Point() );
+			var p:Point = super.globalToLocal( _POINT );
 			with ( super.graphics ) {
 				clear();
 				beginFill( 0xFF0000, 0 );
@@ -273,7 +287,7 @@ package by.blooddy.gui.display.component {
 				return result;
 			} else {
 				return	super.dispatchEvent( event ) &&
-					this._componentInfo.$dispatchEvent( event );
+						this._componentInfo.$dispatchEvent( event );
 			}
 		}
 

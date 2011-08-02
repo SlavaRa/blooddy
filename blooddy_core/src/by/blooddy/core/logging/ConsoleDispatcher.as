@@ -231,14 +231,6 @@ use namespace $private;
  */
 internal final class Client {
 
-	/**
-	 * @private
-	 */
-	private static const _RESPONDER:Responder = new Responder(
-		function(...rest):* {},
-		function(...rest):* {}
-	);
-	
 	public function Client(target:ConsoleDispatcher) {
 		super();
 		this._target = target;
@@ -251,7 +243,7 @@ internal final class Client {
 	
 	public function call(commandName:String, parameters:Array=null):* {
 		if ( this._target ) {
-			parameters.unshift( commandName, _RESPONDER );
+			parameters.unshift( commandName, Responder.DEFAULT_RESPONDER );
 			return this._target.$client.call.apply( null, parameters );
 		}
 	}

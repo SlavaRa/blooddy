@@ -134,6 +134,10 @@ package by.blooddy.gui.display.component {
 		//
 		//--------------------------------------------------------------------------
 
+		public function getComponents():Vector.<ComponentInfo> {
+			return this._components_list.slice();
+		}
+
 		public function loadComponent(url:String, params:Object=null):ComponentInfo {
 //			if ( !super.hasManager() ) throw new ArgumentError();
 //			var loader:ILoadable = super.loadResourceBundle( url );
