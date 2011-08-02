@@ -217,6 +217,9 @@ package by.blooddy.core.net {
 		}
 
 		protected function $callOutputCommand(command:Command):* {
+			if ( command is NetCommand && ( command as NetCommand ).num ) {
+				throw new ArgumentError();
+			}
 			return this.$invokeCallInputCommand( command, false );
 		}
 

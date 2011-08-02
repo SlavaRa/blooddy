@@ -18,6 +18,20 @@ package by.blooddy.core.net {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Class constants
+		//
+		//--------------------------------------------------------------------------
+
+		public static const DEFAULT_RESPONDER:by.blooddy.core.net.Responder = new by.blooddy.core.net.Responder(
+			function(...rest):* {
+			},
+			function(...rest):* {
+				trace( 'DEFAULT_RESPONDER_ERROR:', rest );
+			}
+		);
+
+		//--------------------------------------------------------------------------
+		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
