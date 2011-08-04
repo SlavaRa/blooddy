@@ -87,7 +87,7 @@ package by.blooddy.core.display.resource {
 		}
 
 		public function toString():String {
-			return '[' + ClassUtils.getClassName( this ) + ' bundleName="' + this.bundleName + '" resourceName="' + this.resourceName + '"]';
+			return '[' + ClassUtils.getClassName( this ) + ( this.bundleName ? ' bundleName="' + this.bundleName + '"' : '' ) + ( this.resourceName ? ' resourceName="' + this.resourceName + '"' : '' ) + ']';
 		}
 
 	}
