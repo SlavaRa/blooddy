@@ -170,6 +170,19 @@ package by.blooddy.core.utils {
 			return container;
 		}
 
+		public static function getDescendants(container:DisplayObjectContainer, name:String):DisplayObject {
+			if ( container.name == name ) {
+				return container;
+			} else if ( container.numChildren > 0 ) {
+				var result:DisplayObject = container.getChildByName( name );
+				if ( !result ) {
+					result = getChildByName( container, name );
+				}
+				return result;
+			}
+			return null;
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Private class methods
@@ -202,6 +215,29 @@ package by.blooddy.core.utils {
 				currentTarget = null;
 			}
 			
+		}
+		
+		/**
+		 * @private
+		 */
+		private static function getChildByName(container:DisplayObjectContainer, name:String):DisplayObject {
+			var result:DisplayObject;
+			var c:DisplayObjectContainer;
+			var i:uint;
+			var l:uint = container.numChildren;
+			var v:Vector.<uint> = new Vector.<uint>( l );
+			for ( i=0; i<l; ++i ) {
+				v[ i ] = i;
+			}
+			for ( i=0; i<l; ++i ) {
+				c = container.getChildAt( v.splice( Math.round( Math.random() * ( v.length - 1 ) ), 1 )[ 0 ] ) as DisplayObjectContainer;
+				if ( c && c.numChildren > 0 ) {
+					result = c.getChildByName( name );
+					if ( !result ) result = getChildByName( c, name );
+					if ( result ) return result;
+				}
+			}
+			return result;
 		}
 		
 	}
