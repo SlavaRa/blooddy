@@ -6,6 +6,7 @@
 
 package by.blooddy.core.display {
 
+	import by.blooddy.core.utils.DisplayObjectUtils;
 	import by.blooddy.core.utils.proxy.Proxy;
 	
 	import flash.display.DisplayObject;
@@ -24,35 +25,6 @@ package by.blooddy.core.display {
 	 * @created					17.05.2010 15:07:47
 	 */
 	public dynamic class DisplayObjectContainerProxy extends Proxy {
-
-		//--------------------------------------------------------------------------
-		//
-		//  Private class methods
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		private static function getChildByName(container:DisplayObjectContainer, name:String):DisplayObject {
-			var result:DisplayObject;
-			var c:DisplayObjectContainer;
-			var i:uint;
-			var l:uint = container.numChildren;
-			var v:Vector.<uint> = new Vector.<uint>( l );
-			for ( i=0; i<l; ++i ) {
-				v[ i ] = i;
-			}
-			for ( i=0; i<l; ++i ) {
-				c = container.getChildAt( v.splice( Math.round( Math.random() * ( v.length - 1 ) ), 1 )[ 0 ] ) as DisplayObjectContainer;
-				if ( c && c.numChildren > 0 ) {
-					result = c.getChildByName( name );
-					if ( !result ) result = getChildByName( c, name );
-					if ( result ) return result;
-				}
-			}
-			return result;
-		}
 
 		//--------------------------------------------------------------------------
 		//
@@ -149,16 +121,7 @@ package by.blooddy.core.display {
 			}
 			if ( name is QName ) name = name.toString();
 			else if ( ( !name is String ) ) throw new ArgumentError();
-			var result:DisplayObject;
-			if ( this._container.name == name ) {
-				result = this._container;
-			} else if ( this._container.numChildren > 0 ) {
-				result = this._container.getChildByName( name );
-				if ( !result ) {
-					result = getChildByName( this._container, name );
-				}
-			}
-			return result;
+			return DisplayObjectUtils.getDescendants( this._container, name );
 		}
 
 		flash_proxy override function nextNameIndex(index:int):int {
