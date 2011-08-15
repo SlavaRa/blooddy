@@ -171,13 +171,15 @@ package by.blooddy.gui.display.component {
 				}
 			}
 
-			var i:int = super.getChildIndex( info.component );
+//			var i:int = super.getChildIndex( info.component );
+			var i:int = this._components_list.indexOf( info );
 			this._components_list.splice( i, 1 );
 
-			super.removeChild( info.component );
 			delete this._components_id[ info.id ];
 			i = this._components_name[ info.name ].indexOf( info );
 			if ( i >= 0 ) this._components_name[ info.name ].splice( i, 1 );
+
+			super.removeChild( info.component );
 
 			if ( setNewFocus ) {
 				var num:int = super.numChildren;
@@ -216,7 +218,9 @@ package by.blooddy.gui.display.component {
 
 		public function clear():void {
 			for each ( var info:ComponentInfo in this._components_id ) {
-				this.removeComponent( info );
+				if ( info.component ) { // могло удалить в результате других дейсвий
+					this.removeComponent( info );
+				}
 			}
 		}
 
@@ -224,7 +228,8 @@ package by.blooddy.gui.display.component {
 
 			var rating:uint = info.properties.rating;
 
-			var i:int = super.getChildIndex( info.component );
+//			var i:int = super.getChildIndex( info.component );
+			var i:int = this._components_list.indexOf( info );
 			this._components_list.splice( i, 1 );
 
 			i = this._components_list.length;
@@ -243,7 +248,8 @@ package by.blooddy.gui.display.component {
 
 			var rating:uint = info.properties.rating;
 			
-			var i:int = super.getChildIndex( info.component );
+//			var i:int = super.getChildIndex( info.component );
+			var i:int = this._components_list.indexOf( info );
 			this._components_list.splice( i, 1 );
 
 			i = -1;
