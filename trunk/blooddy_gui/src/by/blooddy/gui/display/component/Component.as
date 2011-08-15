@@ -9,7 +9,6 @@ package by.blooddy.gui.display.component {
 	import by.blooddy.core.blooddy;
 	import by.blooddy.core.display.DisplayObjectContainerProxy;
 	import by.blooddy.core.display.resource.ResourceSprite;
-	import by.blooddy.core.events.display.resource.ResourceEvent;
 	import by.blooddy.core.managers.process.IProgressProcessable;
 	import by.blooddy.core.utils.ClassAlias;
 	import by.blooddy.core.utils.ClassUtils;
@@ -22,7 +21,6 @@ package by.blooddy.gui.display.component {
 	import flash.events.Event;
 	import flash.geom.Point;
 	import flash.geom.Transform;
-	import flash.utils.getQualifiedClassName;
 
 	//--------------------------------------
 	//  Aliases
@@ -79,8 +77,8 @@ package by.blooddy.gui.display.component {
 			super.transform = new $Transform( this );
 			super.mouseEnabled = true;
 			super.mouseChildren = true;
-			super.addEventListener( ResourceEvent.ADDED_TO_MAIN,		this.handler_addedToMain, false, int.MIN_VALUE, true );
-			super.addEventListener( ResourceEvent.REMOVED_FROM_MAIN,	this.handler_removedFromMain, false, int.MIN_VALUE, true );
+			super.addEventListener( Event.ADDED_TO_STAGE,		this.handler_addedToStage, false, int.MAX_VALUE, true );
+			super.addEventListener( Event.REMOVED_FROM_STAGE,	this.handler_removedFromStage, false, int.MIN_VALUE, true );
 		}
 
 		//--------------------------------------------------------------------------
@@ -317,7 +315,7 @@ package by.blooddy.gui.display.component {
 		/**
 		 * @private
 		 */
-		private function handler_addedToMain(event:ResourceEvent):void {
+		private function handler_addedToStage(event:Event):void {
 			var parent:DisplayObject = this;
 			while ( ( parent = parent.parent ) && !( parent is ComponentContainer ) ) {};
 			this._container = parent as ComponentContainer;
@@ -331,7 +329,7 @@ package by.blooddy.gui.display.component {
 		/**
 		 * @private
 		 */
-		private function handler_removedFromMain(event:ResourceEvent):void {
+		private function handler_removedFromStage(event:Event):void {
 			if ( this._constructed ) {
 				this._constructed = false;
 
