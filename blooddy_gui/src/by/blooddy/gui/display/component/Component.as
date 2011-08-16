@@ -258,11 +258,12 @@ package by.blooddy.gui.display.component {
 		//
 		//--------------------------------------------------------------------------
 
-		protected function drawLock(rect:Rectangle):void {
+		protected function drawLock():void {
+			var p:Point = super.globalToLocal( _POINT );
 			with ( super.graphics ) {
 				clear();
 				beginFill( 0xFF0000, 0 );
-				drawRect( rect.x, rect.y, rect.width, rect.height );
+				drawRect( p.x, p.y, super.stage.stageWidth, super.stage.stageHeight );
 				endFill();
 			}
 		}
@@ -277,8 +278,7 @@ package by.blooddy.gui.display.component {
 		 * @private
 		 */
 		private function updateLock(event:Event=null):void {
-			var p:Point = super.globalToLocal( _POINT );
-			this.drawLock( new Rectangle( p.x, p.y, super.stage.stageWidth, super.stage.stageHeight ) ); 
+			this.drawLock(); 
 		}
 
 		/**
