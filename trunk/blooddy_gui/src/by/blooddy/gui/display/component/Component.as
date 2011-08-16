@@ -20,6 +20,7 @@ package by.blooddy.gui.display.component {
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	import flash.geom.Transform;
 
 	//--------------------------------------
@@ -253,6 +254,21 @@ package by.blooddy.gui.display.component {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
+
+		protected function drawLock(rect:Rectangle):void {
+			with ( super.graphics ) {
+				clear();
+				beginFill( 0xFF0000, 0 );
+				drawRect( rect.x, rect.y, rect.width, rect.height );
+				endFill();
+			}
+		}
+
+		//--------------------------------------------------------------------------
+		//
 		//  Private methods
 		//
 		//--------------------------------------------------------------------------
@@ -260,14 +276,9 @@ package by.blooddy.gui.display.component {
 		/**
 		 * @private
 		 */
-		private function drawLock(event:Event=null):void {
+		private function updateLock(event:Event=null):void {
 			var p:Point = super.globalToLocal( _POINT );
-			with ( super.graphics ) {
-				clear();
-				beginFill( 0xFF0000, 0 );
-				drawRect( p.x, p.y, super.stage.stageWidth, super.stage.stageHeight );
-				endFill();
-			}
+			this.drawLock( new Rectangle( p.x, p.y, super.stage.stageWidth, super.stage.stageHeight ) ); 
 		}
 
 		/**
@@ -320,8 +331,8 @@ package by.blooddy.gui.display.component {
 			while ( ( parent = parent.parent ) && !( parent is ComponentContainer ) ) {};
 			this._container = parent as ComponentContainer;
 			if ( this._lock ) {
-				super.stage.addEventListener( Event.RESIZE, this.drawLock );
-				this.drawLock();
+				super.stage.addEventListener( Event.RESIZE, this.updateLock );
+				this.updateLock();
 			}
 			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_exitFrame, false, int.MIN_VALUE );
 		}
@@ -341,7 +352,7 @@ package by.blooddy.gui.display.component {
 
 			}
 			if ( this._lock ) {
-				super.stage.removeEventListener( Event.RESIZE, this.drawLock );
+				super.stage.removeEventListener( Event.RESIZE, this.updateLock );
 			}
 			if ( this._componentInfo ) {
 				this._componentInfo.$clear(); // TODO: перенести?
