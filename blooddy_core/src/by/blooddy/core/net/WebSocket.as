@@ -222,11 +222,12 @@ package by.blooddy.core.net {
 			this._inputBuffer.length = 0;
 			this._socket.removeEventListener( Event.OPEN,							super.dispatchEvent );
 			this._socket.removeEventListener( Event.CONNECT,						this.handler_connect );
+			this._socket.removeEventListener( ProgressEvent.SOCKET_DATA,			this.handler_socketData );
 			this._socket.removeEventListener( IOErrorEvent.IO_ERROR,				super.dispatchEvent );
 			this._socket.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	super.dispatchEvent );
 			this._socket.removeEventListener( Event.CLOSE,							this.handler_close );
+			this._socket.removeEventListener( Event.CLOSE,							this.handler_connect_close );
 			this._socket.removeEventListener( ProgressEvent.SOCKET_DATA,			this.handler_connect_socketData );
-			this._socket.removeEventListener( ProgressEvent.SOCKET_DATA,			this.handler_progress_socketData );
 			if ( this._socket.connected ) {
 				this._socket.close();
 			}
@@ -235,9 +236,9 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private function throwError():void {
+		private function throwError(e:Error=null):void {
 			this.clear();
-			super.dispatchEvent( new IOErrorEvent( IOErrorEvent.IO_ERROR ) );
+			super.dispatchEvent( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, ( e ? e.message : null ), ( e ? e.errorID : 0 ) ) );
 		}
 
 		//--------------------------------------------------------------------------
@@ -250,17 +251,15 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		private function handler_connect(event:Event):void {
-			this._socket.addEventListener( Event.CLOSE,					this.handler_close );
+			this._socket.addEventListener( Event.CLOSE,					this.handler_connect_close );
 			this._socket.addEventListener( ProgressEvent.SOCKET_DATA,	this.handler_connect_socketData );
-			this._socket.writeUTFBytes( 'GET / HTTP/1.1' );
-			this._socket.writeUTFBytes( '\r\n' );
-			this._socket.writeUTFBytes( 'Upgrade: WebSocket' );
-			this._socket.writeUTFBytes( '\r\n' );
-			this._socket.writeUTFBytes( 'Connection: Upgrade' );
-			this._socket.writeUTFBytes( '\r\n' );
-			this._socket.writeUTFBytes( 'Host: ' + this._socket.host );
-			this._socket.writeUTFBytes( '\r\n' );
-			this._socket.writeUTFBytes( 'Origin: ' + this._socket.host );
+			this._socket.writeUTFBytes(
+				'GET / HTTP/1.1\r\n' +
+				'Upgrade: WebSocket\r\n' +
+				'Connection: Upgrade\r\n' +
+				'Host: ' + this._socket.host + '\r\n' +
+				'Origin: ' + this._socket.host
+			);
 			this._socket.writeBytes( _MARK );
 			this._socket.flush();
 		}
@@ -268,11 +267,10 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private function handler_close(event:Event):void {
-			this.clear();
-			super.dispatchEvent( event );
+		private function handler_connect_close(event:Event):void {
+			this.throwError();
 		}
-
+		
 		/**
 		 * @private
 		 */
@@ -308,8 +306,8 @@ package by.blooddy.core.net {
 					this._inputBuffer.length = 0;
 				}
 
-				this._socket.removeEventListener( ProgressEvent.SOCKET_DATA, this.handler_connect_socketData );
-				this._socket.addEventListener( ProgressEvent.SOCKET_DATA, this.handler_progress_socketData );
+				this._socket.removeEventListener( Event.CLOSE,					this.handler_connect_close );
+				this._socket.removeEventListener( ProgressEvent.SOCKET_DATA,	this.handler_connect_socketData );
 				
 				if ( 'HTTP_RESPONSE_STATUS' in HTTPStatusEvent ) {
 					var status:HTTPStatusEvent = new HTTPStatusEvent( HTTPStatusEvent.HTTP_RESPONSE_STATUS, false, false, 101 );
@@ -321,12 +319,15 @@ package by.blooddy.core.net {
 				super.dispatchEvent( new Event( Event.CONNECT ) );
 				
 				if ( this._inputBuffer.bytesAvailable ) {
-					this.handler_progress_socketData( event );
+					this.handler_socketData( event );
 				}
 
+				this._socket.addEventListener( ProgressEvent.SOCKET_DATA,		this.handler_socketData );
+				this._socket.addEventListener( Event.CLOSE,						this.handler_close );
+				
 			} catch ( e:* ) {
 				
-				this.throwError();
+				this.throwError( e as Error );
 				
 			}
 			
@@ -335,16 +336,25 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private function handler_progress_socketData(event:Event):void {
+		private function handler_close(event:Event):void {
+			this.clear();
+			super.dispatchEvent( event );
+		}
+		
+		/**
+		 * @private
+		 */
+		private function handler_socketData(event:Event):void {
 
 			this._socket.readBytes( this._inputBuffer, this._inputBuffer.length );
 
-			var pos:uint;
+			var pos:int;
 			var data:String;
 			
 			do {
 
 				pos = this._inputBuffer.position;
+
 				if ( this._inputBuffer[ pos ] == 0x00 ) {
 
 					pos = ByteArrayUtils.indexOfByte( this._inputBuffer, 0xFF, pos + 1 );
@@ -352,9 +362,9 @@ package by.blooddy.core.net {
 						++this._inputBuffer.position;
 						data = this._inputBuffer.readUTFBytes( pos - this._inputBuffer.position );
 						++this._inputBuffer.position;
+						super.dispatchEvent( new DataEvent( DataEvent.DATA, false, false, data ) );
 					}
-					super.dispatchEvent( new DataEvent( DataEvent.DATA, false, false, data ) );
-					
+
 				} else {
 
 					if ( this._inputBuffer[ pos ] == 0xFF && this._inputBuffer[ pos + 1 ] == 0x00 ) {

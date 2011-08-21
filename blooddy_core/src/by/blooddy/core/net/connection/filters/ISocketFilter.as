@@ -19,12 +19,8 @@ package by.blooddy.core.net.connection.filters {
 	 *
 	 * @keyword					socketfilter, filter, socket
 	 */
-	public interface ISocketFilter {
+	public interface ISocketFilter extends IAbstractSocketFilter {
 
-		function getHash():String;
-
-		function isSystem(command:NetCommand):Boolean;
-		
 		function readCommand(input:IDataInput, io:String='input'):NetCommand;
 
 		function writeCommand(output:IDataOutput, command:NetCommand):void;

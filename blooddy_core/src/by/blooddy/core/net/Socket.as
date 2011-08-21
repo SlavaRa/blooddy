@@ -19,6 +19,8 @@ package by.blooddy.core.net {
 	[Event( name="open", type="flash.events.Event" )]
 
 	/**
+	 * @copy					flash.net.Socket
+	 * 
 	 * @author					BlooDHounD
 	 * @version					1.0
 	 * @playerversion			Flash 9

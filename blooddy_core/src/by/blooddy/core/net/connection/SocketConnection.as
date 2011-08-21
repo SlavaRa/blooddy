@@ -9,53 +9,19 @@ package by.blooddy.core.net.connection {
 	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.events.net.SerializeErrorEvent;
 	import by.blooddy.core.logging.InfoLog;
-	import by.blooddy.core.net.AbstractRemoter;
 	import by.blooddy.core.net.ISocket;
 	import by.blooddy.core.net.NetCommand;
-	import by.blooddy.core.net.Protocols;
-	import by.blooddy.core.net.ProxySocket;
 	import by.blooddy.core.net.Responder;
 	import by.blooddy.core.net.Socket;
 	import by.blooddy.core.net.connection.filters.ISocketFilter;
 	import by.blooddy.core.utils.ByteArrayUtils;
 	
-	import flash.errors.IOError;
 	import flash.errors.IllegalOperationError;
-	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.utils.ByteArray;
-
-	//--------------------------------------
-	//  Implements events: IConnection
-	//--------------------------------------
-
-	/**
-	 * @inheritDoc
-	 */
-	[Event( name="open", type="flash.events.Event" )]
-
-	/**
-	 * @inheritDoc
-	 */
-	[Event( name="connect", type="flash.events.Event" )]
-
-	/**
-	 * @inheritDoc
-	 */
-	[Event( name="close", type="flash.events.Event" )]
-
-	/**
-	 * @inheritDoc
-	 */
-	[Event( name="ioError", type="flash.events.IOErrorEvent" )]
-
-	/**
-	 * @inheritDoc
-	 */
-	[Event( name="securityError", type="flash.events.SecurityErrorEvent" )]
 
 	//--------------------------------------
 	//  Events
@@ -74,7 +40,7 @@ package by.blooddy.core.net.connection {
 	 *
 	 * @keyword					socketconnection, connection, proxysocket, socket, proxy
 	 */
-	public class SocketConnection extends AbstractRemoter implements INetConnection {
+	public class SocketConnection extends AbstractSocketConnection {
 
 		//--------------------------------------------------------------------------
 		//
@@ -85,8 +51,10 @@ package by.blooddy.core.net.connection {
 		/**
 		 * Constructior
 		 */
-		public function SocketConnection() {
-			super();
+		public function SocketConnection(socket:ISocket=null) {
+			if ( !socket ) socket = new Socket();
+			super( socket );
+			this._socket = socket;
 		}
 
 		//--------------------------------------------------------------------------
@@ -110,122 +78,6 @@ package by.blooddy.core.net.connection {
 		 * @private
 		 */
 		private var _inputPosition:uint = 0;
-
-		//--------------------------------------------------------------------------
-		//
-		//  Implements properties: INetConnection
-		//
-		//--------------------------------------------------------------------------
-
-		//----------------------------------
-		//  connected
-		//----------------------------------
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get connected():Boolean {
-			return ( this._socket ? this._socket.connected : false );
-		}
-
-		//----------------------------------
-		//  protocol
-		//----------------------------------
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get protocol():String {
-			if ( this._socket ) {
-				return this._socket.protocol;
-			} else {
-				return null;
-			}
-		}
-
-		//----------------------------------
-		//  connectionType
-		//----------------------------------
-
-		/**
-		 * @private
-		 */
-		private var _connectionType:String = '';
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get connectionType():String {
-			return this._connectionType;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set connectionType(value:String):void {
-			if ( this.connected ) throw new ArgumentError(); /** TODO: описать ошибку */
-/*			switch (value) {
-				
-			}
-*/			this._connectionType = value;
-		}
-
-		//----------------------------------
-		//  host
-		//----------------------------------
-
-		/**
-		 * @private
-		 */
-		private var _host:String;
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get host():String {
-			return this._host;
-		}
-
-		//----------------------------------
-		//  port
-		//----------------------------------
-
-		/**
-		 * @private
-		 */
-		private var _port:int;
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get port():int {
-			return this._port;
-		}
-
-		//----------------------------------
-		//  connectionTimeout
-		//----------------------------------
-
-		/**
-		 * @private
-		 */
-		private var _connectionTimeout:Number = 10E3;
-
-		/**
-		 * @inheritDoc
-		 */
-		public function get timeout():uint {
-			return this._connectionTimeout;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set timeout(value:uint):void {
-			if ( this._connectionTimeout == value ) return;
-			this._connectionTimeout = value;
-			if ( this._socket ) this._socket.timeout = this._connectionTimeout;
-		}
 
 		//--------------------------------------------------------------------------
 		//
@@ -265,43 +117,9 @@ package by.blooddy.core.net.connection {
 		/**
 		 * @inheritDoc
 		 */
-		public function connect(host:String, port:int):void {
-			if ( this.connected ) throw new IOError();//this.close();
-			switch ( this._connectionType ) {
-				case Protocols.SOCKET:
-					if ( !( this._socket is Socket ) ) this._socket = null;
-					this._socket = new Socket();
-					break;
-				case Protocols.HTTP:
-					if ( !( this._socket is ProxySocket ) ) this._socket = null;
-					this._socket = new ProxySocket();
-					break;
-			}
-			if ( !this._socket ) throw new ArgumentError(); /** TODO: описать обшибку */
-			this._socket.timeout = this._connectionTimeout;
-			this._socket.addEventListener( Event.OPEN,							super.dispatchEvent );
-			this._socket.addEventListener( Event.CONNECT,						this.handler_connect );
-			this._socket.addEventListener( ProgressEvent.SOCKET_DATA,			this.handler_socketData );
-			this._socket.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_error );
-			this._socket.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error );
-			this._socket.addEventListener( Event.CLOSE,							this.handler_close );
-			this._socket.connect( host, port );
-			this._host = host;
-			this._port = port;
-			if ( super.logging ) {
-				super.logger.addLog( new InfoLog( 'Open: ' + this._host + ':' + this._port, InfoLog.INFO ) );
-			}
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public function close():void {
-			if ( this._socket ) {
-				this._socket.close();
-			} else {
-				Error.throwError( IOError, 2002 );
-			}
+		public override function connect(host:String, port:int):void {
+			super.connect( host, port );
+			this._socket.addEventListener( ProgressEvent.SOCKET_DATA, this.handler_socketData );
 		}
 
 		/**
@@ -324,6 +142,15 @@ package by.blooddy.core.net.connection {
 		/**
 		 * @private
 		 */
+		protected override function $clear():void {
+			this._socket.removeEventListener( ProgressEvent.SOCKET_DATA, this.handler_socketData );
+			this._inputBuffer.length = 0;
+			this._inputPosition = 0;
+		}
+		
+		/**
+		 * @private
+		 */
 		protected override function $callOutputCommand(command:Command):* {
 
 //			var bytes:ByteArray = new ByteArray();
@@ -337,65 +164,9 @@ package by.blooddy.core.net.connection {
 
 		//--------------------------------------------------------------------------
 		//
-		//  Private methods
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		private function clear():void {
-			this._host = null;
-			this._port = 0;
-			this._socket.removeEventListener( Event.OPEN,							super.dispatchEvent );
-			this._socket.removeEventListener( Event.CONNECT,						this.handler_connect );
-			this._socket.removeEventListener( ProgressEvent.SOCKET_DATA,			this.handler_socketData );
-			this._socket.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_error );
-			this._socket.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error );
-			this._socket.removeEventListener( Event.CLOSE,							this.handler_close );
-			this._inputBuffer.length = 0;
-			this._inputPosition = 0;
-		}
-
-		//--------------------------------------------------------------------------
-		//
 		//  Event handlers
 		//
 		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		private function handler_connect(event:Event):void {
-			if ( super.logging ) {
-				super.logger.addLog( new InfoLog( 'Connect: ' + this._host + ':' + this._port, InfoLog.INFO ) );
-			}
-			super.dispatchEvent( event );
-		}
-
-		/**
-		 * @private
-		 */
-		private function handler_error(event:ErrorEvent):void {
-			if ( super.logging ) {
-				super.logger.addLog( new InfoLog( 'Error: ' + this._host + ':' + this._port, InfoLog.ERROR ) );
-			}
-			this.clear();
-			super.dispatchEvent( event );
-		}
-
-		/**
-		 * @private
-		 * Соединение закрылось.
-		 */
-		private function handler_close(event:Event):void {
-			super.rejectResponders();
-			if ( super.logging ) {
-				super.logger.addLog( new InfoLog( 'Close: ' + this._host + ':' + this._port, InfoLog.INFO ) );
-			}
-			this.clear();
-			super.dispatchEvent( event );
-		}
 
 		/**
 		 * @private

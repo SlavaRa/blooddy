@@ -18,22 +18,6 @@ package by.blooddy.core.net.connection {
 	 */
 	public interface INetConnection extends IConnection, IAbstractSocket {
 
-		//----------------------------------
-		//  connectionType
-		//----------------------------------
-
-		/**
-		 * Тип прокси соединение.
-		 *
-		 * @keyword					connection.connectionType, connectionType
-		 */
-		function get connectionType():String;
-
-		/**
-		 * @private
-		 */
-		function set connectionType(value:String):void;
-
 	}
 
 }
