@@ -23,18 +23,7 @@ package by.blooddy.core.net.connection.filters {
 	 * @langversion				3.0
 	 * @created					Mar 18, 2010 11:38:18 AM
 	 */
-	public class TextSocketFilter implements ISocketFilter {
-		
-		//--------------------------------------------------------------------------
-		//
-		//  Class variables
-		//
-		//--------------------------------------------------------------------------
-		
-		/**
-		 * @private
-		 */
-		private static const _HASH:String = MD5.hash( getQualifiedClassName( prototype.contructor ) );
+	public class TextSocketFilter implements ISocketFilter, ITextSocketFilter {
 		
 		//--------------------------------------------------------------------------
 		//
@@ -68,15 +57,29 @@ package by.blooddy.core.net.connection.filters {
 		//
 		//--------------------------------------------------------------------------
 
+		/**
+		 * @private
+		 */
+		private const _hash:String = MD5.hash( getQualifiedClassName( prototype.contructor ) );
+		
+		/**
+		 * @inheritDoc
+		 */
 		public function getHash():String {
-			return _HASH;
+			return _hash;
 		}
 
+		/**
+		 * @inheritDoc
+		 */
 		public function isSystem(netCommand:NetCommand):Boolean {
 			return false;
 		}
 		
-		public function readCommand(input:IDataInput, io:String='input'):NetCommand {
+		/**
+		 * @inheritDoc
+		 */
+		public final function readCommand(input:IDataInput, io:String='input'):NetCommand {
 
 			var context:Context = this._contexts[ input ] as Context;
 			if ( !context ) this._contexts[ input ] = context = new Context();
@@ -87,13 +90,15 @@ package by.blooddy.core.net.connection.filters {
 
 			try {
 
+				// TODO: optimize for ByteArray. use ByteArrayUtils.indexOfByte
+				
 				while ( input.bytesAvailable > 0 ) {
 					c = input.readUnsignedByte();
 					if ( c == 0 ) {
 						bytes.position = 0;
 						data = bytes.readUTFBytes( bytes.length );
 						bytes.length = 0;
-						return this.getCommandFromString( data, io );
+						return this.decodeCommand( data, io );
 					}
 					bytes.writeByte( c );
 				}
@@ -109,24 +114,27 @@ package by.blooddy.core.net.connection.filters {
 
 		}
 
-		public function writeCommand(output:IDataOutput, command:NetCommand):void {
+		/**
+		 * @inheritDoc
+		 */
+		public final function writeCommand(output:IDataOutput, command:NetCommand):void {
 
-			output.writeUTFBytes( this.getStringFromCommand( command ) );
+			output.writeUTFBytes( this.encodeCommand( command ) );
 			output.writeByte( 0 );
 			
 		}
 
-		//--------------------------------------------------------------------------
-		//
-		//  Protected methods
-		//
-		//--------------------------------------------------------------------------
-
-		protected function getCommandFromString(data:String, io:String):NetCommand {
+		/**
+		 * @inheritDoc
+		 */
+		public function decodeCommand(data:String, io:String='input'):NetCommand {
 			throw new IllegalOperationError();
 		}
 
-		protected function getStringFromCommand(command:NetCommand):String {
+		/**
+		 * @inheritDoc
+		 */
+		public function encodeCommand(command:NetCommand):String {
 			throw new IllegalOperationError();
 		}
 		
