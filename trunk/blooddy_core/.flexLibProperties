@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<flexLibProperties includeAllClasses="false" version="1">
+<flexLibProperties includeAllClasses="false" useMultiPlatformConfig="false" version="1">
   <includeClasses>
     <classEntry path="by.blooddy.core.blooddy"/>
     <classEntry path="by.blooddy.core.commands.Command"/>
@@ -204,6 +204,11 @@
     <classEntry path="parseBoolean"/>
     <classEntry path="by.blooddy.core.net.ITextSocket"/>
     <classEntry path="by.blooddy.core.net.WebSocket"/>
+    <classEntry path="by.blooddy.core.net.connection.AbstractSocketConnection"/>
+    <classEntry path="by.blooddy.core.net.connection.TextSocketConnection"/>
+    <classEntry path="by.blooddy.core.net.TextSocket"/>
+    <classEntry path="by.blooddy.core.net.connection.filters.ITextSocketFilter"/>
+    <classEntry path="by.blooddy.core.net.connection.filters.IAbstractSocketFilter"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests>
