@@ -128,6 +128,14 @@ package by.blooddy.gui.display.component {
 			return this._baseController;
 		}
 
+		public function get stageWidth():int {
+			return ( stage ? stage.stageWidth : 0 );
+		}
+
+		public function get stageHeight():int {
+			return ( stage ? stage.stageHeight : 0 );
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Methods

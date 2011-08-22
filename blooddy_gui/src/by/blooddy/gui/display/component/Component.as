@@ -175,6 +175,28 @@ package by.blooddy.gui.display.component {
 		public function get container():ComponentContainer {
 			return this._container;
 		}
+
+		//----------------------------------
+		//  backgroundColor
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
+		private var _backgroundColor:uint = 0x00FF0000;
+
+		public function get backgroundColor():uint {
+			return this._backgroundColor;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set backgroundColor(value:uint):void {
+			if ( this._backgroundColor == value ) return;
+			this._backgroundColor = value;
+			this.drawLock();
+		}
 		
 		//--------------------------------------------------------------------------
 		//
@@ -259,10 +281,11 @@ package by.blooddy.gui.display.component {
 		//--------------------------------------------------------------------------
 
 		protected function drawLock():void {
+			if ( !super.stage ) return;
 			var p:Point = super.globalToLocal( _POINT );
 			with ( super.graphics ) {
 				clear();
-				beginFill( 0xFF0000, 0 );
+				beginFill( this._backgroundColor, ( this._backgroundColor >> 24 ) / 0xFF );
 				drawRect( p.x, p.y, super.stage.stageWidth, super.stage.stageHeight );
 				endFill();
 			}
@@ -285,18 +308,19 @@ package by.blooddy.gui.display.component {
 		 * @private
 		 */
 		private function $dispatchEvent(event:Event):Boolean {
+			var componentInfo:ComponentInfo = this._componentInfo;
 			if ( event is ErrorEvent ) {
 				var result:Boolean = true;
-				if ( super.hasEventListener( event.type ) || !this._componentInfo || !this._componentInfo.hasEventListener( event.type ) ) {
+				if ( super.hasEventListener( event.type ) || !componentInfo || !componentInfo.hasEventListener( event.type ) ) {
 					result &&= super.dispatchEvent( event );
 				}
-				if ( this._componentInfo.hasEventListener( event.type ) ) {
-					result &&= this._componentInfo.$dispatchEvent( event );
+				if ( componentInfo && componentInfo.hasEventListener( event.type ) ) {
+					result &&= componentInfo.$dispatchEvent( event );
 				}
 				return result;
 			} else {
 				return	super.dispatchEvent( event ) &&
-						this._componentInfo.$dispatchEvent( event );
+						( !componentInfo || componentInfo.$dispatchEvent( event ) );
 			}
 		}
 
