@@ -8,11 +8,13 @@ package by.blooddy.core.display.text {
 
 	import by.blooddy.core.blooddy;
 	import by.blooddy.core.utils.ClassAlias;
-
+	
 	import flash.display.Loader;
 	import flash.display.LoaderInfo;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
+	import flash.events.UncaughtErrorEvent;
+	import flash.events.UncaughtErrorEvents;
 	import flash.text.TextField;
 
 	//--------------------------------------
@@ -46,6 +48,7 @@ package by.blooddy.core.display.text {
 			super.addEventListener( Event.REMOVED,				this.handler_removed,			false, int.MAX_VALUE, true );
 			super.addEventListener( Event.ADDED_TO_STAGE,		this.handler_addedToStage,		false, int.MAX_VALUE, true );
 			super.addEventListener( Event.REMOVED_FROM_STAGE,	this.handler_removedFromStage,	false, int.MAX_VALUE, true );
+			
 		}
 
 		//--------------------------------------------------------------------------
@@ -58,6 +61,21 @@ package by.blooddy.core.display.text {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Properties
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private const _uncaughtErrorEvents:UncaughtErrorEvents = new UncaughtErrorEvents();
+
+		public function get  uncaughtErrorEvents():UncaughtErrorEvents {
+			return this._uncaughtErrorEvents;
+		}
+		
+		//--------------------------------------------------------------------------
+		//
 		//  Event handlers
 		//
 		//--------------------------------------------------------------------------
@@ -67,15 +85,20 @@ package by.blooddy.core.display.text {
 		 */
 		private function handler_added(event:Event):void {
 			if ( event.target !== this ) {
-				// останавливаем расспостранение события
-				// наши родители даже не догадываются о его существовании
-				event.stopImmediatePropagation();
 				// если пришёл Loader, то надо подписаться на всяческие ошибки
 				if ( event.target is Loader ) {
 					// так как мы не собираемся контролировать объект, лучше подпишимся со слабыми ссылками
 					var loader:LoaderInfo = ( event.target as Loader ).contentLoaderInfo;
 					loader.addEventListener( Event.COMPLETE,		this.handler_complete, false, int.MAX_VALUE, true );
 					loader.addEventListener( IOErrorEvent.IO_ERROR,	this.handler_complete, false, int.MAX_VALUE, true );
+					loader.uncaughtErrorEvents.addEventListener( UncaughtErrorEvent.UNCAUGHT_ERROR, this._uncaughtErrorEvents.dispatchEvent );
+				}
+				// останавливаем расспостранение события
+				// наши родители даже не догадываются о его существовании
+				if ( event.target.parent is Loader ) {
+					event.stopPropagation();
+				} else {
+					event.stopImmediatePropagation();
 				}
 			}
 		}
@@ -85,16 +108,21 @@ package by.blooddy.core.display.text {
 		 */
 		private function handler_removed(event:Event):void {
 			if ( event.target !== this ) {
-				// останавливаем расспостранение события
-				// наши родители даже не догадываются о его существовании
-				event.stopImmediatePropagation();
 				// если пришёл Loader, то надо отписаться на всяческие ошибки
 				if ( event.target is Loader ) {
 					// отписываемся
 					var loader:LoaderInfo = ( event.target as Loader ).contentLoaderInfo;
 					loader.removeEventListener( Event.COMPLETE,			this.handler_complete );
 					loader.removeEventListener( IOErrorEvent.IO_ERROR,	this.handler_complete );
-					// TODO: uncatch errors
+					loader.uncaughtErrorEvents.removeEventListener( UncaughtErrorEvent.UNCAUGHT_ERROR, this._uncaughtErrorEvents.dispatchEvent );
+
+				}
+				// останавливаем расспостранение события
+				// наши родители даже не догадываются о его существовании
+				if ( event.target.parent is Loader ) {
+					event.stopPropagation();
+				} else {
+					event.stopImmediatePropagation();
 				}
 			}
 		}
@@ -106,7 +134,7 @@ package by.blooddy.core.display.text {
 			var loader:LoaderInfo = event.target as LoaderInfo;
 			loader.removeEventListener( Event.COMPLETE,			this.handler_complete );
 			loader.removeEventListener( IOErrorEvent.IO_ERROR,	this.handler_complete );
-			// TODO: uncatch errors
+			loader.uncaughtErrorEvents.removeEventListener( UncaughtErrorEvent.UNCAUGHT_ERROR, this._uncaughtErrorEvents.dispatchEvent );
 		}
 
 	}

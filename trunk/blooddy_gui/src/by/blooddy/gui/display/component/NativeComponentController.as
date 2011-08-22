@@ -145,19 +145,7 @@ package by.blooddy.gui.display.component {
 		}
 
 		public override function dispatchEvent(event:Event):Boolean {
-			if ( event is ErrorEvent ) {
-				var result:Boolean = true;
-				if ( super.hasEventListener( event.type ) || !this._componentInfo.hasEventListener( event.type ) ) {
-					result &&= super.dispatchEvent( event );
-				}
-				if ( this._componentInfo.hasEventListener( event.type ) ) {
-					result &&= this._componentInfo.$dispatchEvent( event );
-				}
-				return result;
-			} else {
-				return	super.dispatchEvent( event ) &&
-						this._componentInfo.$dispatchEvent( event );
-			}
+			return this.$dispatchEvent( event );
 		}
 
 		public override function hasEventListener(type:String):Boolean {
@@ -168,6 +156,39 @@ package by.blooddy.gui.display.component {
 		public override function willTrigger(type:String):Boolean {
 			return	super.willTrigger( type ) ||
 					this._componentInfo.willTrigger( type );
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Namespace methonds
+		//
+		//--------------------------------------------------------------------------
+		
+		$internal final function $init(info:ComponentInfo, controller:IBaseController=null):void {
+			this._componentInfo = info;
+			if ( controller ) {
+				this._baseController = controller;
+				this._sharedObject = controller.sharedObject[ 'component_' + info.name ];
+			}
+			if ( !this._sharedObject ) controller.sharedObject[ 'component_' + info.name ] = this._sharedObject = new Object();
+			info.component.addEventListener( ComponentEvent.COMPONENT_CONSTRUCT, this.handler_componentConstruct, false, int.MAX_VALUE, true );
+			info.component.addEventListener( ComponentEvent.COMPONENT_DESTRUCT, this.handler_componentDestruct, false, int.MAX_VALUE, true );
+			if ( info.component.constructed ) {
+				info.component.addEventListener( Event.ENTER_FRAME, this.handler_exitFrame );
+			}
+		}
+		
+		$internal final function $clear():void {
+			if ( this._constructed ) {
+				this._constructed = false;
+				this.destruct();
+			}
+			this._componentInfo.component.removeEventListener( Event.ENTER_FRAME, this.handler_exitFrame );
+			this._componentInfo.component.removeEventListener( ComponentEvent.COMPONENT_CONSTRUCT, this.handler_componentConstruct );
+			this._componentInfo.component.removeEventListener( ComponentEvent.COMPONENT_DESTRUCT, this.handler_componentDestruct );
+			this._sharedObject = null;
+			this._baseController = null;
+			this._componentInfo = null;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -184,37 +205,27 @@ package by.blooddy.gui.display.component {
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Namespace methonds
+		//  Private methods
 		//
 		//--------------------------------------------------------------------------
 
-		$internal final function $init(info:ComponentInfo, controller:IBaseController=null):void {
-			this._componentInfo = info;
-			if ( controller ) {
-				this._baseController = controller;
-				this._sharedObject = controller.sharedObject[ 'component_' + info.name ];
-			}
-			if ( !this._sharedObject ) controller.sharedObject[ 'component_' + info.name ] = this._sharedObject = new Object();
-			info.component.addEventListener( ComponentEvent.COMPONENT_CONSTRUCT, this.handler_componentConstruct, false, int.MAX_VALUE, true );
-			info.component.addEventListener( ComponentEvent.COMPONENT_DESTRUCT, this.handler_componentDestruct, false, int.MAX_VALUE, true );
-			if ( info.component.constructed ) {
-				info.component.addEventListener( Event.ENTER_FRAME, this.handler_exitFrame );
+		private function $dispatchEvent(event:Event):Boolean {
+			var componentInfo:ComponentInfo = this._componentInfo;
+			if ( event is ErrorEvent ) {
+				var result:Boolean = true;
+				if ( super.hasEventListener( event.type ) || !componentInfo || !componentInfo.hasEventListener( event.type ) ) {
+					result &&= super.dispatchEvent( event );
+				}
+				if ( componentInfo && componentInfo.hasEventListener( event.type ) ) {
+					result &&= componentInfo.$dispatchEvent( event );
+				}
+				return result;
+			} else {
+				return	super.dispatchEvent( event ) &&
+						( !componentInfo || componentInfo.$dispatchEvent( event ) );
 			}
 		}
-
-		$internal final function $clear():void {
-			if ( this._constructed ) {
-				this._constructed = false;
-				this.destruct();
-			}
-			this._componentInfo.component.removeEventListener( Event.ENTER_FRAME, this.handler_exitFrame );
-			this._componentInfo.component.removeEventListener( ComponentEvent.COMPONENT_CONSTRUCT, this.handler_componentConstruct );
-			this._componentInfo.component.removeEventListener( ComponentEvent.COMPONENT_DESTRUCT, this.handler_componentDestruct );
-			this._sharedObject = null;
-			this._baseController = null;
-			this._componentInfo = null;
-		}
-
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Event handlers
