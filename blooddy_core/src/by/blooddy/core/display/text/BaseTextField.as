@@ -16,6 +16,7 @@ package by.blooddy.core.display.text {
 	import flash.events.UncaughtErrorEvent;
 	import flash.events.UncaughtErrorEvents;
 	import flash.text.TextField;
+	import flash.utils.Dictionary;
 
 	//--------------------------------------
 	//  Aliases
@@ -23,6 +24,12 @@ package by.blooddy.core.display.text {
 
 	ClassAlias.registerQNameAlias( new QName( blooddy, 'TextField' ), BaseTextField );
 
+	//--------------------------------------
+	//  Events
+	//--------------------------------------
+	
+	[Event( name="init", type="flash.events.Event" )]
+	
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -61,19 +68,15 @@ package by.blooddy.core.display.text {
 
 		//--------------------------------------------------------------------------
 		//
-		//  Properties
+		//  Variables
 		//
 		//--------------------------------------------------------------------------
 
 		/**
 		 * @private
 		 */
-		private const _uncaughtErrorEvents:UncaughtErrorEvents = new UncaughtErrorEvents();
+		private var _loaders:Dictionary;
 
-		public function get  uncaughtErrorEvents():UncaughtErrorEvents {
-			return this._uncaughtErrorEvents;
-		}
-		
 		//--------------------------------------------------------------------------
 		//
 		//  Event handlers
@@ -89,17 +92,15 @@ package by.blooddy.core.display.text {
 				if ( event.target is Loader ) {
 					// так как мы не собираемся контролировать объект, лучше подпишимся со слабыми ссылками
 					var loader:LoaderInfo = ( event.target as Loader ).contentLoaderInfo;
+					loader.uncaughtErrorEvents.addEventListener( UncaughtErrorEvent.UNCAUGHT_ERROR, handler_uncaughtError, false, 0, true );
 					loader.addEventListener( Event.COMPLETE,		this.handler_complete, false, int.MAX_VALUE, true );
 					loader.addEventListener( IOErrorEvent.IO_ERROR,	this.handler_complete, false, int.MAX_VALUE, true );
-					loader.uncaughtErrorEvents.addEventListener( UncaughtErrorEvent.UNCAUGHT_ERROR, this._uncaughtErrorEvents.dispatchEvent );
+					if ( !this._loaders ) this._loaders = new Dictionary();
+					this._loaders[ loader ] = true;
 				}
 				// останавливаем расспостранение события
 				// наши родители даже не догадываются о его существовании
-				if ( event.target.parent is Loader ) {
-					event.stopPropagation();
-				} else {
-					event.stopImmediatePropagation();
-				}
+				event.stopPropagation();
 			}
 		}
 
@@ -114,16 +115,19 @@ package by.blooddy.core.display.text {
 					var loader:LoaderInfo = ( event.target as Loader ).contentLoaderInfo;
 					loader.removeEventListener( Event.COMPLETE,			this.handler_complete );
 					loader.removeEventListener( IOErrorEvent.IO_ERROR,	this.handler_complete );
-					loader.uncaughtErrorEvents.removeEventListener( UncaughtErrorEvent.UNCAUGHT_ERROR, this._uncaughtErrorEvents.dispatchEvent );
-
+					delete this._loaders[ loader ];
+					try {
+						loader.loader.close();
+					} catch ( e:* ) {
+					}
+					try {
+						loader.loader.unload();
+					} catch ( e:* ) {
+					}
 				}
 				// останавливаем расспостранение события
 				// наши родители даже не догадываются о его существовании
-				if ( event.target.parent is Loader ) {
-					event.stopPropagation();
-				} else {
-					event.stopImmediatePropagation();
-				}
+				event.stopPropagation();
 			}
 		}
 
@@ -134,7 +138,18 @@ package by.blooddy.core.display.text {
 			var loader:LoaderInfo = event.target as LoaderInfo;
 			loader.removeEventListener( Event.COMPLETE,			this.handler_complete );
 			loader.removeEventListener( IOErrorEvent.IO_ERROR,	this.handler_complete );
-			loader.uncaughtErrorEvents.removeEventListener( UncaughtErrorEvent.UNCAUGHT_ERROR, this._uncaughtErrorEvents.dispatchEvent );
+			delete this._loaders[ loader ];
+			for each ( var h:Boolean in this._loaders ) break;
+			if ( !h && super.hasEventListener( Event.INIT ) ) {
+				super.dispatchEvent( new Event( Event.INIT ) );
+			}
+		}
+
+		/**
+		 * @private
+		 */
+		private static function handler_uncaughtError(event:UncaughtErrorEvent):void {
+			// ignore
 		}
 
 	}
