@@ -48,6 +48,9 @@ package by.blooddy.core.logging {
 				case DEBUG: cl = 'debug';	break;
 			}
 			if ( cl ) {
+				if ( result.length > 1024 ) {
+					result = result.substr( 0, 1024 ) + '...';
+				}
 				result = '<span class="' + cl + '">' + result + '</span>';
 			}
 			return result;

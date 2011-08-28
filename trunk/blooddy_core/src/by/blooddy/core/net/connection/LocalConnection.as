@@ -8,11 +8,13 @@ package by.blooddy.core.net.connection {
 	
 	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.net.AbstractRemoter;
+	import by.blooddy.core.utils.UID;
 	
 	import flash.errors.IOError;
 	import flash.events.SecurityErrorEvent;
 	import flash.events.StatusEvent;
 	import flash.net.LocalConnection;
+	import flash.utils.ByteArray;
 	
 	// TODO: log events
 
@@ -33,6 +35,17 @@ package by.blooddy.core.net.connection {
 	 */
 	public class LocalConnection extends AbstractRemoter implements IConnection {
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Class variables
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private static const _JUNK:ByteArray = new ByteArray();
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -165,9 +178,32 @@ package by.blooddy.core.net.connection {
 		 */
 		protected override function $callOutputCommand(command:Command):* {
 			if ( !this._targetName ) throw new IOError();
-			var args:Array = command.slice();
-			args.unshift( this._targetName, command.name );
-			this._connection.send.apply( this, args );
+			var option:uint = 0;
+			_JUNK.writeObject( command.slice() );
+			if ( _JUNK.length > 40e3 ) {
+				option |= 1;
+				_JUNK.compress();
+			}
+			var uid:String;
+			var bytes:ByteArray;
+			if ( _JUNK.length > 40e3 ) {
+				option |= 2;
+				_JUNK.position = 0;
+				uid = UID.generate();
+				bytes = new ByteArray();
+				do {
+					_JUNK.readBytes( bytes, 0, 40e3 );
+					this._connection.send( this._targetName, '$', uid, null, option, bytes );
+					bytes.length = 0;
+				} while ( _JUNK.bytesAvailable > 40e3 );
+				_JUNK.readBytes( bytes );
+				option |= 4;
+			} else {
+				bytes = _JUNK;
+			}
+			this._connection.send( this._targetName, '$', uid, command.name, option, bytes );
+			_JUNK.length = 0;
+
 		}
 
 		//--------------------------------------------------------------------------
@@ -179,8 +215,8 @@ package by.blooddy.core.net.connection {
 		/**
 		 * @private
 		 */
-		$private function $invokeCallInputCommand(command:Command):* {
-			return super.$invokeCallInputCommand( command );
+		$private function $invokeCallInputCommand(name:String, args:Array):* {
+			return super.$invokeCallInputCommand( new Command( name, args ) );
 		}
 
 	}
@@ -196,6 +232,7 @@ package by.blooddy.core.net.connection {
 import by.blooddy.core.commands.Command;
 import by.blooddy.core.net.connection.LocalConnection;
 
+import flash.utils.ByteArray;
 import flash.utils.Proxy;
 import flash.utils.flash_proxy;
 
@@ -233,8 +270,43 @@ internal final dynamic class Client extends Proxy {
 	/**
 	 * @private
 	 */
-	private var _hash:Object = new Object();
-	
+	private const _methods_hash:Object = new Object();
+
+	/**
+	 * @private
+	 */
+	private const _parts_hash:Object = new Object();
+
+	//--------------------------------------------------------------------------
+	//
+	//  Methods
+	//
+	//--------------------------------------------------------------------------
+
+	public function $(uid:String, name:String, option:uint, bytes:ByteArray):* {
+		if ( option & 2 ) { // данные приходят кусками
+			if ( uid in this._parts_hash ) {
+				this._parts_hash[ uid ].writeBytes( bytes );
+			} else {
+				bytes.position = bytes.length;
+				this._parts_hash[ uid ] = bytes;
+			}
+			if ( option & 4 ) {
+				bytes = this._parts_hash[ uid ];
+				delete this._parts_hash[ uid ];
+			} else {
+				bytes = null;
+			}
+		}
+		if ( bytes ) {
+			if ( option & 1 ) {
+				bytes.uncompress();
+			}
+			var args:Array = bytes.readObject();
+			return this._target.$private::$invokeCallInputCommand( name, args );
+		}
+	}
+
 	//--------------------------------------------------------------------------
 	//
 	//  Overriden flash_proxy methods
@@ -253,11 +325,11 @@ internal final dynamic class Client extends Proxy {
 	 */
 	flash_proxy override function getProperty(name:*):* {
 		var n:String = name.toString();
-		var result:* = this._hash[ n ];
+		var result:* = this._methods_hash[ n ];
 		if ( result == null ) {
 			var app:Client = this;
-			this._hash[ n ] = result = function(...rest):* {
-				return app._target.$private::$invokeCallInputCommand( new Command( n, rest ) );
+			this._methods_hash[ n ] = result = function(...rest):* {
+				return app._target.$private::$invokeCallInputCommand( n, rest );
 			};
 		}
 		return result;
@@ -267,7 +339,7 @@ internal final dynamic class Client extends Proxy {
 	 * @private
 	 */
 	flash_proxy override function callProperty(name:*, ...parameters):* {
-		this._target.$private::$invokeCallInputCommand( new Command( name, parameters ) );
+		this._target.$private::$invokeCallInputCommand( name, parameters );
 	}
 
 }

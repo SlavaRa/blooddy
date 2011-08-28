@@ -66,6 +66,9 @@ package by.blooddy.core.logging.commands {
 				}
 			}
 			if ( cl ) {
+				if ( result.length > 1024 ) {
+					result = result.substr( 0, 1024 ) + '...';
+				}
 				result = '<span class="' + cl + '">' + result + '</span>';
 			}
 			return result;
