@@ -203,6 +203,27 @@ package by.blooddy.core.data {
 		}
 
 		//----------------------------------
+		//  dispatchEvent
+		//----------------------------------
+
+		/**
+		 * @private
+		 */
+		public override function willTrigger(type:String):Boolean {
+			if ( !super.hasEventListener( type ) ) {
+				// надо бублить
+				var target:Data = this._bubble_parent;
+				while ( target ) {
+					if ( target.hasEventListener( type ) ) {
+						return true;
+					}
+					target = target._bubble_parent;
+				}
+			}
+			return false;
+		}
+
+		//----------------------------------
 		//  toLocaleString
 		//----------------------------------
 
