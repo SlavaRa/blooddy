@@ -19,6 +19,36 @@ package by.blooddy.core.logging {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Class variables
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private static const _HASH:Object = {
+			'<':	'&lt;',
+			'>':	'&gt;',
+			'&':	'&amp;',
+			'"':	'&quot;',
+			'\'':	'&apos;'
+		};
+
+		//--------------------------------------------------------------------------
+		//
+		//  Class methods
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private static function replacer(s:String, ...args):String {
+			return _HASH[ s ];
+		}
+
+		//--------------------------------------------------------------------------
+		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
@@ -55,7 +85,7 @@ package by.blooddy.core.logging {
 		 * @private
 		 */
 		public function toHTMLString():String {
-			return this.toString();
+			return escapeHTML( this.toString() );
 		}
 
 		/**
@@ -70,6 +100,10 @@ package by.blooddy.core.logging {
 		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
+
+		protected static function escapeHTML(str:String):String {
+			return str.replace( /[<>&"']/g, replacer );
+		}
 
 		protected final function formatToString(...args):String {
 			var result:Array = new Array();

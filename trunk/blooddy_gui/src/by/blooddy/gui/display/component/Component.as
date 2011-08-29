@@ -355,7 +355,7 @@ package by.blooddy.gui.display.component {
 			while ( ( parent = parent.parent ) && !( parent is ComponentContainer ) ) {};
 			this._container = parent as ComponentContainer;
 			if ( this._lock ) {
-				super.stage.addEventListener( Event.RESIZE, this.updateLock );
+				super.stage.addEventListener( Event.RESIZE, this.updateLock, false, int.MIN_VALUE );
 				this.updateLock();
 			}
 			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_exitFrame, false, int.MIN_VALUE );

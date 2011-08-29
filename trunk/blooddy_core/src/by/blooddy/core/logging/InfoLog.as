@@ -47,10 +47,10 @@ package by.blooddy.core.logging {
 				case FATAL:	cl = 'fatal';	break;
 				case DEBUG: cl = 'debug';	break;
 			}
+			if ( result.length > 1024 ) {
+				result = escapeHTML( result ).substr( 0, 1024 ) + '...';
+			}
 			if ( cl ) {
-				if ( result.length > 1024 ) {
-					result = result.substr( 0, 1024 ) + '...';
-				}
 				result = '<span class="' + cl + '">' + result + '</span>';
 			}
 			return result;
