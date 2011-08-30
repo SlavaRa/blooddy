@@ -48,8 +48,9 @@ package by.blooddy.core.logging {
 				case DEBUG: cl = 'debug';	break;
 			}
 			if ( result.length > 1024 ) {
-				result = escapeHTML( result ).substr( 0, 1024 ) + '...';
+				result = result.substr( 0, 1024 ) + '...';
 			}
+			result = escapeHTML( result );
 			if ( cl ) {
 				result = '<span class="' + cl + '">' + result + '</span>';
 			}
