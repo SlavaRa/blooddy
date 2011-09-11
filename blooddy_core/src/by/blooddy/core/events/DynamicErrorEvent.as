@@ -18,7 +18,7 @@ package by.blooddy.core.events {
 	 * @langversion				3.0
 	 * @created					14.02.2010 18:04:33
 	 */
-	public class DynamicErrorEvent extends ErrorEvent {
+	public dynamic class DynamicErrorEvent extends ErrorEvent {
 		
 		//--------------------------------------------------------------------------
 		//
