@@ -36,6 +36,7 @@ package by.blooddy.console.application {
 	import flash.text.TextFormat;
 	import flash.ui.Keyboard;
 	import flash.utils.Dictionary;
+	import flash.events.SecurityErrorEvent;
 
 	[SWF( width="1024", height="768", frameRate="60", backgroundColor="#777777", scriptTimeLimit="60" )]
 	[Frame( factoryClass="by.blooddy.factory.ApplicationFactory" )]
@@ -113,10 +114,13 @@ package by.blooddy.console.application {
 			stage.align = StageAlign.TOP_LEFT;
 
 			var i:uint = 0;
+			this._connection.allowDomain( '*' );
+			this._connection.allowInsecureDomain( '*' );
 			this._connection.open( '__blooddy_console' );
 			this._connection.client = this;
-			this._connection.addEventListener( AsyncErrorEvent.ASYNC_ERROR, this.handler_asyncError, false, int.MAX_VALUE, true );
-			this._connection.addEventListener( StatusEvent.STATUS, this.handler_status, false, int.MAX_VALUE, true );
+			this._connection.addEventListener( SecurityErrorEvent.SECURITY_ERROR, this.handler_securityError, false, 0, true );
+			this._connection.addEventListener( AsyncErrorEvent.ASYNC_ERROR, this.handler_asyncError, false, 0, true );
+			this._connection.addEventListener( StatusEvent.STATUS, this.handler_status, false, 0, true );
 
 			this._logFiled.name = 'log';
 			this._logFiled.y = 25;
@@ -295,7 +299,7 @@ package by.blooddy.console.application {
 		 * @private
 		 */
 		private function handler_asyncError(event:AsyncErrorEvent):void {
-			trace( 'listener ' + event );
+			trace( 'listener', event );
 		}
 
 		/**
@@ -303,8 +307,15 @@ package by.blooddy.console.application {
 		 */
 		private function handler_status(event:StatusEvent):void {
 			if ( event.code == 'error' && event.code == 'warinig' ) {
-				trace( 'listener ' + event );
+				trace( 'listener', event );
 			}
+		}
+
+		/**
+		 * @private
+		 */
+		private function handler_securityError(event:SecurityErrorEvent):void {
+			trace( 'listener', event );
 		}
 
 		/**
