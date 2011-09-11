@@ -193,7 +193,6 @@
     <classEntry path="by.blooddy.core.utils.time.RelativeTime"/>
     <classEntry path="by.blooddy.core.utils.time.Time"/>
     <classEntry path="by.blooddy.core.utils.time.getTimer"/>
-    <classEntry path="by.blooddy.core.utils.time.setTimeout"/>
     <classEntry path="by.blooddy.core.utils.traceObject"/>
     <classEntry path="by.blooddy.core.utils.ui.ContextMenuUtils"/>
     <classEntry path="by.blooddy.core.utils.version.IVersion"/>
