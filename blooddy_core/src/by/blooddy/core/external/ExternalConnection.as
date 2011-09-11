@@ -15,7 +15,6 @@ package by.blooddy.core.external {
 	import by.blooddy.core.net.connection.IConnection;
 	import by.blooddy.core.utils.copyObject;
 	import by.blooddy.core.utils.nextframeCall;
-	import by.blooddy.core.utils.time.setTimeout;
 	
 	import flash.errors.IllegalOperationError;
 	import flash.events.ErrorEvent;
@@ -23,6 +22,7 @@ package by.blooddy.core.external {
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.external.ExternalInterface;
+	import flash.utils.setTimeout;
 
 	//--------------------------------------
 	//  Events

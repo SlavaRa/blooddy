@@ -9,7 +9,6 @@ package by.blooddy.social.api.ru.mail.my {
 	import by.blooddy.core.commands.Command;
 	import by.blooddy.core.net.MIME;
 	import by.blooddy.core.net.loading.URLLoader;
-	import by.blooddy.core.utils.time.setTimeout;
 	import by.blooddy.core.utils.xml.XMLUtils;
 	import by.blooddy.crypto.MD5;
 	import by.blooddy.social.api.SocialAPI;
@@ -23,6 +22,7 @@ package by.blooddy.social.api.ru.mail.my {
 	import flash.net.URLRequest;
 	import flash.net.URLVariables;
 	import flash.utils.Dictionary;
+	import flash.utils.setTimeout;
 	
 	/**
 	 * @author					BlooDHounD
