@@ -27,6 +27,7 @@ package by.blooddy.core.net.loading {
 	import flash.system.Security;
 	import flash.system.SecurityDomain;
 	import flash.utils.ByteArray;
+	import flash.utils.setTimeout;
 
 	/**
 	 * @author					BlooDHounD
@@ -57,7 +58,7 @@ package by.blooddy.core.net.loading {
 		/**
 		 * @private
 		 */
-		private static const IS_REMOTE:Boolean = Security.sandboxType == Security.REMOTE;
+		private static const IS_REMOTE:Boolean = ( Security.sandboxType == Security.REMOTE );
 
 		//--------------------------------------------------------------------------
 		//
@@ -234,18 +235,18 @@ package by.blooddy.core.net.loading {
 			result._target = this;
 			var li:LoaderInfo = result._loaderInfo;
 			if ( open ) {	// событие уже могло быть послано
-				li.addEventListener( Event.OPEN,				super.dispatchEvent,			false, int.MAX_VALUE );
+				li.addEventListener( Event.OPEN,					super.dispatchEvent,			false, int.MAX_VALUE );
 			}
-			li.addEventListener( HTTPStatusEvent.HTTP_STATUS,	super.dispatchEvent,			false, int.MAX_VALUE );
-			li.addEventListener( ProgressEvent.PROGRESS,		super.progressHandler,			false, int.MAX_VALUE );
+			li.addEventListener( HTTPStatusEvent.HTTP_STATUS,		super.dispatchEvent,			false, int.MAX_VALUE );
+			li.addEventListener( ProgressEvent.PROGRESS,			super.progressHandler,			false, int.MAX_VALUE );
 			if ( security ) { // с подозрением на секурность, используем расширенный обработчик
-				li.addEventListener( Event.INIT,				this.handler_security_init,		false, int.MAX_VALUE );
+				li.addEventListener( Event.INIT,					this.handler_security_init,		false, int.MAX_VALUE );
 			} else {
-				li.addEventListener( Event.INIT,				this.handler_init,				false, int.MAX_VALUE );
+				li.addEventListener( Event.INIT,					this.handler_init,				false, int.MAX_VALUE );
 			}
-			li.addEventListener( Event.COMPLETE,				this.handler_loader_complete,	false, int.MAX_VALUE );
-			li.addEventListener( IOErrorEvent.IO_ERROR,			this.handler_loader_error,		false, int.MAX_VALUE );
-			// TODO: uncatch errors
+			li.addEventListener( Event.COMPLETE,					this.handler_complete,			false, int.MAX_VALUE );
+			li.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_error,				false, int.MAX_VALUE );
+			li.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error,				false, int.MAX_VALUE );
 			return result;
 		}
 
@@ -277,16 +278,18 @@ package by.blooddy.core.net.loading {
 		 */
 		private function clear_loader():void {
 			if ( this._loader ) {
-				this._loader._target = null;
 				var li:LoaderInfo = this._loaderInfo;
-				li.removeEventListener( Event.OPEN,						super.dispatchEvent );
-				li.removeEventListener( HTTPStatusEvent.HTTP_STATUS,	super.dispatchEvent );
-				li.removeEventListener( ProgressEvent.PROGRESS,			super.progressHandler );
-				li.removeEventListener( Event.INIT,						this.handler_security_init );
-				li.removeEventListener( Event.INIT,						this.handler_init );
-				li.removeEventListener( Event.COMPLETE,					this.handler_security_complete );
-				li.removeEventListener( Event.COMPLETE,					this.handler_loader_complete );
-				li.removeEventListener( IOErrorEvent.IO_ERROR,			this.handler_loader_error );
+				li.removeEventListener( Event.OPEN,							super.dispatchEvent );
+				li.removeEventListener( HTTPStatusEvent.HTTP_STATUS,		super.dispatchEvent );
+				li.removeEventListener( ProgressEvent.PROGRESS,				super.progressHandler );
+				li.removeEventListener( Event.INIT,							this.handler_security_init );
+				li.removeEventListener( Event.INIT,							this.handler_init );
+				li.removeEventListener( Event.COMPLETE,						this.handler_security_complete );
+				li.removeEventListener( Event.COMPLETE,						this.handler_complete );
+				li.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_error );
+				li.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_error );
+				this._loaderInfo = null;
+				this._loader._target = null;
 				// TODO: uncatch errors
 				try {
 					this._loader._close();
@@ -346,7 +349,7 @@ package by.blooddy.core.net.loading {
 				if ( this._loaderContext && this._loaderContext.ignoreSecurityDomain ) {
 					
 					this._contentType = this._loaderInfo.contentType;
-					this._loaderInfo.removeEventListener( Event.COMPLETE, this.handler_loader_complete );
+					this._loaderInfo.removeEventListener( Event.COMPLETE, this.handler_complete );
 					this._loaderInfo.addEventListener( Event.COMPLETE, this.handler_security_complete );
 					
 				} else {
@@ -359,7 +362,7 @@ package by.blooddy.core.net.loading {
 						}
 					}
 
-					this.handler_loader_error( new SecurityErrorEvent( SecurityErrorEvent.SECURITY_ERROR, false, false, error.toString(), error.errorID ) );
+					this.handler_error( new SecurityErrorEvent( SecurityErrorEvent.SECURITY_ERROR, false, false, error.toString(), error.errorID ) );
 					
 				}
 
@@ -412,7 +415,7 @@ package by.blooddy.core.net.loading {
 					_JUNK.removeChild( content );
 					dispose( content );
 				}
-				this.handler_loader_error( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, 'плохой swf подсунулся' ) );
+				this.handler_error( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, 'плохой swf подсунулся' ) );
 
 			} else {
 
@@ -441,13 +444,13 @@ package by.blooddy.core.net.loading {
 			loader._loadBytes( this._loaderInfo.bytes, this.create_loaderContext() );
 			this.clear_loader();	// очищаем старый лоадер
 			this._loader = loader;	// записываем новый
-			this._loaderInfo = this._loader._loaderInfo;
+			this._loaderInfo = loader._loaderInfo;
 		}
 
 		/**
 		 * @private
 		 */
-		private function handler_loader_complete(event:Event):void {
+		private function handler_complete(event:Event):void {
 			var bytesTotal:uint = this._loaderInfo.bytesTotal;
 			super.updateProgress( bytesTotal, bytesTotal );
 			super.completeHandler( event );
@@ -456,7 +459,7 @@ package by.blooddy.core.net.loading {
 		/**
 		 * @private
 		 */
-		private function handler_loader_error(event:ErrorEvent):void {
+		private function handler_error(event:ErrorEvent):void {
 			this.clear_loader();
 			super.completeHandler( event );
 		}
@@ -696,7 +699,7 @@ internal final class $Loader extends flash.display.Loader {
 	 * @private
 	 */
 	private function handler_added(event:Event):void {
-		if ( event.target !== this ) return;
+		if ( event.target !== this || this.parent !== _JUNK ) return;
 		_JUNK.addChild( this );
 		_JUNK.removeChild( this );
 		Error.throwError( IllegalOperationError, 2037 );

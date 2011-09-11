@@ -9,6 +9,7 @@ package by.blooddy.core.utils {
 	import flash.display.Shape;
 	import flash.events.EventDispatcher;
 
+	[Event( name="enterFrame", type="flash.events.Event" )]
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -27,9 +28,9 @@ package by.blooddy.core.utils {
 
 import by.blooddy.core.utils.enterFrameBroadcaster;
 
-import flash.events.Event;
 import flash.display.Sprite;
 import flash.errors.IllegalOperationError;
+import flash.events.Event;
 
 enterFrameBroadcaster.addEventListener( Event.ADDED_TO_STAGE, this.handler_added );
 
@@ -42,7 +43,8 @@ internal const _JUNK:Sprite = new Sprite();
  * @private
  */
 internal function handler_added(event:Event):void {
+	if ( this.parent === _JUNK ) return;
 	_JUNK.addChild( this );
 	_JUNK.removeChild( this );
-	throw new IllegalOperationError();
+	Error.throwError( IllegalOperationError, 2037 );
 }
