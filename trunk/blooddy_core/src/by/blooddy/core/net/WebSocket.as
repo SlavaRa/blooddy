@@ -206,6 +206,8 @@ package by.blooddy.core.net {
 		 * @inheritDoc
 		 */
 		public function close():void {
+			this._socket.writeByte( 0xFF );
+			this._socket.writeByte( 0x00 );
 			this._socket.close();
 		}
 
