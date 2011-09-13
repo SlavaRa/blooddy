@@ -50,10 +50,11 @@ package by.blooddy.core.utils {
 			return text;
 		}
 
-		private static const _TRIM_PATTERN:RegExp = /^\s+|\s+$/g;
+		private static const _TRIM_PATTERN:RegExp = /[^\s].*?(?=\s*$)/;
 
 		public static function trim(text:String):String {
-			return text.replace( _TRIM_PATTERN, '' );
+			var s:Array = _TRIM_PATTERN.exec( text );
+			return ( s ? s[ 0 ] : '' );
 		}
 
 		public static function convertToConstName(name:String):String {

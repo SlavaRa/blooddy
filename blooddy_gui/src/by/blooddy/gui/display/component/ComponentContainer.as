@@ -46,7 +46,7 @@ package by.blooddy.gui.display.component {
 	//  Events
 	//--------------------------------------
 	
-	[Event( name="componentConstuct", type="by.blooddy.gui.events.ComponentEvent" )]
+	[Event( name="componentConstruct", type="by.blooddy.gui.events.ComponentEvent" )]
 	[Event( name="componentDestruct", type="by.blooddy.gui.events.ComponentEvent" )]
 	
 	/**

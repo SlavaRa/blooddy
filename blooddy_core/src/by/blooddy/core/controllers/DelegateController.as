@@ -73,6 +73,9 @@ package by.blooddy.core.controllers {
 			return this._baseController;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set baseController(value:IBaseController):void {
 			if ( this._baseController === value ) return;
 			if ( this._baseController ) this.destruct();
