@@ -110,14 +110,13 @@ package by.blooddy.core.data {
 		 */
 		$protected_data function setParent(value:DataContainer):void {
 			if ( this._parent === value ) return;
-			var old:DataContainer = this._parent;
-			this._parent = value;
-			if ( old && old != value ) { // мы потеряли СТАРОГО папу
+			if ( this._parent ) { // мы потеряли СТАРОГО папу
+				this._bubble_parent = this._parent;
 				this.dispatchEventFunction( new DataBaseEvent( DataBaseEvent.REMOVED, true ) );
 			}
-			value = this._parent;
-			this._bubble_parent = value;
-			if ( value && value != old ) { // появился НОВЫЙ папа :)
+			if ( this._parent !== value ) {
+				this._parent = value;
+				this._bubble_parent = value;
 				this.dispatchEventFunction( new DataBaseEvent( DataBaseEvent.ADDED, true ) );
 			}
 		}
