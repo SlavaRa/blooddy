@@ -114,7 +114,7 @@ package by.blooddy.core.data {
 				this._bubble_parent = this._parent;
 				this.dispatchEventFunction( new DataBaseEvent( DataBaseEvent.REMOVED, true ) );
 			}
-			if ( this._parent !== value ) {
+			if ( value && this._parent !== value ) {
 				this._parent = value;
 				this._bubble_parent = value;
 				this.dispatchEventFunction( new DataBaseEvent( DataBaseEvent.ADDED, true ) );
