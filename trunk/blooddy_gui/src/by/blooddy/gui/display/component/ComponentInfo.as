@@ -9,6 +9,7 @@ package by.blooddy.gui.display.component {
 	import by.blooddy.core.controllers.IBaseController;
 	import by.blooddy.core.display.DisplayObjectContainerProxy;
 	import by.blooddy.core.managers.process.IProgressProcessable;
+	import by.blooddy.core.utils.ClassUtils;
 	import by.blooddy.core.utils.UID;
 	import by.blooddy.gui.controller.ComponentController;
 	
@@ -21,7 +22,7 @@ package by.blooddy.gui.display.component {
 	//  Events
 	//--------------------------------------
 	
-	[Event( name="componentConstuct", type="by.blooddy.gui.events.ComponentEvent" )]
+	[Event( name="componentConstruct", type="by.blooddy.gui.events.ComponentEvent" )]
 	[Event( name="componentDestruct", type="by.blooddy.gui.events.ComponentEvent" )]
 	[Event( name="componentError", type="by.blooddy.gui.events.ComponentErrorEvent" )]
 	
@@ -188,6 +189,13 @@ package by.blooddy.gui.display.component {
 		 */
 		public override function dispatchEvent(event:Event):Boolean {
 			throw new IllegalOperationError();
+		}
+
+		/**
+		 * @private
+		 */
+		public override function toString():String {
+			return '[' + ClassUtils.getClassName( this ) + ' name="' + this._name + '"]';
 		}
 
 		//--------------------------------------------------------------------------
