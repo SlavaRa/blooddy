@@ -208,6 +208,7 @@
     <classEntry path="by.blooddy.core.net.TextSocket"/>
     <classEntry path="by.blooddy.core.net.connection.filters.ITextSocketFilter"/>
     <classEntry path="by.blooddy.core.net.connection.filters.IAbstractSocketFilter"/>
+    <classEntry path="by.blooddy.core.tween.Tween"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests>
