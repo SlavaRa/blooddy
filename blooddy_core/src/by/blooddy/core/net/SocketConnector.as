@@ -71,7 +71,7 @@ package by.blooddy.core.net {
 		/**
 		 * Constructor
 		 */
-		public function SocketConnector(socket:IAbstractSocket!) {
+		public function SocketConnector(socket:IAbstractSocket=null) {
 			super();
 			if ( socket ) this.socket = socket;
 		}
@@ -106,9 +106,13 @@ package by.blooddy.core.net {
 			return this._socket;
 		}
 
+		/**
+		 * @private
+		 */
 		public function set socket(value:IAbstractSocket):void {
 			if ( this._socket === value ) return;
-			if ( this._hosts ) throw new IllegalOperationError();
+			if ( value && this._hosts ) throw new IllegalOperationError();
+			this._hosts = null;
 			if ( this._socket ) {
 				this._socket.removeEventListener( Event.CONNECT,						this.handler_connect );
 				this._socket.removeEventListener( Event.CLOSE,							this.handler_close );
@@ -131,11 +135,12 @@ package by.blooddy.core.net {
 		//--------------------------------------------------------------------------
 
 		public function connect(pair:HostPair, ...hosts):void {
+			if ( !pair ) throw new ArgumentError();
 			if ( !this._socket ) throw new IllegalOperationError();
 			if ( this._socket.connected ) throw new IllegalOperationError();
 			if ( this._hosts ) throw new IllegalOperationError();
-			hosts.unshift( pair );
 			this._hosts = Vector.<HostPair>( hosts );
+			this._hosts.unshift( pair );
 			this._connectToNext();
 		}
 
