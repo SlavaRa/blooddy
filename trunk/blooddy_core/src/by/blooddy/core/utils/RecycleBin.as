@@ -84,10 +84,10 @@ package by.blooddy.core.utils {
 			var rcs:Vector.<ResourceContainer> = this._hash[ key ] as Vector.<ResourceContainer>;
 			if ( !rcs ) this._hash[ key ] = rcs = new Vector.<ResourceContainer>();
 			time += getTimer();
-			for ( var i:int = rcs.length - 1; i >= 0; --i ) {
-				if ( rcs[ i ].time > time ) break;
+			var l:uint = rcs.length;
+			for ( var i:int=0; i < l; ++i ) {
+				if ( rcs[ i ].time <= time ) break;
 			}
-			++i;
 			rcs.splice( i, 0, new ResourceContainer( resource, time ) );
 			if ( this._length == 0 ) {
 				_TIMER.addEventListener( TimerEvent.TIMER, this.handler_timer );
@@ -148,28 +148,24 @@ package by.blooddy.core.utils {
 		 */
 		private function handler_timer(event:TimerEvent):void {
 			var time:uint = getTimer() + 1E3;
-
 			var rcs:Vector.<ResourceContainer>;
 			var i:int, l:uint;
-
 			var rc:ResourceContainer;
 			for each ( rcs in this._hash ) {
 				l = rcs.length;
-				for ( i = l-1; i >= 0; --i ) {
+				for ( i=0; i<l; ++i ) {
 					rc = rcs[ i ];
 					// если условие проходит, то всё что там лежит совсем не старое
 					if ( rc.time > time ) break;
 					dispose( rc.resource );
 				}
-				++i;
-				l -= i;
-				if ( l > 0 ) { // минимум один элемент на удаление
-					rcs.splice( i, l );
-					this._length -= l;
-					if ( this._length == 0 ) {
-						_TIMER.removeEventListener( TimerEvent.TIMER, this.handler_timer );
-					}
+				if ( i > 0 ) { // минимум один элемент на удаление
+					rcs.splice( 0, i );
+					this._length -= i;
 				}
+			}
+			if ( this._length == 0 ) {
+				_TIMER.removeEventListener( TimerEvent.TIMER, this.handler_timer );
 			}
 		}
 
