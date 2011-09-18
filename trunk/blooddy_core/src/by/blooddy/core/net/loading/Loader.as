@@ -207,8 +207,10 @@ package by.blooddy.core.net.loading {
 			if ( this._content ) {
 				if ( this._content is DisplayObject ) {
 					var d:DisplayObject = this._content as DisplayObject;
-					_JUNK.addChild( d );
-					_JUNK.removeChild( d );
+					if ( d.parent ) {
+						_JUNK.addChild( d );
+						_JUNK.removeChild( d );
+					}
 					dispose( d );
 				} else if ( this._content is BitmapData ) {
 					( this._content as BitmapData ).dispose();
@@ -538,7 +540,6 @@ internal final class $Loader extends flash.display.Loader {
 	 */
 	public function $Loader() {
 		super();
-		super.addEventListener( Event.ADDED, this.handler_added, false, int.MAX_VALUE, true );
 	}
 
 	//--------------------------------------------------------------------------
@@ -625,6 +626,7 @@ internal final class $Loader extends flash.display.Loader {
 		this._target.unload();
 	}
 
+	[Deprecated( message="метод бесмысленен", replacement="unload" )]
 	/**
 	 * @private
 	 */
@@ -670,12 +672,16 @@ internal final class $Loader extends flash.display.Loader {
 	 * @private
 	 */
 	internal function _unload():void {
+		if ( super.parent ) {
+			_JUNK.addChild( this );
+			_JUNK.removeChild( this );
+		}
 		if ( _waitGC ) {
 			super.unloadAndStop( false );
 		} else {
+			_waitGC = true;
 			_GC_TIMER.addEventListener( TimerEvent.TIMER_COMPLETE, this.handler_timerComplete );
 			_GC_TIMER.start();
-			_waitGC = true;
 		}
 	}
 	
@@ -693,16 +699,6 @@ internal final class $Loader extends flash.display.Loader {
 		_GC_TIMER.removeEventListener( TimerEvent.TIMER_COMPLETE, this.handler_timerComplete );
 		super.unloadAndStop( true );
 		_waitGC = false;
-	}
-
-	/**
-	 * @private
-	 */
-	private function handler_added(event:Event):void {
-		if ( event.target !== this || this.parent !== _JUNK ) return;
-		_JUNK.addChild( this );
-		_JUNK.removeChild( this );
-		Error.throwError( IllegalOperationError, 2037 );
 	}
 
 }
