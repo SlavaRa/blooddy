@@ -386,10 +386,10 @@ package by.blooddy.core.managers.resource {
 		 */
 		public function removeResourceBundle(bundleName:String):void {
 			if ( bundleName in this._hash ) {
+				var bundle:IResourceBundle = this._hash[ bundleName ] as IResourceBundle;
 				if ( super.hasEventListener( ResourceBundleEvent.BUNDLE_REMOVED ) ) {
 					if ( !super.dispatchEvent( new ResourceBundleEvent( ResourceBundleEvent.BUNDLE_REMOVED, false, true, bundle ) ) ) return;
 				}
-				var bundle:IResourceBundle = this._hash[ bundleName ] as IResourceBundle;
 				delete this._hash[ bundleName ];
 				var loader:ILoadable = bundle as ILoadable;
 				if ( loader ) {
