@@ -312,11 +312,15 @@ package by.blooddy.core.managers.resource {
 		 * 
 		 * @keyword					resourcemanager.hasresourcebundle, hasresourcebundle
 		 */
-		public function hasResourceBundle(bundleName:String):Boolean {
-			if ( !( bundleName in this._hash ) ) return false;
-			var loader:ILoadable = this._hash[ bundleName ] as ILoadable;
-			if ( loader && !loader.complete ) return false;
-			return true;
+		public function hasResourceBundle(bundleName:String, ignoreLoading:Boolean=false):Boolean {
+			if ( bundleName in this._hash ) {
+				if ( ignoreLoading ) {
+					return true;
+				} else {
+					return ( this._hash[ bundleName ] as ILoadable ).complete;
+				}
+			}
+			return false;
 		}
 
 		/**
@@ -382,19 +386,21 @@ package by.blooddy.core.managers.resource {
 		 */
 		public function removeResourceBundle(bundleName:String):void {
 			if ( bundleName in this._hash ) {
+				if ( super.hasEventListener( ResourceBundleEvent.BUNDLE_REMOVED ) ) {
+					if ( !super.dispatchEvent( new ResourceBundleEvent( ResourceBundleEvent.BUNDLE_REMOVED, false, true, bundle ) ) ) return;
+				}
 				var bundle:IResourceBundle = this._hash[ bundleName ] as IResourceBundle;
 				delete this._hash[ bundleName ];
 				var loader:ILoadable = bundle as ILoadable;
 				if ( loader ) {
 					this.unregisterLoadable( loader );
 					var asset:$ResourceLoader = loader as $ResourceLoader;
-					var complete:Boolean = loader.complete;
 					if ( asset ) { // если ассет, то помучаемся
 						delete asset.managers[ this ];
 						for each ( var has:Boolean in asset.managers ) break;
 						if ( !has ) {
 							delete _HASH[ bundleName ];
-							if ( complete ) asset._unload();
+							if ( loader.complete ) asset._unload();
 							else {
 								if ( asset.queue ) {
 									var i:int = _LOADING_QUEUE.indexOf( asset.queue );
@@ -403,9 +409,6 @@ package by.blooddy.core.managers.resource {
 								} else asset._close();
 							}
 						}
-					}
-					if ( complete && super.hasEventListener( ResourceBundleEvent.BUNDLE_REMOVED ) ) {
-						super.dispatchEvent( new ResourceBundleEvent( ResourceBundleEvent.BUNDLE_REMOVED, false, false, bundle ) );
 					}
 				}
 			}
