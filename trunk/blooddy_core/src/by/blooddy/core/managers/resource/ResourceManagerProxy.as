@@ -65,9 +65,12 @@ package by.blooddy.core.managers.resource {
 		 */
 		public function ResourceManagerProxy() {
 			super();
-			this._resourceUsages[ '' ] = new ResourceUsage(); // added default bundle
 			this._manager.addEventListener( ResourceBundleEvent.BUNDLE_ADDED,	this.handler_bundleAdded, false, int.MAX_VALUE, true );
 			this._manager.addEventListener( ResourceBundleEvent.BUNDLE_REMOVED,	this.handler_bundleRemoved, false, int.MAX_VALUE, true );
+			// added default bundle
+			 var usage:ResourceUsage = new ResourceUsage();
+			 usage.lock = -1;
+			 this._resourceUsages[ '' ] = usage;
 		}
 
 		//--------------------------------------------------------------------------
@@ -99,7 +102,7 @@ package by.blooddy.core.managers.resource {
 		/**
 		 * @private
 		 */
-		private const _timer:Timer = new Timer( 15e3 );
+		private const _timer:Timer = new Timer( 60e3 );
 
 		//--------------------------------------------------------------------------
 		//
@@ -122,7 +125,7 @@ package by.blooddy.core.managers.resource {
 		public final function set resourceLiveTime(value:uint):void {
 			if ( this._resourceLiveTime == value ) return;
 			this._resourceLiveTime = value;
-			this._timer.delay = this._resourceLiveTime / 4;
+			this._timer.delay = this._resourceLiveTime;
 		}
 
 		//--------------------------------------------------------------------------
@@ -254,14 +257,22 @@ package by.blooddy.core.managers.resource {
 
 		public function lockResourceBundle(bundleName:String):void {
 			var usage:ResourceUsage = this._resourceUsages[ bundleName ] as ResourceUsage;
-			if ( !usage ) this._resourceUsages[ bundleName ] = usage = new ResourceUsage();
-			usage.lock = true;
+			if ( !usage ) {
+				if ( !this._manager.hasResourceBundle( bundleName, true ) ) {
+					throw new ArgumentError( 'Ресурс не был загружен.', 5102 );
+				}
+				this._resourceUsages[ bundleName ] = usage = new ResourceUsage();
+			}
+			if ( !usage.lock ) {
+				usage.lock = 1;
+			}
 		}
 
 		public function unlockResourceBundle(bundleName:String):void {
 			var usage:ResourceUsage = this._resourceUsages[ bundleName ] as ResourceUsage;
 			if ( usage && usage.lock ) {
-				usage.lock = false;
+				if ( usage.lock < 0 ) throw new ArgumentError( 'Ресурс не может быть разблокирован.', 5103 );
+				usage.lock = 0;
 				if ( usage.count <= 0 ) usage.lastUse = getTimer();
 			}
 		}
@@ -296,6 +307,7 @@ package by.blooddy.core.managers.resource {
 		 */
 		private function isEmpty():Boolean {
 			for each ( var usage:ResourceUsage in this._resourceUsages ) {
+				if ( usage.lock < 0 ) continue; // системный бандл
 				return false;
 			}
 			return true;
@@ -312,11 +324,13 @@ package by.blooddy.core.managers.resource {
 		 */
 		private function handler_bundleAdded(event:ResourceBundleEvent):void {
 			if ( this.isEmpty() ) {
-				this._timer.reset();
-				this._timer.start();
 				this._timer.addEventListener( TimerEvent.TIMER, this.handler_timer );
+				this._timer.start();
 			}
-			this._resourceUsages[ event.bundle.name ] = new ResourceUsage();
+			var name:String = event.bundle.name;
+			if ( !( name in this._resourceUsages ) ) {
+				this._resourceUsages[ name ] = new ResourceUsage();
+			}
 		}
 
 		/**
@@ -325,7 +339,7 @@ package by.blooddy.core.managers.resource {
 		private function handler_bundleRemoved(event:ResourceBundleEvent):void {
 			delete this._resourceUsages[ event.bundle.name ];
 			if ( this.isEmpty() ) {
-				this._timer.stop();
+				this._timer.reset();
 				this._timer.removeEventListener( TimerEvent.TIMER, this.handler_timer );
 			}
 		}
@@ -425,6 +439,6 @@ internal final class ResourceUsage {
 	
 	public var lastUse:Number = getTimer();
 	
-	public var lock:Boolean = false;
+	public var lock:int = 0;
 	
 }
