@@ -228,7 +228,7 @@ package by.blooddy.core.data {
 		//----------------------------------
 
 		public function toLocaleString():String {
-			return '[' + ClassUtils.getClassName( this ) + ']';
+			return '[' + ClassUtils.getClassName( this ) + ( this._name ? ' name="' + this._name + '"' : '' ) + ']';
 		}
 
 		//----------------------------------
@@ -239,7 +239,7 @@ package by.blooddy.core.data {
 		 * @private
 		 */
 		public override function toString():String {
-			return ( this._parent ? this._parent + '.' : '' ) + ( this._name ? this._name : this.toLocaleString() );
+			return ( this._parent ? this._parent + '.' : '' ) + this.toLocaleString();
 		}
 
 		//----------------------------------
