@@ -342,7 +342,9 @@ package by.blooddy.gui.display.component {
 
 				var resultEvent:ComponentEvent = new ComponentEvent( ComponentEvent.COMPONENT_CONSTRUCT, false, false, this._componentInfo );
 				this.$dispatchEvent( resultEvent );
-				this._container.$dispatchEvent( resultEvent ); // TODO: перенести?
+				if ( this._container ) { // могли уже удалить нечаенно )
+					this._container.$dispatchEvent( resultEvent ); // TODO: перенести?
+				}
 
 			}
 		}
