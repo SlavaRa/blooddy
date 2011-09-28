@@ -12,7 +12,7 @@ package by.blooddy.core.managers.resource {
 	import by.blooddy.core.net.loading.ILoadable;
 	import by.blooddy.core.utils.DisplayObjectUtils;
 	import by.blooddy.core.utils.RecycleBin;
-
+	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
@@ -143,18 +143,22 @@ package by.blooddy.core.managers.resource {
 				hash[ def.bundleName ] = true;
 			}
 			var locks:Vector.<ResourceDefinition>;
-			for ( var bundleName:String in this._resourceUsages ) {
-				if ( !( bundleName in hash ) ) {
-					var usage:ResourceUsage = this._resourceUsages[ bundleName ];
-					if ( usage.lock ) {
-						if ( !resources ) { // у нас другая ошибка будет
-							if ( !locks ) locks = new Vector.<ResourceDefinition>();
-							locks.push( new ResourceDefinition( bundleName ) );
-						}
-					} else {
-						this.unloadResourceBundle( bundleName );
+			var usage:ResourceUsage;
+			var bundles:Vector.<String> = new Vector.<String>();
+			var bundleName:String;
+			for ( bundleName in this._resourceUsages ) {
+				// создаём отдельный вектор, так как удаления из хэша во время перебора, нарушает порядок перебора
+				bundles.push( bundleName );
+				if ( !resources ) { // у нас другая ошибка будет
+					usage = this._resourceUsages[ bundleName ];
+					if ( usage.lock > 0 ) {
+						if ( !locks ) locks = new Vector.<ResourceDefinition>();
+						locks.push( new ResourceDefinition( bundleName ) );
 					}
 				}
+			}
+			for each ( bundleName in bundles ) {
+				this.unloadResourceBundle( bundleName );
 			}
 			if ( resources ) {
 				throw new ResourceError( 'Некоторые ресурсы не были возвращены в мэннеджер ресурсов.', 0, resources );
@@ -298,8 +302,10 @@ package by.blooddy.core.managers.resource {
 		 * @private
 		 */
 		private function unloadResourceBundle(bundleName:String):void {
-			this._bin.clear( bundleName + _SEPARATOR );
-			this._manager.removeResourceBundle( bundleName );
+			this._bin.clear( new RegExp( '^' + bundleName + _SEPARATOR ) );
+			if ( this._resourceUsages[ bundleName ].lock >= 0 ) {
+				this._manager.removeResourceBundle( bundleName );
+			}
 		}
 
 		/**
