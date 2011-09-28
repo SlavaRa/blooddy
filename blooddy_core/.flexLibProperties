@@ -209,6 +209,7 @@
     <classEntry path="by.blooddy.core.net.connection.filters.ITextSocketFilter"/>
     <classEntry path="by.blooddy.core.net.connection.filters.IAbstractSocketFilter"/>
     <classEntry path="by.blooddy.core.tween.Tween"/>
+    <classEntry path="by.blooddy.core.net.ProxyResponder"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests>

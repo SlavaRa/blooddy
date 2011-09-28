@@ -115,7 +115,7 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		public override function toString():String {
-			return '[' + ClassUtils.getClassName( this ) + ( this.num ? ' num="' + this.num  + '"' : '' ) + ' io="' + this.io + '" name="' + super.name + '"' + ( super.length > 0 ? ' arguments=(' + this.argumentsToString() + ')' : '' ) + ']';
+			return '[' + ClassUtils.getClassName( this ) + ' io="' + this.io + '" name="' + super.name + '"' + ( this.num ? ' num="' + this.num  + '"' : '' ) + ( super.length > 0 ? ' arguments=(' + this.argumentsToString() + ')' : '' ) + ']';
 		}
 
 	}

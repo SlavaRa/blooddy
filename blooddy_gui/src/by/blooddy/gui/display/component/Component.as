@@ -285,7 +285,7 @@ package by.blooddy.gui.display.component {
 			var p:Point = super.globalToLocal( _POINT );
 			with ( super.graphics ) {
 				clear();
-				beginFill( this._backgroundColor, ( this._backgroundColor >> 24 ) / 0xFF );
+				beginFill( this._backgroundColor & 0xFFFFFF, ( this._backgroundColor >>> 24 ) / 0xFF );
 				drawRect( p.x, p.y, super.stage.stageWidth, super.stage.stageHeight );
 				endFill();
 			}
