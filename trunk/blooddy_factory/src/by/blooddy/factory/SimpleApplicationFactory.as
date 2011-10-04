@@ -188,7 +188,7 @@ package by.blooddy.factory {
 				var Root:Class = appd.getDefinition( rootClassName ) as Class;
 				// вернём stage где был
 				var stage:Stage = super.stage;
-				if ( DisplayObject.prototype.isPrototypeOf( Root.prototype ) ) {
+				if ( Root.prototype instanceof DisplayObject ) {
 					// сделаем рут
 					$root = new Root();
 					stage.addChild( $root as DisplayObject );
