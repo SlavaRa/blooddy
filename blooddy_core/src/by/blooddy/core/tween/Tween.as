@@ -119,6 +119,7 @@ package by.blooddy.core.tween {
 				t = time - tween._startTime;
 				if ( t < tween._duration ) {
 					tween._render( t );
+					if ( tween._onProgress != null ) tween._onProgress();
 				} else {
 					list.splice( i, 1 );
 					--i;
@@ -154,6 +155,7 @@ package by.blooddy.core.tween {
 
 			// params
 			if ( params ) {
+				if ( params.onProgress is Function )	this._onProgress = params.onProgress;
 				if ( params.onComplete is Function )	this._onComplete = params.onComplete;
 				if ( params.ease is Function )			this._ease = params.ease;
 			}
@@ -195,6 +197,11 @@ package by.blooddy.core.tween {
 		 * @private
 		 */
 		private var _ease:Function;
+		
+		/**
+		 * @private
+		 */
+		private var _onProgress:Function;
 		
 		/**
 		 * @private
