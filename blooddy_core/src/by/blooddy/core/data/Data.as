@@ -114,10 +114,14 @@ package by.blooddy.core.data {
 				this._bubble_parent = this._parent;
 				this.dispatchEventFunction( new DataBaseEvent( DataBaseEvent.REMOVED, true ) );
 			}
-			if ( value && this._parent !== value ) {
-				this._parent = value;
-				this._bubble_parent = value;
-				this.dispatchEventFunction( new DataBaseEvent( DataBaseEvent.ADDED, true ) );
+			if ( value ) {
+				if ( this._parent !== value ) {
+					this._parent = value;
+					this._bubble_parent = value;
+					this.dispatchEventFunction( new DataBaseEvent( DataBaseEvent.ADDED, true ) );
+				}
+			} else {
+				this._parent = null;
 			}
 		}
 
@@ -182,27 +186,29 @@ package by.blooddy.core.data {
 			if ( super.hasEventListener( event.type ) ) {
 				canceled = !super.dispatchEvent( event );
 			}
-			// надо бублить
-			var target:Data = this._bubble_parent;
-			var e:DataBaseNativeEvent;
-			while ( target ) {
-				if ( target.hasEventListener( event.type ) ) {
-					e = event.clone() as DataBaseNativeEvent;
-					e.$eventPhase = EventPhase.BUBBLING_PHASE;
-					e.$target = this;
-					e.$canceled = canceled;
-					CONTAINER.$event = e;
-					target.$dispatchEvent( CONTAINER );
-					canceled &&= e.$canceled;
-					if ( e.$stopped ) break;
+			if ( !event.$stopped ) {
+				// надо бублить
+				var target:Data = this._bubble_parent;
+				var e:DataBaseNativeEvent;
+				while ( target ) {
+					if ( target.hasEventListener( event.type ) ) {
+						e = event.clone() as DataBaseNativeEvent;
+						e.$eventPhase = EventPhase.BUBBLING_PHASE;
+						e.$target = this;
+						e.$canceled = canceled;
+						CONTAINER.$event = e;
+						target.$dispatchEvent( CONTAINER );
+						canceled &&= e.$canceled;
+						if ( e.$stopped ) break;
+					}
+					target = target._bubble_parent;
 				}
-				target = target._bubble_parent;
 			}
 			return !canceled;
 		}
 
 		//----------------------------------
-		//  dispatchEvent
+		//  willTrigger
 		//----------------------------------
 
 		/**
