@@ -756,27 +756,6 @@ internal class DefaultResourceBundle implements IResourceBundle {
 	
 	//--------------------------------------------------------------------------
 	//
-	//  Class variables
-	//
-	//--------------------------------------------------------------------------
-	
-	/**
-	 * @private
-	 */
-	private static const _PROTO_BITMAP_DATA:Object =	BitmapData.prototype;
-	
-	/**
-	 * @private
-	 */
-	private static const _PROTO_SOUND:Object =			Sound.prototype;
-	
-	/**
-	 * @private
-	 */
-	private static const _PROTO_BYTE_ARRAY:Object =		ByteArray.prototype;
-	
-	//--------------------------------------------------------------------------
-	//
 	//  Constructor
 	//
 	//--------------------------------------------------------------------------
@@ -841,11 +820,11 @@ internal class DefaultResourceBundle implements IResourceBundle {
 				if ( resource is Class ) {
 					var resourceClass:Class = resource as Class;
 					var p:Object = resourceClass.prototype;
-					if ( _PROTO_BITMAP_DATA.isPrototypeOf( p ) ) {
+					if ( p instanceof BitmapData ) {
 						resource = new resourceClass( 0, 0 );
 					} else if (
-						_PROTO_SOUND.isPrototypeOf( p ) ||
-						_PROTO_BYTE_ARRAY.isPrototypeOf( p )
+						p instanceof Sound ||
+						p instanceof ByteArray
 					) {
 						resource = new resourceClass();
 					}

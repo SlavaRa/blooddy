@@ -56,21 +56,6 @@ package by.blooddy.core.managers.resource {
 		 */
 		private static const _NAME_BYTE_ARRAY:String =		getQualifiedClassName( ByteArray );
 
-		/**
-		 * @private
-		 */
-		private static const _PROTO_BITMAP_DATA:Object =	BitmapData.prototype;
-
-		/**
-		 * @private
-		 */
-		private static const _PROTO_SOUND:Object =			Sound.prototype;
-
-		/**
-		 * @private
-		 */
-		private static const _PROTO_BYTE_ARRAY:Object =		ByteArray.prototype;
-
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -157,9 +142,9 @@ package by.blooddy.core.managers.resource {
 					var resourceClass:Class = resource as Class;
 					var p:Object = resourceClass.prototype;
 					if (
-						_PROTO_BITMAP_DATA.isPrototypeOf( p ) || (
+						p instanceof BitmapData || (
 							this._domain &&
-							this._domain.getDefinition( _NAME_BITMAP_DATA ).prototype.isPrototypeOf( p )
+							p instanceof this._domain.getDefinition( _NAME_BITMAP_DATA )
 						)
 					) {
 						try {
@@ -168,11 +153,11 @@ package by.blooddy.core.managers.resource {
 							resource = new resourceClass();
 						}
 					} else if ( 
-						_PROTO_SOUND.isPrototypeOf( p ) ||
-						_PROTO_BYTE_ARRAY.isPrototypeOf( p ) || (
+						p instanceof Sound ||
+						p instanceof ByteArray || (
 							this._domain && (
-								this._domain.getDefinition( _NAME_SOUND ).prototype.isPrototypeOf( p ) ||
-								this._domain.getDefinition( _NAME_BYTE_ARRAY ).prototype.isPrototypeOf( p )
+								p instanceof this._domain.getDefinition( _NAME_SOUND ) ||
+								p instanceof this._domain.getDefinition( _NAME_BYTE_ARRAY )
 							)
 						)
 					) {

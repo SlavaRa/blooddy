@@ -31,7 +31,7 @@
 		</external-library-path>
 		-->
 
-		<keep-generated-actionscript>true</keep-generated-actionscript>
+		<keep-generated-actionscript>false</keep-generated-actionscript>
 
 		<!--
 		<include-libraries>
@@ -114,7 +114,7 @@
 		<warn-duplicate-variable-def>true</warn-duplicate-variable-def>
 		<warn-for-var-in-changes>false</warn-for-var-in-changes>
 		<warn-import-hides-class>true</warn-import-hides-class>
-		<warn-instance-of-changes>true</warn-instance-of-changes>
+		<warn-instance-of-changes>false</warn-instance-of-changes>
 		<warn-internal-error>true</warn-internal-error>
 		<warn-level-not-supported>true</warn-level-not-supported>
 		<warn-missing-namespace-decl>true</warn-missing-namespace-decl>
@@ -131,7 +131,7 @@
 
 	<static-link-runtime-shared-libraries>false</static-link-runtime-shared-libraries>
 
-	<target-player>10.0.0</target-player>
+	<target-player>10.3.0</target-player>
 
 	<use-network>true</use-network>
 
@@ -139,7 +139,7 @@
 		<publisher>BlooDHounD</publisher>
 		<creator>BlooDHounD</creator>
 		<language>en</language>
-		<description>http://blooddy.by</description>
+		<description>http://www.blooddy.by</description>
 	</metadata>
 
 </flex-config>
