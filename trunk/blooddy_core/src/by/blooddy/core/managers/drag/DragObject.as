@@ -22,6 +22,12 @@ package by.blooddy.core.managers.drag {
 	import flash.system.Capabilities;
 
 	//--------------------------------------
+	//  Namespaces
+	//--------------------------------------
+	
+	use namespace $internal;
+	
+	//--------------------------------------
 	//  Excluded APIs
 	//--------------------------------------
 
@@ -42,14 +48,6 @@ package by.blooddy.core.managers.drag {
 	 * @keyword					dragobject, drag
 	 */
 	public final class DragObject extends BaseShape {
-
-		//--------------------------------------------------------------------------
-		//
-		//  Namespaces
-		//
-		//--------------------------------------------------------------------------
-
-		use namespace $internal;
 
 		//--------------------------------------------------------------------------
 		//
