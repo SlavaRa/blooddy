@@ -21,6 +21,12 @@ package by.blooddy.core.managers.drag {
 	import flash.ui.Keyboard;
 
 	//--------------------------------------
+	//  Namespaces
+	//--------------------------------------
+	
+	use namespace $internal;
+	
+	//--------------------------------------
 	//  Events
 	//--------------------------------------
 
@@ -53,14 +59,6 @@ package by.blooddy.core.managers.drag {
 	 * @keyword					dragmanager, drag
 	 */
 	public final class DragManager extends EventDispatcher {
-
-		//--------------------------------------------------------------------------
-		//
-		//  Namespaces
-		//
-		//--------------------------------------------------------------------------
-
-		use namespace $internal;
 
 		//--------------------------------------------------------------------------
 		//

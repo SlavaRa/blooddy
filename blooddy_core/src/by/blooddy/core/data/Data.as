@@ -14,6 +14,12 @@ package by.blooddy.core.data {
 	import flash.events.EventPhase;
 
 	//--------------------------------------
+	//  Namespaces
+	//--------------------------------------
+	
+	use namespace $internal;
+	
+	//--------------------------------------
 	//  Events
 	//--------------------------------------
 
@@ -35,11 +41,9 @@ package by.blooddy.core.data {
 	//  Excluded APIs
 	//--------------------------------------
 
-	[Exclude( kind="namespace", name="$protected_data" )]
+	[Exclude( kind="property", name="$parent" )]
 
-	[Exclude( kind="property", name="_parent" )]
-
-	[Exclude( kind="method", name="setParent" )]
+	[Exclude( kind="method", name="$setParent" )]
 
 	/**
 	 * @author					BlooDHounD
@@ -50,18 +54,6 @@ package by.blooddy.core.data {
 	 * @keyword					data
 	 */
 	public class Data extends EventDispatcher {
-
-		//--------------------------------------------------------------------------
-		//
-		//  Namespaces
-		//
-		//--------------------------------------------------------------------------
-
-		protected namespace $protected_data;
-
-		use namespace $protected_data;
-
-		use namespace $internal;
 
 		//--------------------------------------------------------------------------
 		//
@@ -89,12 +81,12 @@ package by.blooddy.core.data {
 		/**
 		 * @private
 		 */
-		$protected_data var _parent:DataContainer;
-
+		private var _bubble_parent:DataContainer;
+		
 		/**
 		 * @private
 		 */
-		private var _bubble_parent:DataContainer;
+		$internal var $parent:DataContainer;
 
 		/**
 		 * Родитель элемента.
@@ -102,26 +94,26 @@ package by.blooddy.core.data {
 		 * @keyword					data.parent, parent
 		 */
 		public function get parent():DataContainer {
-			return this._parent;
+			return this.$parent;
 		}
 
 		/**
 		 * @private
 		 */
-		$protected_data function setParent(value:DataContainer):void {
-			if ( this._parent === value ) return;
-			if ( this._parent ) { // мы потеряли СТАРОГО папу
-				this._bubble_parent = this._parent;
+		$internal function $setParent(value:DataContainer):void {
+			if ( this.$parent === value ) return;
+			if ( this.$parent ) { // мы потеряли СТАРОГО папу
+				this._bubble_parent = this.$parent;
 				this.dispatchEventFunction( new DataBaseEvent( DataBaseEvent.REMOVED, true ) );
 			}
 			if ( value ) {
-				if ( this._parent !== value ) {
-					this._parent = value;
+				if ( this.$parent !== value ) {
+					this.$parent = value;
 					this._bubble_parent = value;
 					this.dispatchEventFunction( new DataBaseEvent( DataBaseEvent.ADDED, true ) );
 				}
 			} else {
-				this._parent = null;
+				this.$parent = null;
 			}
 		}
 
@@ -245,7 +237,7 @@ package by.blooddy.core.data {
 		 * @private
 		 */
 		public override function toString():String {
-			return ( this._parent ? this._parent + '.' : '' ) + this.toLocaleString();
+			return ( this.$parent ? this.$parent + '.' : '' ) + this.toLocaleString();
 		}
 
 		//----------------------------------

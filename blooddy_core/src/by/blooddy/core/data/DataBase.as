@@ -8,6 +8,12 @@ package by.blooddy.core.data {
 
 	import flash.errors.IllegalOperationError;
 
+	//--------------------------------------
+	//  Namespaces
+	//--------------------------------------
+	
+	use namespace $internal;
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -17,14 +23,6 @@ package by.blooddy.core.data {
 	 * @keyword					database, data
 	 */
 	public final class DataBase extends DataContainer {
-
-		//--------------------------------------------------------------------------
-		//
-		//  Namespaces
-		//
-		//--------------------------------------------------------------------------
-
-		use namespace $protected_data;
 
 		//--------------------------------------------------------------------------
 		//
@@ -62,7 +60,7 @@ package by.blooddy.core.data {
 		//
 		//--------------------------------------------------------------------------
 
-		$protected_data override function setParent(value:DataContainer):void {
+		$internal override function $setParent(value:DataContainer):void {
 			Error.throwError( IllegalOperationError, 2037 );
 		}
 
