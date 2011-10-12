@@ -8,8 +8,6 @@ package by.blooddy.core.managers.resource {
 
 	import by.blooddy.core.utils.ClassUtils;
 
-	import flash.errors.IllegalOperationError;
-
 	/**
 	 * Динамический пучёк ресурсов.
 	 * 
@@ -34,8 +32,10 @@ package by.blooddy.core.managers.resource {
 		 * @param	name		Имя пучка.
 		 */
 		public function ResourceBundle(name:String) {
+			if ( !name ) {
+				Error.throwError( TypeError, 2007, 'name' );
+			}
 			super();
-			if ( !name ) throw new IllegalOperationError();
 			this._name = name;
 		}
 

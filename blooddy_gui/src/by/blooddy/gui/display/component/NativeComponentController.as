@@ -48,10 +48,10 @@ package by.blooddy.gui.display.component {
 		 * Constructor.
 		 */
 		public function NativeComponentController() {
-			super();
 			if ( !( this is ComponentController ) ) {
 				Error.throwError( IllegalOperationError, 2012, ClassUtils.getClassName( this ) );
 			}
+			super();
 		}
 		
 		//--------------------------------------------------------------------------

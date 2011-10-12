@@ -6,7 +6,10 @@
 
 package by.blooddy.core.managers {
 
+	import by.blooddy.core.utils.ClassUtils;
+	
 	import flash.display.InteractiveObject;
+	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.KeyboardEvent;
@@ -123,8 +126,10 @@ package by.blooddy.core.managers {
 		 * @param	control				Объект для слежки нажатий вяких кнопочек.
 		 */
 		public function KeyboardManager(control:InteractiveObject) {
+			if ( !_privateCall ) {
+				Error.throwError( IllegalOperationError, 2012, ClassUtils.getClassName( this ) );
+			}
 			super();
-			if ( !_privateCall ) throw new ArgumentError();
 			_privateCall = false;
 			control.addEventListener( KeyboardEvent.KEY_DOWN, this.$dispatchEvent, false, int.MAX_VALUE );
 			control.addEventListener( KeyboardEvent.KEY_UP, this.$dispatchEvent, false, int.MAX_VALUE );

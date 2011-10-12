@@ -736,7 +736,7 @@ package by.blooddy.core.utils {
 			var fps:Number = 1E3 / ( time - this._prevTime );
 			this._FPS.push( fps );
 
-			var mem:Number = System.totalMemory / 1024 / 1024;
+			var mem:Number = System.privateMemory / 1024 / 1024;
 			this._MEM.push( mem );
 
 			var net:Number = 0;
@@ -826,7 +826,7 @@ package by.blooddy.core.utils {
 			var fps:Number = 1E3 / ( time - this._prevTime );
 			this._FPS.push( fps );
 
-			var mem:Number = System.totalMemory / 1024 / 1024;
+			var mem:Number = System.privateMemory / 1024 / 1024;
 			this._MEM.push( mem );
 
 			var net:Number = event.bytesLoaded;

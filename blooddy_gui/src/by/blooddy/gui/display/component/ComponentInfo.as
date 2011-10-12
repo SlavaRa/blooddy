@@ -16,7 +16,6 @@ package by.blooddy.gui.display.component {
 	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
-	import flash.utils.getQualifiedClassName;
 
 	//--------------------------------------
 	//  Events
@@ -61,8 +60,10 @@ package by.blooddy.gui.display.component {
 		 * Constructor.
 		 */
 		public function ComponentInfo() {
+			if ( !internalCall ) {
+				Error.throwError( IllegalOperationError, 2012, ClassUtils.getClassName( this ) );
+			}
 			super();
-			if ( !internalCall ) Error.throwError( ArgumentError, 2012, getQualifiedClassName( this ) );
 			internalCall = false;
 		}
 

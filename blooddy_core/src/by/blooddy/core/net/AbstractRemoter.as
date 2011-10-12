@@ -358,7 +358,7 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		private function handler_timer(event:TimerEvent):void {
-			const time:Number = getTimer() - 15 * 1e3;
+			const time:Number = getTimer() - 15e3;
 			for ( var num:* in this._responders ) {
 				if ( ( this._responders[ num ] as ResponderAsset ).time <= time ) {
 					this.invokeResponder( num, 'timeout' );
