@@ -8,7 +8,7 @@ package by.blooddy.core.meta {
 
 	import by.blooddy.core.utils.ClassAlias;
 	import by.blooddy.core.utils.ClassUtils;
-
+	
 	import flash.errors.IllegalOperationError;
 	import flash.system.Capabilities;
 	import flash.utils.Dictionary;
@@ -198,8 +198,10 @@ package by.blooddy.core.meta {
 		 * Constructor
 		 */
 		public function TypeInfo() {
+			if ( !_privateCall ) {
+				Error.throwError( IllegalOperationError, 2012, ClassUtils.getClassName( this ) );
+			}
 			super();
-			if ( !_privateCall ) throw new IllegalOperationError();
 			_privateCall = false;
 		}
 

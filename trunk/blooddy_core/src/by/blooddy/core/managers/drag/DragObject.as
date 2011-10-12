@@ -7,7 +7,8 @@
 package by.blooddy.core.managers.drag {
 
 	import by.blooddy.core.display.BaseShape;
-
+	import by.blooddy.core.utils.ClassUtils;
+	
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
@@ -99,8 +100,10 @@ package by.blooddy.core.managers.drag {
 		 * @private
 		 */
 		public function DragObject(dragSource:DisplayObject, rescale:Boolean=false, offset:Point=null, bounds:Rectangle=null/*, snapAngle:uint=0*/) {
+			if ( !_internalCall ) {
+				Error.throwError( IllegalOperationError, 2012, ClassUtils.getClassName( this ) );
+			}
 			super();
-			if ( !_internalCall ) throw new ArgumentError();
 			this._dragSource = dragSource;
 			this._rescale = rescale;
 			this._offset = offset || (

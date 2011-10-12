@@ -7,8 +7,9 @@
 package by.blooddy.core.managers.drag {
 
 	import by.blooddy.core.events.managers.DragEvent;
+	import by.blooddy.core.utils.ClassUtils;
 	import by.blooddy.core.utils.DisplayObjectUtils;
-
+	
 	import flash.display.DisplayObject;
 	import flash.display.Stage;
 	import flash.errors.IllegalOperationError;
@@ -99,8 +100,10 @@ package by.blooddy.core.managers.drag {
 		 * @private
 		 */
 		public function DragManager() {
+			if ( _inited ) {
+				Error.throwError( IllegalOperationError, 2012, ClassUtils.getClassName( this ) );
+			}
 			super();
-			if ( _inited ) throw new IllegalOperationError();
 			_inited = true;
 		}
 

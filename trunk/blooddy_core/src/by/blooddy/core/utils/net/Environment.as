@@ -57,15 +57,6 @@ package by.blooddy.core.utils.net {
 			return _browserVersion;
 		}
 
-		/**
-		 * @private
-		 */
-		private static var _domain:String;
-
-		public static function get domain():String {
-			return _domain;
-		}
-
 		//--------------------------------------------------------------------------
 		//
 		//  Private class methids
@@ -88,8 +79,7 @@ package by.blooddy.core.utils.net {
 									'an:n.appName,' +
 									'av:n.appVersion,' +
 									'ua:n.userAgent,' +
-									'op:(w.opera?w.opera.version():0),' +
-									'domain:location.hostname' +
+									'op:(w.opera?w.opera.version():0)' +
 								'}' +
 							'}catch(e){' +
 							'}' +
@@ -130,8 +120,6 @@ package by.blooddy.core.utils.net {
 						if ( m ) _browserVersion = m[ 1 ];
 
 					}
-
-					_domain = o.domain;
 
 				}
 			}

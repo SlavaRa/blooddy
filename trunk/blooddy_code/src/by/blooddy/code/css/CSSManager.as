@@ -8,11 +8,13 @@ package by.blooddy.code.css {
 
 	import by.blooddy.code.css.definition.CSSMedia;
 	import by.blooddy.core.events.net.loading.LoaderEvent;
+	import by.blooddy.core.managers.process.IProcessable;
 	import by.blooddy.core.managers.resource.IResourceManager;
 	import by.blooddy.core.managers.resource.ResourceManager;
 	import by.blooddy.core.net.loading.ILoadable;
-	import by.blooddy.core.managers.process.IProcessable;
+	import by.blooddy.core.utils.ClassUtils;
 	
+	import flash.errors.IllegalOperationError;
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -76,8 +78,10 @@ package by.blooddy.code.css {
 		 * Constructor
 		 */
 		public function CSSManager(manager:IResourceManager) {
+			if ( !_privateCall ) {
+				Error.throwError( IllegalOperationError, 2012, ClassUtils.getClassName( this ) );
+			}
 			super();
-			if ( !_privateCall ) throw new ArgumentError();
 			_privateCall = false;
 			this._manager = manager;
 		}
@@ -160,9 +164,9 @@ package by.blooddy.code.css {
 import by.blooddy.code.css.CSSManager;
 import by.blooddy.code.css.CSSParser;
 import by.blooddy.code.css.definition.CSSMedia;
+import by.blooddy.core.managers.process.IProcessable;
 import by.blooddy.core.managers.resource.IResourceManager;
 import by.blooddy.core.net.loading.ILoadable;
-import by.blooddy.core.managers.process.IProcessable;
 import by.blooddy.core.net.loading.LoaderPriority;
 
 import flash.events.ErrorEvent;

@@ -124,11 +124,12 @@ package by.blooddy.core.net.connection.filters {
 			return this._hash;
 		}
 
-		public function isSystem(command:NetCommand):Boolean {
-			switch ( command.io ) {
-				case NetCommand.INPUT:	command = this._input_patterns[ command.name ];		break;
-				case NetCommand.OUTPUT:	command = this._output_patterns[ command.name ];	break;
-				default:				command = null;										break;
+		public function isSystem(commandName:String, io:String=NetCommand.UNKNOWN):Boolean {
+			var command:Command;
+			switch ( io ) {
+				case NetCommand.INPUT:	command = this._input_patterns[ commandName ];	break;
+				case NetCommand.OUTPUT:	command = this._output_patterns[ commandName ];	break;
+				default:				command = null;									break;
 			}
 			return ( command && command.system );
 		}

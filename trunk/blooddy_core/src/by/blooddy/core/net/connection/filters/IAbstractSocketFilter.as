@@ -19,7 +19,7 @@ package by.blooddy.core.net.connection.filters {
 		
 		function getHash():String;
 		
-		function isSystem(command:NetCommand):Boolean;
+		function isSystem(commandName:String, io:String=''):Boolean;
 		
 	}
 	

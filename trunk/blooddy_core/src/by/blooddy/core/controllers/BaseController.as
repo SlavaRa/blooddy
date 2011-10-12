@@ -34,10 +34,10 @@ package by.blooddy.core.controllers {
 		 * Constructor
 		 */
 		public function BaseController(container:DisplayObjectContainer!, dataBase:DataBase!, sharedObject:ProxySharedObject!) {
-			super();
 			if ( !container )		Error.throwError( TypeError, 2007, 'container' );
 			if ( !dataBase )		Error.throwError( TypeError, 2007, 'dataBase' );
 			if ( !sharedObject )	Error.throwError( TypeError, 2007, 'sharedObject' );
+			super();
 			this._dataBase = dataBase;
 			this._container = container;
 			this._sharedObject = sharedObject;

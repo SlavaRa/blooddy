@@ -68,11 +68,13 @@ package by.blooddy.core.net.connection {
 		 * Constructor
 		 */
 		public function AbstractSocketConnection(socket:IAbstractSocket=null) {
-			super();
 			if ( ( this as Object ).constructor == AbstractSocketConnection ) {
 				Error.throwError( IllegalOperationError, 2012, ClassUtils.getClassName( this ) );
 			}
-			if ( !socket ) throw new ArgumentError();
+			if ( !socket ) {
+				Error.throwError( TypeError, 2007, 'socket' );
+			}
+			super();
 			this._socket = socket;
 		}
 		

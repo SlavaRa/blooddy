@@ -56,10 +56,10 @@ package by.blooddy.core.data {
 		 * @param	cancelable
 		 */
 		public function DataBaseNativeEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
-			super( type, bubbles, cancelable );
 			if ( !( this is DataBaseEvent ) ) {
 				Error.throwError( IllegalOperationError, 2012, ClassUtils.getClassName( this ) );
 			}
+			super( type, bubbles, cancelable );
 		}
 
 		//--------------------------------------------------------------------------

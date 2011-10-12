@@ -72,14 +72,14 @@ package by.blooddy.core.net.connection.filters {
 		/**
 		 * @inheritDoc
 		 */
-		public function isSystem(netCommand:NetCommand):Boolean {
+		public function isSystem(commandName:String, io:String=NetCommand.UNKNOWN):Boolean {
 			return false;
 		}
 		
 		/**
 		 * @inheritDoc
 		 */
-		public final function readCommand(input:IDataInput, io:String='input'):NetCommand {
+		public final function readCommand(input:IDataInput, io:String=NetCommand.INPUT):NetCommand {
 
 			var context:Context = this._contexts[ input ] as Context;
 			if ( !context ) this._contexts[ input ] = context = new Context();
