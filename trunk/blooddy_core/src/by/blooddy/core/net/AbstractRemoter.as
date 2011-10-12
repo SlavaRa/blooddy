@@ -233,13 +233,10 @@ package by.blooddy.core.net {
 				var system:Boolean = false;
 				if ( command is NetCommand ) {
 					var netCommand:NetCommand = command as NetCommand;
-					if ( netCommand.system ) {
-						system = true;
-					} else if ( netCommand.num && netCommand.num in this._responders ) {
+					if ( netCommand.num && netCommand.num in this._responders ) {
 						var request:NetCommand = ( this._responders[ netCommand.num ] as ResponderAsset ).command;
-						if ( request.system ) {
-							system = true;
-						} else {
+						netCommand.system = request.system;
+						if ( !request.system ) {
 							command = command.clone();
 							command.name = request.name + '(' + command.name + ')';
 						}

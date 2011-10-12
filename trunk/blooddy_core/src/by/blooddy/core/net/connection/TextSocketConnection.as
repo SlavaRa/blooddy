@@ -113,7 +113,7 @@ package by.blooddy.core.net.connection {
 			if ( !this._socket || !this._socket.connected ) throw new IllegalOperationError( 'соединение не установленно' );
 			if ( !this._filter ) throw new IllegalOperationError( 'нету фильтра сообщений' );
 			var command:NetCommand = new NetCommand( commandName, NetCommand.OUTPUT, parameters );
-			command.system = this._filter.isSystem( command.name );
+			command.system = this._filter.isSystem( commandName, NetCommand.OUTPUT );
 			return super.$invokeCallOutputCommand( command, responder );
 		}
 		
