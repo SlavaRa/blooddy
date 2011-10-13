@@ -113,6 +113,7 @@ package by.blooddy.core.data {
 					this.dispatchEventFunction( new DataBaseEvent( DataBaseEvent.ADDED, true ) );
 				}
 			} else {
+				this._bubble_parent = null;
 				this.$parent = null;
 			}
 		}

@@ -192,7 +192,7 @@ package by.blooddy.core.data {
 		/**
 		 * @private
 		 */
-		private function $removeChildAt(index:int, strict:Boolean=true):Data {
+		private function $removeChildAt(index:int):Data {
 			var child:Data = this._list.splice( index, 1 )[ 0 ];
 			this.removeChild_before( child ); // вызовем событие о добавлние
 			child.$setParent( null );
@@ -327,7 +327,7 @@ package by.blooddy.core.data {
 		/**
 		 * @private
 		 */
-		private function $setChildIndex(child:Data, index:int, strict:Boolean=true):void {
+		private function $setChildIndex(child:Data, index:int):void {
 			var i:int = this._list.indexOf( child );
 			if ( i != index ) {
 				this._list.splice( i, 1 );
