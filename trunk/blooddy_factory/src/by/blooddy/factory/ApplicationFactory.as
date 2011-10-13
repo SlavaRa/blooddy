@@ -21,7 +21,6 @@ package by.blooddy.factory {
 	import flash.net.URLRequest;
 	import flash.system.ApplicationDomain;
 	import flash.system.LoaderContext;
-	import flash.system.SecurityDomain;
 	import flash.utils.clearTimeout;
 	import flash.utils.setTimeout;
 
@@ -708,7 +707,6 @@ internal class TextSprite extends Sprite {
 	public function TextSprite(color:uint=0xFFFFFF):void {
 		super();
 		super.mouseEnabled = false;
-		super.mouseChildren = false;
 		super.tabEnabled = false;
 		this.label.selectable = false;
 		this.label.defaultTextFormat = _FORMAT;
@@ -780,6 +778,7 @@ internal final class PreloaderSprite extends TextSprite {
 	 */
 	public function PreloaderSprite(progress:Number=0.0, color:uint=0xFFFFFF):void {
 		super( color );
+		super.mouseChildren = false;
 		this.label.width = 100;
 		this.label.y = - 20;
 		this.label.x = - this.label.width / 2;
