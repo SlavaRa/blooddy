@@ -737,7 +737,7 @@ package by.blooddy.core.meta {
 
 			var o:Object;
 
-			var hash_p:Object = new Object();
+			var hash_p:Object;
 
 			// соберём свойства описанные в XML
 			if ( parent ) { // для классов
@@ -751,6 +751,7 @@ package by.blooddy.core.meta {
 					this._constructor = _EMPTY_CONSTRUCTOR;
 				}
 
+				hash_p = parent._hash_members;
 				hash = new Object();
 
 				// соберём ссылки на локальную имплементацию
