@@ -781,7 +781,7 @@ internal final class PreloaderSprite extends TextSprite {
 		super.mouseChildren = false;
 		this.label.width = 100;
 		this.label.y = - 20;
-		this.label.x = - this.label.width / 2;
+		this.label.x = -( this.label.width >>> 1 );
 		this.label.text = 'Initialization...';
 		this._progress = progress;
 		this.redraw();
@@ -892,7 +892,7 @@ internal final class ErrorSprite extends TextSprite {
 		this.label.selectable = true;
 		this.label.multiline = true;
 		this.label.width = 200;
-		this.label.x = - this.label.width / 2;
+		this.label.x = -( this.label.width >>> 1 );
 		this.text = text;
 	}
 
@@ -912,7 +912,7 @@ internal final class ErrorSprite extends TextSprite {
 	 */
 	public function set text(value:String):void {
 		this.label.text = value || '';
-		this.label.y =  - this.label.height / 2;
+		this.label.y = -( this.label.height >>> 1 );
 	}
 
 }
