@@ -8,7 +8,8 @@ package by.blooddy.core.utils {
 
 	import by.blooddy.core.meta.PropertyInfo;
 	import by.blooddy.core.meta.TypeInfo;
-
+	
+	import flash.utils.Dictionary;
 	import flash.xml.XMLDocument;
 
 	/**
@@ -38,7 +39,7 @@ package by.blooddy.core.utils {
 		//--------------------------------------------------------------------------
 
 		public static function toString(o:Object):String {
-			return encodeValue( o, new Array() );
+			return encodeValue( o, new Dictionary() );
 		}
 
 		//--------------------------------------------------------------------------
@@ -50,7 +51,7 @@ package by.blooddy.core.utils {
 		/**
 		 * @private
 		 */
-		private static function encodeValue(value:*, list:Array):String {
+		private static function encodeValue(value:*, list:Dictionary):String {
 			switch ( typeof value ) {
 				case 'number':		return ( isFinite( value ) ? value : 'null' );
 				case 'boolean':		return value;
@@ -64,8 +65,11 @@ package by.blooddy.core.utils {
 						value is Vector.<uint> ||
 						value is Vector.<int> ||
 						value is Vector.<Number>
-					)	return encodeArray( value, list );
-					else if ( value is Object ) return encodeObject( value, list );
+					) {
+						return encodeArray( value, list );
+					} else if ( value is Object ) {
+						return encodeObject( value, list );
+					}
 					break;
 			}
 			return 'null';
@@ -110,9 +114,9 @@ package by.blooddy.core.utils {
 		/**
 		 * @private
 		 */
-		private static function encodeArray(value:Object, list:Array):String {
-			if ( list.indexOf( value ) >= 0 ) return '[link]';
-			list.push( value );
+		private static function encodeArray(value:Object, list:Dictionary):String {
+			if ( value in list ) return '[link]';
+			list[ value ] = true;
 			var arr:Array = new Array();
 			var l:int = value.length - 1;
 			while ( l > 0 && value[ l ] == null ) {
@@ -122,31 +126,33 @@ package by.blooddy.core.utils {
 			for ( var i:uint = 0; i<l; ++i ) {
 				arr.push( encodeValue( value[ i ], list ) );
 			}
+			delete list[ value ];
 			return '[' + arr.join( ',' ) + ']';
 		}
 
 		/**
 		 * @private
 		 */
-		private static function encodeObject(value:Object, list:Array):String {
-			if ( list.indexOf( value ) >= 0 ) return '[link]';
-			list.push( value );
+		private static function encodeObject(value:Object, list:Dictionary):String {
+			if ( value in list ) return '[link]';
+			list[ value ] = true;
 			var hash:Object = new Object();
 			var arr:Array = new Array();
 			var info:TypeInfo = TypeInfo.getInfo( value );
 			for each ( var prop:PropertyInfo in info.getProperties() ) {
 				if ( prop.type == _FUNCTION ) continue;
 				if ( !prop.name.uri ) {
-					hash[ prop.type.toString() ] = true;
+					hash[ prop.name.toString() ] = true;
 				}
 				arr.push( prop.name + ':' + encodeValue( value[ prop.name ], list ) );
 			}
 			for ( var i:Object in value ) {
 				if ( i in hash ) continue;
+				hash[ i ] = true;
 				if ( value[ i ] is Function ) continue;
 				arr.push( i + ':' + encodeValue( value[ i ], list ) );
 			}
-			list.pop();
+			delete list[ value ];
 			arr.sort();
 			return '{' + arr.join( ',' ) + '}';
 		}

@@ -235,8 +235,8 @@ package by.blooddy.core.net {
 					var netCommand:NetCommand = command as NetCommand;
 					if ( netCommand.num && netCommand.num in this._responders ) {
 						var request:NetCommand = ( this._responders[ netCommand.num ] as ResponderAsset ).command;
-						netCommand.system = request.system;
-						if ( !request.system ) {
+						netCommand.system = system = request.system;
+						if ( !system ) {
 							command = command.clone();
 							command.name = request.name + '(' + command.name + ')';
 						}
