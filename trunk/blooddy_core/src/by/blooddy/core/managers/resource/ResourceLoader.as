@@ -258,8 +258,13 @@ package by.blooddy.core.managers.resource {
 		 */
 		private function clear():void {
 			this._name = null;
+			this._definitions = null;
 			var resource:*;
+			var arr:Vector.<String> = new Vector.<String>();
 			for ( var name:String in this._hash ) {
+				arr.push( name );
+			}
+			for each ( name in arr ) {
 				resource = this._hash[ name ];
 				if ( typeof resource == 'object' ) {
 					dispose( resource );
@@ -267,7 +272,6 @@ package by.blooddy.core.managers.resource {
 				delete this._hash[ name ];
 			}
 			this._domain = null;
-			this._name = null;
 		}
 
 		//--------------------------------------------------------------------------

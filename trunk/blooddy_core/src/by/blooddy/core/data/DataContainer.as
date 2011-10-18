@@ -204,11 +204,15 @@ package by.blooddy.core.data {
 		//----------------------------------
 		
 		public function removeChildren(beginIndex:int=0, endIndex:int=int.MAX_VALUE):void {
-			if ( arguments.length < 2 ) endIndex = this._list.length - 1;
-			if ( beginIndex > endIndex || beginIndex < 0 || endIndex >= this._list.length ) Error.throwError( RangeError, 2006 );
-			for each( var child:Data in this._list.splice( beginIndex, endIndex - beginIndex + 1 ) ) {
-				this.removeChild_before( child );
-				child.$setParent( null );
+			if ( arguments.length < 2 ) endIndex = this._list.length;
+			else ++endIndex;
+			var l:int = endIndex - beginIndex;
+			if ( l < 0 || beginIndex < 0 || endIndex > this._list.length ) Error.throwError( RangeError, 2006 );
+			if ( l > 0 ) {
+				for each( var child:Data in this._list.splice( beginIndex, l ) ) {
+					this.removeChild_before( child );
+					child.$setParent( null );
+				}
 			}
 		}
 		

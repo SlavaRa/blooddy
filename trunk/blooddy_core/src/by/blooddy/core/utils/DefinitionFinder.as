@@ -95,6 +95,10 @@ package by.blooddy.core.utils {
 				}
 
 				this._definitions = definitions;
+				
+				this._data.clear();
+				this._data = null;
+				
 			}
 			return this._definitions.slice();
 		}
