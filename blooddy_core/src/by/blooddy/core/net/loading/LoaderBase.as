@@ -498,14 +498,14 @@ package by.blooddy.core.net.loading {
 				this._input.clear();
 				this._input = null;
 			}
+			if ( this.$unload() && super.hasEventListener( Event.UNLOAD ) ) {
+				super.dispatchEvent( new Event( Event.UNLOAD ) );
+			}
 //			this._id = null;
 			this._url = null;
 			this._bytesLoaded = 0;
 			this._bytesTotal = 0;
 			this._state = _STATE_IDLE;
-			if ( this.$unload() && super.hasEventListener( Event.UNLOAD ) ) {
-				super.dispatchEvent( new Event( Event.UNLOAD ) );
-			}
 		}
 
 		//--------------------------------------------------------------------------

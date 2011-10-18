@@ -215,7 +215,7 @@ package by.blooddy.core.net.loading {
 				} else if ( this._content is BitmapData ) {
 					( this._content as BitmapData ).dispose();
 				}
-				this._content = undefined;
+				this._content = null;
 			}
 			this.clear_loader();
 			this._contentType = null;

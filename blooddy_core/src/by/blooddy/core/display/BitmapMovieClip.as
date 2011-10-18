@@ -7,12 +7,14 @@
 package by.blooddy.core.display {
 
 	import by.blooddy.core.utils.IDisposable;
-
+	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
+	import flash.display.Graphics;
 	import flash.display.IBitmapDrawable;
 	import flash.display.MovieClip;
+	import flash.display.Shape;
 	import flash.errors.IllegalOperationError;
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
@@ -74,8 +76,8 @@ package by.blooddy.core.display {
 		 */
 		private static function getElement(bitmap:IBitmapDrawable):CollectionElement {
 			var bmp:BitmapData;
-			var x:Number = 0;
-			var y:Number = 0;
+			var x:int = 0;
+			var y:int = 0;
 			if ( bitmap is BitmapData ) {
 				bmp = bitmap as BitmapData;
 			} else if ( bitmap is Bitmap ) {
@@ -112,16 +114,15 @@ package by.blooddy.core.display {
 		 * @note					после выполнения метода MovieClip будет остановлен на последнем кадре. 
 		 *  
 		 */
-		public static function getAsMovieClip(bitmap:IBitmapDrawable, pixelSnapping:String='auto', smoothing:Boolean=false):BitmapMovieClip {
+		public static function getAsMovieClip(bitmap:IBitmapDrawable, smoothing:Boolean=false):BitmapMovieClip {
 			var result:BitmapMovieClip;
 			if ( bitmap is MovieClip ) {
 				if ( bitmap is BitmapMovieClip ) {
 					result = ( bitmap as BitmapMovieClip ).clone();
-					result.pixelSnapping = pixelSnapping;
-					result.smoothing = smoothing;
+					result._smoothing = smoothing;
 				} else {
 					var mc:MovieClip = bitmap as MovieClip;
-					result = new BitmapMovieClip( pixelSnapping, smoothing );
+					result = new BitmapMovieClip( smoothing );
 					const l:uint = mc.totalFrames;
 					for ( var i:uint = 0; i<l; ++i ) {
 						mc.gotoAndStop( i + 1 );
@@ -144,11 +145,11 @@ package by.blooddy.core.display {
 		/**
  		 * Constructor
 		 */
-		public function BitmapMovieClip(pixelSnapping:String='auto', smoothing:Boolean=false) {
+		public function BitmapMovieClip(smoothing:Boolean=false) {
 			super();
-			this._container.pixelSnapping = pixelSnapping;
-			this._container.smoothing = smoothing;
-			super.addChild( this._container );
+			super.mouseChildren = false;
+			this._smoothing = smoothing;
+			super.addChild( this._content );
 		}
 
 		//--------------------------------------------------------------------------
@@ -165,47 +166,12 @@ package by.blooddy.core.display {
 		/**
 		 * @private
 		 */
-		private const _container:Bitmap = new Bitmap();
-
-		//--------------------------------------------------------------------------
-		//
-		//  Properties
-		//
-		//--------------------------------------------------------------------------
-
-		public function get pixelSnapping():String {
-			return this._container.pixelSnapping;
-		}
-
+		private var _smoothing:Boolean;
+		
 		/**
 		 * @private
 		 */
-		public function set pixelSnapping(value:String):void {
-			this._container.pixelSnapping = value;
-		}
-
-		public function get smoothing():Boolean {
-			return this._container.smoothing;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set smoothing(value:Boolean):void {
-			this._container.smoothing = value;
-		}
-
-		public function get bitmapData():BitmapData {
-			return this._container.bitmapData;
-		}
-
-		public function get relativeX():Number {
-			return this._container.x;
-		}
-
-		public function get relativeY():Number {
-			return this._container.y;
-		}
+		private const _content:Shape = new Shape();
 
 		//--------------------------------------------------------------------------
 		//
@@ -286,7 +252,7 @@ package by.blooddy.core.display {
 		 * @param	bind	если установлен в true, то копирует только ссылки на эленты, аставляя связывание.
 		 */
 		public function clone(bind:Boolean=true):BitmapMovieClip {
-			var result:BitmapMovieClip = new BitmapMovieClip( this._container.pixelSnapping, this._container.smoothing );
+			var result:BitmapMovieClip = new BitmapMovieClip( this._smoothing );
 			var i:uint;
 			const l:uint = this._list.length;
 			if ( bind ) {
@@ -356,7 +322,7 @@ package by.blooddy.core.display {
 		}
 
 		public function dispose():void {
-			this._container.bitmapData = null;
+			this._content.graphics.clear();
 			this._totalFrames = 0;
 			var bmp:BitmapData;
 			while ( this._list.length ) {
@@ -376,9 +342,13 @@ package by.blooddy.core.display {
 			this._currentFrame = value;
 			if ( this._list.length < value ) return;
 			var element:CollectionElement = this._list[ value - 1 ];
-			this._container.bitmapData = element.bmp;
-			this._container.x = element.x;
-			this._container.y = element.y;
+			var bmp:BitmapData = element.bmp;
+			var g:Graphics = this._content.graphics;
+			g.clear();
+			g.beginBitmapFill( bmp, null, false, this._smoothing );
+			g.drawRect( 0, 0, bmp.width, bmp.height );
+			this._content.x = element.x;
+			this._content.y = element.y;
 		}
 
 		//--------------------------------------------------------------------------
@@ -459,7 +429,7 @@ import flash.display.BitmapData;
  */
 internal final class CollectionElement {
 
-	public function CollectionElement(bmp:BitmapData, x:Number=0, y:Number=0) {
+	public function CollectionElement(bmp:BitmapData, x:int=0, y:int=0) {
 		super();
 		this.bmp = bmp;
 		this.x = x;
@@ -468,9 +438,9 @@ internal final class CollectionElement {
 
 	public var bmp:BitmapData;
 
-	public var x:Number;
+	public var x:int;
 
-	public var y:Number;
+	public var y:int;
 
 	public function clone():CollectionElement {
 		return new CollectionElement( this.bmp.clone(), this.x, this.y );

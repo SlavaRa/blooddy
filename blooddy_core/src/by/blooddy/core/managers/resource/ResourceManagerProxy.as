@@ -154,6 +154,7 @@ package by.blooddy.core.managers.resource {
 			}
 			for each ( bundleName in bundles ) {
 				this.unloadResourceBundle( bundleName );
+				delete this._resourceUsages[ bundleName ];
 			}
 			if ( resources ) {
 				throw new ResourceError( 'Некоторые ресурсы не были возвращены в мэннеджер ресурсов.', 0, resources );

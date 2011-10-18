@@ -311,10 +311,7 @@ package by.blooddy.core.net.loading {
 			var unload:Boolean = Boolean( this._content || this._stream || this._loader || this._sound || this._zip || this._input );
 			this.clear_asset();
 			this._request = null;
-			if ( this._content ) {
-				dispose( this._content );
-				this._content = undefined;
-			}
+			this._content = undefined;
 			this._contentType = null;
 			return unload;
 		}
