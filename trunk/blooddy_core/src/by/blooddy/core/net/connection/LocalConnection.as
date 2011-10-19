@@ -34,7 +34,7 @@ package by.blooddy.core.net.connection {
 	 * @created					26.05.2010 20:49:37
 	 */
 	public class LocalConnection extends AbstractRemoter implements IConnection {
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class variables
@@ -236,9 +236,10 @@ import flash.utils.ByteArray;
 import flash.utils.Proxy;
 import flash.utils.flash_proxy;
 
-use namespace flash_proxy;
-
 internal namespace $private;
+
+use namespace flash_proxy;
+use namespace $private;
 
 /**
  * @private
@@ -303,7 +304,7 @@ internal final dynamic class Client extends Proxy {
 				bytes.uncompress();
 			}
 			var args:Array = bytes.readObject();
-			return this._target.$private::$invokeCallInputCommand( name, args );
+			return this._target.$invokeCallInputCommand( name, args );
 		}
 	}
 
@@ -329,7 +330,7 @@ internal final dynamic class Client extends Proxy {
 		if ( result == null ) {
 			var app:Client = this;
 			this._methods_hash[ n ] = result = function(...rest):* {
-				return app._target.$private::$invokeCallInputCommand( n, rest );
+				return app._target.$invokeCallInputCommand( n, rest );
 			};
 		}
 		return result;
@@ -339,7 +340,7 @@ internal final dynamic class Client extends Proxy {
 	 * @private
 	 */
 	flash_proxy override function callProperty(name:*, ...parameters):* {
-		this._target.$private::$invokeCallInputCommand( name, parameters );
+		this._target.$invokeCallInputCommand( name, parameters );
 	}
 
 }

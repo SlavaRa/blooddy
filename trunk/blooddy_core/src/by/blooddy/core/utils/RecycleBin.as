@@ -71,12 +71,7 @@ package by.blooddy.core.utils {
 		//--------------------------------------------------------------------------
 
 		public function has(key:String!):Boolean {
-			if ( key in this._hash ) {
-				if ( this._hash[ key ].length > 0 ) {
-					return true;
-				}
-			}
-			return false;
+			return ( key in this._hash && this._hash[ key ].length > 0 );
 		}
 
 		public function takeIn(key:String, resource:*, time:uint=3*60*1E3):void {

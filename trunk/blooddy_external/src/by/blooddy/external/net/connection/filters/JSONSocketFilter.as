@@ -38,7 +38,7 @@ package by.blooddy.external.net.connection.filters {
 		//
 		//--------------------------------------------------------------------------
 
-		protected override function getCommandFromString(data:String, io:String):NetCommand {
+		public override function decodeCommand(data:String, io:String=NetCommand.INPUT):NetCommand {
 			var o:* = JSON.decode( data );
 			if ( o is Array ) {
 				return new NetCommand( o.shift(), io, o );
@@ -46,7 +46,7 @@ package by.blooddy.external.net.connection.filters {
 			return null;
 		}
 
-		protected override function getStringFromCommand(command:NetCommand):String {
+		public override function encodeCommand(command:NetCommand):String {
 			var arr:Array = command.slice();
 			arr.unshift( command.name );
 			return JSON.encode( arr );

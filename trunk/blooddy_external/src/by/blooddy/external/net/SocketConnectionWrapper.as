@@ -10,9 +10,9 @@ package by.blooddy.external.net {
 	import by.blooddy.core.net.RemoterProxy;
 	import by.blooddy.core.net.connection.SocketConnection;
 	import by.blooddy.core.net.connection.filters.ISocketFilter;
-	import by.blooddy.core.utils.time.setTimeout;
 	
 	import flash.events.AsyncErrorEvent;
+	import flash.utils.setTimeout;
 
 	//--------------------------------------
 	//  Events
@@ -87,8 +87,8 @@ package by.blooddy.external.net {
 			return ( filter ? filter.getHash() : null );
 		}
 		
-		public function connect(host:String, port:int, proxy:Boolean=false):void {
-			setTimeout( this._call, 1, this._connect, host, port, proxy );
+		public function connect(host:String, port:int):void {
+			setTimeout( this._call, 1, this._connect, host, port );
 		}
 
 		public function close():void {
@@ -114,8 +114,7 @@ package by.blooddy.external.net {
 		/**
 		 * @private
 		 */
-		private function _connect(host:String, port:int, proxy:Boolean):void {
-			this._connection.connectionType = ( proxy ? Protocols.HTTP : Protocols.SOCKET );
+		private function _connect(host:String, port:int):void {
 			this._connection.connect( host, port );
 		}
 		
