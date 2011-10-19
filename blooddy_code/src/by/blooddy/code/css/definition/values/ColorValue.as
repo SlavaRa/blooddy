@@ -66,7 +66,7 @@ package by.blooddy.code.css.definition.values {
 
 		public function toString():String {
 			var v:String;
-			if ( this.value > 0xFFFFFF && this.value & 0xFF000000 != 0xFF000000 ) {
+			if ( this.value > 0xFFFFFF && ( this.value & 0xFF000000 ) != 0xFF000000 ) {
 				v = this.value.toString( 16 );
 				while ( v.length < 8 ) {
 					v = '0' + v;

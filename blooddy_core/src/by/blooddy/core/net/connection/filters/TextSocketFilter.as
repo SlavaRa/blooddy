@@ -127,7 +127,7 @@ package by.blooddy.core.net.connection.filters {
 		/**
 		 * @inheritDoc
 		 */
-		public function decodeCommand(data:String, io:String='input'):NetCommand {
+		public function decodeCommand(data:String, io:String=NetCommand.INPUT):NetCommand {
 			throw new IllegalOperationError();
 		}
 
