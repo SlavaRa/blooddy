@@ -13,10 +13,10 @@ package by.blooddy.core.net {
 	import by.blooddy.core.logging.Logger;
 	import by.blooddy.core.logging.commands.CommandLog;
 	import by.blooddy.core.utils.time.AutoTimer;
+	import by.blooddy.core.utils.time.getTimer;
 	
 	import flash.errors.ScriptTimeoutError;
 	import flash.events.TimerEvent;
-	import flash.utils.getTimer;
 
 	/**
 	 * @author					BlooDHounD
@@ -41,11 +41,16 @@ package by.blooddy.core.net {
 		//  Class variables
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 */
-		private static const _TIMER:AutoTimer = new AutoTimer( 30 * 1E3 );
+		private static const _TIMEOUT:uint = 30e3;
+
+		/**
+		 * @private
+		 */
+		private static const _TIMER:AutoTimer = new AutoTimer( _TIMEOUT >>> 1 );
 		
 		//--------------------------------------------------------------------------
 		//
@@ -355,7 +360,7 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		private function handler_timer(event:TimerEvent):void {
-			const time:Number = getTimer() - 15e3;
+			const time:Number = getTimer() - _TIMEOUT;
 			for ( var num:* in this._responders ) {
 				if ( ( this._responders[ num ] as ResponderAsset ).time <= time ) {
 					this.invokeResponder( num, 'timeout' );
@@ -379,14 +384,7 @@ package by.blooddy.core.net {
 import by.blooddy.core.commands.Command;
 import by.blooddy.core.net.NetCommand;
 import by.blooddy.core.net.Responder;
-
-import flash.utils.getTimer;
-
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Helper class: ResponderAsset
-//
-////////////////////////////////////////////////////////////////////////////////
+import by.blooddy.core.utils.time.getTimer;
 
 /**
  * @private
