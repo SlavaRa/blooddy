@@ -71,10 +71,18 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		private function $status(...args):void {
+			var arr:Array = args;
 			if ( this._status != null ) {
+				if ( args.length < this._status.length ) {
+					args = arr.slice();
+					args.length = this._status.length;
+				}
 				this._status.apply( null, args );
 			}
 			if ( this._responder.status != null ) {
+				if ( args.length < this._responder.status.length ) {
+					args.length = this._responder.status.length;
+				}
 				this._responder.status.apply( null, args );
 			}
 		}

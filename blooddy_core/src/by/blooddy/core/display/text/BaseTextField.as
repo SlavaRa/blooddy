@@ -51,8 +51,8 @@ package by.blooddy.core.display.text {
 		public function BaseTextField() {
 			super();
 			super.mouseEnabled = false;
-			super.addEventListener( Event.ADDED,				this.handler_added,				false, int.MAX_VALUE, true );
-			super.addEventListener( Event.REMOVED,				this.handler_removed,			false, int.MAX_VALUE, true );
+			super.addEventListener( Event.ADDED,				this.handler_added,				true, int.MAX_VALUE, true );
+			super.addEventListener( Event.REMOVED,				this.handler_removed,			true, int.MAX_VALUE, true );
 			super.addEventListener( Event.ADDED_TO_STAGE,		this.handler_addedToStage,		false, int.MAX_VALUE, true );
 			super.addEventListener( Event.REMOVED_FROM_STAGE,	this.handler_removedFromStage,	false, int.MAX_VALUE, true );
 			
@@ -87,48 +87,44 @@ package by.blooddy.core.display.text {
 		 * @private
 		 */
 		private function handler_added(event:Event):void {
-			if ( event.target !== this ) {
-				// если пришёл Loader, то надо подписаться на всяческие ошибки
-				if ( event.target is Loader ) {
-					// так как мы не собираемся контролировать объект, лучше подпишимся со слабыми ссылками
-					var loader:LoaderInfo = ( event.target as Loader ).contentLoaderInfo;
-					loader.uncaughtErrorEvents.addEventListener( UncaughtErrorEvent.UNCAUGHT_ERROR, handler_uncaughtError, false, 0, true );
-					loader.addEventListener( Event.COMPLETE,		this.handler_complete, false, int.MAX_VALUE, true );
-					loader.addEventListener( IOErrorEvent.IO_ERROR,	this.handler_complete, false, int.MAX_VALUE, true );
-					if ( !this._loaders ) this._loaders = new Dictionary();
-					this._loaders[ loader ] = true;
-				}
-				// останавливаем расспостранение события
-				// наши родители даже не догадываются о его существовании
-				event.stopPropagation();
+			// если пришёл Loader, то надо подписаться на всяческие ошибки
+			if ( event.target is Loader ) {
+				// так как мы не собираемся контролировать объект, лучше подпишимся со слабыми ссылками
+				var loader:LoaderInfo = ( event.target as Loader ).contentLoaderInfo;
+				loader.uncaughtErrorEvents.addEventListener( UncaughtErrorEvent.UNCAUGHT_ERROR, handler_uncaughtError, false, 0, true );
+				loader.addEventListener( Event.COMPLETE,		this.handler_complete, false, int.MAX_VALUE, true );
+				loader.addEventListener( IOErrorEvent.IO_ERROR,	this.handler_complete, false, int.MAX_VALUE, true );
+				if ( !this._loaders ) this._loaders = new Dictionary();
+				this._loaders[ loader ] = true;
 			}
+			// останавливаем расспостранение события
+			// наши родители даже не догадываются о его существовании
+			event.stopPropagation();
 		}
 
 		/**
 		 * @private
 		 */
 		private function handler_removed(event:Event):void {
-			if ( event.target !== this ) {
-				// если пришёл Loader, то надо отписаться на всяческие ошибки
-				if ( event.target is Loader ) {
-					// отписываемся
-					var loader:LoaderInfo = ( event.target as Loader ).contentLoaderInfo;
-					loader.removeEventListener( Event.COMPLETE,			this.handler_complete );
-					loader.removeEventListener( IOErrorEvent.IO_ERROR,	this.handler_complete );
-					delete this._loaders[ loader ];
-					try {
-						loader.loader.close();
-					} catch ( e:* ) {
-					}
-					try {
-						loader.loader.unload();
-					} catch ( e:* ) {
-					}
+			// если пришёл Loader, то надо отписаться на всяческие ошибки
+			if ( event.target is Loader ) {
+				// отписываемся
+				var loader:LoaderInfo = ( event.target as Loader ).contentLoaderInfo;
+				loader.removeEventListener( Event.COMPLETE,			this.handler_complete );
+				loader.removeEventListener( IOErrorEvent.IO_ERROR,	this.handler_complete );
+				delete this._loaders[ loader ];
+				try {
+					loader.loader.close();
+				} catch ( e:* ) {
 				}
-				// останавливаем расспостранение события
-				// наши родители даже не догадываются о его существовании
-				event.stopPropagation();
+				try {
+					loader.loader.unload();
+				} catch ( e:* ) {
+				}
 			}
+			// останавливаем расспостранение события
+			// наши родители даже не догадываются о его существовании
+			event.stopPropagation();
 		}
 
 		/**
