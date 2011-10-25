@@ -23,7 +23,7 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 
-		use namespace $protected_info;
+		use namespace $protected;
 
 		//--------------------------------------------------------------------------
 		//
@@ -84,7 +84,7 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		private var _returnType:QName;
+		$protected var _returnType:QName;
 
 		public function get returnType():QName {
 			return this._returnType;
@@ -124,30 +124,29 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 
-		$protected_info override function parseXML(xml:XML):void {
-			super.parseXML( xml );
+		$protected override function parse(o:Object):void {
+			super.parse( o );
 			if ( this._parent ) { // сигнатура метода не может именяться, так что нечего лишний раз парсить
 				this._returnType = ( this._parent as MethodInfo )._returnType;
 				this._parameters = ( this._parent as MethodInfo )._parameters;
 				this._parameters_required = ( this._parent as MethodInfo )._parameters_required;
 			} else {
-				this._returnType = ClassUtils.parseClassQName( xml.@returnType.toString() );
-				var list:XMLList = xml.parameter;
-				if ( list.length() <= 0 ) {
-					this._parameters = _EMPTY_PARAMETERS;
-					this._parameters_required = _EMPTY_PARAMETERS;
-				} else {
+				this._returnType = ClassUtils.parseClassQName( o.returnType );
+				if ( o.parameters.length > 0 ) {
 					this._parameters = new Vector.<ParameterInfo>();
 					this._parameters_required = new Vector.<ParameterInfo>();
 					var p:ParameterInfo;
-					for each ( xml in list ) {
+					for each ( o in o.parameters ) {
 						p = new ParameterInfo();
-						p.parseXML( xml );
+						p.parse( o );
 						this._parameters.push( p );
-						if ( !p.optional ) {
+						if ( !p._optional ) {
 							this._parameters_required.push( p );
 						}
 					}
+				} else {
+					this._parameters = _EMPTY_PARAMETERS;
+					this._parameters_required = _EMPTY_PARAMETERS;
 				}
 			}
 		}

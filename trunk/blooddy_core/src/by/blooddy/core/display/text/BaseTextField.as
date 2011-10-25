@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 package by.blooddy.core.display.text {
-
+	
 	import by.blooddy.core.blooddy;
 	import by.blooddy.core.utils.ClassAlias;
 	
@@ -17,13 +17,13 @@ package by.blooddy.core.display.text {
 	import flash.events.UncaughtErrorEvents;
 	import flash.text.TextField;
 	import flash.utils.Dictionary;
-
+	
 	//--------------------------------------
 	//  Aliases
 	//--------------------------------------
-
+	
 	ClassAlias.registerQNameAlias( new QName( blooddy, 'TextField' ), BaseTextField );
-
+	
 	//--------------------------------------
 	//  Events
 	//--------------------------------------
@@ -38,95 +38,99 @@ package by.blooddy.core.display.text {
 	 * @created					Mar 1, 2010 1:15:43 PM
 	 */
 	public class BaseTextField extends TextField {
-
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-
+		
 		/**
 		 * Constructor.
 		 */
 		public function BaseTextField() {
 			super();
 			super.mouseEnabled = false;
-			super.addEventListener( Event.ADDED,				this.handler_added,				true, int.MAX_VALUE, true );
-			super.addEventListener( Event.REMOVED,				this.handler_removed,			true, int.MAX_VALUE, true );
+			super.addEventListener( Event.ADDED,				this.handler_added,				false, int.MAX_VALUE, true );
+			super.addEventListener( Event.REMOVED,				this.handler_removed,			false, int.MAX_VALUE, true );
 			super.addEventListener( Event.ADDED_TO_STAGE,		this.handler_addedToStage,		false, int.MAX_VALUE, true );
 			super.addEventListener( Event.REMOVED_FROM_STAGE,	this.handler_removedFromStage,	false, int.MAX_VALUE, true );
 			
 		}
-
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Includes
 		//
 		//--------------------------------------------------------------------------
-
+		
 		include "../../../../../includes/implements_BaseDisplayObject.as";
-
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Variables
 		//
 		//--------------------------------------------------------------------------
-
+		
 		/**
 		 * @private
 		 */
 		private var _loaders:Dictionary;
-
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Event handlers
 		//
 		//--------------------------------------------------------------------------
-
+		
 		/**
 		 * @private
 		 */
 		private function handler_added(event:Event):void {
-			// если пришёл Loader, то надо подписаться на всяческие ошибки
-			if ( event.target is Loader ) {
-				// так как мы не собираемся контролировать объект, лучше подпишимся со слабыми ссылками
-				var loader:LoaderInfo = ( event.target as Loader ).contentLoaderInfo;
-				loader.uncaughtErrorEvents.addEventListener( UncaughtErrorEvent.UNCAUGHT_ERROR, handler_uncaughtError, false, 0, true );
-				loader.addEventListener( Event.COMPLETE,		this.handler_complete, false, int.MAX_VALUE, true );
-				loader.addEventListener( IOErrorEvent.IO_ERROR,	this.handler_complete, false, int.MAX_VALUE, true );
-				if ( !this._loaders ) this._loaders = new Dictionary();
-				this._loaders[ loader ] = true;
+			if ( event.target !== this ) {
+				// если пришёл Loader, то надо подписаться на всяческие ошибки
+				if ( event.target is Loader ) {
+					// так как мы не собираемся контролировать объект, лучше подпишимся со слабыми ссылками
+					var loader:LoaderInfo = ( event.target as Loader ).contentLoaderInfo;
+					loader.uncaughtErrorEvents.addEventListener( UncaughtErrorEvent.UNCAUGHT_ERROR, handler_uncaughtError, false, 0, true );
+					loader.addEventListener( Event.COMPLETE,		this.handler_complete, false, int.MAX_VALUE, true );
+					loader.addEventListener( IOErrorEvent.IO_ERROR,	this.handler_complete, false, int.MAX_VALUE, true );
+					if ( !this._loaders ) this._loaders = new Dictionary();
+					this._loaders[ loader ] = true;
+				}
+				// останавливаем расспостранение события
+				// наши родители даже не догадываются о его существовании
+				event.stopPropagation();
 			}
-			// останавливаем расспостранение события
-			// наши родители даже не догадываются о его существовании
-			event.stopPropagation();
 		}
-
+		
 		/**
 		 * @private
 		 */
 		private function handler_removed(event:Event):void {
-			// если пришёл Loader, то надо отписаться на всяческие ошибки
-			if ( event.target is Loader ) {
-				// отписываемся
-				var loader:LoaderInfo = ( event.target as Loader ).contentLoaderInfo;
-				loader.removeEventListener( Event.COMPLETE,			this.handler_complete );
-				loader.removeEventListener( IOErrorEvent.IO_ERROR,	this.handler_complete );
-				delete this._loaders[ loader ];
-				try {
-					loader.loader.close();
-				} catch ( e:* ) {
+			if ( event.target !== this ) {
+				// если пришёл Loader, то надо отписаться на всяческие ошибки
+				if ( event.target is Loader ) {
+					// отписываемся
+					var loader:LoaderInfo = ( event.target as Loader ).contentLoaderInfo;
+					loader.removeEventListener( Event.COMPLETE,			this.handler_complete );
+					loader.removeEventListener( IOErrorEvent.IO_ERROR,	this.handler_complete );
+					delete this._loaders[ loader ];
+					try {
+						loader.loader.close();
+					} catch ( e:* ) {
+					}
+					try {
+						loader.loader.unload();
+					} catch ( e:* ) {
+					}
 				}
-				try {
-					loader.loader.unload();
-				} catch ( e:* ) {
-				}
+				// останавливаем расспостранение события
+				// наши родители даже не догадываются о его существовании
+				event.stopPropagation();
 			}
-			// останавливаем расспостранение события
-			// наши родители даже не догадываются о его существовании
-			event.stopPropagation();
 		}
-
+		
 		/**
 		 * @private
 		 */
@@ -140,14 +144,14 @@ package by.blooddy.core.display.text {
 				super.dispatchEvent( new Event( Event.INIT ) );
 			}
 		}
-
+		
 		/**
 		 * @private
 		 */
 		private static function handler_uncaughtError(event:UncaughtErrorEvent):void {
 			// ignore
 		}
-
+		
 	}
-
+	
 }

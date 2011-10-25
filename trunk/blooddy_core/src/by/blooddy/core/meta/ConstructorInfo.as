@@ -21,7 +21,7 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 
-		use namespace $protected_info;
+		use namespace $protected;
 
 		//--------------------------------------------------------------------------
 		//
@@ -95,23 +95,22 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 
-		$protected_info override function parseXML(xml:XML):void {
-			var list:XMLList = xml.parameter;
-			if ( list.length() <= 0 ) {
-				this._parameters = _EMPTY_PARAMETERS;
-				this._parameters_required = _EMPTY_PARAMETERS;
-			} else {
+		$protected override function parse(o:Object):void {
+			var p:ParameterInfo;
+			if ( o.length > 0 ) {
 				this._parameters = new Vector.<ParameterInfo>();
 				this._parameters_required = new Vector.<ParameterInfo>();
-				var p:ParameterInfo;
-				for each ( xml in list ) {
+				for each ( o in o ) {
 					p = new ParameterInfo();
-					p.parseXML( xml );
+					p.parse( o );
 					this._parameters.push( p );
-					if ( !p.optional ) {
+					if ( !p._optional ) {
 						this._parameters_required.push( p );
 					}
 				}
+			} else {
+				this._parameters = _EMPTY_PARAMETERS;
+				this._parameters_required = _EMPTY_PARAMETERS;
 			}
 		}
 

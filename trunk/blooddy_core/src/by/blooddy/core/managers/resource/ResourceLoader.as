@@ -209,6 +209,7 @@ package by.blooddy.core.managers.resource {
 		public override function unload():void {
 			this.clear();
 			super.unload();
+			this._name = null;
 		}
 
 		/**
@@ -217,6 +218,7 @@ package by.blooddy.core.managers.resource {
 		public override function close():void {
 			this.clear();
 			super.close();
+			this._name = null;
 		}
 
 		/**
@@ -257,7 +259,6 @@ package by.blooddy.core.managers.resource {
 		 * @private
 		 */
 		private function clear():void {
-			this._name = null;
 			this._definitions = null;
 			var resource:*;
 			var arr:Vector.<String> = new Vector.<String>();

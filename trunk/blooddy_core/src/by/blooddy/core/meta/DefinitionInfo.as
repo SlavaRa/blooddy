@@ -30,7 +30,7 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 
-		use namespace $protected_info;
+		use namespace $protected;
 
 		//--------------------------------------------------------------------------
 		//
@@ -41,8 +41,16 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		protected static const _EMPTY_METADATA:XMLList = new XMLList();
+		$protected static const _EMPTY_METADATA:XMLList = new XMLList();
 
+		/**
+		 * @private
+		 */
+		private static const _SKIP_METADATA:Object = {
+			'__go_to_ctor_definition_help': true,
+			'__go_to_definition_help': true
+		};
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -65,7 +73,7 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		$protected_info var _parent:DefinitionInfo;
+		$protected var _parent:DefinitionInfo;
 
 		//--------------------------------------------------------------------------
 		//
@@ -76,7 +84,7 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		$protected_info var _name:QName;
+		$protected var _name:QName;
 
 		public function get name():QName {
 			return this._name;
@@ -85,12 +93,12 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		$protected_info var _metadata:XMLList;
+		$protected var _metadata:XMLList;
 
 		/**
 		 * @private
 		 */
-		$protected_info var _metadata_local:XMLList;
+		$protected var _metadata_local:XMLList;
 
 		public function getMetadata(local:Boolean=false):XMLList {
 			if ( local ) {
@@ -118,36 +126,36 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 
-		$protected_info override function parseXML(xml:XML):void {
-			var n:String;
-			var meta:XMLList = xml.metadata.(
-				n = @name,
-				n != '__go_to_ctor_definition_help' &&
-				n != '__go_to_definition_help'
-			); // исключаев дебаг мету
-			if ( this._parent ) {
-
-				if ( meta.length() <= 0 ) {
-
-					this._metadata_local =	_EMPTY_METADATA;
-					this._metadata =		this._parent._metadata;
-
-				} else {
-
-					this._metadata_local =	meta.copy();
-					if ( this._parent._metadata === _EMPTY_METADATA ) {
-						this._metadata = this._metadata_local;
-					} else {
-						this._metadata = meta.copy() + this._parent._metadata;
-					}
-
+		$protected override function parse(o:Object):void {
+			var i:uint;
+			var list:XMLList;
+			if ( o.metadata && o.metadata.length > 0 ) {
+				list = new XMLList();
+				var m:XML;
+				var a:XML;
+				for each ( o in o.metadata ) {
+					if ( o.name in _SKIP_METADATA ) continue;
+					m = <metadata />;
+					m.@name = o.name;
+					for each ( o in o.value ) {
+						a = <arg />;
+						if ( 'key' in o ) a.@key = o.key;
+						if ( 'value' in o ) a.@value = o.value;
+						m.appendChild( a );
+					};
+					list[ i++ ] = m;
 				}
-
+			}
+			if ( i > 0 ) {
+				this._metadata_local = list;
+				if ( !this._parent || this._parent._metadata === _EMPTY_METADATA ) {
+					this._metadata = list;
+				} else {
+					this._metadata = list + this._parent._metadata;
+				}
 			} else {
-
-				this._metadata_local =
-				this._metadata = ( meta.length() <= 0 ? _EMPTY_METADATA : meta.copy() );
-
+				this._metadata_local = _EMPTY_METADATA;
+				this._metadata = ( this._parent ? this._parent._metadata : _EMPTY_METADATA );
 			}
 		}
 
