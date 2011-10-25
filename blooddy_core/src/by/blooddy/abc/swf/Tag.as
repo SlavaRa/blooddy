@@ -34,7 +34,7 @@ package by.blooddy.abc.swf {
 		public function writeExternal(output:IDataOutput):void {
 			// TODO: дописать
 		}
-		
+
 	}
 
 }

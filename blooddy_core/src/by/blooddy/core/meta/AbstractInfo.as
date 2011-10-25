@@ -30,9 +30,9 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 
-		protected namespace $protected_info;
+		protected namespace $protected;
 
-		use namespace $protected_info;
+		use namespace $protected;
 
 		//--------------------------------------------------------------------------
 		//
@@ -67,7 +67,7 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 
-		$protected_info function parseXML(xml:XML):void {
+		$protected function parse(o:Object):void {
 		}
 
 	}

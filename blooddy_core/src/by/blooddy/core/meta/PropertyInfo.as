@@ -23,7 +23,7 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 
-		use namespace $protected_info;
+		use namespace $protected;
 
 		//--------------------------------------------------------------------------
 		//
@@ -37,6 +37,30 @@ package by.blooddy.core.meta {
 
 		public static const ACCESS_READ_WRITE:uint =	0;
 
+		//--------------------------------------------------------------------------
+		//
+		//  Class variables
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		 * @private
+		 */
+		private static const _ACCESS_VALUES:Object = {
+			readonly: ACCESS_READ,
+			writeonly: ACCESS_WRITE,
+			readwrite: ACCESS_READ_WRITE
+		};
+
+		/**
+		 * @private
+		 */
+		private static const _ACCESS_STRINGS:Object = {
+			1: 'readonly',
+			2: 'writeonly',
+			0: 'readwrite'
+		};
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -63,7 +87,7 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		$protected_info var _access:uint;
+		$protected var _access:uint;
 
 		public function get access():uint {
 			return this._access;
@@ -79,13 +103,7 @@ package by.blooddy.core.meta {
 			var xml:XML = super.toXML( local );
 			xml.setLocalName( 'property' );
 			xml.@type = this._type;
-
-			var access:String = '';
-			switch ( this._access ) {
-				case ACCESS_READ:		xml.@access = 'readonly';	break;
-				case ACCESS_WRITE:		xml.@access = 'writeonly';	break;
-				case ACCESS_READ_WRITE:	xml.@access = 'readwrite';	break;
-			}
+			xml.@access = _ACCESS_STRINGS[ this._access ];
 			return xml;
 		}
 
@@ -95,24 +113,14 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 
-		$protected_info override function parseXML(xml:XML):void {
-			super.parseXML( xml );
+		$protected override function parse(o:Object):void {
+			super.parse( o );
 			if ( this._parent ) { // нефига парсить лишний раз
 				this._type = ( this._parent as PropertyInfo )._type;
 			} else {
-				this._type = ClassUtils.parseClassQName( xml.@type.toString() );
+				this._type = ClassUtils.parseClassQName( o.type );
 			}
-			switch ( xml.name().toString() ) {
-				case 'accessor':
-					switch ( xml.@access.toString() ) {
-						case 'readonly':	this._access = ACCESS_READ;			break;
-						case 'writeonly':	this._access = ACCESS_WRITE;		break;
-					}
-					break;
-				case 'constant':
-					this._access = ACCESS_READ;
-					break;
-			}
+			this._access = _ACCESS_VALUES[ o.access ];
 		}
 
 	}

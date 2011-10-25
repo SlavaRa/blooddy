@@ -23,7 +23,7 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 
-		use namespace $protected_info;
+		use namespace $protected;
 
 		//--------------------------------------------------------------------------
 		//
@@ -47,7 +47,7 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		private var _type:QName;
+		$protected var _type:QName;
 
 		/**
 		 * @inheritDoc
@@ -59,7 +59,7 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		private var _optional:Boolean;
+		$protected var _optional:Boolean;
 
 		public function get optional():Boolean {
 			return this._optional;
@@ -74,7 +74,7 @@ package by.blooddy.core.meta {
 		public override function toXML(local:Boolean=false):XML {
 			var result:XML = <parameter />;
 			result.@type = this._type;
-			result.@optional = this._optional;
+			if ( this._optional ) result.@optional = this._optional;
 			return result;
 		}
 
@@ -84,9 +84,9 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 
-		$protected_info override function parseXML(xml:XML):void {
-			this._type = ClassUtils.parseClassQName( xml.@type.toString() );
-			this._optional = parseBoolean( xml.@optional.toString() );
+		$protected override function parse(o:Object):void {
+			this._type = ClassUtils.parseClassQName( o.type );
+			this._optional = o.optional;
 		}
 
 	}

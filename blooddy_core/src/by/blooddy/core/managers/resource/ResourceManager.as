@@ -732,11 +732,15 @@ internal final class $ResourceLoader extends ResourceLoader {
 	}
 	
 	internal function _close():void {
+		this._bytes = null;
 		super.close();
+		this._url = null;
 	}
 	
 	internal function _unload():void {
+		this._bytes = null;
 		super.unload();
+		this._url = null;
 	}
 
 }

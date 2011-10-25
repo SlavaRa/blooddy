@@ -27,7 +27,7 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 
-		use namespace $protected_info;
+		use namespace $protected;
 
 		//--------------------------------------------------------------------------
 		//
@@ -51,7 +51,7 @@ package by.blooddy.core.meta {
 		/**
 		 * @private
 		 */
-		protected var _type:QName;
+		$protected var _type:QName;
 
 		/**
 		 * @inheritDoc
@@ -60,7 +60,7 @@ package by.blooddy.core.meta {
 			return this._type;
 		}
 
-		$protected_info var _owner:TypeInfo;
+		$protected var _owner:TypeInfo;
 
 		public function get owner():TypeInfo {
 			return this._owner;
@@ -87,8 +87,8 @@ package by.blooddy.core.meta {
 		//
 		//--------------------------------------------------------------------------
 
-		$protected_info override function parseXML(xml:XML):void {
-			super.parseXML( xml );
+		$protected override function parse(o:Object):void {
+			super.parse( o );
 			if ( this._parent ) {
 				this._name = this._parent._name;
 			}
