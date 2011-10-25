@@ -23,7 +23,7 @@ package by.blooddy.gui.style.meta {
 		//
 		//--------------------------------------------------------------------------
 		
-		use namespace $protected_info;
+		use namespace $protected;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -44,7 +44,7 @@ package by.blooddy.gui.style.meta {
 		//
 		//--------------------------------------------------------------------------
 		
-		$protected_info var _owner:StyleInfo;
+		$protected var _owner:StyleInfo;
 		
 		public function get owner():StyleInfo {
 			return this._owner;
