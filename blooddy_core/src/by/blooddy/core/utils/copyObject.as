@@ -78,27 +78,31 @@ internal function $copyObject(hash:Dictionary, source:Object, target:Object=null
 		}
 		hash[ source ] = target; // ADD
 		var key:*, value:*;
-		const props:Dictionary = new Dictionary();
-		for each ( var prop:PropertyInfo in TypeInfo.getInfo( source ).getProperties() ) {
-			key = prop.name;
-			props[ key ] = true;
-			try {
+		if ( source.constructor === Object ) {
+			for ( key in source ) {
+				if ( source[ key ] is Function ) continue;
 				value = $copyObject( hash, source[ key ] );
 				target[ key ] = value;
-			} catch ( e:* ) {
 			}
-		}
-		for ( key in source ) {
-			if ( !( key in props ) ) {
+		} else {
+			const props:Object = new Object();
+			for each ( var prop:PropertyInfo in TypeInfo.getInfo( source ).getProperties() ) {
+				key = prop.name;
+				props[ key ] = true;
 				try {
 					value = $copyObject( hash, source[ key ] );
 					target[ key ] = value;
 				} catch ( e:* ) {
 				}
 			}
-		}
-		if ( source is Error ) {
-			target.stack = ( source as Error ).getStackTrace();
+			for ( key in source ) {
+				if ( key in props || source[ key ] is Function ) continue;
+				value = $copyObject( hash, source[ key ] );
+				target[ key ] = value;
+			}
+			if ( source is Error ) {
+				target.stack = ( source as Error ).getStackTrace();
+			}
 		}
 	}
 	return target;
