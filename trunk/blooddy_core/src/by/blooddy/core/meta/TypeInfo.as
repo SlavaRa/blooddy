@@ -174,7 +174,7 @@ package by.blooddy.core.meta {
 			// variable & constant
 			for each ( o in t.variables ) {
 				// имя свойства
-				uri = o.uri;
+				uri = o.uri || '';
 				localName = o.name;
 				if ( uri )	n = uri + '::' + localName;
 				else		n = localName;
@@ -189,7 +189,7 @@ package by.blooddy.core.meta {
 			// accessor
 			for each ( o in t.accessors ) {
 				// имя свойства
-				uri = o.uri;
+				uri = o.uri || '';
 				localName = o.name;
 				if ( uri )	n = uri + '::' + localName;
 				else		n = localName;
@@ -213,7 +213,7 @@ package by.blooddy.core.meta {
 			// methods
 			for each ( o in t.methods ) {
 				// имя свойства
-				uri = o.uri;
+				uri = o.uri || '';
 				localName = o.name;
 				if ( uri )	n = uri + '::' + localName;
 				else		n = localName;
@@ -829,7 +829,7 @@ package by.blooddy.core.meta {
 				// variable & constant
 				for each ( o in t.variables ) {
 					// имя свойства
-					uri = o.uri;
+					uri = o.uri || '';
 					localName = o.name;
 					if ( uri )	n = uri + '::' + localName;
 					else		n = localName;
@@ -849,7 +849,7 @@ package by.blooddy.core.meta {
 				// accessor
 				for each ( o in t.accessors ) {
 					// имя свойства
-					uri = o.uri;
+					uri = o.uri || '';
 					localName = o.name;
 					if ( uri )	n = uri + '::' + localName;
 					else		n = localName;
@@ -902,7 +902,7 @@ package by.blooddy.core.meta {
 				// methods
 				for each ( o in t.methods ) {
 					// имя свойства
-					uri = o.uri;
+					uri = o.uri || '';
 					localName = o.name;
 					if ( uri )	n = uri + '::' + localName;
 					else		n = localName;
