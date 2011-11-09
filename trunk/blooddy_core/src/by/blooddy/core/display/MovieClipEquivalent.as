@@ -13,10 +13,10 @@ package by.blooddy.core.display {
 	//  Excluded APIs
 	//--------------------------------------
 
-	[Exclude( kind="namespace", name="$protected_mc" )]
+	[Exclude( kind="namespace", name="$protected" )]
 
-	[Exclude( kind="method", name="_totalFrames" )]
-	[Exclude( kind="method", name="_currentFrame" )]
+	[Exclude( kind="method", name="$totalFrames" )]
+	[Exclude( kind="method", name="$currentFrame" )]
 
 	[Exclude( kind="method", name="addFrameScript" )]
 	[Exclude( kind="method", name="setCurrentFrame" )]
@@ -38,9 +38,9 @@ package by.blooddy.core.display {
 		//
 		//--------------------------------------------------------------------------
 
-		protected namespace $protected_mc;
+		protected namespace $protected;
 
-		use namespace $protected_mc;
+		use namespace $protected;
 
 		//--------------------------------------------------------------------------
 		//
@@ -81,39 +81,39 @@ package by.blooddy.core.display {
 		/**
 		 * @private
 		 */
-		$protected_mc var _totalFrames:int = 0;
+		$protected var $totalFrames:int = 0;
 
 		/**
 		 * @private
 		 */
 		public override function get totalFrames():int {
-			return this._totalFrames;
+			return this.$totalFrames;
 		}
 
 		/**
 		 * @private
 		 */
-		$protected_mc var _currentFrame:int = 0;
+		$protected var $currentFrame:int = 0;
 
 		/**
 		 * @private
 		 */
 		public override function get currentFrame():int {
-			return this._currentFrame;
+			return this.$currentFrame;
 		}
 
 		/**
 		 * @private
 		 */
-		$protected_mc function setCurrentFrame(value:int):void {
-			this._currentFrame = value;
+		$protected function $setCurrentFrame(value:int):void {
+			this.$currentFrame = value;
 		}
 
 		/**
 		 * @private
 		 */
 		public override function get framesLoaded():int {
-			return this._totalFrames;
+			return this.$totalFrames;
 		} 
 
 		//--------------------------------------------------------------------------
@@ -142,8 +142,8 @@ package by.blooddy.core.display {
 		 * @private
 		 */
 		public override function nextFrame():void {
-			if ( this._currentFrame < this._totalFrames ) {
-				this.setCurrentFrame( this._currentFrame + 1 );
+			if ( this.$currentFrame < this.$totalFrames ) {
+				this.$setCurrentFrame( this.$currentFrame + 1 );
 			}
 		}
 
@@ -151,8 +151,8 @@ package by.blooddy.core.display {
 		 * @private
 		 */
 		public override function prevFrame():void {
-			if ( this._currentFrame > 1 ) {
-				this.setCurrentFrame( this._currentFrame - 1 );
+			if ( this.$currentFrame > 1 ) {
+				this.$setCurrentFrame( this.$currentFrame - 1 );
 			}
 		}
 
@@ -161,8 +161,8 @@ package by.blooddy.core.display {
 		 */
 		public override function gotoAndPlay(frame:Object, scene:String=null):void {
 			var f:int = int( Number( frame ) );
-			if ( this._currentFrame != f && f>0 && f <= this._totalFrames ) {
-				this.setCurrentFrame( f );
+			if ( this.$currentFrame != f && f>0 && f <= this.$totalFrames ) {
+				this.$setCurrentFrame( f );
 			}
 			if ( !this._running ) this.play();
 		}
@@ -172,8 +172,8 @@ package by.blooddy.core.display {
 		 */
 		public override function gotoAndStop(frame:Object, scene:String=null):void {
 			var f:int = int( Number(frame) );
-			if ( this._currentFrame != f && f>0 && f <= this._totalFrames ) {
-				this.setCurrentFrame( f );
+			if ( this.$currentFrame != f && f>0 && f <= this.$totalFrames ) {
+				this.$setCurrentFrame( f );
 			}
 			if ( this._running ) this.stop();
 		}
@@ -193,7 +193,7 @@ package by.blooddy.core.display {
 		 * @private
 		 */
 		private function handler_enterFrame(event:Event):void {
-			this.setCurrentFrame( this._currentFrame == this._totalFrames ? 1 : this._currentFrame + 1 );
+			this.$setCurrentFrame( this.$currentFrame == this.$totalFrames ? 1 : this.$currentFrame + 1 );
 		}
 
 	}

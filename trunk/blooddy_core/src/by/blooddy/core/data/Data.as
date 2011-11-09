@@ -191,7 +191,7 @@ package by.blooddy.core.data {
 						e.$canceled = canceled;
 						CONTAINER.$event = e;
 						target.$dispatchEvent( CONTAINER );
-						canceled &&= e.$canceled;
+						canceled = e.$canceled;
 						if ( e.$stopped ) break;
 					}
 					target = target._bubble_parent;
@@ -352,4 +352,7 @@ internal final class EventContainer extends Event {
 
 }
 
+/**
+ * @private
+ */
 internal const CONTAINER:EventContainer = new EventContainer();

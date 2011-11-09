@@ -26,7 +26,7 @@ package by.blooddy.core.display {
 		//
 		//--------------------------------------------------------------------------
 
-		use namespace $protected_mc;
+		use namespace $protected;
 
 		//--------------------------------------------------------------------------
 		//
@@ -117,9 +117,9 @@ package by.blooddy.core.display {
 		/**
 		 * @private
 		 */
-		$protected_mc override function setCurrentFrame(value:int):void {
-			var oldFrame:int = this._currentFrame;
-			this._currentFrame = value;
+		$protected override function $setCurrentFrame(value:int):void {
+			var oldFrame:int = this.$currentFrame;
+			this.$currentFrame = value;
 			// поменяем кадры
 			var num:uint = super.numChildren;
 			var mc:MovieClip;
@@ -129,22 +129,17 @@ package by.blooddy.core.display {
 					mc.gotoAndStop( this.getCurrentFrame( mc.totalFrames ) );
 				}
 			}
-			// сообщим
-			this.frameChanged( oldFrame, value );
 		}
 
 		/**
 		 * @private
 		 */
 		private function setTotalFrame(value:int):void {
-			this._totalFrames = value;
+			this.$totalFrames = value;
 			this._hash = _HASH[ value ];
 			if ( !this._hash ) {
 				_HASH[ value ] = this._hash = new Array( value );
 			}
-		}
-
-		protected function frameChanged(oldFrame:uint, newFrame:uint):void {
 		}
 
 		//--------------------------------------------------------------------------
@@ -156,14 +151,14 @@ package by.blooddy.core.display {
 		private function getCurrentFrame(totalFrames:uint):uint {
 			var arr:Array = this._hash[ totalFrames ];
 			if ( !arr ) this._hash[ totalFrames ] = arr = new Array();
-			var result:uint = arr[ this._currentFrame ];
+			var result:uint = arr[ this.$currentFrame ];
 			if ( !result ) {
-				if ( totalFrames == this._totalFrames ) {
-					result = this._currentFrame;
+				if ( totalFrames == this.$totalFrames ) {
+					result = this.$currentFrame;
 				} else {
-					result = Math.round( ( this._currentFrame - 1 ) / this._totalFrames * totalFrames ) + 1;
+					result = Math.round( ( this.$currentFrame - 1 ) / this.$totalFrames * totalFrames ) + 1;
 				}
-				arr[ this._currentFrame ] = result;
+				arr[ this.$currentFrame ] = result;
 			}
 			return result;
 		}
@@ -175,11 +170,11 @@ package by.blooddy.core.display {
 			if ( child is MovieClip ) {
 				var mc:MovieClip = child as MovieClip;
 				mc.gotoAndStop( this.getCurrentFrame( mc.totalFrames ) );
-				if ( this._totalFrames < mc.totalFrames ) {
+				if ( this.$totalFrames < mc.totalFrames ) {
 					this.setTotalFrame( mc.totalFrames );
 				} 
 			} else if ( child is Sprite ) {
-				if ( this._totalFrames == 0 ) this.setTotalFrame( 1 );
+				if ( this.$totalFrames == 0 ) this.setTotalFrame( 1 );
 			}
 		}
 
@@ -189,7 +184,7 @@ package by.blooddy.core.display {
 		private function removedChild(child:DisplayObject):void {
 			if ( child is MovieClip ) {
 				var mc:MovieClip = child as MovieClip;
-				if ( mc.totalFrames == this._totalFrames ) {
+				if ( mc.totalFrames == this.$totalFrames ) {
 					var num:int = super.numChildren;
 
 					if ( num <= 0 ) {
@@ -206,10 +201,10 @@ package by.blooddy.core.display {
 						} 
 					}
 
-					if ( this._totalFrames != totalFrames ) {
+					if ( this.$totalFrames != totalFrames ) {
 						this.setTotalFrame( totalFrames );
-						if ( this._currentFrame < totalFrames ) {
-							this.setCurrentFrame( totalFrames );
+						if ( this.$currentFrame < totalFrames ) {
+							this.$setCurrentFrame( totalFrames );
 						}
 					}
 				}

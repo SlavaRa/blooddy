@@ -223,6 +223,9 @@ package by.blooddy.core.managers.resource {
 			var result:Sound;
 			if ( resource is Sound ) {
 				result = resource as Sound;
+			} else if ( resource is Class && resource.prototype instanceof Sound ) {
+				var resourceClass:Class = resource as Class;
+				result = new resourceClass() as Sound;
 			}
 			if ( result ) {
 				if ( !resourceName ) resourceName = '';
