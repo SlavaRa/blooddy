@@ -9,6 +9,7 @@ package by.blooddy.core.display {
 	import by.blooddy.core.managers.process.IProgressable;
 	import by.blooddy.core.utils.css.ColorUtils;
 	
+	import flash.display.Graphics;
 	import flash.events.Event;
 	import flash.events.ProgressEvent;
 
@@ -219,6 +220,8 @@ package by.blooddy.core.display {
 
 			if ( this._width <= 0 || this._height <= 0 ) return false;
 
+			var g:Graphics = super.graphics;
+			
 			var alpha:Number;
 			var color:uint;
 			
@@ -232,13 +235,13 @@ package by.blooddy.core.display {
 			alpha = ( ( color >> 24 ) & 0xFF ) / 0xFF;
 			if ( alpha > 0.05 ) {
 				color = color & 0xFFFFFF;
-				super.graphics.beginFill( color, alpha );
-				super.graphics.drawRect( 0, 0, this._width, this._height );
-				super.graphics.endFill();
+				g.beginFill( color, alpha );
+				g.drawRect( 0, 0, this._width, this._height );
+				g.endFill();
 			}
 
 			if ( this._progress > 0 ) {
-				super.graphics.lineStyle();
+				g.lineStyle();
 				color =	(	this._indicatorColor32 is Number ?
 							this._indicatorColor32 as Number :
 							(	this._indicatorColor32 is Array ?
@@ -248,9 +251,9 @@ package by.blooddy.core.display {
 						);
 				alpha = ( ( color >> 24 ) & 0xFF ) / 0xFF;
 				color = color & 0xFFFFFF;
-				super.graphics.beginFill( color, alpha );
-				super.graphics.drawRect( 0, 0, this._width * this._progress, this._height );
-				super.graphics.endFill();
+				g.beginFill( color, alpha );
+				g.drawRect( 0, 0, this._width * this._progress, this._height );
+				g.endFill();
 				// 3D суко!
 //				super.graphics.lineStyle( 1, 0, 0.70, true );
 //				super.graphics.moveTo( 0, this._height - 1 );
@@ -270,8 +273,8 @@ package by.blooddy.core.display {
 			alpha = ( ( color >> 24 ) & 0xFF ) / 0xFF;
 			if ( alpha>0.05 ) {
 				color = color & 0xFFFFFF;
-				super.graphics.lineStyle( 1, color, alpha );
-				super.graphics.drawRect(0, 0, this._width, this._height);
+				g.lineStyle( 1, color, alpha );
+				g.drawRect(0, 0, this._width, this._height);
 			}
 
 			return true;

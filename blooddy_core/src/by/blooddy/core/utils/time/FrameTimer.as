@@ -30,6 +30,18 @@ package by.blooddy.core.utils.time {
 
 		//--------------------------------------------------------------------------
 		//
+		//  Class variables
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 * быстрее клонировать, чем делать new
+		 */
+		private static const _EVENT:TimerEvent = new TimerEvent( TimerEvent.TIMER );
+
+		//--------------------------------------------------------------------------
+		//
 		//  Class properties
 		//
 		//--------------------------------------------------------------------------
@@ -163,9 +175,9 @@ package by.blooddy.core.utils.time {
 			if ( this._running ) return;
 			this.updateDelay();
 			switch ( this._reset_count ) {
-				case 0:		super.start();																			break;
-				case 1:		enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame );	break;
-				default:	enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame2 );	break;
+				case 0:	super.start();																			break;
+				case 1:	enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame );	break;
+				case 2:	enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame2 );	break;
 					
 			}
 			this._running = true;
@@ -178,9 +190,9 @@ package by.blooddy.core.utils.time {
 			if ( !this._running ) return;
 			this._running = false;
 			switch ( this._reset_count ) {
-				case 0:		super.stop();																				break;
-				case 1:		enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );	break;
-				default:	enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame2 );	break;
+				case 0:	super.stop();																				break;
+				case 1:	enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );	break;
+				case 2:	enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame2 );	break;
 					
 			}
 		}
@@ -203,16 +215,12 @@ package by.blooddy.core.utils.time {
 		 * @private
 		 */
 		private function updateDelay():void {
+
 			var value:Number = this._delay;
-			if ( value < _frameRate ) {
-				value = _frameRate;
-			}
+			if ( value < _frameRate ) value = _frameRate;
 
 			var reset_count:uint = Math.round( value / _frameRate );
-
-			if ( reset_count > 4 ) {
-				reset_count = 0;
-			}
+			if ( reset_count > 2 ) reset_count = 0;
 
 			if ( this._reset_count == reset_count ) return;
 
@@ -224,6 +232,7 @@ package by.blooddy.core.utils.time {
 				super.delay = value;
 			}
 			if ( running ) this.start();
+
 		}
 
 		//--------------------------------------------------------------------------
@@ -237,7 +246,7 @@ package by.blooddy.core.utils.time {
 		 */
 		private function handler_enterFrame(event:Event):void {
 			if ( !this._running ) return;
-			super.dispatchEvent( new TimerEvent( TimerEvent.TIMER ) );
+			super.dispatchEvent( _EVENT );
 		}
 
 		/**
@@ -245,8 +254,8 @@ package by.blooddy.core.utils.time {
 		 */
 		private function handler_enterFrame2(event:Event):void {
 			if ( !this._running ) return;
-			if ( ( ++this._count % this._reset_count ) == 0 && this._running ) {
-				super.dispatchEvent( new TimerEvent( TimerEvent.TIMER ) );
+			if ( ( ++this._count ) & 1 && this._running ) {
+				super.dispatchEvent( _EVENT );
 			}
 		}
 
