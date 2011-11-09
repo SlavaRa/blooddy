@@ -18,7 +18,6 @@ package by.blooddy.core.display {
 	import flash.errors.IllegalOperationError;
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
-	import flash.system.Capabilities;
 
 	//--------------------------------------
 	//  Excluded APIs
@@ -52,7 +51,9 @@ package by.blooddy.core.display {
 		//
 		//--------------------------------------------------------------------------
 
-		use namespace $protected_mc;
+		use namespace $protected;
+
+		use namespace $private;
 
 		//--------------------------------------------------------------------------
 		//
@@ -63,8 +64,14 @@ package by.blooddy.core.display {
 		/**
 		 * @private
 		 */
-		private static const _EMPTY:BitmapData = new BitmapData( 1, 1, true, 0x000000 );
+		$private static const _EMPTY_BMP:BitmapData = new BitmapData( 1, 1, true, 0x000000 );
 
+		/**
+		 * @private
+		 * инитиализируем в out-of-package
+		 */
+		$private static var _EMPTY_LIST:Vector.<CollectionElement>;
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Class private methods
@@ -74,25 +81,27 @@ package by.blooddy.core.display {
 		/**
 		 * @private
 		 */
-		private static function getElement(bitmap:IBitmapDrawable):CollectionElement {
+		$private static function getElement(bitmap:IBitmapDrawable):CollectionElement {
 			var bmp:BitmapData;
-			var x:int = 0;
-			var y:int = 0;
+			var x:int;
+			var y:int;
 			if ( bitmap is BitmapData ) {
-				bmp = bitmap as BitmapData;
+				bmp = ( bitmap as BitmapData ).clone();
 			} else if ( bitmap is Bitmap ) {
-				bmp = ( bitmap as Bitmap ).bitmapData;
+				bmp = ( bitmap as Bitmap ).bitmapData.clone();
 			} else if ( bitmap is DisplayObject ) {
 				var obj:DisplayObject = bitmap as DisplayObject;
 				var bounds:Rectangle = obj.getBounds( obj );
-				if ( bounds.width > 0 && bounds.height > 0 ) {
-					bmp = new BitmapData( Math.ceil( bounds.width + 2 ), Math.ceil( bounds.height + 2 ), true, 0x000000 );
-					bmp.draw( obj, new Matrix( 1, 0, 0, 1, Math.ceil( -bounds.left + 1 ), Math.ceil( -bounds.top + 1 ) ) );
-					x = Math.floor( bounds.left - 1 );
-					y = Math.floor( bounds.top - 1 );
+				if ( bounds.isEmpty() ) {
+					bmp = _EMPTY_BMP;
 				} else {
-					bmp = _EMPTY;
+					bmp = new BitmapData( Math.ceil( bounds.width + 2 ), Math.ceil( bounds.height + 2 ), true, 0x000000 );
+					bmp.draw( obj, new Matrix( 1, 0, 0, 1, Math.ceil( -bounds.x + 1 ), Math.ceil( -bounds.y + 1 ) ) );
+					x = Math.floor( bounds.x - 1 );
+					y = Math.floor( bounds.y - 1 );
 				}
+			} else {
+				Error.throwError( ArgumentError, 0 );
 			}
 			return new CollectionElement( bmp, x, y );
 		}
@@ -114,7 +123,7 @@ package by.blooddy.core.display {
 		 * @note					после выполнения метода MovieClip будет остановлен на последнем кадре. 
 		 *  
 		 */
-		public static function getAsMovieClip(bitmap:IBitmapDrawable, smoothing:Boolean=false):BitmapMovieClip {
+		public static function getAsMovieClip(bitmap:IBitmapDrawable, deferred:Boolean=true, smoothing:Boolean=false):BitmapMovieClip {
 			var result:BitmapMovieClip;
 			if ( bitmap is MovieClip ) {
 				if ( bitmap is BitmapMovieClip ) {
@@ -122,16 +131,26 @@ package by.blooddy.core.display {
 					result._smoothing = smoothing;
 				} else {
 					var mc:MovieClip = bitmap as MovieClip;
-					result = new BitmapMovieClip( smoothing );
 					const l:uint = mc.totalFrames;
-					for ( var i:uint = 0; i<l; ++i ) {
-						mc.gotoAndStop( i + 1 );
-						result.addBitmap( mc );
+					if ( deferred ) {
+						result = new DeferredBitmapMovieClip();
+						( result as DeferredBitmapMovieClip )._mc = mc;
+					} else {
+						result = new BitmapMovieClip();
+					}
+					result.$totalFrames = l;
+					result._list = new Vector.<CollectionElement>( l, true );
+					if ( !deferred ) {
+						for ( var i:uint = 0; i<l; ++i ) {
+							mc.gotoAndStop( i + 1 );
+							result._list[ i ] = getElement( mc );
+						}
 					}
 				}
 			} else {
 				result = new BitmapMovieClip();
-				result.addBitmap( bitmap );
+				result._list = new Vector.<CollectionElement>( 1, true );
+				result._list[ 0 ] = getElement( bitmap );
 			}
 			return result;
 		}
@@ -145,10 +164,10 @@ package by.blooddy.core.display {
 		/**
  		 * Constructor
 		 */
-		public function BitmapMovieClip(smoothing:Boolean=false) {
+		public function BitmapMovieClip() {
 			super();
+			this.$totalFrames = 1;
 			super.mouseChildren = false;
-			this._smoothing = smoothing;
 			super.addChild( this._content );
 		}
 
@@ -161,12 +180,12 @@ package by.blooddy.core.display {
 		/**
 		 * @private
 		 */
-		private const _list:Vector.<CollectionElement> = new Vector.<CollectionElement>();
+		$private var _list:Vector.<CollectionElement> = _EMPTY_LIST;
 
 		/**
 		 * @private
 		 */
-		private var _smoothing:Boolean;
+		$private var _smoothing:Boolean;
 		
 		/**
 		 * @private
@@ -175,70 +194,100 @@ package by.blooddy.core.display {
 
 		//--------------------------------------------------------------------------
 		//
-		//  Overriden methods: MovieClip
+		//  Overriden properties
 		//
 		//--------------------------------------------------------------------------
 
-		[Deprecated( message="метод запрещён", replacement="addBitmap" )]
+		/**
+		 * @private
+		 */
+		private var _mouseChildren:Boolean = true;
+
+		[Deprecated( message="свойство не используется" )]
+		/**
+		 * @private
+		 */
+		public override function get mouseChildren():Boolean {
+			return this._mouseChildren;
+		}
+		
+		/**
+		 * @private
+		 */
+		public override function set mouseChildren(value:Boolean):void {
+			this._mouseChildren = true;
+		}
+
+		public override function get numChildren():int {
+			return 0;
+		}
+
+		//--------------------------------------------------------------------------
+		//
+		//  Overriden methods
+		//
+		//--------------------------------------------------------------------------
+
+		[Deprecated( message="метод запрещён" )]
 		public override function addChild(child:DisplayObject):DisplayObject {
-			if ( !Capabilities.isDebugger ) Error.throwError( IllegalOperationError, 1001, 'addChild' );
+			Error.throwError( IllegalOperationError, 1001, 'addChild' );
 			return null;
 		}
 
-		[Deprecated( message="метод запрещён", replacement="addBitmapAt" )]
+		[Deprecated( message="метод запрещён" )]
 		public override function addChildAt(child:DisplayObject, index:int):DisplayObject {
-			if ( !Capabilities.isDebugger ) Error.throwError( IllegalOperationError, 1001, 'addChildAt' );
+			Error.throwError( IllegalOperationError, 1001, 'addChildAt' );
 			return null;
 		}
 
-		[Deprecated( message="метод запрещён", replacement="removeBitmap" )]
+		[Deprecated( message="метод запрещён" )]
 		public override function removeChild(child:DisplayObject):DisplayObject {
-			if ( !Capabilities.isDebugger ) Error.throwError( IllegalOperationError, 1001, 'removeChild' );
+			Error.throwError( IllegalOperationError, 1001, 'removeChild' );
 			return null;
 		}
 
-		[Deprecated( message="метод запрещён", replacement="removeBitmapAt" )]
+		[Deprecated( message="метод запрещён" )]
 		public override function removeChildAt(index:int):DisplayObject {
-			if ( !Capabilities.isDebugger ) Error.throwError( IllegalOperationError, 1001, 'removeChildAt' );
+			Error.throwError( IllegalOperationError, 1001, 'removeChildAt' );
 			return null;
 		}
 
-		[Deprecated( message="метод запрещён", replacement="getBitmapAt" )]
+		[Deprecated( message="метод запрещён" )]
 		public override function getChildAt(index:int):DisplayObject {
-			if ( !Capabilities.isDebugger ) Error.throwError( IllegalOperationError, 1001, 'getChildAt' );
+			Error.throwError( IllegalOperationError, 1001, 'getChildAt' );
 			return null;
 		}
 
-		[Deprecated( message="метод запрещён", replacement="getBitmapIndex" )]
+		[Deprecated( message="метод запрещён" )]
 		public override function getChildIndex(child:DisplayObject):int {
-			if ( !Capabilities.isDebugger ) Error.throwError( IllegalOperationError, 1001, 'getChildIndex' );
+			Error.throwError( IllegalOperationError, 1001, 'getChildIndex' );
 			return -1;
 		}
 
 		[Deprecated( message="метод запрещён" )]
 		public override function getChildByName(name:String):DisplayObject {
-			if ( !Capabilities.isDebugger ) Error.throwError( IllegalOperationError, 1001, 'getChildByName' );
+			Error.throwError( IllegalOperationError, 1001, 'getChildByName' );
 			return null;
 		}
 
-		[Deprecated( message="метод запрещён", replacement="setBitmapIndex" )]
+		[Deprecated( message="метод запрещён" )]
 		public override function setChildIndex(child:DisplayObject, index:int):void {
-			if ( !Capabilities.isDebugger ) Error.throwError( IllegalOperationError, 1001, 'setChildIndex' );
+			Error.throwError( IllegalOperationError, 1001, 'setChildIndex' );
 		}
 
-		[Deprecated( message="метод запрещён", replacement="swapBitmaps" )]
+		[Deprecated( message="метод запрещён" )]
 		public override function swapChildren(child1:DisplayObject, child2:DisplayObject):void {
-			if ( !Capabilities.isDebugger ) Error.throwError( IllegalOperationError, 1001, 'swapChildren' );
+			Error.throwError( IllegalOperationError, 1001, 'swapChildren' );
 		}
 
-		[Deprecated( message="метод запрещён", replacement="swapBitmapsAt" )]
+		[Deprecated( message="метод запрещён" )]
 		public override function swapChildrenAt(index1:int, index2:int):void {
-			if ( !Capabilities.isDebugger ) Error.throwError( IllegalOperationError, 1001, 'swapChildrenAt' );
+			Error.throwError( IllegalOperationError, 1001, 'swapChildrenAt' );
 		}
 
-		[Deprecated( message="метод запрещён", replacement="containsBitmap" )]
+		[Deprecated( message="метод запрещён" )]
 		public override function contains(child:DisplayObject):Boolean {
-			if ( !Capabilities.isDebugger ) Error.throwError( IllegalOperationError, 1001, 'contains' );
+			Error.throwError( IllegalOperationError, 1001, 'contains' );
 			return false;
 		}
 
@@ -251,84 +300,22 @@ package by.blooddy.core.display {
 		/**
 		 * @param	bind	если установлен в true, то копирует только ссылки на эленты, аставляя связывание.
 		 */
-		public function clone(bind:Boolean=true):BitmapMovieClip {
-			var result:BitmapMovieClip = new BitmapMovieClip( this._smoothing );
-			var i:uint;
-			const l:uint = this._list.length;
-			if ( bind ) {
-				for ( i=0; i<l; ++i ) {
-					result._list.push( this._list[ i ] );
-				}
-			} else {
-				for ( i=0; i<l; ++i ) {
-					result._list.push( this._list[ i ].clone() );
-				}
-			}
-			result._totalFrames = this._totalFrames;
+		public function clone():BitmapMovieClip {
+			var result:BitmapMovieClip = new BitmapMovieClip();
+			result._smoothing = this._smoothing;
+			result._list = this._list;
+			result.$totalFrames = this.$totalFrames;
 			return result;
-		}
-
-		public function addBitmap(bitmap:IBitmapDrawable, x:Number=0, y:Number=0):BitmapData {
-			var element:CollectionElement = getElement( bitmap );
-			element.x += x;
-			element.y += y;
-			this._list.push( element );
-			++this._totalFrames;
-			return element.bmp;
-		}
-
-		public function addBitmapAt(bitmap:IBitmapDrawable, index:int, x:Number=0, y:Number=0):BitmapData {
-			var element:CollectionElement = getElement( bitmap );
-			element.x += x;
-			element.y += y;
-			this._list.splice( index, 0, element );
-			++this._totalFrames;
-			if ( index <= this._currentFrame ) {
-				++this._currentFrame;
-			}
-			return element.bmp;
-		}
-
-		public function removeBitmap(bitmap:BitmapData):BitmapData {
-			return this.$removeBitmapAt( this.$getBitmapIndex( bitmap ) );
-		}
-
-		public function removeBitmapAt(index:int):BitmapData {
-			return this.$removeBitmapAt( index );
-		}
-
-		public function getBitmapAt(index:int):BitmapData {
-			return this.$getBitmapAt( index );
-		}
-
-		public function getBitmapIndex(bitmap:BitmapData):int {
-			return this.$getBitmapIndex( bitmap );
-		}
-
-		public function setBitmapIndex(bitmap:BitmapData, index:int):void {
-			this.$setBitmapIndex( bitmap, index );
-		}
-
-		public function swapBitmaps(bitmap1:BitmapData, bitmap2:BitmapData):void {
-			this.$swapBitmaps( bitmap1, bitmap2, this.$getBitmapIndex( bitmap1 ), this.$getBitmapIndex( bitmap2 ) );
-		}
-
-		public function swapBitmapsAt(index1:int, index2:int):void {
-			this.$swapBitmaps( this.getBitmapAt( index1 ), this.getBitmapAt( index2 ), index1, index2 );
-		}
-
-		public function containsBitmap(bitmap:BitmapData):Boolean {
-			return this.$getBitmapIndex( bitmap ) >= 0;
 		}
 
 		public function dispose():void {
 			this._content.graphics.clear();
-			this._totalFrames = 0;
+			this.$totalFrames = 0;
 			var bmp:BitmapData;
-			while ( this._list.length ) {
-				bmp = this._list.pop().bmp;
-				if ( bmp !== _EMPTY ) bmp.dispose();
+			for each ( var e:CollectionElement in this._list ) {
+				if ( e.bmp !== _EMPTY_BMP ) e.bmp.dispose();
 			}
+			this._list = null;
 			super.stop();
 		}
 
@@ -338,8 +325,8 @@ package by.blooddy.core.display {
 		//
 		//--------------------------------------------------------------------------
 
-		$protected_mc override function setCurrentFrame(value:int):void {
-			this._currentFrame = value;
+		$protected override function $setCurrentFrame(value:int):void {
+			this.$currentFrame = value;
 			if ( this._list.length < value ) return;
 			var element:CollectionElement = this._list[ value - 1 ];
 			var bmp:BitmapData = element.bmp;
@@ -349,60 +336,6 @@ package by.blooddy.core.display {
 			g.drawRect( 0, 0, bmp.width, bmp.height );
 			this._content.x = element.x;
 			this._content.y = element.y;
-		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  Private methods
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		private function $removeBitmapAt(index:Number):BitmapData {
-			--this._totalFrames;
-			return this._list.splice( index, 1 )[0].bmp;
-		}
-
-		/**
-		 * @private
-		 */
-		private function $getBitmapIndex(bitmap:BitmapData):int {
-			var l:uint = this._list.length;
-			for ( var i:uint=0; i<l; ++i ) {
-				if ( this._list[ i ].bmp === bitmap ) return i;
-			}
-			return -1;
-		}
-
-		/**
-		 * @private
-		 */
-		private function $getBitmapAt(index:int):BitmapData {
-			return this._list[ index ].bmp;
-		}
-
-		/**
-		 * @private
-		 */
-		private function $setBitmapIndex(bitmap:BitmapData, index:int):void {
-			this._list.splice( this.$getBitmapIndex( bitmap ), 1 );
-			this._list.splice( index, 0, bitmap );
-		}
-
-		/**
-		 * @private
-		 */
-		private function $swapBitmaps(bmp1:BitmapData, bmp2:BitmapData, index1:int, index2:int):void {
-			// надо сперва поставить того кто выше
-			if ( index1 > index2 ) {
-				this.$setBitmapIndex( bmp1, index2 );
-				this.$setBitmapIndex( bmp2, index1 );
-			} else {
-				this.$setBitmapIndex( bmp2, index1 );
-				this.$setBitmapIndex( bmp1, index2 );
-			}
 		}
 
 	}
@@ -415,7 +348,18 @@ package by.blooddy.core.display {
 //
 //==============================================================================
 
+import by.blooddy.core.display.BitmapMovieClip;
+
 import flash.display.BitmapData;
+import flash.display.MovieClip;
+import flash.events.Event;
+
+internal namespace $private;
+
+use namespace $private;
+
+BitmapMovieClip._EMPTY_LIST = new Vector.<CollectionElement>( 1, true );
+BitmapMovieClip._EMPTY_LIST[ 0 ] = new CollectionElement( BitmapMovieClip._EMPTY_BMP );
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -442,8 +386,68 @@ internal final class CollectionElement {
 
 	public var y:int;
 
-	public function clone():CollectionElement {
-		return new CollectionElement( this.bmp.clone(), this.x, this.y );
+}
+
+/**
+ * @private
+ */
+internal final class DeferredBitmapMovieClip extends BitmapMovieClip {
+
+	use namespace $protected;
+
+	public function DeferredBitmapMovieClip() {
+		super();
+		super.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
+	}
+
+	$private var _mc:MovieClip;
+
+	private var _f:int = 0;
+
+	public override function clone():BitmapMovieClip {
+		if ( this._f < this.$totalFrames ) {
+			var result:DeferredBitmapMovieClip = new DeferredBitmapMovieClip();
+			result._mc = this._mc;
+			result._smoothing = this._smoothing;
+			result._list = this._list;
+			result._f = this._f;
+			result.$totalFrames = this.$totalFrames;
+			return result;
+		} else {
+			return super.clone();
+		}
+	}
+
+	$protected override function $setCurrentFrame(value:int):void {
+		if ( this._mc ) {
+			while ( this._f < value ) this.createNext();
+		}
+		super.$setCurrentFrame( value );
+	}
+
+	/**
+	 * @private
+	 */
+	$private function createNext():void {
+		if ( !this._list[ this._f ] ) {
+			this._mc.gotoAndStop( this._f + 1 );
+			this._list[ this._f ] = getElement( this._mc );
+		}
+		++this._f;
+		if ( this._f >= this.$totalFrames ) {
+			this._mc = null; // закончили отрисовку
+		}
+	}
+
+	/**
+	 * @private
+	 */
+	private function handler_enterFrame(event:Event):void {
+		if ( this._f < this.$totalFrames ) {
+			this.createNext();
+		} else {
+			super.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
+		}
 	}
 
 }
