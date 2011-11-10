@@ -70,7 +70,7 @@ package by.blooddy.core.display {
 		 * @private
 		 * инитиализируем в out-of-package
 		 */
-		$private static var _EMPTY_LIST:Vector.<CollectionElement>;
+		$private static var _EMPTY_LIST:Vector.<Frame>;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -81,7 +81,7 @@ package by.blooddy.core.display {
 		/**
 		 * @private
 		 */
-		$private static function getElement(bitmap:IBitmapDrawable):CollectionElement {
+		$private static function getElement(bitmap:IBitmapDrawable):Frame {
 			var bmp:BitmapData;
 			var x:int;
 			var y:int;
@@ -92,9 +92,7 @@ package by.blooddy.core.display {
 			} else if ( bitmap is DisplayObject ) {
 				var obj:DisplayObject = bitmap as DisplayObject;
 				var bounds:Rectangle = obj.getBounds( obj );
-				if ( bounds.isEmpty() ) {
-					bmp = _EMPTY_BMP;
-				} else {
+				if ( !bounds.isEmpty() ) {
 					bmp = new BitmapData( Math.ceil( bounds.width + 2 ), Math.ceil( bounds.height + 2 ), true, 0x000000 );
 					bmp.draw( obj, new Matrix( 1, 0, 0, 1, Math.ceil( -bounds.x + 1 ), Math.ceil( -bounds.y + 1 ) ) );
 					x = Math.floor( bounds.x - 1 );
@@ -103,7 +101,7 @@ package by.blooddy.core.display {
 			} else {
 				Error.throwError( ArgumentError, 0 );
 			}
-			return new CollectionElement( bmp, x, y );
+			return new Frame( bmp, x, y );
 		}
 
 		//--------------------------------------------------------------------------
@@ -132,25 +130,20 @@ package by.blooddy.core.display {
 				} else {
 					var mc:MovieClip = bitmap as MovieClip;
 					const l:uint = mc.totalFrames;
-					if ( deferred ) {
-						result = new DeferredBitmapMovieClip();
-						( result as DeferredBitmapMovieClip )._mc = mc;
-					} else {
-						result = new BitmapMovieClip();
-					}
+					result = ( deferred ? new DeferredBitmapMovieClip( mc ) : new BitmapMovieClip() );
 					result.$totalFrames = l;
-					result._list = new Vector.<CollectionElement>( l, true );
+					result._list = new Vector.<Frame>( l + 1, true );
 					if ( !deferred ) {
-						for ( var i:uint = 0; i<l; ++i ) {
-							mc.gotoAndStop( i + 1 );
+						for ( var i:uint = 1; i<=l; ++i ) {
+							mc.gotoAndStop( i );
 							result._list[ i ] = getElement( mc );
 						}
 					}
 				}
 			} else {
 				result = new BitmapMovieClip();
-				result._list = new Vector.<CollectionElement>( 1, true );
-				result._list[ 0 ] = getElement( bitmap );
+				result._list = new Vector.<Frame>( 2, true );
+				result._list[ 1 ] = getElement( bitmap );
 			}
 			return result;
 		}
@@ -180,7 +173,7 @@ package by.blooddy.core.display {
 		/**
 		 * @private
 		 */
-		$private var _list:Vector.<CollectionElement> = _EMPTY_LIST;
+		$private var _list:Vector.<Frame> = _EMPTY_LIST;
 
 		/**
 		 * @private
@@ -312,8 +305,8 @@ package by.blooddy.core.display {
 			this._content.graphics.clear();
 			this.$totalFrames = 0;
 			var bmp:BitmapData;
-			for each ( var e:CollectionElement in this._list ) {
-				if ( e.bmp !== _EMPTY_BMP ) e.bmp.dispose();
+			for each ( var e:Frame in this._list ) {
+				if ( e && e.bmp !== _EMPTY_BMP ) e.bmp.dispose();
 			}
 			this._list = null;
 			super.stop();
@@ -328,14 +321,16 @@ package by.blooddy.core.display {
 		$protected override function $setCurrentFrame(value:int):void {
 			this.$currentFrame = value;
 			if ( this._list.length < value ) return;
-			var element:CollectionElement = this._list[ value - 1 ];
-			var bmp:BitmapData = element.bmp;
 			var g:Graphics = this._content.graphics;
 			g.clear();
-			g.beginBitmapFill( bmp, null, false, this._smoothing );
-			g.drawRect( 0, 0, bmp.width, bmp.height );
-			this._content.x = element.x;
-			this._content.y = element.y;
+			var e:Frame = this._list[ value ];
+			if ( e && e.bmp ) {
+				var bmp:BitmapData = e.bmp;
+				g.beginBitmapFill( bmp, null, false, this._smoothing );
+				g.drawRect( 0, 0, bmp.width, bmp.height );
+				this._content.x = e.x;
+				this._content.y = e.y;
+			}
 		}
 
 	}
@@ -358,8 +353,8 @@ internal namespace $private;
 
 use namespace $private;
 
-BitmapMovieClip._EMPTY_LIST = new Vector.<CollectionElement>( 1, true );
-BitmapMovieClip._EMPTY_LIST[ 0 ] = new CollectionElement( BitmapMovieClip._EMPTY_BMP );
+BitmapMovieClip._EMPTY_LIST = new Vector.<Frame>( 2, true );
+BitmapMovieClip._EMPTY_LIST[ 1 ] = new Frame( BitmapMovieClip._EMPTY_BMP );
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -371,9 +366,9 @@ BitmapMovieClip._EMPTY_LIST[ 0 ] = new CollectionElement( BitmapMovieClip._EMPTY
  * @private
  * Вспомогательный класс.
  */
-internal final class CollectionElement {
+internal final class Frame {
 
-	public function CollectionElement(bmp:BitmapData, x:int=0, y:int=0) {
+	public function Frame(bmp:BitmapData, x:int=0, y:int=0) {
 		super();
 		this.bmp = bmp;
 		this.x = x;
@@ -395,19 +390,19 @@ internal final class DeferredBitmapMovieClip extends BitmapMovieClip {
 
 	use namespace $protected;
 
-	public function DeferredBitmapMovieClip() {
+	public function DeferredBitmapMovieClip(mc:MovieClip) {
 		super();
+		this._mc = mc;
 		super.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
 	}
 
-	$private var _mc:MovieClip;
+	private var _mc:MovieClip;
 
 	private var _f:int = 0;
 
 	public override function clone():BitmapMovieClip {
 		if ( this._f < this.$totalFrames ) {
-			var result:DeferredBitmapMovieClip = new DeferredBitmapMovieClip();
-			result._mc = this._mc;
+			var result:DeferredBitmapMovieClip = new DeferredBitmapMovieClip( this._mc );
 			result._smoothing = this._smoothing;
 			result._list = this._list;
 			result._f = this._f;
@@ -418,9 +413,17 @@ internal final class DeferredBitmapMovieClip extends BitmapMovieClip {
 		}
 	}
 
+	public override function dispose():void {
+		if ( this._mc ) {
+			super.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
+			this._mc = null;
+		}
+		super.dispose();
+	}
+
 	$protected override function $setCurrentFrame(value:int):void {
 		if ( this._mc ) {
-			while ( this._f < value ) this.createNext();
+			this.createFrame( value );
 		}
 		super.$setCurrentFrame( value );
 	}
@@ -428,15 +431,10 @@ internal final class DeferredBitmapMovieClip extends BitmapMovieClip {
 	/**
 	 * @private
 	 */
-	$private function createNext():void {
-		if ( !this._list[ this._f ] ) {
-			this._mc.gotoAndStop( this._f + 1 );
-			this._list[ this._f ] = getElement( this._mc );
-		}
-		++this._f;
-		if ( this._f >= this.$totalFrames ) {
-			this._mc = null; // закончили отрисовку
-		}
+	private function createFrame(f:int):void {
+		if ( this._list[ f ] ) return;
+		this._mc.gotoAndStop( f );
+		this._list[ f ] = getElement( this._mc );
 	}
 
 	/**
@@ -444,9 +442,12 @@ internal final class DeferredBitmapMovieClip extends BitmapMovieClip {
 	 */
 	private function handler_enterFrame(event:Event):void {
 		if ( this._f < this.$totalFrames ) {
-			this.createNext();
+			++this._f;
+			this.createFrame( this._f );
 		} else {
+			// закончили отрисовку
 			super.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
+			this._mc = null;
 		}
 	}
 
