@@ -40,17 +40,6 @@ package by.blooddy.core.controllers {
 
 		//--------------------------------------------------------------------------
 		//
-		//  Variables
-		//
-		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 */
-		private var _constructed:Boolean = false;
-
-		//--------------------------------------------------------------------------
-		//
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
@@ -68,6 +57,19 @@ package by.blooddy.core.controllers {
 			return this._container;
 		}
 
+		//----------------------------------
+		//  constructed
+		//----------------------------------
+		
+		/**
+		 * @private
+		 */
+		private var _constructed:Boolean = false;
+
+		public function get constructed():Boolean {
+			return this._constructed;
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
