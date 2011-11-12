@@ -142,6 +142,7 @@ package by.blooddy.core.net {
 			this._hosts = Vector.<HostPair>( hosts );
 			this._hosts.unshift( pair );
 			this._connectToNext();
+			super.dispatchEvent( new Event( Event.OPEN ) );
 		}
 
 		public function close():void {
