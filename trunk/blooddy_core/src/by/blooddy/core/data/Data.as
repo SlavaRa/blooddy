@@ -182,17 +182,16 @@ package by.blooddy.core.data {
 			if ( !event.$stopped ) {
 				// надо бублить
 				var target:Data = this._bubble_parent;
-				var e:DataBaseNativeEvent;
 				while ( target ) {
 					if ( target.hasEventListener( event.type ) ) {
-						e = event.clone() as DataBaseNativeEvent;
-						e.$eventPhase = EventPhase.BUBBLING_PHASE;
-						e.$target = this;
-						e.$canceled = canceled;
-						CONTAINER.$event = e;
+						event = event.clone() as DataBaseNativeEvent;
+						event.$eventPhase = EventPhase.BUBBLING_PHASE;
+						event.$target = this;
+						event.$canceled = canceled;
+						CONTAINER.$event = event;
 						target.$dispatchEvent( CONTAINER );
-						canceled = e.$canceled;
-						if ( e.$stopped ) break;
+						canceled = event.$canceled;
+						if ( event.$stopped ) break;
 					}
 					target = target._bubble_parent;
 				}

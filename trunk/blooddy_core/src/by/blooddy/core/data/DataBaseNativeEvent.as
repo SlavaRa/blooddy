@@ -152,7 +152,10 @@ package by.blooddy.core.data {
 		 * @private
 		 */
 		public override function preventDefault():void {
-			if ( super.cancelable ) this.$canceled = true;
+			if ( super.cancelable ) {
+				super.preventDefault();
+				this.$canceled = true;
+			}
 		}
 
 		/**
