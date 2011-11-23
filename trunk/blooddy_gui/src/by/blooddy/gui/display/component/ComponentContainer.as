@@ -307,7 +307,9 @@ package by.blooddy.gui.display.component {
 			this._components_name[ info.name ].push( info );
 
 			// focus
-			super.stage.focus = info.component;
+			if ( info.component.mouseEnabled ) {
+				super.stage.focus = info.component;
+			}
 
 			this._components_list.push( info );
 			super.addChild( info.component );

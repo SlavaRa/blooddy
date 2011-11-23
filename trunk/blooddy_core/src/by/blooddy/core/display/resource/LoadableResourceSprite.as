@@ -50,6 +50,16 @@ package by.blooddy.core.display.resource {
 		 */
 		private var _loader:IProgressProcessable;
 
+		/**
+		 * @private
+		 */
+		private var _isDrawed:Boolean = false;
+
+		/**
+		 * @private
+		 */
+		private var _hasStage:Boolean = false;
+
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
@@ -61,9 +71,14 @@ package by.blooddy.core.display.resource {
 			if ( !super.hasManager() ) return;
 
 			if ( this._loader ) {
+
 				this.clearLoader();
-			} else {
+
+			} else if ( this._isDrawed ) {
+
+				this._isDrawed = false;
 				this.clear();
+
 			}
 
 			var resources:Array = this.getResourceBundles();
@@ -120,11 +135,13 @@ package by.blooddy.core.display.resource {
 				}
 				this.preload( this._loader as IProgressable );
 
-			} else {
+			} else if ( this._hasStage ) {
 
+				this._isDrawed = true;
 				this.draw();
 
 			}
+
 		}
 
 		protected function getResourceBundles():Array {
@@ -172,6 +189,9 @@ package by.blooddy.core.display.resource {
 		 * @private
 		 */
 		private function handler_addedToMain(event:ResourceEvent):void {
+			this._hasStage = true;
+			super.addEventListener( Event.REMOVED_FROM_STAGE,	this.handler_removedFromStage );
+			super.addEventListener( Event.ADDED_TO_STAGE,		this.handler_addedToStage );
 			this.invalidate();
 		}
 		
@@ -179,9 +199,12 @@ package by.blooddy.core.display.resource {
 		 * @private
 		 */
 		private function handler_removedFromMain(event:ResourceEvent):void {
+			super.removeEventListener( Event.REMOVED_FROM_STAGE,	this.handler_removedFromStage );
+			super.removeEventListener( Event.ADDED_TO_STAGE,		this.handler_addedToStage );
 			if ( this._loader ) {
 				this.clearLoader();
-			} else {
+			} else if ( this._isDrawed ) {
+				this._isDrawed = false;
 				this.clear();
 			}
 		}
@@ -189,9 +212,29 @@ package by.blooddy.core.display.resource {
 		/**
 		 * @private
 		 */
+		private function handler_addedToStage(event:Event):void {
+			this._hasStage = true;
+			if ( !this._isDrawed ) {
+				this.draw();
+			}
+		}
+
+		/**
+		 * @private
+		 */
+		private function handler_removedFromStage(event:Event):void {
+			this._hasStage = false;
+		}
+		
+		/**
+		 * @private
+		 */
 		private function handler_complete(event:Event):void {
 			this.clearLoader();
-			this.draw();
+			if ( this._hasStage ) {
+				this._isDrawed = true;
+				this.draw();
+			}
 		}
 
 	}
