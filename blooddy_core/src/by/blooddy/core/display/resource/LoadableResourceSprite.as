@@ -214,9 +214,7 @@ package by.blooddy.core.display.resource {
 		 */
 		private function handler_addedToStage(event:Event):void {
 			this._hasStage = true;
-			if ( !this._isDrawed ) {
-				this.draw();
-			}
+			this.invalidate();
 		}
 
 		/**
