@@ -14,7 +14,9 @@ package by.blooddy.core.display.resource {
 	
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
-	
+
+	[Event( name="draw", type="flash.events.Event" )]
+
 	/**
 	 * @author					BlooDHounD
 	 * @version					1.0
@@ -72,12 +74,11 @@ package by.blooddy.core.display.resource {
 
 			if ( this._loader ) {
 
-				this.clearLoader();
+				this.$clearLoader();
 
 			} else if ( this._isDrawed ) {
 
-				this._isDrawed = false;
-				this.clear();
+				this.$clear();
 
 			}
 
@@ -137,8 +138,7 @@ package by.blooddy.core.display.resource {
 
 			} else if ( this._hasStage ) {
 
-				this._isDrawed = true;
-				this.draw();
+				this.$draw();
 
 			}
 
@@ -169,7 +169,7 @@ package by.blooddy.core.display.resource {
 		/**
 		 * @private
 		 */
-		private function clearLoader():void {
+		private function $clearLoader():void {
 			if ( this._loader is ProgressDispatcher ) {
 				( this._loader as ProgressDispatcher ).clear();
 			} else {
@@ -177,6 +177,28 @@ package by.blooddy.core.display.resource {
 			}
 			this._loader.removeEventListener( Event.COMPLETE, this.handler_complete );
 			this._loader = null;
+		}
+
+		/**
+		 * @private
+		 */
+		private function $draw():void {
+			this._isDrawed = true;
+			this.draw();
+			if ( super.hasEventListener( 'draw' ) ) {
+				super.dispatchEvent( new Event( 'draw' ) );
+			}
+		}
+
+		/**
+		 * @private
+		 */
+		private function $clear():void {
+			this._isDrawed = false;
+			this.clear();
+			if ( super.hasEventListener( 'clear' ) ) {
+				super.dispatchEvent( new Event( 'clear' ) );
+			}
 		}
 
 		//--------------------------------------------------------------------------
@@ -202,10 +224,9 @@ package by.blooddy.core.display.resource {
 			super.removeEventListener( Event.REMOVED_FROM_STAGE,	this.handler_removedFromStage );
 			super.removeEventListener( Event.ADDED_TO_STAGE,		this.handler_addedToStage );
 			if ( this._loader ) {
-				this.clearLoader();
+				this.$clearLoader();
 			} else if ( this._isDrawed ) {
-				this._isDrawed = false;
-				this.clear();
+				this.$clear();
 			}
 		}
 
@@ -228,10 +249,9 @@ package by.blooddy.core.display.resource {
 		 * @private
 		 */
 		private function handler_complete(event:Event):void {
-			this.clearLoader();
+			this.$clearLoader();
 			if ( this._hasStage ) {
-				this._isDrawed = true;
-				this.draw();
+				this.$draw();
 			}
 		}
 
