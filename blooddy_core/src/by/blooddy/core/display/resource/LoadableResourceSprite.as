@@ -16,6 +16,7 @@ package by.blooddy.core.display.resource {
 	import flash.events.Event;
 
 	[Event( name="draw", type="flash.events.Event" )]
+	[Event( name="clear", type="flash.events.Event" )]
 
 	/**
 	 * @author					BlooDHounD
