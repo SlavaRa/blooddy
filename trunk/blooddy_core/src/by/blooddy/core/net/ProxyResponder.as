@@ -18,10 +18,11 @@ package by.blooddy.core.net {
 		/**
 		 * Constructor
 		 */
-		public function ProxyResponder(responder:Responder, result:Function=null, status:Function=null) {
+		public function ProxyResponder(responder:Responder!, result:Function=null, status:Function=null) {
 			super(
 				( result !== null && responder.result !== null ? this.$result : ( responder.result || result ) ),
-				( status !== null && responder.status !== null ? this.$status : ( responder.status || status ) )
+				( status !== null && responder.status !== null ? this.$status : ( responder.status || status ) ),
+				responder.timeout
 			);
 			this._responder = responder;
 			this._result = result;

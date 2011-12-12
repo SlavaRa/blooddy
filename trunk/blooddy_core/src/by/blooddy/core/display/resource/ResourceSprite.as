@@ -311,7 +311,7 @@ package by.blooddy.core.display.resource {
 				if ( !resources ) resources = new Vector.<ResourceDefinition>();
 				resources.push( def );
 			}
-			if ( resources ) {
+			if ( resources && super.hasEventListener( ResourceErrorEvent.RESOURCE_ERROR ) ) {
 				super.dispatchEvent( new ResourceErrorEvent( ResourceErrorEvent.RESOURCE_ERROR, false, false, 'Некоторые ресурсы не были возвращены в мэннеджер ресурсов.', 0, resources ) );
 			}
 			// зануляем resourceManager

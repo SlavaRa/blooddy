@@ -94,6 +94,12 @@ package by.blooddy.core.net {
 		
 		public var status:Boolean;
 
+		//----------------------------------
+		//  parent
+		//----------------------------------
+		
+		public var parent:NetCommand;
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
@@ -115,7 +121,7 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		public override function toString():String {
-			return '[' + ClassUtils.getClassName( this ) + ' io="' + this.io + '" name="' + super.name + '"' + ( this.num ? ' num="' + this.num  + '"' : '' ) + ( super.length > 0 ? ' arguments=(' + this.argumentsToString() + ')' : '' ) + ']';
+			return '[' + ClassUtils.getClassName( this ) + ' io="' + this.io + '" name="' + ( this.parent ? this.parent.name + '(' + super.name + ')' : super.name )+ '"' + ( this.num ? ' num="' + this.num  + '"' : '' ) + ( super.length > 0 ? ' arguments=(' + this.argumentsToString() + ')' : '' ) + ']';
 		}
 
 	}
