@@ -45,12 +45,7 @@ package by.blooddy.core.net {
 		/**
 		 * @private
 		 */
-		private static const _TIMEOUT:uint = 30e3;
-
-		/**
-		 * @private
-		 */
-		private static const _TIMER:AutoTimer = new AutoTimer( _TIMEOUT >>> 1 );
+		private static const _TIMER:AutoTimer = new AutoTimer( 60 );
 		
 		//--------------------------------------------------------------------------
 		//
@@ -164,6 +159,10 @@ package by.blooddy.core.net {
 			this._logging = value;
 		}
 
+		//----------------------------------
+		//  responderTimeout
+		//----------------------------------
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Implements methods: IRemoter
@@ -241,10 +240,7 @@ package by.blooddy.core.net {
 					if ( netCommand.num && netCommand.num in this._responders ) {
 						var request:NetCommand = ( this._responders[ netCommand.num ] as ResponderAsset ).command;
 						netCommand.system = system = request.system;
-						if ( !system ) {
-							command = command.clone();
-							command.name = request.name + '(' + command.name + ')';
-						}
+						netCommand.parent = request;
 					}
 				}
 				if ( !system ) {
@@ -360,9 +356,11 @@ package by.blooddy.core.net {
 		 * @private
 		 */
 		private function handler_timer(event:TimerEvent):void {
-			const time:Number = getTimer() - _TIMEOUT;
+			const time:Number = getTimer();
+			var asset:ResponderAsset;
 			for ( var num:* in this._responders ) {
-				if ( ( this._responders[ num ] as ResponderAsset ).time <= time ) {
+				asset = this._responders[ num ] as ResponderAsset;
+				if ( asset.responder.timeout && asset.time <= time - asset.responder.timeout ) {
 					this.invokeResponder( num, 'timeout' );
 				}
 			}
