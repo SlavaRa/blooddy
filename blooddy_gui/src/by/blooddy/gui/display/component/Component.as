@@ -125,6 +125,10 @@ package by.blooddy.gui.display.component {
 			return this._constructed;
 		}
 		
+		//----------------------------------
+		//  name
+		//----------------------------------
+		
 		/**
 		 * @private
 		 */
