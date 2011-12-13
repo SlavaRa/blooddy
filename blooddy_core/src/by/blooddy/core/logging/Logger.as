@@ -7,9 +7,11 @@
 package by.blooddy.core.logging {
 
 	import by.blooddy.core.events.logging.LogEvent;
+	import by.blooddy.core.utils.time.AutoTimer;
 	import by.blooddy.core.utils.time.getTimer;
-
+	
 	import flash.events.EventDispatcher;
+	import flash.events.TimerEvent;
 
 	//--------------------------------------
 	//  Events
@@ -28,6 +30,17 @@ package by.blooddy.core.logging {
 	 * @keyword					log, logger
 	 */
 	public class Logger extends EventDispatcher {
+
+		//--------------------------------------------------------------------------
+		//
+		//  Class variables
+		//
+		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private static const _TIMER:AutoTimer = new AutoTimer( 30e3 );
 
 		//--------------------------------------------------------------------------
 		//
@@ -99,7 +112,6 @@ package by.blooddy.core.logging {
 		public function set maxLength(value:uint):void {
 			if ( this._maxLength == value ) return;
 			this._maxLength = value;
-			this.updateList();
 		}
 
 		//----------------------------------
@@ -121,7 +133,6 @@ package by.blooddy.core.logging {
 		public function set maxTime(value:uint):void {
 			if ( this._maxTime == value ) return;
 			this._maxTime = value;
-			this.updateList();
 		}
 
 		//--------------------------------------------------------------------------
@@ -131,8 +142,10 @@ package by.blooddy.core.logging {
 		//--------------------------------------------------------------------------
 
 		public function addLog(log:Log):void {
+			if ( this._list.length == 0 ) {
+				_TIMER.addEventListener( TimerEvent.TIMER, this.updateList );
+			}
 			this._list.push( log );
-			this.updateList();
 			if ( super.hasEventListener( LogEvent.ADDED_LOG ) ) {
 				super.dispatchEvent( new LogEvent( LogEvent.ADDED_LOG, false, false, log ) );
 			}
@@ -151,19 +164,18 @@ package by.blooddy.core.logging {
 		/**
 		 * @private
 		 */
-		private function updateList():void {
-			var time:uint = getTimer();
+		private function updateList(...rest):void {
+			var time:Number = getTimer() - this._maxTime;
 			const l:uint = this._list.length;
-			for ( var i:uint = 0; i < l; ++i ) {
-				if ( time - this._list[i].time < this._maxTime ) {
-					break;
-				}
-			}
-			if ( l - i > this._maxLength ) {
-				i = l - this._maxLength;
+			var i:uint = ( this._maxLength && l > this._maxLength ? l - this._maxLength : 0 );
+			for ( i; i < l; ++i ) {
+				if ( time < this._list[ i ].time ) break;
 			}
 			if ( i > 0 ) {
 				this._list.splice( 0, i );
+				if ( i == l ) {
+					_TIMER.removeEventListener( TimerEvent.TIMER, this.updateList );
+				}
 			}
 		}
 

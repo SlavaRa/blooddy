@@ -69,11 +69,7 @@ package by.blooddy.core.logging {
 		/**
 		 * @private
 		 */
-		private const _time:uint = getTimer();
-
-		public function get time():uint {
-			return this._time;
-		}
+		public const time:Number = getTimer();
 
 		//--------------------------------------------------------------------------
 		//
