@@ -56,17 +56,6 @@ package by.blooddy.gui.display.component {
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Variables
-		//
-		//--------------------------------------------------------------------------
-		
-		/**
-		 * @private
-		 */
-		private var _constructed:Boolean = false;
-		
-		//--------------------------------------------------------------------------
-		//
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
@@ -131,6 +120,19 @@ package by.blooddy.gui.display.component {
 		 */
 		public function get sharedObject():Object {
 			return this._sharedObject;
+		}
+		
+		//----------------------------------
+		//  constructed
+		//----------------------------------
+		
+		/**
+		 * @private
+		 */
+		private var _constructed:Boolean = false;
+		
+		public function get constructed():Boolean {
+			return this._constructed;
 		}
 		
 		//--------------------------------------------------------------------------
