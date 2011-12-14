@@ -111,7 +111,9 @@ package by.blooddy.core.logging {
 		 */
 		public function set maxLength(value:uint):void {
 			if ( this._maxLength == value ) return;
+			var u:Boolean = ( value < this._maxLength );
 			this._maxLength = value;
+			if ( u ) this.updateList();
 		}
 
 		//----------------------------------
@@ -132,7 +134,9 @@ package by.blooddy.core.logging {
 		 */
 		public function set maxTime(value:uint):void {
 			if ( this._maxTime == value ) return;
+			var u:Boolean = ( value < this._maxLength );
 			this._maxTime = value;
+			if ( u ) this.updateList();
 		}
 
 		//--------------------------------------------------------------------------
