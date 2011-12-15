@@ -13,8 +13,8 @@ package by.blooddy.core.external {
 	import by.blooddy.core.net.NetCommand;
 	import by.blooddy.core.net.Responder;
 	import by.blooddy.core.net.connection.IConnection;
+	import by.blooddy.core.utils.callLater;
 	import by.blooddy.core.utils.copyObject;
-	import by.blooddy.core.utils.nextframeCall;
 	
 	import flash.errors.IllegalOperationError;
 	import flash.events.ErrorEvent;
@@ -89,7 +89,7 @@ package by.blooddy.core.external {
 				}
 				ExternalInterface.addCallback( _PROXY_METHOD, this.$call );
 			}
-			nextframeCall( this.init );
+			callLater( this.init );
 		}
 
 		//--------------------------------------------------------------------------

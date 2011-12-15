@@ -14,8 +14,15 @@ package by.blooddy.core.utils {
 	 * @playerversion			Flash 9
 	 * @langversion				3.0
 	 */
-	public function nextframeCall(func:Function, args:Array=null, priority:int=0.0):void {
-		deferredCall( func, args,  enterFrameBroadcaster, Event.ENTER_FRAME, false, priority ); 
+	public function callNextFrame(func:Function, args:Array=null, priority:int=0.0):void {
+		callDeferred( func, args,  target, Event.ENTER_FRAME, false, priority ); 
 	}
 
 }
+
+import flash.display.Shape;
+
+/**
+ * @private
+ */
+internal const target:Shape = new Shape();
