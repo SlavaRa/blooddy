@@ -14,8 +14,14 @@ package by.blooddy.core.utils {
 	 * @playerversion			Flash 9
 	 * @langversion				3.0
 	 */
-	public function deferredCall(func:Function, args:Array, target:IEventDispatcher, eventType:String, useCapture:Boolean=false, priority:int=0.0, useWeakReference:Boolean=false):void {
-		target.addEventListener( eventType, ( new Listener( func, args ) ).handler, useCapture, priority, useWeakReference );
+	public function callDeferred(func:Function, args:Array, target:IEventDispatcher, eventType:String, useCapture:Boolean=false, priority:int=0.0, useWeakReference:Boolean=false):void {
+		target.addEventListener(
+			eventType,
+			( new Listener( func, args ) ).handler,
+			useCapture,
+			priority,
+			useWeakReference
+		);
 	}
 
 }
@@ -50,7 +56,11 @@ internal final class Listener extends Caller {
 
 	public function handler(event:Event):void {
 		// надо себя убить из слушателей, иначе есть риск зависнуть, к тому же нам надо выполниться всего один раз
-		( event.currentTarget as IEventDispatcher ).removeEventListener( event.type, this.handler, event.eventPhase == EventPhase.CAPTURING_PHASE );
+		( event.currentTarget as IEventDispatcher ).removeEventListener(
+			event.type,
+			this.handler,
+			event.eventPhase == EventPhase.CAPTURING_PHASE
+		);
 		// вызываемся
 		super.call();
 	}

@@ -6,7 +6,7 @@
 
 package by.blooddy.core.managers.process {
 
-	import by.blooddy.core.utils.nextframeCall;
+	import by.blooddy.core.utils.callNextFrame;
 
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
@@ -167,7 +167,7 @@ package by.blooddy.core.managers.process {
 			this._complete &&= process.complete;
 			if ( this._complete && !this._toComplete) {
 				this._toComplete = true;
-				nextframeCall( this.tryComplete );
+				callNextFrame( this.tryComplete );
 			}
 		}
 
@@ -203,7 +203,7 @@ package by.blooddy.core.managers.process {
 			}
 			if ( this._complete && !this._toComplete) {
 				this._toComplete = true;
-				nextframeCall( this.tryComplete );
+				callNextFrame( this.tryComplete );
 			}
 		}
 
@@ -285,7 +285,7 @@ package by.blooddy.core.managers.process {
 		private function handler_progress(event:ProgressEvent):void {
 			if ( !this._toProgress ) {
 				this._toProgress = true;
-				nextframeCall( this.updateProgress );
+				callNextFrame( this.updateProgress );
 			}
 		}
 

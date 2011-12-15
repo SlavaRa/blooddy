@@ -175,7 +175,6 @@
     <classEntry path="by.blooddy.core.utils.UID"/>
     <classEntry path="by.blooddy.core.utils.WeakRef"/>
     <classEntry path="by.blooddy.core.utils.copyObject"/>
-    <classEntry path="by.blooddy.core.utils.deferredCall"/>
     <classEntry path="by.blooddy.core.utils.dispose"/>
     <classEntry path="by.blooddy.core.utils.enterFrameBroadcaster"/>
     <classEntry path="by.blooddy.core.utils.equalsObjects"/>
@@ -184,7 +183,6 @@
     <classEntry path="by.blooddy.core.utils.net.Location"/>
     <classEntry path="by.blooddy.core.utils.net.URLUtils"/>
     <classEntry path="by.blooddy.core.utils.net.copyURLRequest"/>
-    <classEntry path="by.blooddy.core.utils.nextframeCall"/>
     <classEntry path="by.blooddy.core.utils.proxy.Proxy"/>
     <classEntry path="by.blooddy.core.utils.proxy.ProxyEventDispatcher"/>
     <classEntry path="by.blooddy.core.utils.proxy.ProxyObject"/>
@@ -210,6 +208,7 @@
     <classEntry path="by.blooddy.core.net.connection.filters.IAbstractSocketFilter"/>
     <classEntry path="by.blooddy.core.tween.Tween"/>
     <classEntry path="by.blooddy.core.net.ProxyResponder"/>
+    <classEntry path="by.blooddy.core.utils.callLater"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests>
