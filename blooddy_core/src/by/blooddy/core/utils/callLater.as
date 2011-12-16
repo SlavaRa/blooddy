@@ -12,8 +12,7 @@ package by.blooddy.core.utils {
 	 * @created					15.12.2011 16:02:29
 	 */
 	public function callLater(func:Function, args:Array=null, priority:int=0.0):void {
-		var t:Number = getTimer();
-		callDeferred( function(...rest):void { trace( getTimer() - t ); func.apply( null, rest ); }, args,  target, TimerEvent.TIMER, false, priority ); 
+		callDeferred( func, args,  target, TimerEvent.TIMER, false, priority ); 
 	}
 	
 }
