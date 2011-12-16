@@ -11,7 +11,9 @@ package by.blooddy.core.display.resource {
 	import by.blooddy.core.managers.process.IProgressable;
 	import by.blooddy.core.managers.process.ProgressDispatcher;
 	import by.blooddy.core.net.loading.ILoadable;
+	import by.blooddy.core.utils.callDeferred;
 	
+	import flash.errors.IllegalOperationError;
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
 
@@ -66,7 +68,7 @@ package by.blooddy.core.display.resource {
 		/**
 		 * @private
 		 */
-		private var _invalidated:Boolean = false;
+		private var _invalidated:int = 0;
 
 		//--------------------------------------------------------------------------
 		//
@@ -74,22 +76,22 @@ package by.blooddy.core.display.resource {
 		//
 		//--------------------------------------------------------------------------
 
-		protected final function invalidate():void {
+		protected final function invalidate(immediately:Boolean=false):void {
 			if ( this._invalidated || !super.hasManager() ) return;
 
-//			if ( !immediately && stage ) {
-//
-//				this._invalidated = true;
-//
-//				callDeferred( this.$invalidate, null, stage, Event.RENDER );
-//
-//				stage.invalidate();
-//				
-//			} else {
+			if ( !immediately && stage ) {
+
+				this._invalidated = 1;
+
+				callDeferred( this.$invalidate, null, stage, Event.RENDER );
+
+				stage.invalidate();
+				
+			} else {
 
 				this.$invalidate();
 
-//			}
+			}
 
 		}
 
@@ -124,7 +126,10 @@ package by.blooddy.core.display.resource {
 		 */
 		private function $invalidate():void {
 
-			this._invalidated = false;
+			if ( this._invalidated == 2 ) {
+				throw new IllegalOperationError( 'recursive "ivalidate" call' );
+			}
+			this._invalidated = 2;
 
 			if ( this._isDrawed ) {
 				this.$clear();
@@ -191,7 +196,9 @@ package by.blooddy.core.display.resource {
 			if ( this._hasStage ) {
 				this.$draw();
 			}
-			
+
+			this._invalidated = 0;
+
 		}
 
 		/**
@@ -211,20 +218,22 @@ package by.blooddy.core.display.resource {
 		 * @private
 		 */
 		private function $draw():void {
+			this._isDrawed = true;
 			if ( this._loader ) {
 				if ( this.drawPreloader( this._loader ) ) {
-					this._isDrawed = true;
+					
 				} else {
 					this.clearPreloader( this._loader );
+					this._isDrawed = false;
 				}
 			} else {
 				if ( this.draw() ) {
-					this._isDrawed = true;
 					if ( super.hasEventListener( 'draw' ) ) {
 						super.dispatchEvent( new Event( 'draw' ) );
 					}
 				} else {
 					this.clear();
+					this._isDrawed = false;
 				}
 			}
 		}
@@ -233,7 +242,6 @@ package by.blooddy.core.display.resource {
 		 * @private
 		 */
 		private function $clear():void {
-			this._isDrawed = false;
 			if ( this._loader ) {
 				this.clearPreloader( this._loader );
 			} else {
@@ -242,6 +250,7 @@ package by.blooddy.core.display.resource {
 					super.dispatchEvent( new Event( 'clear' ) );
 				}
 			}
+			this._isDrawed = false;
 		}
 
 		//--------------------------------------------------------------------------
