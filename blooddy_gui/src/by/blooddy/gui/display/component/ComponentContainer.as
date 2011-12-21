@@ -226,7 +226,7 @@ package by.blooddy.gui.display.component {
 
 		public function clear():void {
 			for each ( var info:ComponentInfo in this._components_id ) {
-				if ( info.component ) { // могло удалить в результате других дейсвий
+				if ( info.component && !info.properties.fixed ) { // могло удалить в результате других дейсвий
 					this.removeComponent( info );
 				}
 			}
