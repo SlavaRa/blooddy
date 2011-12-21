@@ -30,11 +30,12 @@ package by.blooddy.gui.display.component {
 		/**
 		 * Constructor
 		 */
-		public function ComponentProperties(singleton:Boolean=true, alwaysOnTop:Boolean=false, modal:Boolean=false) {
+		public function ComponentProperties(singleton:Boolean=true, alwaysOnTop:Boolean=false, modal:Boolean=false, fixed:Boolean=false) {
 			super();
 			this._singleton = singleton;
 			this._alwaysOnTop = alwaysOnTop;
 			this._modal = modal;
+			this._fixed = fixed;
 		}
 
 		//--------------------------------------------------------------------------
@@ -68,6 +69,15 @@ package by.blooddy.gui.display.component {
 
 		public function get modal():Boolean {
 			return this._modal;
+		}
+
+		/**
+		 * @private
+		 */
+		private var _fixed:Boolean = false;
+
+		public function get fixed():Boolean {
+			return this._fixed;
 		}
 
 		public function get rating():uint {
