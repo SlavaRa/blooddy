@@ -253,7 +253,7 @@ package by.blooddy.core.net.loading {
 					break;
 
 				default:		// для остальных используем загрузку через stream
-					this._input = new ByteArray();
+					this._input = this.create_input();
 					this._stream = this.create_stream( true, !_URL || _URL.test( this._request.url ) );
 					this._stream.load( this._request );
 					break;
@@ -327,7 +327,7 @@ package by.blooddy.core.net.loading {
 		 * создаёт URLStream для загрузки
 		 */
 		private function create_stream(open:Boolean=false, progress:Boolean=false):flash.net.URLStream {
-			var result:flash.net.URLStream = new flash.net.URLStream();
+			var result:flash.net.URLStream = _BIN.takeOut( 'stream' ) || new flash.net.URLStream(); // ТУДУ. чек зис момент!
 			if ( open ) {
 				result.addEventListener( Event.OPEN,					super.dispatchEvent );
 			}
@@ -351,7 +351,8 @@ package by.blooddy.core.net.loading {
 		 * создаёт лоадер для загрузки
 		 */
 		private function create_loader(url:Boolean=false, open:Boolean=false):$Loader {
-			var result:$Loader = new $Loader( this._loaderContext );
+			var result:$Loader = _BIN.takeOut( 'loader' ) || new $Loader();
+			result.loaderContext = this._loaderContext;
 			result._target = this;
 			if ( open ) {	// событие уже могло быть послано
 				result.addEventListener( Event.OPEN,					super.dispatchEvent );
@@ -374,7 +375,8 @@ package by.blooddy.core.net.loading {
 		 * создаём звук для загрузки
 		 */
 		private function create_sound(open:Boolean=false):$SoundLoader {
-			var result:$SoundLoader = new $SoundLoader( this._loaderContext );
+			var result:$SoundLoader = _BIN.takeOut( 'sound' ) || new $SoundLoader();
+			result.loaderContext = this._loaderContext;
 			result._target = this;
 			if ( open ) {
 				result.addEventListener( Event.OPEN,					super.dispatchEvent );
@@ -393,7 +395,7 @@ package by.blooddy.core.net.loading {
 		 * создаём звук для загрузки
 		 */
 		private function create_zip(open:Boolean=false):$ZIPLoader {
-			var result:$ZIPLoader = new $ZIPLoader();
+			var result:$ZIPLoader = _BIN.takeOut( 'zip' ) || new $ZIPLoader();
 			result._target = this;
 			if ( open ) {
 				result.addEventListener( Event.OPEN,					super.dispatchEvent );
@@ -406,7 +408,14 @@ package by.blooddy.core.net.loading {
 			result.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_common_error );
 			return result;
 		}
-		
+
+		/**
+		 * @private
+		 */
+		private function create_input():ByteArray {
+			return new ByteArray();
+		}
+
 		/**
 		 * @private
 		 */
@@ -441,6 +450,7 @@ package by.blooddy.core.net.loading {
 					} catch ( e:* ) {
 					}
 				}
+				_BIN.takeIn( 'stream', this._stream );
 				this._stream = null;
 			}
 		}
@@ -467,6 +477,7 @@ package by.blooddy.core.net.loading {
 					this._loader._close();
 				}
 				this._loader.loaderContext = null;
+				_BIN.takeIn( 'loader', this._loader );
 				this._loader = null;
 			}
 		}
@@ -491,6 +502,7 @@ package by.blooddy.core.net.loading {
 					this._sound._close();
 				}
 				this._sound.loaderContext = null;
+				_BIN.takeIn( 'sound', this._sound );
 				this._sound = null;
 			}
 		}
@@ -514,6 +526,7 @@ package by.blooddy.core.net.loading {
 				} else {
 					this._zip._close();
 				}
+				_BIN.takeIn( 'zip', this._zip );
 				this._zip = null;
 			}
 		}
@@ -750,7 +763,7 @@ package by.blooddy.core.net.loading {
 		private function handler_loader_url_ioError(event:IOErrorEvent):void {
 			this.clear_loader();
 			if ( _ERROR_LOADER.test( event.text ) ) {
-				this._input = new ByteArray();
+				this._input = this.create_input();
 				this._stream = this.create_stream( false, !_URL || _URL.test( this._request.url ) );
 				this._stream.load( this._request );
 			} else {
@@ -855,8 +868,8 @@ internal final class $Loader extends Loader {
 	 * @private
 	 * Constructor
 	 */
-	public function $Loader(loaderContext:LoaderContext) {
-		super( null, loaderContext );
+	public function $Loader() {
+		super();
 	}
 
 	//--------------------------------------------------------------------------
@@ -937,8 +950,8 @@ internal final class $SoundLoader extends SoundLoader {
 	 * @private
 	 * Constructor
 	 */
-	public function $SoundLoader(loaderContext:LoaderContext) {
-		super( null, loaderContext );
+	public function $SoundLoader() {
+		super();
 	}
 
 	//--------------------------------------------------------------------------

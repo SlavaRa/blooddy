@@ -33,7 +33,12 @@ package by.blooddy.core.utils {
 		/**
 		 * @private
 		 */
-		private static const _TIMER:AutoTimer = new AutoTimer( 30*1E3 );
+		private static const _TIMER:AutoTimer = new AutoTimer( 30*1e3 );
+
+		/**
+		 * @private
+		 */
+		private static const _CONTAINERS:Array = new Array();
 
 		//--------------------------------------------------------------------------
 		//
@@ -74,16 +79,19 @@ package by.blooddy.core.utils {
 			return ( key in this._hash && this._hash[ key ].length > 0 );
 		}
 
-		public function takeIn(key:String, resource:*, time:uint=3*60*1E3):void {
+		public function takeIn(key:String, resource:*, time:uint=3*60*1e3):void {
 			if ( resource == null || time <= 0 ) throw new ArgumentError();
-			var rcs:Vector.<ResourceContainer> = this._hash[ key ] as Vector.<ResourceContainer>;
-			if ( !rcs ) this._hash[ key ] = rcs = new Vector.<ResourceContainer>();
+			var list:Array = this._hash[ key ];
+			if ( !list ) this._hash[ key ] = list = new Array();
 			time += getTimer();
-			var l:uint = rcs.length;
+			var l:uint = list.length;
 			for ( var i:int=0; i < l; ++i ) {
-				if ( rcs[ i ].time <= time ) break;
+				if ( list[ i ].time <= time ) break;
 			}
-			rcs.splice( i, 0, new ResourceContainer( resource, time ) );
+			var rc:ResourceContainer = ( _CONTAINERS.length > 0 ? _CONTAINERS.pop() : new ResourceContainer() );
+			rc.resource = resource;
+			rc.time = time;
+			list.splice( i, 0, rc );
 			if ( this._length == 0 ) {
 				_TIMER.addEventListener( TimerEvent.TIMER, this.handler_timer );
 			}
@@ -91,15 +99,19 @@ package by.blooddy.core.utils {
 		}
 
 		public function takeOut(key:String):* {
-			var rcs:Vector.<ResourceContainer> = this._hash[ key ] as Vector.<ResourceContainer>;
-			if ( rcs && rcs.length > 0 ) {
+			var result:*;
+			var list:Array = this._hash[ key ];
+			if ( list && list.length > 0 ) {
 				--this._length;
 				if ( this._length == 0 ) {
 					_TIMER.removeEventListener( TimerEvent.TIMER, this.handler_timer );
 				}
-				return rcs.pop().resource;
+				var rc:ResourceContainer = list.pop();
+				result = rc.resource;
+				rc.resource = null;
+				_CONTAINERS.push( rc );
 			}
-			return null;
+			return result;
 		}
 
 		/**
@@ -107,14 +119,18 @@ package by.blooddy.core.utils {
 		public function clear(pattern:*=null):void {
 			var key:String;
 			var rc:ResourceContainer;
+			var list:Array;
 			if ( pattern ) {
 				for ( key in this._hash ) {
 					if ( key.search( pattern ) >= 0 ) {
-						for each ( rc in this._hash[ key ] ) {
+						list = this._hash[ key ];
+						for each ( rc in list ) {
 							dispose( rc.resource );
+							rc.resource = null;
 						}
-						this._length -= this._hash[ key ].length;
+						this._length -= list.length;
 						delete this._hash[ key ];
+						_CONTAINERS.push.apply( null, list );
 					}
 				}
 				if ( this._length == 0 ) {
@@ -122,10 +138,13 @@ package by.blooddy.core.utils {
 				}
 			} else {
 				for ( key in this._hash ) {
-					for each ( rc in this._hash[ key ] ) {
+					list = this._hash[ key ];
+					for each ( rc in list ) {
 						dispose( rc.resource );
+						rc.resource = null;
 					}
 					delete this._hash[ key ];
+					_CONTAINERS.push.apply( null, list );
 				}
 				this._length = 0;
 				_TIMER.removeEventListener( TimerEvent.TIMER, this.handler_timer );
@@ -142,21 +161,22 @@ package by.blooddy.core.utils {
 		 * @private
 		 */
 		private function handler_timer(event:TimerEvent):void {
-			var time:uint = getTimer() + 1E3;
-			var rcs:Vector.<ResourceContainer>;
+			var time:uint = getTimer() + 1e3;
+			var list:Array;
 			var i:int, l:uint;
 			var rc:ResourceContainer;
-			for each ( rcs in this._hash ) {
-				l = rcs.length;
+			for each ( list in this._hash ) {
+				l = list.length;
 				for ( i=0; i<l; ++i ) {
-					rc = rcs[ i ];
+					rc = list[ i ];
 					// если условие проходит, то всё что там лежит совсем не старое
 					if ( rc.time > time ) break;
 					dispose( rc.resource );
+					rc.resource = null;
 				}
 				if ( i > 0 ) { // минимум один элемент на удаление
-					rcs.splice( 0, i );
 					this._length -= i;
+					_CONTAINERS.push.apply( null, list.splice( 0, i ) );
 				}
 			}
 			if ( this._length == 0 ) {
@@ -186,10 +206,8 @@ package by.blooddy.core.utils {
  */
 internal final class ResourceContainer {
 
-	public function ResourceContainer(resource:*, time:Number=0) {
+	public function ResourceContainer() {
 		super();
-		this.resource = resource;
-		this.time = time;
 	}
 
 	public var resource:*;

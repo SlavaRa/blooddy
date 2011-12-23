@@ -8,6 +8,7 @@ package by.blooddy.core.net.loading {
 	
 	import by.blooddy.core.net.domain;
 	import by.blooddy.core.utils.ClassUtils;
+	import by.blooddy.core.utils.RecycleBin;
 	import by.blooddy.core.utils.enterFrameBroadcaster;
 	import by.blooddy.core.utils.net.URLUtils;
 	
@@ -142,7 +143,12 @@ package by.blooddy.core.net.loading {
 		$protected_load static const _ROOT:String = URLUtils.getPathURL(
 			URLUtils.normalizeURL( ( new flash.display.Loader() ).contentLoaderInfo.loaderURL )
 		);
-		
+
+		/**
+		 * @private
+		 */
+		$protected_load static const _BIN:RecycleBin = new RecycleBin();
+
 		/**
 		 * @private
 		 * статус загрузки. ожидание
