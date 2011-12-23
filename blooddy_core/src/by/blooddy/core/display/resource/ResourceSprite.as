@@ -94,6 +94,11 @@ package by.blooddy.core.display.resource {
 		 */
 		private static const _LOCK_HASH:Dictionary = new Dictionary( true );
 
+		/**
+		 * @private
+		 */
+		private static const _LINKERS:Array = new Array();
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -254,6 +259,7 @@ package by.blooddy.core.display.resource {
 			--def.count;
 			if ( !def.count ) {
 				delete this._resources[ resource ];
+				_LINKERS.push( def );
 			}
 			this._manager.trashResource( resource, time );
 		}
@@ -293,7 +299,10 @@ package by.blooddy.core.display.resource {
 		private function saveResource(bundleName:String, resourceName:String, resource:Object):void {
 			var def:ResourceLinker = this._resources[ resource ];
 			if ( !def ) {
-				this._resources[ resource ] = def = new ResourceLinker( bundleName, resourceName );
+				def = ( _LINKERS.length > 0 ? _LINKERS.pop() : new ResourceLinker() );
+				def.bundleName = bundleName;
+				def.resourceName = resourceName;
+				this._resources[ resource ] = def;
 			}
 			++def.count;
 		}
@@ -406,8 +415,8 @@ internal final class ResourceLinker extends ResourceDefinition {
 	 * @private
 	 * Constructor
 	 */
-	public function ResourceLinker(bundleName:String=null, resourceName:String=null) {
-		super( bundleName, resourceName );
+	public function ResourceLinker() {
+		super();
 	}
 
 	//--------------------------------------------------------------------------

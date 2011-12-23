@@ -11,6 +11,7 @@ package by.blooddy.core.managers.resource {
 	import by.blooddy.core.net.domain;
 	import by.blooddy.core.net.loading.ILoadable;
 	import by.blooddy.core.net.loading.LoaderPriority;
+	import by.blooddy.core.utils.RecycleBin;
 	import by.blooddy.core.utils.enterFrameBroadcaster;
 	import by.blooddy.core.utils.net.Environment;
 	
@@ -55,6 +56,11 @@ package by.blooddy.core.managers.resource {
 		//  Class variables
 		//
 		//--------------------------------------------------------------------------
+
+		/**
+		 * @private
+		 */
+		private static const _BIN:RecycleBin = new RecycleBin();
 
 		/**
 		 * @private
@@ -191,11 +197,11 @@ package by.blooddy.core.managers.resource {
 		 * @private
 		 */
 		private static function addLoaderQueue(asset:$ResourceLoader, priority:int):void {
-			asset.queue = new QueueItem( asset, priority );
+			asset.$queue = new QueueItem( asset, priority );
 			if ( priority >= LoaderPriority.HIGHEST ) {
-				_LOADING_QUEUE.unshift( asset.queue );
+				_LOADING_QUEUE.unshift( asset.$queue );
 			} else {
-				_LOADING_QUEUE.push( asset.queue ); // TODO: splice to the num
+				_LOADING_QUEUE.push( asset.$queue ); // TODO: splice to the num
 				_LOADING_QUEUE.sortOn( _SORT_FIELDS, _SORT_OPTIONS );
 			}
 		 	if ( _loading < _maxLoading ) {
@@ -214,7 +220,7 @@ package by.blooddy.core.managers.resource {
 				)
 			) {
 				var asset:$ResourceLoader = _LOADING_QUEUE.shift().asset;
-				asset.queue = null;
+				asset.$queue = null;
 				registerQueue( asset );
 				asset._load();
 				++_loading;
@@ -364,7 +370,7 @@ package by.blooddy.core.managers.resource {
 				if ( bundle is ILoadable ) {
 					var loader:ILoadable = bundle as ILoadable;
 					if ( loader is $ResourceLoader ) {
-						( loader as $ResourceLoader ).managers[ this ] = true;
+						( loader as $ResourceLoader ).$managers[ this ] = true;
 					}
 					if ( loader.complete ) {
 						if ( super.hasEventListener( ResourceBundleEvent.BUNDLE_ADDED ) ) {
@@ -397,18 +403,19 @@ package by.blooddy.core.managers.resource {
 					this.unregisterLoadable( loader );
 					var asset:$ResourceLoader = loader as $ResourceLoader;
 					if ( asset ) { // если ассет, то помучаемся
-						delete asset.managers[ this ];
-						for each ( var has:Boolean in asset.managers ) break;
+						delete asset.$managers[ this ];
+						for each ( var has:Boolean in asset.$managers ) break;
 						if ( !has ) {
 							delete _HASH[ bundleName ];
 							if ( loader.complete ) asset._unload();
 							else {
-								if ( asset.queue ) {
-									var i:int = _LOADING_QUEUE.indexOf( asset.queue );
+								if ( asset.$queue ) {
+									var i:int = _LOADING_QUEUE.indexOf( asset.$queue );
 									_LOADING_QUEUE.splice( i, 1 );
-									asset.queue = null;
+									asset.$queue = null;
 								} else asset._close();
 							}
+							_BIN.takeIn( '', asset );
 						}
 					}
 				}
@@ -437,14 +444,14 @@ package by.blooddy.core.managers.resource {
 				if ( url in _HASH ) {
 					asset = _HASH[ url ];
 				} else {
-					_HASH[ url ] = asset = new $ResourceLoader(
-						url,
-						( urlRewriter ? urlRewriter.getURLByName( url ) : null ) || url ,
-						( store ? store.getFileByName( url ) : null )
-					);
+					asset = _BIN.takeOut( '' ) || new $ResourceLoader();
+					asset.$name = url;
+					asset.$url = ( urlRewriter ? urlRewriter.getURLByName( url ) : null ) || url;
+					asset.$bytes = ( store ? store.getFileByName( url ) : null );
+					_HASH[ url ] = asset;
 					addLoaderQueue( asset, priority );
 				}
-				asset.managers[ this ] = true;
+				asset.$managers[ this ] = true;
 				this._hash[ url ] = asset;
 
 				if ( asset.complete ) {
@@ -459,8 +466,8 @@ package by.blooddy.core.managers.resource {
 
 			// изменился приоритет загрузки
 			if ( !asset.complete ) {
-				if ( asset.queue && asset.queue.priority < priority ) {
-					asset.queue.priority = priority;
+				if ( asset.$queue && asset.$queue.priority < priority ) {
+					asset.$queue.priority = priority;
 					_LOADING_QUEUE.sortOn( _SORT_FIELDS, _SORT_OPTIONS );
 					updateQueue();
 				}
@@ -633,10 +640,8 @@ internal final class $ResourceLoader extends ResourceLoader {
 	//
 	//--------------------------------------------------------------------------
 
-	public function $ResourceLoader(name:String, url:String, bytes:ByteArray) {
-		super( name );
-		this._url = url;
-		this._bytes = bytes;
+	public function $ResourceLoader() {
+		super();
 	}
 
 	//--------------------------------------------------------------------------
@@ -645,14 +650,11 @@ internal final class $ResourceLoader extends ResourceLoader {
 	//
 	//--------------------------------------------------------------------------
 
-	/**
-	 * @private
-	 */
-	private var _bytes:ByteArray;
+	internal var $bytes:ByteArray;
 
-	internal var queue:QueueItem;
+	internal var $queue:QueueItem;
 	
-	internal const managers:Dictionary = new Dictionary( true );
+	internal const $managers:Dictionary = new Dictionary( true );
 
 	//--------------------------------------------------------------------------
 	//
@@ -660,13 +662,16 @@ internal final class $ResourceLoader extends ResourceLoader {
 	//
 	//--------------------------------------------------------------------------
 
-	/**
-	 * @private
-	 */
-	private var _url:String;
+	internal var $name:String;
+
+	public override function get name():String {
+		return this.$name;
+	}
+
+	internal var $url:String;
 
 	public override function get url():String {
-		return this._url;
+		return this.$url;
 	}
 
 	/**
@@ -709,14 +714,14 @@ internal final class $ResourceLoader extends ResourceLoader {
 	//--------------------------------------------------------------------------
 	
 	internal function _load():void {
-		if ( this._bytes ) {
-			super.loadBytes( this._bytes );
+		if ( this.$bytes ) {
+			super.loadBytes( this.$bytes );
 		} else {
 			var url:String;
-			if ( !ResourceManager.baseURL || _URL.test( this._url ) ) {
-				url = this._url;
+			if ( !ResourceManager.baseURL || _URL.test( this.$url ) ) {
+				url = this.$url;
 			} else {
-				url = ResourceManager.baseURL + '/' + this._url;
+				url = ResourceManager.baseURL + '/' + this.$url;
 			}
 			super.loaderContext = new LoaderContext( new ApplicationDomain( ApplicationDomain.currentDomain ), ResourceManager.ignoreSecurityDomain );
 			try { // так как запуск отложен, то и ошибку надо генерировать в виде события
@@ -732,15 +737,15 @@ internal final class $ResourceLoader extends ResourceLoader {
 	}
 	
 	internal function _close():void {
-		this._bytes = null;
+		this.$bytes = null;
 		super.close();
-		this._url = null;
+		this.$url = null;
 	}
 	
 	internal function _unload():void {
-		this._bytes = null;
+		this.$bytes = null;
 		super.unload();
-		this._url = null;
+		this.$url = null;
 	}
 
 }

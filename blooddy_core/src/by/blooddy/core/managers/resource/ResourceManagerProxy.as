@@ -49,6 +49,11 @@ package by.blooddy.core.managers.resource {
 		 */
 		private static const _NAME_DISPLAY_OBJECT:String = getQualifiedClassName( DisplayObject );
 
+		/**
+		 * @private
+		 */
+		private static const _LINKERS:Array = new Array();
+
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -240,6 +245,7 @@ package by.blooddy.core.managers.resource {
 			--def.count;
 			if ( !def.count ) {
 				delete this._resources[ resource ];
+				_LINKERS.push( def );
 			}
 			if ( resource is DisplayObject ) {
 				var mc:DisplayObject = resource as DisplayObject;
@@ -291,7 +297,12 @@ package by.blooddy.core.managers.resource {
 		 */
 		private function saveResource(bundleName:String, resourceName:String, resource:Object):void {
 			var def:ResourceLinker = this._resources[ resource ];
-			if ( !def ) this._resources[ resource ] = def = new ResourceLinker( bundleName, resourceName );
+			if ( !def ) {
+				def = _LINKERS.pop() || new ResourceLinker();
+				def.bundleName = bundleName;
+				def.resourceName = resourceName;
+				this._resources[ resource ] = def;
+			}
 			++def.count;
 			var usage:ResourceUsage = this._resourceUsages[ bundleName ] as ResourceUsage;
 			++usage.count;
@@ -396,8 +407,8 @@ internal final class ResourceLinker extends ResourceDefinition {
 	 * @private
 	 * Constructor
 	 */
-	public function ResourceLinker(bundleName:String=null, resourceName:String=null) {
-		super( bundleName, resourceName );
+	public function ResourceLinker() {
+		super();
 	}
 	
 	//--------------------------------------------------------------------------
