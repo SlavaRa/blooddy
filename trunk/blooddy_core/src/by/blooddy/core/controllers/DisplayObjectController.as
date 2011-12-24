@@ -34,7 +34,7 @@ package by.blooddy.core.controllers {
 			this._container.addEventListener( Event.ADDED_TO_STAGE,			this.handler_addedToStage,		false, int.MIN_VALUE, true );
 			this._container.addEventListener( Event.REMOVED_FROM_STAGE,		this.handler_removedFromStage,	false, int.MIN_VALUE, true );
 			if ( this._container.stage ) {
-				this._container.addEventListener( Event.ENTER_FRAME,		this.handler_exitFrame );
+				this._container.addEventListener( Event.ENTER_FRAME,		this.handler_enterFrame );
 			}
 		}
 
@@ -91,8 +91,8 @@ package by.blooddy.core.controllers {
 		/**
 		 * @private
 		 */
-		private function handler_exitFrame(event:Event):void {
-			this._container.removeEventListener( Event.ENTER_FRAME, this.handler_exitFrame );
+		private function handler_enterFrame(event:Event):void {
+			this._container.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
 			if ( !this._constructed && this._container.stage ) {
 				this._constructed = true;
 				this.construct();

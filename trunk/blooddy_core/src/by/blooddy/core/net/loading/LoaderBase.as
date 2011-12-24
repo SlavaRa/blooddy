@@ -93,13 +93,12 @@ package by.blooddy.core.net.loading {
 	[Exclude( kind="property", name="_URL" )]
 
 	[Exclude( kind="method", name="$getAbstractContent" )]
-	[Exclude( kind="method", name="isIdle" )]
 	[Exclude( kind="method", name="$load" )]
 	[Exclude( kind="method", name="$loadBytes" )]
 	[Exclude( kind="method", name="$unload" )]
 	[Exclude( kind="method", name="updateProgress" )]
-	[Exclude( kind="method", name="handler_progress" )]
-	[Exclude( kind="method", name="handler_complete" )]
+	[Exclude( kind="method", name="progressHandler" )]
+	[Exclude( kind="method", name="completeHandler" )]
 
 	[ExcludeClass]
 	/**
@@ -329,7 +328,7 @@ package by.blooddy.core.net.loading {
 			this._input = new ByteArray();
 			this._input.writeBytes( bytes );
 			this._input.position = 0;
-			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_exitFrame );
+			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_loadBytes_enterFrame );
 		}
 		
 		/**
@@ -337,7 +336,7 @@ package by.blooddy.core.net.loading {
 		 */
 		public function close():void {
 			if ( this._state != _STATE_PROGRESS ) throw new ArgumentError();
-			this.clear();
+			this.stop();
 		}
 		
 		/**
@@ -345,7 +344,14 @@ package by.blooddy.core.net.loading {
 		 */
 		public function unload():void {
 			if ( this._state <= _STATE_PROGRESS ) throw new ArgumentError();
-			this.clear();
+			this.stop();
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function isIdle():Boolean {
+			return this._state == _STATE_IDLE;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -403,17 +409,34 @@ package by.blooddy.core.net.loading {
 		/**
 		 * @private
 		 */
-		$protected_load final function isIdle():Boolean {
-			return this._state == _STATE_IDLE;
-		}
-
-		/**
-		 * @private
-		 * 
-		 */
 		$protected_load final function start():void {
 			this._state = _STATE_PROGRESS;
+			this._bytesLoaded = 0;
+			this._bytesTotal = 0;
 			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
+		}
+		
+		/**
+		 * @private
+		 * очисщает данные
+		 */
+		$protected_load final function stop():void {
+			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
+			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_loadBytes_enterFrame );
+			if ( this._input ) {
+				this._input.clear();
+				this._input = null;
+			}
+			this._state = _STATE_IDLE;
+			if ( this.$unload() && super.hasEventListener( Event.UNLOAD ) ) {
+				super.dispatchEvent( new Event( Event.UNLOAD ) );
+			}
+			if ( this._state != _STATE_IDLE ) {
+//				this._id = null;
+				this._url = null;
+				this._bytesLoaded = 0;
+				this._bytesTotal = 0;
+			}
 		}
 		
 		/**
@@ -482,36 +505,25 @@ package by.blooddy.core.net.loading {
 			//if ( this._id && NetMonitor.isActive() ) {
 			//	NetMonitor.monitorEvent( this._id, event );
 			//}
-			if ( event is ErrorEvent && event.type != ErrorEvent.ERROR ) {
-				if ( super.hasEventListener( ErrorEvent.ERROR ) ) {
-					var result:Boolean = super.dispatchEvent( new ErrorEvent( ErrorEvent.ERROR, false, false, ( event as ErrorEvent ).text, ( event as ErrorEvent ).errorID ) );
-					if ( !super.hasEventListener( event.type ) ) {
-						return result;
-					}
+			if (
+				event is ErrorEvent &&
+				event.type != ErrorEvent.ERROR &&
+				super.hasEventListener( ErrorEvent.ERROR )
+			) {
+				var result:Boolean = super.dispatchEvent(
+					new ErrorEvent(
+						ErrorEvent.ERROR,
+						false,
+						false,
+						( event as ErrorEvent ).text,
+						( event as ErrorEvent ).errorID
+					)
+				);
+				if ( !super.hasEventListener( event.type ) ) {
+					return result;
 				}
 			}
 			return super.dispatchEvent( event );
-		}
-
-		/**
-		 * @private
-		 * очисщает данные
-		 */
-		private function clear():void {
-			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
-			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_exitFrame );
-			if ( this._input ) {
-				this._input.clear();
-				this._input = null;
-			}
-			if ( this.$unload() && super.hasEventListener( Event.UNLOAD ) ) {
-				super.dispatchEvent( new Event( Event.UNLOAD ) );
-			}
-//			this._id = null;
-			this._url = null;
-			this._bytesLoaded = 0;
-			this._bytesTotal = 0;
-			this._state = _STATE_IDLE;
 		}
 
 		//--------------------------------------------------------------------------
@@ -531,8 +543,8 @@ package by.blooddy.core.net.loading {
 		/**
 		 * @private
 		 */
-		private function handler_exitFrame(event:Event):void {
-			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_exitFrame );
+		private function handler_loadBytes_enterFrame(event:Event):void {
+			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_loadBytes_enterFrame );
 			if ( super.hasEventListener( Event.OPEN ) ) {
 				this.$dispatchEvent( new Event( Event.OPEN ) );
 			}

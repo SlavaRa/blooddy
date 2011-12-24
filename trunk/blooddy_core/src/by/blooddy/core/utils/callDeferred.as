@@ -15,9 +15,12 @@ package by.blooddy.core.utils {
 	 * @langversion				3.0
 	 */
 	public function callDeferred(func:Function, args:Array, target:IEventDispatcher, eventType:String, useCapture:Boolean=false, priority:int=0.0, useWeakReference:Boolean=false):void {
+		var listener:Listener = ( _listeners.length > 0 ? _listeners.pop() : new Listener() );
+		listener.func = func;
+		listener.args = args;
 		target.addEventListener(
 			eventType,
-			( new Listener( func, args ) ).handler,
+			listener.handler,
 			useCapture,
 			priority,
 			useWeakReference
@@ -44,14 +47,22 @@ import flash.events.IEventDispatcher;
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+const _listeners:Array = new Array();
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Helper class: Listener
+//
+////////////////////////////////////////////////////////////////////////////////
+
 /**
  * @private
  * Вспомогательный класс.
  */
 internal final class Listener extends Caller {
 
-	public function Listener(listener:Function, args:Array) {
-		super( listener, args );
+	public function Listener() {
+		super( null );
 	}
 
 	public function handler(event:Event):void {
@@ -61,8 +72,14 @@ internal final class Listener extends Caller {
 			this.handler,
 			event.eventPhase == EventPhase.CAPTURING_PHASE
 		);
+
 		// вызываемся
 		super.call();
+
+		this.func = null;
+		this.args = null;
+		_listeners.push( this );
+
 	}
 
 }

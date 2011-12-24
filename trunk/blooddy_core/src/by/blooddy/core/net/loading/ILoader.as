@@ -119,6 +119,8 @@ package by.blooddy.core.net.loading {
 		 */
 		function unload():void;
 
+		function isIdle():Boolean;
+
 	}
 
 }

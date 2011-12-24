@@ -197,11 +197,11 @@ package by.blooddy.core.managers.resource {
 		 * @private
 		 */
 		private static function addLoaderQueue(asset:$ResourceLoader, priority:int):void {
-			asset.$queue = new QueueItem( asset, priority );
+			asset._queue = new QueueItem( asset, priority );
 			if ( priority >= LoaderPriority.HIGHEST ) {
-				_LOADING_QUEUE.unshift( asset.$queue );
+				_LOADING_QUEUE.unshift( asset._queue );
 			} else {
-				_LOADING_QUEUE.push( asset.$queue ); // TODO: splice to the num
+				_LOADING_QUEUE.push( asset._queue ); // TODO: splice to the num
 				_LOADING_QUEUE.sortOn( _SORT_FIELDS, _SORT_OPTIONS );
 			}
 		 	if ( _loading < _maxLoading ) {
@@ -220,7 +220,7 @@ package by.blooddy.core.managers.resource {
 				)
 			) {
 				var asset:$ResourceLoader = _LOADING_QUEUE.shift().asset;
-				asset.$queue = null;
+				asset._queue = null;
 				registerQueue( asset );
 				asset._load();
 				++_loading;
@@ -370,7 +370,7 @@ package by.blooddy.core.managers.resource {
 				if ( bundle is ILoadable ) {
 					var loader:ILoadable = bundle as ILoadable;
 					if ( loader is $ResourceLoader ) {
-						( loader as $ResourceLoader ).$managers[ this ] = true;
+						( loader as $ResourceLoader )._managers[ this ] = true;
 					}
 					if ( loader.complete ) {
 						if ( super.hasEventListener( ResourceBundleEvent.BUNDLE_ADDED ) ) {
@@ -403,18 +403,21 @@ package by.blooddy.core.managers.resource {
 					this.unregisterLoadable( loader );
 					var asset:$ResourceLoader = loader as $ResourceLoader;
 					if ( asset ) { // если ассет, то помучаемся
-						delete asset.$managers[ this ];
-						for each ( var has:Boolean in asset.$managers ) break;
+						delete asset._managers[ this ];
+						for each ( var has:Boolean in asset._managers ) break;
 						if ( !has ) {
 							delete _HASH[ bundleName ];
 							if ( loader.complete ) asset._unload();
 							else {
-								if ( asset.$queue ) {
-									var i:int = _LOADING_QUEUE.indexOf( asset.$queue );
+								if ( asset._queue ) {
+									var i:int = _LOADING_QUEUE.indexOf( asset._queue );
 									_LOADING_QUEUE.splice( i, 1 );
-									asset.$queue = null;
+									asset._queue = null;
 								} else asset._close();
 							}
+							asset._name = null;
+							asset._url = null;
+							asset._bytes = null;
 							_BIN.takeIn( '', asset );
 						}
 					}
@@ -445,13 +448,13 @@ package by.blooddy.core.managers.resource {
 					asset = _HASH[ url ];
 				} else {
 					asset = _BIN.takeOut( '' ) || new $ResourceLoader();
-					asset.$name = url;
-					asset.$url = ( urlRewriter ? urlRewriter.getURLByName( url ) : null ) || url;
-					asset.$bytes = ( store ? store.getFileByName( url ) : null );
+					asset._name = url;
+					asset._url = ( urlRewriter ? urlRewriter.getURLByName( url ) : null ) || url;
+					asset._bytes = ( store ? store.getFileByName( url ) : null );
 					_HASH[ url ] = asset;
 					addLoaderQueue( asset, priority );
 				}
-				asset.$managers[ this ] = true;
+				asset._managers[ this ] = true;
 				this._hash[ url ] = asset;
 
 				if ( asset.complete ) {
@@ -466,8 +469,8 @@ package by.blooddy.core.managers.resource {
 
 			// изменился приоритет загрузки
 			if ( !asset.complete ) {
-				if ( asset.$queue && asset.$queue.priority < priority ) {
-					asset.$queue.priority = priority;
+				if ( asset._queue && asset._queue.priority < priority ) {
+					asset._queue.priority = priority;
 					_LOADING_QUEUE.sortOn( _SORT_FIELDS, _SORT_OPTIONS );
 					updateQueue();
 				}
@@ -488,8 +491,8 @@ package by.blooddy.core.managers.resource {
 		 * Добавляем уже грузящийся объект
 		 */
 		private function registerLoadable(loader:ILoadable):void {
-			loader.addEventListener( Event.COMPLETE,	this.handler_complete );
-			loader.addEventListener( ErrorEvent.ERROR,	this.handler_complete );
+			loader.addEventListener( Event.COMPLETE,	this.handler_complete, false, int.MAX_VALUE );
+			loader.addEventListener( ErrorEvent.ERROR,	this.handler_complete, false, int.MAX_VALUE );
 			loader.addEventListener( Event.UNLOAD,		this.handler_unload );
 		}
 
@@ -634,6 +637,11 @@ internal final class $ResourceLoader extends ResourceLoader {
 	 */
 	private static const _URL:RegExp = /^\w+:\/\//;
 
+	/**
+	 * @private
+	 */
+	private static const _DOMAIN:ApplicationDomain = ApplicationDomain.currentDomain;
+
 	//--------------------------------------------------------------------------
 	//
 	//  Constructor
@@ -650,11 +658,11 @@ internal final class $ResourceLoader extends ResourceLoader {
 	//
 	//--------------------------------------------------------------------------
 
-	internal var $bytes:ByteArray;
+	internal var _bytes:ByteArray;
 
-	internal var $queue:QueueItem;
+	internal var _queue:QueueItem;
 	
-	internal const $managers:Dictionary = new Dictionary( true );
+	internal const _managers:Dictionary = new Dictionary( true );
 
 	//--------------------------------------------------------------------------
 	//
@@ -662,16 +670,16 @@ internal final class $ResourceLoader extends ResourceLoader {
 	//
 	//--------------------------------------------------------------------------
 
-	internal var $name:String;
+	internal var _name:String;
 
 	public override function get name():String {
-		return this.$name;
+		return this._name;
 	}
 
-	internal var $url:String;
+	internal var _url:String;
 
 	public override function get url():String {
-		return this.$url;
+		return this._url;
 	}
 
 	/**
@@ -714,16 +722,16 @@ internal final class $ResourceLoader extends ResourceLoader {
 	//--------------------------------------------------------------------------
 	
 	internal function _load():void {
-		if ( this.$bytes ) {
-			super.loadBytes( this.$bytes );
+		if ( this._bytes ) {
+			super.loadBytes( this._bytes );
 		} else {
 			var url:String;
-			if ( !ResourceManager.baseURL || _URL.test( this.$url ) ) {
-				url = this.$url;
+			if ( !ResourceManager.baseURL || _URL.test( this._url ) ) {
+				url = this._url;
 			} else {
-				url = ResourceManager.baseURL + '/' + this.$url;
+				url = ResourceManager.baseURL + '/' + this._url;
 			}
-			super.loaderContext = new LoaderContext( new ApplicationDomain( ApplicationDomain.currentDomain ), ResourceManager.ignoreSecurityDomain );
+			super.loaderContext = new LoaderContext( new ApplicationDomain( _DOMAIN ), ResourceManager.ignoreSecurityDomain );
 			try { // так как запуск отложен, то и ошибку надо генерировать в виде события
 				super.load( new URLRequest( url ) );
 			} catch ( e:SecurityError ) {
@@ -737,15 +745,17 @@ internal final class $ResourceLoader extends ResourceLoader {
 	}
 	
 	internal function _close():void {
-		this.$bytes = null;
 		super.close();
-		this.$url = null;
+		if ( super.isIdle() ) {
+			super.loaderContext = null;
+		}
 	}
 	
 	internal function _unload():void {
-		this.$bytes = null;
 		super.unload();
-		this.$url = null;
+		if ( super.isIdle() ) {
+			super.loaderContext = null;
+		}
 	}
 
 }
@@ -762,6 +772,17 @@ internal final class $ResourceLoader extends ResourceLoader {
  * обёртка вокруг ApplicationDomain.currentDomain
  */
 internal class DefaultResourceBundle implements IResourceBundle {
+	
+	//--------------------------------------------------------------------------
+	//
+	//  Class variables
+	//
+	//--------------------------------------------------------------------------
+	
+	/**
+	 * @private
+	 */
+	private static const _DOMAIN:ApplicationDomain = ApplicationDomain.currentDomain;
 	
 	//--------------------------------------------------------------------------
 	//
@@ -824,8 +845,8 @@ internal class DefaultResourceBundle implements IResourceBundle {
 		} else {
 			
 			var resource:*;
-			if ( ApplicationDomain.currentDomain.hasDefinition( name ) ) {
-				resource = ApplicationDomain.currentDomain.getDefinition( name );
+			if ( _DOMAIN.hasDefinition( name ) ) {
+				resource = _DOMAIN.getDefinition( name );
 				if ( resource is Class ) {
 					var resourceClass:Class = resource as Class;
 					var p:Object = resourceClass.prototype;
@@ -852,7 +873,7 @@ internal class DefaultResourceBundle implements IResourceBundle {
 		return (
 			name && (
 				name in this._hash || // пытаемся найти в кэше
-				ApplicationDomain.currentDomain.hasDefinition( name ) // пытаемся найти в домене
+				_DOMAIN.hasDefinition( name ) // пытаемся найти в домене
 			)
 		);
 	}

@@ -209,7 +209,9 @@ package by.blooddy.core.managers.resource {
 		public override function unload():void {
 			this.clear();
 			super.unload();
-			this._name = null;
+			if ( super.isIdle() ) {
+				this._name = null;
+			}
 		}
 
 		/**
@@ -218,7 +220,9 @@ package by.blooddy.core.managers.resource {
 		public override function close():void {
 			this.clear();
 			super.close();
-			this._name = null;
+			if ( super.isIdle() ) {
+				this._name = null;
+			}
 		}
 
 		/**

@@ -189,7 +189,7 @@ package by.blooddy.core.net.loading {
 		 * создаёт URLStream для загрузки
 		 */
 		private function create_stream():flash.net.URLStream {
-			var result:flash.net.URLStream = new flash.net.URLStream();
+			var result:flash.net.URLStream = _BIN.takeOut( 'stream' ) || new flash.net.URLStream();
 			result.addEventListener( Event.OPEN,						super.dispatchEvent );
 			result.addEventListener( HTTPStatusEvent.HTTP_STATUS,		super.dispatchEvent );
 			if ( _HTTP_RESPONSE_STATUS ) {
@@ -208,9 +208,6 @@ package by.blooddy.core.net.loading {
 		 */
 		private function clear_stream():void {
 			if ( this._stream ) {
-				if ( this._stream.connected ) {
-					this._stream.close();
-				}
 				this._stream.removeEventListener( Event.OPEN,							super.dispatchEvent );
 				this._stream.removeEventListener( HTTPStatusEvent.HTTP_STATUS,			super.dispatchEvent );
 				if ( _HTTP_RESPONSE_STATUS ) {
@@ -220,6 +217,10 @@ package by.blooddy.core.net.loading {
 				this._stream.removeEventListener( Event.COMPLETE,						this.handler_stream_complete );
 				this._stream.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_stream_error );
 				this._stream.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_stream_error );
+				if ( this._stream.connected ) {
+					this._stream.close();
+				}
+				_BIN.takeIn( 'stream', this._stream ); 
 				this._stream = null;
 			}
 		}

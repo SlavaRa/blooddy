@@ -48,6 +48,8 @@ package by.blooddy.core.net.loading {
 
 		public var checkPolicyFile:Boolean;
 
+		public var parameters:Object;
+
 	}
 
 }

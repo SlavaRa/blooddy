@@ -342,7 +342,7 @@ package by.blooddy.core.display.resource {
 
 			this._stage = super.stage;
 			
-			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_exitFrame );
+			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
 
 			this._depth = this.getDepth();
 			var manager:ResourceManagerProxy = this.getResourceManager();
@@ -370,15 +370,15 @@ package by.blooddy.core.display.resource {
 		 */
 		private function handler_removedFromStage(event:Event):void {
 			if ( this._manager ) {
-				enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_exitFrame, false, this._depth );
+				enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame, false, this._depth );
 			}
 		}
 
 		/**
 		 * @private
 		 */
-		private function handler_exitFrame(event:Event):void {
-			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_exitFrame );
+		private function handler_enterFrame(event:Event):void {
+			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
 			this.removeFromManager();
 		}
 

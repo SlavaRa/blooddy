@@ -256,23 +256,24 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 */
 		private function create_loaderContext(canSecurity:Boolean=false):flash.system.LoaderContext {
+			var result:flash.system.LoaderContext;
 			if (
 				this._loaderContext && (
 					( canSecurity && this._loaderContext.ignoreSecurityDomain ) ||
 					this._loaderContext.checkPolicyFile ||
-					this._loaderContext.applicationDomain
+					this._loaderContext.applicationDomain ||
+					this._loaderContext.parameters
 				)
 			) {
-				return new flash.system.LoaderContext(
-					this._loaderContext.checkPolicyFile,
-					this._loaderContext.applicationDomain,
-					( canSecurity && this._loaderContext.ignoreSecurityDomain
-						?	SecurityDomain.currentDomain
-						:	null
-					)
-				);
+				result = new flash.system.LoaderContext();
+				result.checkPolicyFile = this._loaderContext.checkPolicyFile;
+				result.applicationDomain = this._loaderContext.applicationDomain;
+				if ( canSecurity && this._loaderContext.ignoreSecurityDomain ) {
+					result.securityDomain = SecurityDomain.currentDomain;
+				}
+				result.parameters = this._loaderContext.parameters;
 			}
-			return null;
+			return result;
 		}
 		
 		/**
@@ -293,9 +294,11 @@ package by.blooddy.core.net.loading {
 				this._loaderInfo = null;
 				this._loader._target = null;
 				// TODO: uncatch errors
-				try {
-					this._loader._close();
-				} catch ( e:* ) {
+				if ( !super.complete ) {
+					try {
+						this._loader._close();
+					} catch ( e:* ) {
+					}
 				}
 				try {
 					this._loader._unload();
