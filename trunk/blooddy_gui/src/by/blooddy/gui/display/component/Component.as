@@ -337,8 +337,8 @@ package by.blooddy.gui.display.component {
 		/**
 		 * @private
 		 */
-		private function handler_exitFrame(event:Event):void {
-			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_exitFrame );
+		private function handler_enterFrame(event:Event):void {
+			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
 			if ( !this._constructed && this._container ) {
 
 				this._constructed = true;
@@ -364,7 +364,7 @@ package by.blooddy.gui.display.component {
 				super.stage.addEventListener( Event.RESIZE, this.updateLock, false, int.MIN_VALUE );
 				this.updateLock();
 			}
-			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_exitFrame, false, int.MIN_VALUE );
+			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame, false, int.MIN_VALUE );
 		}
 
 		/**
