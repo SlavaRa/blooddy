@@ -11,7 +11,6 @@ package by.blooddy.core.display.resource {
 	import by.blooddy.core.managers.process.IProgressable;
 	import by.blooddy.core.managers.process.ProgressDispatcher;
 	import by.blooddy.core.net.loading.ILoadable;
-	import by.blooddy.core.utils.callDeferred;
 	
 	import flash.errors.IllegalOperationError;
 	import flash.events.ErrorEvent;
@@ -83,8 +82,7 @@ package by.blooddy.core.display.resource {
 
 				this._invalidated = 1;
 
-				callDeferred( this.$invalidate, null, stage, Event.RENDER );
-
+				stage.addEventListener( Event.RENDER, this.handler_render );
 				stage.invalidate();
 				
 			} else {
@@ -280,7 +278,7 @@ package by.blooddy.core.display.resource {
 			super.removeEventListener( Event.ADDED_TO_STAGE,		this.handler_addedToStage );
 			if ( this._loader ) {
 				this.$clearLoader();
-			} 
+			}
 		}
 
 		/**
@@ -311,6 +309,14 @@ package by.blooddy.core.display.resource {
 			if ( this._hasStage ) {
 				this.$draw();
 			}
+		}
+
+		/**
+		 * @private
+		 */
+		private function handler_render(event:Event):void {
+			event.target.removeEventListener( event.type, this.handler_render );
+			this.$invalidate();
 		}
 
 	}

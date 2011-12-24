@@ -8,7 +8,6 @@ package by.blooddy.core.net.loading {
 
 	import by.blooddy.core.net.MIME;
 	import by.blooddy.core.utils.ByteArrayUtils;
-	import by.blooddy.core.utils.dispose;
 	import by.blooddy.core.utils.net.copyURLRequest;
 	
 	import flash.display.LoaderInfo;
@@ -327,7 +326,7 @@ package by.blooddy.core.net.loading {
 		 * создаёт URLStream для загрузки
 		 */
 		private function create_stream(open:Boolean=false, progress:Boolean=false):flash.net.URLStream {
-			var result:flash.net.URLStream = _BIN.takeOut( 'stream' ) || new flash.net.URLStream(); // ТУДУ. чек зис момент!
+			var result:flash.net.URLStream = _BIN.takeOut( 'stream' ) || new flash.net.URLStream();
 			if ( open ) {
 				result.addEventListener( Event.OPEN,					super.dispatchEvent );
 			}
@@ -445,12 +444,11 @@ package by.blooddy.core.net.loading {
 				this._stream.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_common_error );
 				this._stream.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_stream_init_securityError );
 				if ( close ) {
-					try {
+					if ( this._stream.connected ) {
 						this._stream.close();
-					} catch ( e:* ) {
 					}
+					_BIN.takeIn( 'stream', this._stream ); 
 				}
-				_BIN.takeIn( 'stream', this._stream );
 				this._stream = null;
 			}
 		}
@@ -471,11 +469,7 @@ package by.blooddy.core.net.loading {
 				this._loader.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_loader_input_ioError );
 				this._loader.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_common_error );
 				this._loaderInfo = null;
-				if ( this._loader.complete ) {
-					this._loader._unload();
-				} else {
-					this._loader._close();
-				}
+				this._loader.stop(); // unload
 				this._loader.loaderContext = null;
 				_BIN.takeIn( 'loader', this._loader );
 				this._loader = null;
@@ -496,11 +490,7 @@ package by.blooddy.core.net.loading {
 				this._sound.removeEventListener( Event.COMPLETE,					super.completeHandler );
 				this._sound.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_common_error );
 				this._sound.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_common_error );
-				if ( this._sound.complete ) {
-					this._sound._unload();
-				} else {
-					this._sound._close();
-				}
+				this._sound.stop(); // unload
 				this._sound.loaderContext = null;
 				_BIN.takeIn( 'sound', this._sound );
 				this._sound = null;
@@ -521,11 +511,7 @@ package by.blooddy.core.net.loading {
 				this._zip.removeEventListener( Event.COMPLETE,						super.completeHandler );
 				this._zip.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_common_error );
 				this._zip.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_common_error );
-				if ( this._zip.complete ) {
-					this._zip._unload();
-				} else {
-					this._zip._close();
-				}
+				this._zip.stop(); // unload
 				_BIN.takeIn( 'zip', this._zip );
 				this._zip = null;
 			}
@@ -839,7 +825,6 @@ package by.blooddy.core.net.loading {
 
 import by.blooddy.core.net.loading.HeuristicLoader;
 import by.blooddy.core.net.loading.Loader;
-import by.blooddy.core.net.loading.LoaderContext;
 import by.blooddy.core.net.loading.SoundLoader;
 import by.blooddy.core.net.loading.ZIPLoader;
 
@@ -903,26 +888,6 @@ internal final class $Loader extends Loader {
 		this._target.unload();
 	}
 
-	//--------------------------------------------------------------------------
-	//
-	//  Internal methods
-	//
-	//--------------------------------------------------------------------------
-	
-	/**
-	 * @private
-	 */
-	internal function _close():void {
-		super.close();
-	}
-
-	/**
-	 * @private
-	 */
-	internal function _unload():void {
-		super.unload();
-	}
-	
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -985,26 +950,6 @@ internal final class $SoundLoader extends SoundLoader {
 		this._target.unload();
 	}
 	
-	//--------------------------------------------------------------------------
-	//
-	//  Internal methods
-	//
-	//--------------------------------------------------------------------------
-	
-	/**
-	 * @private
-	 */
-	internal function _close():void {
-		super.close();
-	}
-
-	/**
-	 * @private
-	 */
-	internal function _unload():void {
-		super.unload();
-	}
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1067,24 +1012,4 @@ internal final class $ZIPLoader extends ZIPLoader {
 		this._target.unload();
 	}
 	
-	//--------------------------------------------------------------------------
-	//
-	//  Internal methods
-	//
-	//--------------------------------------------------------------------------
-	
-	/**
-	 * @private
-	 */
-	internal function _close():void {
-		super.close();
-	}
-	
-	/**
-	 * @private
-	 */
-	internal function _unload():void {
-		super.unload();
-	}
-
 }
