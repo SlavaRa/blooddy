@@ -23,7 +23,7 @@ if ( !blooddy.utils.history ) {
 		// shortcuts
 		var $ = blooddy;
 
-		blooddy.require( 'blooddy.events.EventDispatcher' );
+		$.require( 'blooddy.events.EventDispatcher' );
 
 		//--------------------------------------------------------------------------
 		//
@@ -56,6 +56,7 @@ if ( !blooddy.utils.history ) {
 			_rup =		/^(.+?)[\/\\]+[^\/\\]+[\/\\]*([\?#]|$)/,
 			_rpath =	/[\?#]/,
 
+			_hash_source = '',
 			_hash = '',
 			_onChange,
 			_setHash;
@@ -68,12 +69,13 @@ if ( !blooddy.utils.history ) {
 
 		if ( _available ) {
 
-			var	iframe;
-			var getHash;
-			var saveHash = function(hash) {
-				_hash = hash;
-				_onChange();
-			};
+			var	iframe,
+				getHash,
+				saveHash = function(hash) {
+					_hash_source = hash;
+					_hash = ( hash.charAt( 0 ) == '!' ? hash.substr( 1 ) : hash );
+					_onChange();
+				};
 
 			if ( msie ) { // IE
 
@@ -183,7 +185,7 @@ if ( !blooddy.utils.history ) {
 					setInterval(
 						function() {
 							var	hash = getHash();
-							if ( _hash != hash ) {
+							if ( _hash_source != hash ) {
 								setTimeout( updateHash, 1 );
 								saveHash( hash );
 
@@ -241,7 +243,7 @@ if ( !blooddy.utils.history ) {
 				setInterval(
 					function() {
 						var	hash = getHash();
-						if ( _hash != hash ) {
+						if ( _hash_source != hash ) {
 							saveHash( hash );
 						}
 					},

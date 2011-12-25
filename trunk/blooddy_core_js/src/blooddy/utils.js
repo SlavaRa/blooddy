@@ -22,7 +22,14 @@ if ( !blooddy.utils ) {
 		//
 		//--------------------------------------------------------------------------
 
-		var	msie =	blooddy.browser.getMSIE();
+		var	browser =	blooddy.browser,
+			msie =		browser.getMSIE(),
+			webKit =	browser.getWebKit(),
+			gecko =		browser.getGecko(),
+
+			win =		window,
+			doc =		document,
+			doce = 		doc.documentElement;
 
 		//--------------------------------------------------------------------------
 		//
@@ -61,44 +68,45 @@ if ( !blooddy.utils ) {
 		 * @param	{Function}	func
 		 * @return	{Function}
 		 */
-		UtilsPrototype.createDeferredDelegate = function(scope, func, onError) {
-			if ( msie ) {
-				return function() {
-					var a = arguments;
-					setTimeout(
-						( onError
-							?	function() {
-									try {
-										func.apply( scope, a );
-									} catch ( e ) {
-										onError.call( scope, e );
+		UtilsPrototype.createDeferredDelegate = ( msie
+			?	function(scope, func, onError) {
+					return function() {
+						var a = arguments;
+						setTimeout(
+							( onError
+								?	function() {
+										try {
+											func.apply( scope, a );
+										} catch ( e ) {
+											onError.call( scope, e );
+										}
 									}
+								:	function() {
+										func.apply( scope, a );
+									}
+							),
+							1
+						);
+					};
+				}
+			:	function(scope, func, onError) {
+					var delegate = ( onError
+						?	function(args) {
+								try {
+									func.apply( scope, args );
+								} catch ( e ) {
+									onError.call( scope, e );
 								}
-							:	function() {
-									func.apply( scope, a );
-								}
-						),
-						1
-					);
-				};
-			} else {
-				var delegate = ( onError
-					?	function(args) {
-							try {
-								func.apply( scope, args );
-							} catch ( e ) {
-								onError.call( scope, e );
 							}
-						}
-					:	function(args) {
-							func.apply( scope, args );
-						}
-				);
-				return function() {
-					setTimeout( delegate, 1, arguments );
-				};
-			}
-		};
+						:	function(args) {
+								func.apply( scope, args );
+							}
+					);
+					return function() {
+						setTimeout( delegate, 1, arguments );
+					};
+				}
+		);
 
 		/**
 		 * @method
@@ -179,7 +187,7 @@ if ( !blooddy.utils ) {
 				switch ( value.charAt( i ) ) {
 					case '&':
 						switch ( value.charAt( i + 1 ) ) {
-							case 'q': if ( value.substr( i + 2, 4 ) == 'uot;' ){ r = '"'; c = 6; } break;
+							case 'q': if ( value.substr( i + 2, 4 ) == 'uot;' )	{ r = '"'; c = 6; } break;
 							case 'g': if ( value.substr( i + 2, 2 ) == 't;' )	{ r = '>'; c = 4; } break;
 							case 'l': if ( value.substr( i + 2, 2 ) == 't;' )	{ r = '<'; c = 4; } break;
 							case 'a': if ( value.substr( i + 2, 3 ) == 'mp;' )	{ r = '&'; c = 5; } break;
@@ -234,6 +242,50 @@ if ( !blooddy.utils ) {
 				}
 			:	function(arr, o) {
 					return arr.indexOf( o );
+				}
+		);
+
+		/**
+		 * @param {Element} e
+		 * @param {Object} e
+		 */
+		UtilsPrototype.localToGlobal = function(e, p) {
+			do {
+				p.x += e.offsetLeft;
+				p.y += e.offsetTop;
+			} while ( e = e.offsetParent );
+		};
+
+		/**
+		 * @param {Element} e
+		 * @param {Object} e
+		 */
+		UtilsPrototype.globalToLocal = function(e, p) {
+			do {
+				p.x -= e.offsetLeft;
+				p.y -= e.offsetTop;
+			} while ( e = e.offsetParent );
+		};
+
+		/**
+		 * @return {Object}
+		 */
+		UtilsPrototype.getPageBounds = ( msie
+			?	function() {
+					return {
+						left:	doce.scrollLeft,
+						right:	doce.scrollLeft + doce.clientWidth,
+						top:	doce.scrollTop,
+						bottom:	doce.scrollTop + doce.clientHeight
+					};
+				}
+			:	function() {
+					return {
+						left:	win.pageXOffset,
+						right:	win.pageXOffset + win.innerWidth,
+						top:	win.pageYOffset,
+						bottom:	win.pageYOffset + win.innerHeight
+					};
 				}
 		);
 
