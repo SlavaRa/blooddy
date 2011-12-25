@@ -158,7 +158,7 @@ if ( !blooddy.utils.history ) {
 
 					// для остальных версий IE необходим хак с IFrame,
 					// по которому и будет осуществляться переход
-					var	id = '__history_frame_' + Math.round( $.utils.getTime() * Math.random() );
+					var	id = $.createUniqID( 'history' );
 
 					// создём фрэйм
 					// получим его позже, так как сразу он не доступен

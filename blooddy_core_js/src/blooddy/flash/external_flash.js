@@ -164,8 +164,9 @@ if ( !blooddy.Flash.ExternalFlash ) {
 				event.text = e.toString();
 				event.error = e;
 				dispatchEvent.call( this, event );
+			} finally {
+				return ( result == null || result );
 			}
-            return ( result == null || result );
 		};
 
 		//--------------------------------------------------------------------------
@@ -284,16 +285,21 @@ if ( !blooddy.Flash.ExternalFlash ) {
 					}
 					if ( !flash.hasEventListener( a[ 2 ] ) ) {
 						if ( commandName == DISPATCH_ERROR_EVENT ) {
-                            throw new Error( 'unhandled errorEvent: ' + EEvent.IEvent( event ) );
+							try {
+								throw new Error( 'unhandled errorEvent: ' + EEvent.IEvent( event ) );
+							} finally {
+								return true;
+							}
 						}
+						return true;
 					} else {
 						if ( a[ 3 ] ) { // синхронное событие
 							return _dispatchEvent.call( flash, event );
 						} else { // асинхронное событие
 							utils.deferredCall( flash, _dispatchEvent, event );
+							return true;
 						}
 					}
-                    return true;
 
 				default:
 					try {

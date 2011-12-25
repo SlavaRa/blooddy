@@ -158,6 +158,12 @@ if ( !window.blooddy ) {
 			g_win =			win,
 			t_win,
 			doc =			win.document,
+			loc =			win.location,
+			t_loc,
+
+			MMath =			Math,
+
+			msie =			browser.getMSIE(),
 
 			_FILENAME =		'blooddy.js',
 			_NOTATION =		/([^^\/])([A-Z])/g,
@@ -179,7 +185,8 @@ if ( !window.blooddy ) {
 		// выдёргиваем максимально глобальное окно
 		try {
 			while ( ( t_win = g_win.parent ) && t_win !== g_win ) {
-				if ( t_win.document.domain == g_win.document.domain ) {
+				t_loc = t_win.location;
+				if ( t_loc.protocol == loc.protocol && t_loc.hostname == loc.hostname ) {
 					g_win = t_win;
 				} else {
 					break;
@@ -189,7 +196,7 @@ if ( !window.blooddy ) {
 		}
 
 		// инитиализируем request
-		if ( browser.getMSIE() && win.ActiveXObject ) {
+		if ( msie && win.ActiveXObject ) {
 			try {
 				_xhr = new ActiveXObject( 'Microsoft.XMLHTTP' )
 			} catch ( e ) {
@@ -309,7 +316,7 @@ if ( !window.blooddy ) {
 		 */
 		BlooddyPrototype.eval = function(source) {
 			//return ( new Function( source ) ).call( win );
-			if ( browser.getMSIE() ) {
+			if ( msie ) {
 				return win.execScript( source );
 			} else {
 				return win.eval( source ); // FIXME: выдаёт ошибки в gecko
@@ -419,6 +426,19 @@ if ( !window.blooddy ) {
 				return '[package ' + name + ']';
 			};
 			return new InstanceClass();
+		};
+
+		/**
+		 * @method
+		 * @param	{String}	prefix
+		 * @return	{String}
+		 */
+		BlooddyPrototype.createUniqID = function(prefix) {
+			var id;
+			do {
+				id = prefix + '_' + MMath.round( ( new Date() ).getTime() * MMath.random() );
+			} while ( doc.getElementById( id ) );
+			return id;
 		};
 
 		/**
