@@ -49,7 +49,7 @@ if ( !blooddy.Flash.FlashProxy ) {
 		var FlashProxy = function(name) {
 
 			// генерируем ID для сокета
-			var id = name + '_' + Math.round( $.utils.getTime() * Math.random() );
+			var id = $.createUniqID( name );
 			// создаём врменную заглушку, в которую будут вставляться флэшка
 			var e = doc.createElement( 'div' );
 			e.setAttribute( 'id', id );

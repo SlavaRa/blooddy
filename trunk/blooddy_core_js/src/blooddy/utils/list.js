@@ -90,7 +90,7 @@ if ( !blooddy.utils.List ) {
 		 * @return	{Object}
 		 */
 		ListPrototype.add = function(object) {
-			return this.addAt( object, this._list.index );
+			return ListPrototype.addAt.call( this, object, this._list.length );
 		};
 
 		/**
@@ -129,7 +129,7 @@ if ( !blooddy.utils.List ) {
 		 * @return	{Object}
 		 */
 		ListPrototype.remove = function(object) {
-			return this.removeAt( this.getIndex( object ) );
+			return ListPrototype.removeAt.call( this, this.getIndex( object ) );
 		};
 
 		/**
@@ -259,9 +259,9 @@ if ( !blooddy.utils.List ) {
 		ListPrototype.clear = function() {
 			var l = this._list.length;
 			if ( this.hasEventListener( EE_R ) ) {
-				while ( l-- ) this.removeAt( l );
+				while ( l-- ) ListPrototype.removeAt.call( this, l );
 			} else {
-				this._list.splice( 0, this._list.length );
+				this._list.splice( 0, l );
 			}
 		};
 

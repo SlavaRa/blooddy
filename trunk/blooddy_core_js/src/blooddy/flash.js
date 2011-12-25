@@ -289,7 +289,7 @@ if ( !blooddy.Flash ) {
 
 		/**
 		 * @method
-		 * @return	{HTMLElement}	HTMLElement флэшки
+		 * @return	{Element}	HTMLElement флэшки
 		 */
 		FlashPrototype.getElement = function() {
 			return doc.getElementById( this._id );

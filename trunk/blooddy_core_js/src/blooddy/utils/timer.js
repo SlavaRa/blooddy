@@ -32,6 +32,8 @@ if ( !blooddy.utils.Timer ) {
 		var	$ =			blooddy,
 			EEvent =	$.events.Event,
 			utils =		$.utils,
+			MMath =		Math,
+
 			msie =		$.browser.getMSIE();
 
 
@@ -47,8 +49,8 @@ if ( !blooddy.utils.Timer ) {
 		 */
 		var Timer = function(delay, repeatCount) {
 			TimerSuperPrototype.constructor.call( this );
-			this._delay = Math.max( 1, delay || 0 );
-			this._repeatCount = Math.max( 0, repeatCount || 0 );
+			this._delay = MMath.max( 1, delay || 0 );
+			this._repeatCount = MMath.max( 0, repeatCount || 0 );
 		};
 
 		$.extend( Timer, $.events.EventDispatcher );
@@ -124,7 +126,7 @@ if ( !blooddy.utils.Timer ) {
 		 */
 		TimerPrototype.setDelay = function(value) {
 			if ( this._delay == value ) return;
-			value = Math.max( 1, value || 0 );
+			value = MMath.max( 1, value || 0 );
 			if ( this._delay == value ) return;
 			this._delay = value;
 			if ( !isNaN( this._id ) ) {
@@ -162,7 +164,7 @@ if ( !blooddy.utils.Timer ) {
 		 * @param	{Number}	value
 		 */
 		TimerPrototype.setRepeatCount = function(value) {
-			this._repeatCount = Math.max( 0, value || 0 );
+			this._repeatCount = MMath.max( 0, value || 0 );
 		};
 
 		//----------------------------------

@@ -84,14 +84,6 @@ if ( !blooddy.Flash.sound ) {
 
 		/**
 		 * @method
-		 * @param	{String}	uri
-		 */
-		SoundPrototype.unload = function(uri) {
-			this.call( 'unload', uri );
-		};
-
-		/**
-		 * @method
 		 * @param	{Number}	id
 		 */
 		SoundPrototype.stop = function(id) {

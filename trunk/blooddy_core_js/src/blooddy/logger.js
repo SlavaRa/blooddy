@@ -8,14 +8,13 @@ if ( !window.blooddy ) throw new Error( '"blooddy" not initialized' );
 
 if ( !blooddy.Logger ) {
 
-	blooddy.require( 'blooddy.events.EventDispatcher' );
+	blooddy.require( 'blooddy.utils.List' );
 
 	/**
 	 * @class
 	 * логгер
 	 * @namespace	blooddy
-	 * @extends		blooddy.events.EventDispatcher
-	 * @requires	blooddy.utils.Version
+	 * @extends		blooddy.utils.List
 	 * @author		BlooDHounD	<http://www.blooddy.by>
 	 */
 	blooddy.Logger = ( function() {
@@ -30,9 +29,11 @@ if ( !blooddy.Logger ) {
 		 * @private
 		 */
 		var $ =			blooddy,
-			utils =		$.utils,
+			utils =		$.utils;
 
-			EE_A =		'addedLog';
+		var illegalOperation = function() {
+			throw new Error( 'illegal operation' );
+		};
 
 		//--------------------------------------------------------------------------
 		//
@@ -50,10 +51,9 @@ if ( !blooddy.Logger ) {
 			this._maxLength =	( isNaN( maxLength ) ? 50 : maxLength );
 			this._maxTime =		( isNaN( maxTime ) ? 5*60e3 : maxTime );
 			this._minLength =	( minLength || 0 );
-			this._list =		new Array();
 		};
 
-		$.extend( Logger, $.events.EventDispatcher );
+		$.extend( Logger, $.utils.List );
 
 		var	LoggerPrototype =		Logger.prototype,
 			LoggerSuperPrototype =	Logger.superPrototype;
@@ -63,12 +63,6 @@ if ( !blooddy.Logger ) {
 		//  Variables
 		//
 		//--------------------------------------------------------------------------
-
-		/**
-		 * @private
-		 * @type	{Array}
-		 */
-		LoggerPrototype._list = null;
 
 		/**
 		 * @private
@@ -96,23 +90,20 @@ if ( !blooddy.Logger ) {
 
 		/**
 		 * @private
+		 * @param	{blooddy.Logger}	scope
 		 */
 		var updateList = function(scope) {
 			var	time = utils.getTime(),
-				l = scope._list.length,
-				i;
-			for ( i=0; i<l; i++ ) {
-				if ( time - scope._list[i].time < scope._maxTime ) {
+				log;
+			while ( scope._list.length > this._minLength ) {
+				log = scope._list[0];
+				if ( time - log.time < scope._maxTime ) {
 					break;
 				}
+				scope.remove( log );
 			}
-			if ( l - i > this._minLength ) {
-				if ( l - i > scope._maxLength ) {
-					i = l - scope._maxLength;
-				}
-				if ( i > 0 ) {
-					scope._list.splice( 0, i );
-				}
+			while ( scope._list.length > this._maxLength ) {
+				scope.remove( log );
 			}
 		};
 
@@ -223,36 +214,62 @@ if ( !blooddy.Logger ) {
 
 		/**
 		 * @method
-		 * @param	{blooddy.Logger.Log}	log
+		 * @override
+		 * @param	{Object}	object
+		 * @return	{Object}
 		 */
-		LoggerPrototype.addLog = function(log) {
-			this._list.push( log );
+		LoggerPrototype.add = function(object) {
+			object = LoggerSuperPrototype.add.call( this, object );
 			updateList( this );
-			if ( this.hasEventListener( EE_A ) ) {
-				var event = new $.events.Event( EE_A );
-				event.log = log;
-				this.dispatchEvent( event );
-			}
-		};
-
-		/**
-		 * @method
-		 * @return	{Array}
-		 */
-		LoggerPrototype.getList = function() {
-			return this._list.slice();
+			return object;
 		};
 
 		/**
 		 * @method
 		 * @override
-		 * подготавливает объект к удалению
+		 * @throws	{Error}		illegal operation
 		 */
-		LoggerPrototype.dispose = function() {
-			this._list.splice( 0, this._list.length );
-			this._list = null;
-			LoggerSuperPrototype.dispose.call( this );
+		LoggerPrototype.addAt = illegalOperation;
+
+		/**
+		 * @method
+		 * @override
+		 * @param	{Object}	object
+		 * @return	{Object}
+		 */
+		LoggerPrototype.remove = function(object) {
+			object = LoggerSuperPrototype.remove.call( this, object );
+			updateList( this );
+			return object;
 		};
+
+		/**
+		 * @method
+		 * @override
+		 * @throws	{Error}		illegal operation
+		 */
+		LoggerPrototype.removeAt = illegalOperation;
+
+		/**
+		 * @method
+		 * @override
+		 * @throws	{Error}		illegal operation
+		 */
+		LoggerPrototype.setIndex = illegalOperation;
+
+		/**
+		 * @method
+		 * @override
+		 * @throws	{Error}		illegal operation
+		 */
+		LoggerPrototype.swap = illegalOperation;
+
+		/**
+		 * @method
+		 * @override
+		 * @throws	{Error}		illegal operation
+		 */
+		LoggerPrototype.swapAt = illegalOperation;
 
 		/**
 		 * @method
