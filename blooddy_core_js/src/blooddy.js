@@ -44,9 +44,8 @@ if ( !window.blooddy ) {
 				_gecko =	0,
 				_webkit =	0,
 
-				m;
+				m = _u.match( /AppleWebKit\/([\.\d]*)/ );
 
-			m = _u.match( /AppleWebKit\/([\.\d]*)/ );
 			if ( m ) {
 				if ( m[1] )	_webkit = parseFloat( m[1] );
 				else		_webkit = 1;
@@ -174,7 +173,7 @@ if ( !window.blooddy ) {
 
 			_xhr,
 			_root,
-			_logging =		/(;|^)\s*\$bl=1\s*(;|$)/.test( doc.cookie.toString() );
+			_logging =		( win.location.protocol == 'file:' || /(;|^)\s*\$bl=1\s*(;|$)/.test( doc.cookie.toString() ) );
 
 		//--------------------------------------------------------------------------
 		//
