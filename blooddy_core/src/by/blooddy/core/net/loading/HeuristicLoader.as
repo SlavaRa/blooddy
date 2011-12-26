@@ -39,11 +39,6 @@ package by.blooddy.core.net.loading {
 		//
 		//--------------------------------------------------------------------------
 
-		/**
-		 * @private
-		 */
-		private static const $internal_zip:Namespace = ZIPLoader.$internal_zip;
-
 		use namespace $protected_load;
 
 		//--------------------------------------------------------------------------
@@ -274,17 +269,17 @@ package by.blooddy.core.net.loading {
 				case MIME.JPEG:
 				case MIME.GIF:
 					this._loader = this.create_loader();
-					this._loader.loadBytes( bytes );
+					this._loader.$assign( bytes, super.url );
 					break;
 				
 				case MIME.MP3:
 					this._sound = this.create_sound();
-					this._sound.loadBytes( bytes );
+					this._sound.$assign( bytes, super.url );
 					break;
 				
 				case MIME.ZIP:
 					this._zip = this.create_zip();
-					this._zip.loadBytes( bytes );
+					this._zip.$assign( bytes, null, super.url );
 					break;
 				
 				default:	// а вот хз, что это
@@ -293,8 +288,11 @@ package by.blooddy.core.net.loading {
 						this._content = bytes;
 					} else {
 						this.parseUnknownData( bytes );
+						if ( bytes !== this._content ) {
+							bytes.clear();
+							_BIN.takeIn( 'bytes', bytes );
+						}
 					}
-					
 					if ( super.hasEventListener( Event.INIT ) ) {
 						super.dispatchEvent( new Event( Event.INIT ) );
 					}
@@ -412,7 +410,7 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 */
 		private function create_input():ByteArray {
-			return new ByteArray();
+			return _BIN.takeOut( 'bytes' ) || new ByteArray();
 		}
 
 		/**
@@ -430,7 +428,7 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 * очищает stream
 		 */
-		private function clear_stream(close:Boolean=true):void {
+		private function clear_stream(safe:Boolean=false):void {
 			if ( this._stream ) {
 				this._stream.removeEventListener( Event.OPEN,							super.dispatchEvent );
 				this._stream.removeEventListener( HTTPStatusEvent.HTTP_STATUS,			super.dispatchEvent );
@@ -443,7 +441,7 @@ package by.blooddy.core.net.loading {
 				this._stream.removeEventListener( Event.COMPLETE,						this.handler_stream_complete );
 				this._stream.removeEventListener( IOErrorEvent.IO_ERROR,				this.handler_common_error );
 				this._stream.removeEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_stream_init_securityError );
-				if ( close ) {
+				if ( !safe ) {
 					if ( this._stream.connected ) {
 						this._stream.close();
 					}
@@ -521,9 +519,12 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 * очищает буфер
 		 */
-		private function clear_input():void {
+		private function clear_input(safe:Boolean=false):void {
 			if ( this._input ) {
-				this._input.clear();
+				if ( !safe ) {
+					this._input.clear();
+					_BIN.takeIn( 'bytes', this._input );
+				}
 				this._input = null;
 			}
 		}
@@ -627,8 +628,8 @@ package by.blooddy.core.net.loading {
 
 					case MIME.ZIP:
 						this._zip = this.create_zip();
-						this._zip.$internal_zip::$load( this._input, this._stream, super.url );
-						this.clear_stream( false );
+						this._zip.$assign( this._input, this._stream, super.url );
+						this.clear_stream( true );
 						this._input = null;
 						break;
 
@@ -659,7 +660,7 @@ package by.blooddy.core.net.loading {
 			// данные закончились, а мы так и не знали, что у нас тут за дерьмо
 			this._contentType = MIME.analyseBytes( this._input ) || MIME.analyseURL( this._request.url ); // пытаемся узнать что за говно мы грузим
 			this.$loadBytes( this._input );
-			this._input = null;
+			this.clear_input( true );
 		}
 
 		/**
@@ -711,11 +712,7 @@ package by.blooddy.core.net.loading {
 
 			this.parseUnknownData( this._input );
 
-			if ( this._input === this._content ) {
-				this._input = null;
-			} else {
-				this.clear_input();
-			}
+			this.clear_input( this._input === this._content );
 
 			if ( super.hasEventListener( Event.INIT ) ) {
 				super.dispatchEvent( new Event( Event.INIT ) );
@@ -770,11 +767,7 @@ package by.blooddy.core.net.loading {
 				
 				this.parseUnknownData( this._input );
 				
-				if ( this._input === this._content ) {
-					this._input = null;
-				} else {
-					this.clear_input();
-				}
+				this.clear_input( this._input === this._content );
 
 				if ( super.hasEventListener( Event.INIT ) ) {
 					super.dispatchEvent( new Event( Event.INIT ) );

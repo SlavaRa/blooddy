@@ -184,6 +184,14 @@ package by.blooddy.core.net.loading {
 		/**
 		 * @private
 		 */
+		$protected_load function $assign(input:ByteArray, url:String=null):void {
+			this.start( url );
+			this.$loadBytes( input );
+		}
+		
+		/**
+		 * @private
+		 */
 		$protected_load override function $load(request:URLRequest):void {
 			this._loader = this.create_loader( true, true );
 			this._loaderInfo = this._loader._loaderInfo;
@@ -197,6 +205,8 @@ package by.blooddy.core.net.loading {
 			this._loader = this.create_loader();
 			this._loaderInfo = this._loader._loaderInfo;
 			this._loader._loadBytes( bytes, this.create_loaderContext() );
+			bytes.clear();
+			_BIN.takeIn( 'bytes', bytes );
 		}
 
 		/**

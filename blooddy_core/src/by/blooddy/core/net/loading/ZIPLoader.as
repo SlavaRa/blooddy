@@ -33,10 +33,8 @@ package by.blooddy.core.net.loading {
 		//
 		//--------------------------------------------------------------------------
 
-		internal namespace $internal_zip;
-		
 		use namespace $protected_load;
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Class variables
@@ -85,14 +83,14 @@ package by.blooddy.core.net.loading {
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * Constructor.
 		 */
 		public function ZIPLoader(request:URLRequest=null) {
 			super( request );
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Variblies
@@ -108,12 +106,12 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 */
 		private const _hash:Object = new Object();
-		
+
 		/**
 		 * @private
 		 */
 		private var _stream:flash.net.URLStream;
-		
+
 		/**
 		 * @private
 		 */
@@ -133,7 +131,7 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 */
 		private var _fileInfo:FileInfo;
-		
+
 		/**
 		 * @private
 		 */
@@ -166,17 +164,17 @@ package by.blooddy.core.net.loading {
 
 		//--------------------------------------------------------------------------
 		//
-		//  Internal methods
+		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 * метод хак, существует для того что бы HeuristicLoader просто сделал
 		 * перенаправление а не начинал загрузку заново
 		 */
-		$internal_zip function $load(input:ByteArray, stream:flash.net.URLStream=null, url:String=null):void {
-			this.start();
+		$protected_load function $assign(input:ByteArray, stream:flash.net.URLStream=null, url:String=null):void {
+			this.start( url );
 			if ( stream ) {
 				this.assign_stream( stream, true );
 				this._stream = stream;
@@ -196,12 +194,6 @@ package by.blooddy.core.net.loading {
 				this.$loadBytes( input );
 			}
 		}
-		
-		//--------------------------------------------------------------------------
-		//
-		//  Protected methods
-		//
-		//--------------------------------------------------------------------------
 
 		$protected_load override function $load(request:URLRequest):void {
 			this._state = _STATE_SIGNATURE;
@@ -215,7 +207,12 @@ package by.blooddy.core.net.loading {
 			bytes.endian = Endian.LITTLE_ENDIAN;
 			this._input = bytes;
 			try {
-				this.parse();
+				this._need = this.parse();
+				if ( this._need > 0 ) {
+					throw new IOError();
+				}
+				this.clear();
+				super.completeHandler( new Event( Event.COMPLETE ) );
 			} catch ( e:* ) {
 				this.throwError( e );
 			}
@@ -224,16 +221,24 @@ package by.blooddy.core.net.loading {
 		$protected_load override function $unload():Boolean {
 			var unload:Boolean = Boolean( this._stream );
 			this._state = _STATE_IDLE;
-			this.clear_stream();
+			var bytes:ByteArray;
+			while ( this._list.length > 0 ) {
+				bytes = this._list.pop();
+				bytes.clear();
+			}
+			for ( var name:String in this._hash ) {
+				delete this._hash[ name ];
+			}
+			this.clear();
 			return unload;
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Private methods
 		//
 		//--------------------------------------------------------------------------
-		
+
 		/**
 		 * @private
 		 * создаёт URLStream для загрузки
@@ -243,7 +248,7 @@ package by.blooddy.core.net.loading {
 			this.assign_stream( result );
 			return result;
 		}
-		
+
 		/**
 		 * @private
 		 * создаёт URLStream для загрузки
@@ -264,7 +269,21 @@ package by.blooddy.core.net.loading {
 			stream.addEventListener( IOErrorEvent.IO_ERROR,				this.handler_stream_error );
 			stream.addEventListener( SecurityErrorEvent.SECURITY_ERROR,	this.handler_stream_error );
 		}
-		
+
+		/**
+		 * @private
+		 */
+		private function clear():void {
+			if ( this._file ) {
+				this._file.clear();
+				_BIN.takeIn( 'bytes', this._file );
+			}
+			this._file = null;
+			this._fileInfo = null;
+			this.clear_stream();
+			this.clear_input();
+		}
+
 		/**
 		 * @private
 		 * очищает stream
@@ -291,10 +310,16 @@ package by.blooddy.core.net.loading {
 
 		/**
 		 * @private
+		 * очищает буфер
 		 */
-		private function clear():void {
-			this.clear_stream();
-			this._input = null;
+		private function clear_input():void {
+			if ( this._input ) {
+				if ( this._input is ByteArray ) {
+					( this._input as ByteArray ).clear();
+					_BIN.takeIn( 'bytes', this._input );
+				}
+				this._input = null;
+			}
 		}
 
 		/**
@@ -420,6 +445,7 @@ package by.blooddy.core.net.loading {
 								( this._input as ByteArray ).position += bytesLeft;
 							} else {
 								this._input.readBytes( _JUNK, 0, bytesLeft );
+								_JUNK.clear();
 							}
 						}
 						this._state = _STATE_LOCAL_FILE_CONTENT;
@@ -540,12 +566,13 @@ package by.blooddy.core.net.loading {
 		 */
 		private function handler_stream_complete(event:Event):void {
 			if ( this._state == _STATE_IDLE ) {
+				this.clear();
 				super.completeHandler( event );
 			} else {
 				this.throwError( '' );
 			}
 		}
-		
+
 		/**
 		 * @private
 		 */
@@ -571,13 +598,11 @@ package by.blooddy.core.net.loading {
 		 */
 		private function handler_stream_input_progress(event:ProgressEvent):void {
 			if ( this._stream.bytesAvailable >= this._need ) {
-				this._stream.removeEventListener( ProgressEvent.PROGRESS, this.handler_stream_input_progress );
-				this._stream.addEventListener( ProgressEvent.PROGRESS, this.handler_stream_progress );
 				this._stream.readBytes( this._input as ByteArray, ( this._input as ByteArray ).length, this._need );
 				try {
-					if ( this._need > 0 ) {
-						this.parse();
-					}
+					this.parse();
+					this._stream.removeEventListener( ProgressEvent.PROGRESS, this.handler_stream_input_progress );
+					this._stream.addEventListener( ProgressEvent.PROGRESS, this.handler_stream_progress );
 					this._input = this._stream;
 					this.parse();
 					this.progressHandler( event );
@@ -586,12 +611,10 @@ package by.blooddy.core.net.loading {
 				}
 			}
 		}
-		
-	}
-	
-}
 
-import flash.utils.ByteArray;
+	}
+
+}
 
 /**
  * @private
