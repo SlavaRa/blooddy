@@ -120,7 +120,7 @@ package by.blooddy.core.net.loading {
 //		$protected_load override function $getAbstractContent():* {
 //			return this._content;
 //		}
-		
+
 		$protected_load override function $load(request:URLRequest):void {
 			this._stream = this.create_stream();
 			this._stream.load( request );
@@ -148,6 +148,7 @@ package by.blooddy.core.net.loading {
 						return; // выходим :(
 					} finally {
 						bytes.clear();
+						_BIN.takeIn( 'bytes', bytes );
 					}
 					break;
 				
@@ -235,7 +236,7 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 */
 		private function handler_stream_complete(event:Event):void {
-			var input:ByteArray = new ByteArray();
+			var input:ByteArray = _BIN.takeOut( 'bytes' ) || new ByteArray();
 			this._stream.readBytes( input );
 			this.clear_stream();
 			this.$loadBytes( input );

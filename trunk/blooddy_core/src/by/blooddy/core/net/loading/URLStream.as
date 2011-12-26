@@ -196,6 +196,7 @@ package by.blooddy.core.net.loading {
 			if ( this._input ) {
 				if ( this._input is ByteArray ) {
 					( this._input as ByteArray ).clear();
+					_BIN.takeIn( 'bytes', this._input );
 				}
 				this._input = null;
 			}
@@ -224,6 +225,12 @@ package by.blooddy.core.net.loading {
 		 */
 		private function handler_stream_complete(event:Event):void {
 			this._connected = false;
+			var bytes:ByteArray = _BIN.takeOut( 'bytes' ) || new ByteArray();
+			if ( this._stream.bytesAvailable > 0 ) {
+				this._stream.readBytes( bytes );
+			}
+			this._input = bytes;
+			this.clear_stream();
 			super.completeHandler( event );
 		}
 

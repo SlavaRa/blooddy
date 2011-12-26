@@ -313,9 +313,8 @@ package by.blooddy.core.net.loading {
 //				NetMonitor.monitorInvocation( this._id, request, this );
 //				NetMonitor.adjustURLRequest( this._id, request );
 //			}
+			this.start( URLUtils.createAbsoluteURL( _ROOT, request.url ) );
 			this.$load( request );
-			this._url = URLUtils.createAbsoluteURL( _ROOT, request.url );
-			this.start();
 		}
 
 		/**
@@ -325,7 +324,7 @@ package by.blooddy.core.net.loading {
 			if ( this._state != _STATE_IDLE ) throw new ArgumentError();
 			//else if ( this._state > _STATE_PROGRESS ) this.clear();
 			this.start();
-			this._input = new ByteArray();
+			this._input = _BIN.takeOut( 'bytes' ) || new ByteArray();
 			this._input.writeBytes( bytes );
 			this._input.position = 0;
 			enterFrameBroadcaster.addEventListener( Event.ENTER_FRAME, this.handler_loadBytes_enterFrame );
@@ -409,7 +408,8 @@ package by.blooddy.core.net.loading {
 		/**
 		 * @private
 		 */
-		$protected_load final function start():void {
+		$protected_load final function start(url:String=null):void {
+			this._url = url;
 			this._state = _STATE_PROGRESS;
 			this._bytesLoaded = 0;
 			this._bytesTotal = 0;
@@ -425,6 +425,7 @@ package by.blooddy.core.net.loading {
 			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_loadBytes_enterFrame );
 			if ( this._input ) {
 				this._input.clear();
+				_BIN.takeIn( 'bytes', this._input );
 				this._input = null;
 			}
 			this._state = _STATE_IDLE;

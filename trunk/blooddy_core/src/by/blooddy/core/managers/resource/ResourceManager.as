@@ -771,7 +771,7 @@ internal final class $ResourceLoader extends ResourceLoader {
  * дефолтный пучёк ресурсов
  * обёртка вокруг ApplicationDomain.currentDomain
  */
-internal class DefaultResourceBundle implements IResourceBundle {
+internal final class DefaultResourceBundle implements IResourceBundle {
 	
 	//--------------------------------------------------------------------------
 	//

@@ -137,6 +137,14 @@ package by.blooddy.core.net.loading {
 		/**
 		 * @private
 		 */
+		$protected_load function $assign(input:ByteArray, url:String=null):void {
+			this.start( url );
+			this.$loadBytes( input );
+		}
+		
+		/**
+		 * @private
+		 */
 		$protected_load override function $load(request:URLRequest):void {
 			this._sound = this.create_sound();
 			this._sound._load( request, this.create_soundLoaderContext() );
@@ -146,7 +154,13 @@ package by.blooddy.core.net.loading {
 		 * @private
 		 */
 		$protected_load override function $loadBytes(bytes:ByteArray):void {
-			Error.throwError( IllegalOperationError, 2014 );
+			bytes.clear();
+			_BIN.takeIn( 'bytes', bytes );
+			try {
+				Error.throwError( IllegalOperationError, 2014 ); // TODO: error complete
+			} catch ( e:Error ){
+				super.completeHandler( new IOErrorEvent( IOErrorEvent.IO_ERROR, false, false, e.message, e.errorID ) );
+			}
 		}
 
 		/**
