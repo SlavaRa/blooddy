@@ -82,7 +82,8 @@ package by.blooddy.core.display.resource {
 
 				this._invalidated = 1;
 
-				stage.addEventListener( Event.RENDER, this.handler_render );
+				stage.addEventListener( Event.ENTER_FRAME,	this.handler_render );
+				stage.addEventListener( Event.RENDER,		this.handler_render );
 				stage.invalidate();
 				
 			} else {
@@ -315,7 +316,8 @@ package by.blooddy.core.display.resource {
 		 * @private
 		 */
 		private function handler_render(event:Event):void {
-			event.target.removeEventListener( event.type, this.handler_render );
+			event.target.removeEventListener( Event.RENDER,			this.handler_render );
+			event.target.removeEventListener( Event.ENTER_FRAME,	this.handler_render );
 			this.$invalidate();
 		}
 
