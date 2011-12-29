@@ -76,22 +76,28 @@ package by.blooddy.core.display.resource {
 		//--------------------------------------------------------------------------
 
 		protected final function invalidate(immediately:Boolean=false):void {
-			if ( this._invalidated || !super.hasManager() ) return;
 
-			if ( !immediately && stage ) {
+			if ( this._invalidated == 2 ) {
 
-				this._invalidated = 1;
+				throw new IllegalOperationError( 'recursive "ivalidate" call' );
 
-				stage.addEventListener( Event.ENTER_FRAME,	this.handler_render );
-				stage.addEventListener( Event.RENDER,		this.handler_render );
-				stage.invalidate();
-				
-			} else {
+			} else if ( this._invalidated == 0 && super.hasManager() ) {
 
-				this.$invalidate();
+				if ( !immediately && stage ) {
+	
+					this._invalidated = 1;
+
+					stage.addEventListener( Event.ENTER_FRAME,	this.handler_render );
+					stage.addEventListener( Event.RENDER,		this.handler_render );
+					stage.invalidate();
+
+				} else {
+
+					this.$invalidate();
+
+				}
 
 			}
-
 		}
 
 		protected function getResourceBundles():Array {
