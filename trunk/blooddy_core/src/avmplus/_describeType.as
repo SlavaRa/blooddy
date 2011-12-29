@@ -13,6 +13,6 @@ package avmplus {
 	 * @langversion				3.0
 	 * @created					21.10.2011 2:26:35
 	 */
-	public const describeTypeJSON2:Function = describeTypeJSON;
+	public const _describeType:Function = describeTypeJSON;
 	
 }
