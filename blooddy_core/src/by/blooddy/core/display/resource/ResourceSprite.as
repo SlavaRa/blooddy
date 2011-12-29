@@ -340,8 +340,6 @@ package by.blooddy.core.display.resource {
 		 */
 		private function handler_addedToStage(event:Event):void {
 
-			this._stage = super.stage;
-			
 			enterFrameBroadcaster.removeEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
 
 			this._depth = this.getDepth();

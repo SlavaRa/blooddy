@@ -396,8 +396,14 @@ internal final class DeferredBitmapMovieClip extends BitmapMovieClip {
 		super.addEventListener( Event.ENTER_FRAME, this.handler_enterFrame );
 	}
 
+	/**
+	 * @private
+	 */
 	private var _mc:MovieClip;
 
+	/**
+	 * @private
+	 */
 	private var _f:int = 0;
 
 	public override function clone():BitmapMovieClip {

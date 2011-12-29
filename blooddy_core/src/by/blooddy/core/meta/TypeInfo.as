@@ -16,7 +16,7 @@ package by.blooddy.core.meta {
 	import avmplus.INCLUDE_TRAITS;
 	import avmplus.INCLUDE_VARIABLES;
 	import avmplus.USE_ITRAITS;
-	import avmplus.describeTypeJSON2;
+	import avmplus._describeType;
 	
 	import by.blooddy.core.utils.ClassAlias;
 	import by.blooddy.core.utils.ClassUtils;
@@ -135,7 +135,7 @@ package by.blooddy.core.meta {
 		 */
 		private static function getObjectInfo():TypeInfo {
 
-			var t:Object = describeTypeJSON2( Object, _FLAGS & ~HIDE_OBJECT ).traits;
+			var t:Object = _describeType( Object, _FLAGS & ~HIDE_OBJECT ).traits;
 
 			_privateCall = true;
 			var result:TypeInfo = new TypeInfo();
@@ -414,7 +414,7 @@ package by.blooddy.core.meta {
 
 		public function hasType(o:*):Boolean {
 			if ( o is Class ) {
-				return o.prototype.isPrototypeOf( this._targetPrototype );
+				return this._targetPrototype instanceof o;
 			} else if ( o is TypeInfo ) {
 				return ( o as TypeInfo )._targetPrototype.isPrototypeOf( this._targetPrototype );
 			} else {
@@ -637,7 +637,7 @@ package by.blooddy.core.meta {
 		private function parseClass(c:Class):void {
 			this._target = c;
 			this._targetPrototype = c.prototype;
-			this.parse( describeTypeJSON2( c, _FLAGS ) );
+			this.parse( _describeType( c, _FLAGS ) );
 		}
 
 		//--------------------------------------------------------------------------
