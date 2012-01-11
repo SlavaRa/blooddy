@@ -2,6 +2,7 @@
 <flexLibProperties includeAllClasses="false" useMultiPlatformConfig="false" version="1">
   <includeClasses>
     <classEntry path="by.blooddy.game.data.PointsData"/>
+    <classEntry path="by.blooddy.game.display.text.PointsProgressBar"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
