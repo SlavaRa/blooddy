@@ -232,7 +232,7 @@ package by.blooddy.core.display {
 							parseInt( this._bgColor32 as String )
 						)
 					);
-			alpha = ( ( color >> 24 ) & 0xFF ) / 0xFF;
+			alpha = ( ( color >>> 24 ) & 0xFF ) / 0xFF;
 			if ( alpha > 0.05 ) {
 				color = color & 0xFFFFFF;
 				g.beginFill( color, alpha );
@@ -249,7 +249,7 @@ package by.blooddy.core.display {
 								parseInt( this._indicatorColor32 as String )
 							)
 						);
-				alpha = ( ( color >> 24 ) & 0xFF ) / 0xFF;
+				alpha = ( ( color >>> 24 ) & 0xFF ) / 0xFF;
 				color = color & 0xFFFFFF;
 				g.beginFill( color, alpha );
 				g.drawRect( 0, 0, this._width * this._progress, this._height );
@@ -270,11 +270,11 @@ package by.blooddy.core.display {
 							parseInt( this._borderColor32 as String )
 						)
 					);
-			alpha = ( ( color >> 24 ) & 0xFF ) / 0xFF;
-			if ( alpha>0.05 ) {
+			alpha = ( ( color >>> 24 ) & 0xFF ) / 0xFF;
+			if ( alpha > 0.05 ) {
 				color = color & 0xFFFFFF;
 				g.lineStyle( 1, color, alpha );
-				g.drawRect(0, 0, this._width, this._height);
+				g.drawRect( -0.5, -0.5, this._width + 1, this._height + 1 );
 			}
 
 			return true;

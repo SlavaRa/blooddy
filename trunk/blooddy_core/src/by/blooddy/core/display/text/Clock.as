@@ -146,7 +146,7 @@ package by.blooddy.core.display.text {
 		 * @private
 		 */
 		private function updateTimer(...rest):void {
-			var d:Number = getTimer() - this._realTime;
+			var d:Number = this._realTime - getTimer();
 			if ( d < 0 ) {
 				this.clear();
 			} else {
