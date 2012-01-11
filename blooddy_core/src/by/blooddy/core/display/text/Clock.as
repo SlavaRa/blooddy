@@ -1,4 +1,5 @@
 package by.blooddy.core.display.text {
+
 	import by.blooddy.core.utils.DateUtils;
 	import by.blooddy.core.utils.time.AutoTimer;
 	import by.blooddy.core.utils.time.getTimer;
