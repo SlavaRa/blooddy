@@ -4,7 +4,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-	import by.blooddy.core.errors.ErrorsManager;
 	import flash.errors.IllegalOperationError;
 
 	import flash.geom.Rectangle;
@@ -23,7 +22,7 @@
 	 * @private
 	 */
 	public override function set width(value:Number):void {
-		throw new IllegalOperationError( ErrorsManager.getErrorMessage(2071), 2071 );
+		Error.throwError( IllegalOperationError, 2071 );
 	}
 
 	//----------------------------------
@@ -34,7 +33,7 @@
 	 * @private
 	 */
 	public override function set height(value:Number):void {
-		throw new IllegalOperationError( ErrorsManager.getErrorMessage(2071), 2071 );
+		Error.throwError( IllegalOperationError, 2071 );
 	}
 
 	//----------------------------------
@@ -45,7 +44,7 @@
 	 * @private
 	 */
 	public override function set scaleX(value:Number):void {
-		throw new IllegalOperationError( ErrorsManager.getErrorMessage(2071), 2071 );
+		Error.throwError( IllegalOperationError, 2071 );
 	}
 
 	//----------------------------------
@@ -56,7 +55,7 @@
 	 * @private
 	 */
 	public override function set scaleY(value:Number):void {
-		throw new IllegalOperationError( ErrorsManager.getErrorMessage(2071), 2071 );
+		Error.throwError( IllegalOperationError, 2071 );
 	}
 
 	//----------------------------------
@@ -67,7 +66,7 @@
 	 * @private
 	 */
 	public override function set opaqueBackground(value:Object):void {
-		throw new IllegalOperationError( ErrorsManager.getErrorMessage(2071), 2071 );
+		Error.throwError( IllegalOperationError, 2071 );
 	}
 
 	//----------------------------------
@@ -78,7 +77,7 @@
 	 * @private
 	 */
 	public override function set scale9Grid(innerRectangle:Rectangle):void {
-		throw new IllegalOperationError( ErrorsManager.getErrorMessage(2071), 2071 );
+		Error.throwError( IllegalOperationError, 2071 );
 	}
 
 	//----------------------------------
@@ -96,5 +95,5 @@
 	 * @private
 	 */
 	public override function set scrollRect(value:Rectangle):void {
-		throw new IllegalOperationError( ErrorsManager.getErrorMessage(2071), 2071 );
+		Error.throwError( IllegalOperationError, 2071 );
 	}
