@@ -213,6 +213,7 @@
     <classEntry path="by.blooddy.core.tween.Tween"/>
     <classEntry path="by.blooddy.core.net.ProxyResponder"/>
     <classEntry path="by.blooddy.core.display.text.TextProgressBar"/>
+    <classEntry path="by.blooddy.core.display.text.Clock"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests>
