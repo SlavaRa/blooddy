@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flexLibProperties includeAllClasses="false" useMultiPlatformConfig="false" version="1">
   <includeClasses>
-    <classEntry path="avmplus._describeType"/>
     <classEntry path="by.blooddy.core.blooddy"/>
+    <classEntry path="by.blooddy.core.commands.Command"/>
+    <classEntry path="by.blooddy.core.commands.CommandDispatcher"/>
     <classEntry path="by.blooddy.core.commands.ICommandDispatcher"/>
     <classEntry path="by.blooddy.core.controllers.AbstractController"/>
     <classEntry path="by.blooddy.core.controllers.BaseController"/>
@@ -60,6 +61,7 @@
     <classEntry path="by.blooddy.core.events.data.DataBaseEvent"/>
     <classEntry path="by.blooddy.core.events.display.resource.ResourceErrorEvent"/>
     <classEntry path="by.blooddy.core.events.display.resource.ResourceEvent"/>
+    <classEntry path="by.blooddy.core.events.isIntrinsicEvent"/>
     <classEntry path="by.blooddy.core.events.logging.LogEvent"/>
     <classEntry path="by.blooddy.core.events.managers.DragEvent"/>
     <classEntry path="by.blooddy.core.events.managers.RemoteModuleEvent"/>
@@ -118,31 +120,23 @@
     <classEntry path="by.blooddy.core.net.IAbstractSocket"/>
     <classEntry path="by.blooddy.core.net.IRemoter"/>
     <classEntry path="by.blooddy.core.net.ISocket"/>
-    <classEntry path="by.blooddy.core.net.ITextSocket"/>
     <classEntry path="by.blooddy.core.net.IURLRewriter"/>
     <classEntry path="by.blooddy.core.net.MIME"/>
     <classEntry path="by.blooddy.core.net.NetCommand"/>
     <classEntry path="by.blooddy.core.net.Protocols"/>
     <classEntry path="by.blooddy.core.net.ProxyClient"/>
-    <classEntry path="by.blooddy.core.net.ProxyResponder"/>
     <classEntry path="by.blooddy.core.net.ProxySharedObject"/>
     <classEntry path="by.blooddy.core.net.ProxySocket"/>
     <classEntry path="by.blooddy.core.net.RemoterProxy"/>
     <classEntry path="by.blooddy.core.net.Responder"/>
     <classEntry path="by.blooddy.core.net.Socket"/>
     <classEntry path="by.blooddy.core.net.SocketConnector"/>
-    <classEntry path="by.blooddy.core.net.TextSocket"/>
-    <classEntry path="by.blooddy.core.net.WebSocket"/>
-    <classEntry path="by.blooddy.core.net.connection.AbstractSocketConnection"/>
     <classEntry path="by.blooddy.core.net.connection.IAbstractConnection"/>
     <classEntry path="by.blooddy.core.net.connection.IConnection"/>
     <classEntry path="by.blooddy.core.net.connection.INetConnection"/>
     <classEntry path="by.blooddy.core.net.connection.LocalConnection"/>
     <classEntry path="by.blooddy.core.net.connection.SocketConnection"/>
-    <classEntry path="by.blooddy.core.net.connection.TextSocketConnection"/>
-    <classEntry path="by.blooddy.core.net.connection.filters.IAbstractSocketFilter"/>
     <classEntry path="by.blooddy.core.net.connection.filters.ISocketFilter"/>
-    <classEntry path="by.blooddy.core.net.connection.filters.ITextSocketFilter"/>
     <classEntry path="by.blooddy.core.net.connection.filters.SincereSocketFilter"/>
     <classEntry path="by.blooddy.core.net.connection.filters.TextSocketFilter"/>
     <classEntry path="by.blooddy.core.net.domain"/>
@@ -160,7 +154,6 @@
     <classEntry path="by.blooddy.core.net.loading.ZIPLoader"/>
     <classEntry path="by.blooddy.core.net.monitor.INetMonitor"/>
     <classEntry path="by.blooddy.core.net.monitor.NetMonitor"/>
-    <classEntry path="by.blooddy.core.tween.Tween"/>
     <classEntry path="by.blooddy.core.utils.ActivityListener"/>
     <classEntry path="by.blooddy.core.utils.Caller"/>
     <classEntry path="by.blooddy.core.utils.CallerQueue"/>
@@ -210,6 +203,16 @@
     <classEntry path="by.blooddy.core.utils.xml.IXMLable"/>
     <classEntry path="by.blooddy.core.utils.xml.XMLUtils"/>
     <classEntry path="parseBoolean"/>
+    <classEntry path="by.blooddy.core.net.ITextSocket"/>
+    <classEntry path="by.blooddy.core.net.WebSocket"/>
+    <classEntry path="by.blooddy.core.net.connection.AbstractSocketConnection"/>
+    <classEntry path="by.blooddy.core.net.connection.TextSocketConnection"/>
+    <classEntry path="by.blooddy.core.net.TextSocket"/>
+    <classEntry path="by.blooddy.core.net.connection.filters.ITextSocketFilter"/>
+    <classEntry path="by.blooddy.core.net.connection.filters.IAbstractSocketFilter"/>
+    <classEntry path="by.blooddy.core.tween.Tween"/>
+    <classEntry path="by.blooddy.core.net.ProxyResponder"/>
+    <classEntry path="by.blooddy.core.display.text.TextProgressBar"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests>

@@ -171,11 +171,11 @@ package by.blooddy.core.display {
 		public function set progressDispatcher(value:IProgressable):void {
 			if ( this._progressDispatcher === value ) return;
 			if ( this._progressDispatcher ) {
-				this._progressDispatcher.removeEventListener(ProgressEvent.PROGRESS, this.handler_progress);
+				this._progressDispatcher.removeEventListener( ProgressEvent.PROGRESS, this.handler_progress );
 			}
 			this._progressDispatcher = value;
 			if ( this._progressDispatcher ) {
-				this._progressDispatcher.addEventListener(ProgressEvent.PROGRESS, this.handler_progress);
+				this._progressDispatcher.addEventListener( ProgressEvent.PROGRESS, this.handler_progress );
 				this._progress = this._progressDispatcher.progress;
 			} else {
 				this._progress = 0;
