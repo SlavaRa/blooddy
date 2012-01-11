@@ -108,45 +108,27 @@ package by.blooddy.core.display.text {
 			Error.throwError( IllegalOperationError, 2071 );
 		}
 		
-		//----------------------------------
-		//  percents
-		//----------------------------------
-
-		/**
-		 * @private
-		 */
-		private var _percents:Boolean = false;
-
-		public function get percents():Boolean {
-			return this._percents;
-		}
-
-		/**
-		 * @private
-		 */
-		public function set percents(value:Boolean):void {
-			if ( this._percents ) return;
-			this._percents = value;
-			this.render();
-		}
-
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
 		
+		protected final function setText(value:String):void {
+			super.text = value;
+		}
+		
 		protected function render(event:Event=null):Boolean {
 			if ( !super.stage ) return false;
-			super.text = Math.round( this._progress * 100 ) + '%';
+			this.setText( Math.round( this._progress * 100 ) + '%' );
 			return true;
 		}
 		
 		protected function clear(event:Event=null):Boolean {
-			super.text = '';
+			this.setText( '' );
 			return true;
 		}
-		
+
 		//--------------------------------------------------------------------------
 		//
 		//  Event handlers
