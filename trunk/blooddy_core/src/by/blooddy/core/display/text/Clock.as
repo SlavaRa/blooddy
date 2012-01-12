@@ -46,7 +46,9 @@ package by.blooddy.core.display.text {
 		//  Properties
 		//
 		//--------------------------------------------------------------------------
-		
+
+		public var formater:Function;
+
 		//----------------------------------
 		//  progressDispatcher
 		//----------------------------------
@@ -150,7 +152,8 @@ package by.blooddy.core.display.text {
 			if ( d < 0 ) {
 				this.clear();
 			} else {
-				this.setText( DateUtils.timeToString( this._reverse ? d : this._time - d ) );
+				var formater:Function = this.formater || DateUtils.timeToString;
+				this.setText( formater( this._reverse ? d : this._time - d ) );
 			}
 		}
 		
