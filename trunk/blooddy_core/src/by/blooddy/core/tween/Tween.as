@@ -74,10 +74,29 @@ package by.blooddy.core.tween {
 			for ( i=0; i<l; ++i ) {
 				tween = list[ i ];
 				if ( tween._target === target ) {
-					tween._kill();
 					list.splice( i, 1 );
 					--i;
 					--l;
+					tween._kill();
+				}
+			}
+			if ( list.length <= 0 ) {
+				_BROADCASTER.removeEventListener( Event.ENTER_FRAME, handler_enterFrame );
+			}
+		}
+
+		public static function complete(target:Object):void {
+			var tween:Tween;
+			var list:Vector.<Tween> = _LIST;
+			var i:int;
+			var l:int = list.length;
+			for ( i=0; i<l; ++i ) {
+				tween = list[ i ];
+				if ( tween._target === target ) {
+					list.splice( i, 1 );
+					--i;
+					--l;
+					tween._complete();
 				}
 			}
 			if ( list.length <= 0 ) {
