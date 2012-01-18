@@ -75,6 +75,10 @@ package by.blooddy.core.display.resource {
 		//
 		//--------------------------------------------------------------------------
 
+		protected function isDrawed():Boolean {
+			return this._isDrawed;
+		}
+		
 		protected final function invalidate(immediately:Boolean=false):void {
 
 			if ( this._invalidated == 2 ) {

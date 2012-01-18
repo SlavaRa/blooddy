@@ -62,16 +62,16 @@ package by.blooddy.core.display.text {
 		 * @private
 		 */
 		private var _time:Number;
-		
+
 		public function get time():Number {
-			return this._time;
+			return this._realTime - getTimer();
 		}
 		
 		/**
 		 * @private
 		 */
 		public function set time(value:Number):void {
-			if ( this._time === value ) return;
+			if ( this.time === value ) return;
 			this._time = value;
 			this._realTime = getTimer() + value;
 			this.render();
